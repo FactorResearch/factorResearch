@@ -1,0 +1,875 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// Graham Score — Quant Edition
+// Theme: Bloomberg Terminal  ·  Dense · Dark · Precise · Professional
+// Font stack: DM Mono (data) + Syne (headers) — loaded via Google Fonts
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Google Fonts ────────────────────────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
+
+// ── Design Tokens ───────────────────────────────────────────────────────────
+$bg:          #080b10;
+$surface:     #0d1117;
+$card:        #111620;
+$card-raised: #161d2a;
+$border:      #1e2a3a;
+$border-glow: #1e3a5f;
+
+$green:       #00e676;
+$green-dim:   #00c853;
+$green-glow:  rgba(0, 230, 118, 0.15);
+$red:         #ff1744;
+$red-dim:     #d50000;
+$amber:       #ffab00;
+$blue:        #2979ff;
+$blue-bright: #448aff;
+$blue-glow:   rgba(41, 121, 255, 0.2);
+$cyan:        #00b8d4;
+
+$text:        #e8eaf0;
+$text-dim:    #8899aa;
+$text-muted:  #4a5568;
+
+$font-mono:   'DM Mono', 'Fira Code', monospace;
+$font-display:'Syne', sans-serif;
+
+// ── Mixins ──────────────────────────────────────────────────────────────────
+@mixin card {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 6px;
+}
+
+@mixin card-raised {
+  background: $card-raised;
+  border: 1px solid $border;
+  border-radius: 6px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+@mixin glow-line($color: $blue-bright) {
+  border-top: 2px solid $color;
+  box-shadow: 0 -1px 12px rgba($color, 0.4);
+}
+
+@mixin mono($size: 13px, $weight: 400) {
+  font-family: $font-mono;
+  font-size: $size;
+  font-weight: $weight;
+  letter-spacing: 0.02em;
+}
+
+@mixin label-caps {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+@mixin pill($bg, $color) {
+  background: $bg;
+  color: $color;
+  border: 1px solid rgba($color, 0.3);
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+// ── Reset & Base ─────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: $bg;
+  color: $text;
+  font-family: $font-mono;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  // Subtle grid background
+  background-image:
+    linear-gradient(rgba(30, 42, 58, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 42, 58, 0.3) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+// ── App Shell ────────────────────────────────────────────────────────────────
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 20px;
+  border-bottom: 1px solid $border;
+  margin-bottom: 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, $blue-bright, transparent);
+  }
+
+  .app-header-icon {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(68, 138, 255, 0.6));
+  }
+
+  .app-header-content {
+    h1 {
+      font-family: $font-display;
+      font-size: 22px;
+      font-weight: 800;
+      color: $text;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    p {
+      @include label-caps;
+      margin-top: 3px;
+      color: $blue-bright;
+    }
+  }
+}
+
+// ── Tab Bar ──────────────────────────────────────────────────────────────────
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid $border;
+  margin-bottom: 24px;
+
+  .tab-btn {
+    @include mono(12px, 500);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: $text-dim;
+    cursor: pointer;
+    padding: 14px 24px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.15s, border-color 0.15s;
+    position: relative;
+    bottom: -1px;
+
+    &:hover { color: $text; }
+
+    &.active {
+      color: $blue-bright;
+      border-bottom-color: $blue-bright;
+      text-shadow: 0 0 12px rgba($blue-bright, 0.6);
+    }
+  }
+}
+
+// ── Screener Tab ─────────────────────────────────────────────────────────────
+.screener-content {
+  padding-top: 4px;
+}
+
+.screener-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  @include card;
+  border-left: 3px solid $blue-bright;
+}
+
+.screener-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.load-btn {
+  @include mono(12px, 500);
+  background: linear-gradient(135deg, #1a2a4a, #0d1a30);
+  border: 1px solid $blue-bright;
+  border-radius: 4px;
+  color: $blue-bright;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  padding: 9px 20px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: $blue-glow;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover {
+    box-shadow: 0 0 16px rgba($blue-bright, 0.4);
+    &::before { opacity: 1; }
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.screener-info {
+  @include mono(12px);
+  color: $text-dim;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// ── Progress Bar ─────────────────────────────────────────────────────────────
+.progress-container {
+  padding: 12px 16px;
+  @include card;
+  border-left: 3px solid $amber;
+  margin-bottom: 16px;
+
+  span { @include mono(12px); }
+}
+
+.progress-bar-wrapper {
+  height: 3px;
+  background: rgba($amber, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $amber, $green-dim);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 8px rgba($amber, 0.5);
+}
+
+// ── Screener Table ───────────────────────────────────────────────────────────
+.screener-table-wrap {
+  @include card;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.screener-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    tr {
+      background: $card-raised;
+      border-bottom: 2px solid $border;
+    }
+
+    th {
+      @include label-caps;
+      padding: 12px 14px;
+      text-align: left;
+      white-space: nowrap;
+      border-right: 1px solid rgba($border, 0.5);
+
+      &:last-child { border-right: none; }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid rgba($border, 0.6);
+      transition: background 0.12s;
+
+      &:last-child { border-bottom: none; }
+
+      &:hover {
+        background: rgba($blue-bright, 0.04);
+
+        .ticker-link-btn { text-decoration: underline; }
+      }
+    }
+
+    td {
+      padding: 10px 14px;
+      @include mono(13px);
+      vertical-align: middle;
+      border-right: 1px solid rgba($border, 0.3);
+
+      &:last-child { border-right: none; }
+    }
+  }
+
+  .rank-num {
+    color: $text-muted;
+    font-size: 11px;
+    width: 36px;
+    text-align: right;
+    padding-right: 10px;
+  }
+
+  .ticker-cell { width: 80px; }
+
+  .company-name-cell {
+    color: $text-dim;
+    font-size: 12px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// ── Ticker Link Button ────────────────────────────────────────────────────────
+.ticker-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: $blue-bright;
+  font-family: $font-mono;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: color 0.15s, text-shadow 0.15s;
+
+  &:hover {
+    color: #82b1ff;
+    text-shadow: 0 0 8px rgba($blue-bright, 0.6);
+  }
+}
+
+// ── Score Pills ───────────────────────────────────────────────────────────────
+.score-pill {
+  @include mono(12px, 500);
+  display: inline-block;
+  min-width: 36px;
+  text-align: center;
+  padding: 3px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+
+  &.high {
+    background: rgba($green, 0.12);
+    color: $green;
+    border: 1px solid rgba($green, 0.25);
+  }
+
+  &.medium {
+    background: rgba($amber, 0.1);
+    color: $amber;
+    border: 1px solid rgba($amber, 0.22);
+  }
+
+  &.low {
+    background: rgba($red, 0.1);
+    color: $red;
+    border: 1px solid rgba($red, 0.22);
+  }
+}
+
+// ── Verdict Pills ─────────────────────────────────────────────────────────────
+.verdict-pill {
+  @include mono(10px, 500);
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 3px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &.strong-buy {
+    background: rgba($green, 0.15);
+    color: $green;
+    border: 1px solid rgba($green, 0.35);
+    text-shadow: 0 0 8px rgba($green, 0.4);
+  }
+  &.buy {
+    background: rgba($cyan, 0.12);
+    color: $cyan;
+    border: 1px solid rgba($cyan, 0.3);
+  }
+  &.watch {
+    background: rgba($amber, 0.1);
+    color: $amber;
+    border: 1px solid rgba($amber, 0.25);
+  }
+  &.hold {
+    background: rgba($text-muted, 0.1);
+    color: $text-dim;
+    border: 1px solid rgba($text-muted, 0.2);
+  }
+  &.avoid {
+    background: rgba($red, 0.1);
+    color: $red;
+    border: 1px solid rgba($red, 0.25);
+  }
+  &.pending {
+    background: rgba($text-muted, 0.08);
+    color: $text-muted;
+    border: 1px solid rgba($text-muted, 0.15);
+  }
+}
+
+// ── Analyze Tab — Search ──────────────────────────────────────────────────────
+.main-content { padding-top: 4px; }
+
+.search-section {
+  margin-bottom: 24px;
+}
+
+.search-container {
+  max-width: 560px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  gap: 0;
+  border: 1px solid $border-glow;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: $blue-bright;
+    box-shadow: 0 0 0 3px rgba($blue-bright, 0.12);
+  }
+}
+
+.ticker-input {
+  @include mono(14px);
+  background: $card;
+  border: none;
+  color: $text;
+  flex: 1;
+  outline: none;
+  padding: 12px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &::placeholder {
+    color: $text-muted;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+  }
+
+  &:disabled { opacity: 0.5; }
+}
+
+.analyze-btn {
+  @include mono(12px, 500);
+  background: $blue;
+  border: none;
+  border-left: 1px solid $border-glow;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  padding: 12px 24px;
+  text-transform: uppercase;
+  transition: background 0.15s;
+
+  &:hover { background: $blue-bright; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.status-msg {
+  @include mono(12px);
+  color: $text-dim;
+  margin-top: 8px;
+  min-height: 18px;
+  padding-left: 2px;
+}
+
+// ── Company Header ────────────────────────────────────────────────────────────
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px 24px;
+  @include card-raised;
+  border-left: 3px solid $blue-bright;
+  margin-bottom: 16px;
+  @include glow-line($blue-bright);
+
+  h2 {
+    font-family: $font-display;
+    font-size: 20px;
+    font-weight: 700;
+    color: $text;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+}
+
+.company-meta {
+  @include label-caps;
+  color: $text-muted;
+  margin-bottom: 14px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  border: 1px solid $border;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .stat-item {
+    padding: 8px 16px;
+    border-right: 1px solid $border;
+    min-width: 90px;
+
+    &:last-child { border-right: none; }
+  }
+}
+
+.stat-label {
+  @include label-caps;
+  margin-bottom: 3px;
+}
+
+.stat-value {
+  @include mono(15px, 500);
+  color: $text;
+}
+
+.grade-badge {
+  text-align: center;
+  padding: 12px 20px;
+  background: rgba($blue, 0.05);
+  border: 1px solid $border;
+  border-radius: 5px;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.grade-letter {
+  font-family: $font-display;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.grade-label {
+  @include label-caps;
+  margin-bottom: 4px;
+}
+
+.grade-score {
+  @include mono(13px, 500);
+  color: $text-dim;
+}
+
+// ── Composite Banner ──────────────────────────────────────────────────────────
+.composite-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 24px;
+  @include card;
+  border-left: 3px solid $amber;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, $card 0%, rgba($amber, 0.04) 100%);
+}
+
+.composite-banner-verdict {
+  font-family: $font-display;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.composite-banner-desc {
+  @include mono(12px);
+  color: $text-dim;
+  max-width: 380px;
+}
+
+.pillar-scores {
+  display: flex;
+  gap: 0;
+  border: 1px solid $border;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  > div {
+    padding: 10px 18px;
+    text-align: center;
+    border-right: 1px solid $border;
+    min-width: 80px;
+
+    &:last-child { border-right: none; }
+  }
+}
+
+.pillar-value {
+  font-family: $font-display;
+  font-size: 20px;
+  font-weight: 700;
+  color: $text;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.pillar-label {
+  @include label-caps;
+  margin-bottom: 2px;
+}
+
+.pillar-weight {
+  @include mono(10px);
+  color: $text-muted;
+}
+
+// ── Warning Banner ────────────────────────────────────────────────────────────
+.warning-banner {
+  @include mono(12px);
+  background: rgba($amber, 0.08);
+  border: 1px solid rgba($amber, 0.3);
+  border-left: 3px solid $amber;
+  border-radius: 4px;
+  color: $amber;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+
+// ── Scorecards ────────────────────────────────────────────────────────────────
+.scorecard {
+  @include card-raised;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.scorecard-header {
+  font-family: $font-display;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-dim;
+  padding: 12px 18px;
+  background: $card;
+  border-bottom: 1px solid $border;
+}
+
+.criterion-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba($border, 0.5);
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($blue-bright, 0.03); }
+}
+
+.criterion-label {
+  @include mono(12px, 500);
+  color: $text;
+  margin-bottom: 3px;
+}
+
+.criterion-note {
+  @include mono(11px);
+  color: $text-dim;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.score-bar {
+  height: 3px;
+  background: rgba($border, 0.8);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 340px;
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.criterion-pts {
+  @include mono(13px, 500);
+  white-space: nowrap;
+  min-width: 42px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+// ── Charts Grid ───────────────────────────────────────────────────────────────
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+ 
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+
+  .js-plotly-plot {
+    @include card;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+}
+
+// ── Empty Cards ───────────────────────────────────────────────────────────────
+.empty-card {
+  @include card;
+  padding: 40px;
+  text-align: center;
+
+  .empty-title {
+    font-family: $font-display;
+    font-size: 15px;
+    font-weight: 600;
+    color: $text-dim;
+    margin-bottom: 6px;
+  }
+
+  .empty-msg {
+    @include mono(12px);
+    color: $text-muted;
+  }
+}
+
+// ── Graham Detail Card ────────────────────────────────────────────────────────
+.detail-card {
+  @include card-raised;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.card-header {
+  font-family: $font-display;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-dim;
+  padding: 12px 18px;
+  background: $card;
+  border-bottom: 1px solid $border;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba($border, 0.5);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($blue-bright, 0.03); }
+}
+
+.detail-label {
+  @include label-caps;
+}
+
+.detail-value {
+  @include mono(13px, 500);
+  color: $text;
+}
+
+// ── Dash Loading Overlay ──────────────────────────────────────────────────────
+.dash-graph{
+  width: 672px;
+  height: 500px;
+ max-width: 672px;
+  max-height: 500px;
+}
+._dash-loading-callback {
+  opacity: 0.6;
+}
+
+// ── Dropdown (Dash DCC) ───────────────────────────────────────────────────────
+.Select-control {
+  background: $card !important;
+  border: 1px solid $border !important;
+  border-radius: 4px !important;
+  @include mono(12px);
+  color: $text !important;
+}
+
+.Select-menu-outer {
+  background: $card-raised !important;
+  border: 1px solid $border-glow !important;
+  border-radius: 4px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
+}
+
+.Select-option {
+  background: transparent !important;
+  color: $text-dim !important;
+  @include mono(12px);
+  padding: 8px 12px !important;
+
+  &:hover, &.is-focused {
+    background: rgba($blue-bright, 0.08) !important;
+    color: $text !important;
+  }
+}
+
+.Select-value-label {
+  color: $text !important;
+}
+
+// ── Scrollbar ────────────────────────────────────────────────────────────────
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: $bg; }
+::-webkit-scrollbar-thumb  { background: $border; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: $text-muted; }
+
+// ── Selection ────────────────────────────────────────────────────────────────
+::selection {
+  background: rgba($blue-bright, 0.25);
+  color: $text;
+}
+.sort-header-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    white-space: nowrap;
+}
+.sort-header-btn:hover { color: #448aff; }
