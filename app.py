@@ -480,7 +480,8 @@ def update_progress_bar(n):
 
     remaining_stocks = prog["total"] - prog["done"]
     eta_seconds = int(remaining_stocks * 0.35)
-    eta_text = f"~{eta_seconds}s remaining" if prog["running"] and eta_seconds > 0 else (
+    minutes, seconds = divmod(eta_seconds, 60)
+    eta_text = f"~{minutes}m {seconds:02d}s remaining" if prog["running"] and eta_seconds > 0 else (
         "Complete" if not prog["running"] else "Almost done..."
     )
 
@@ -526,7 +527,7 @@ def render_screener_table(n, sector_filter, sort_state):
 
     if prog["running"]:
         return (
-            html.Div("Loading universe data...",
+            html.Div("Engine is warming up please wait...",
                      style={"textAlign": "center", "padding": "40px", "color": BLUE, "fontWeight": "600"}),
             sector_options
         )
