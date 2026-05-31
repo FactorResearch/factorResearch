@@ -1,40 +1,39 @@
-
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
 
 
 // ── Additional Tokens Extracted From Hard-Coded Values ──────────────────────
-$white:                    #fff;
-$blue-light:               #82b1ff;
+$white: #fff;
+$blue-light: #82b1ff;
 $blue-dark-gradient-start: #1a2a4a;
-$blue-dark-gradient-end:   #0d1a30;
-$portfolio-surface:        #1a1d27;
-$portfolio-border:         #2a2d3e;
+$blue-dark-gradient-end: #0d1a30;
+$portfolio-surface: #1a1d27;
+$portfolio-border: #2a2d3e;
 
 // ── Design Tokens ───────────────────────────────────────────────────────────
-$bg:          #080b10;
-$surface:     #0d1117;
-$card:        #111620;
+$bg: #080b10;
+$surface: #0d1117;
+$card: #111620;
 $card-raised: #161d2a;
-$border:      #1e2a3a;
+$border: #1e2a3a;
 $border-glow: #1e3a5f;
 
-$green:       #00e676;
-$green-dim:   #00c853;
-$green-glow:  rgba(0, 230, 118, 0.15);
-$red:         #ff1744;
-$red-dim:     #d50000;
-$amber:       #ffab00;
-$blue:        #2979ff;
+$green: #00e676;
+$green-dim: #00c853;
+$green-glow: rgba(0, 230, 118, 0.15);
+$red: #ff1744;
+$red-dim: #d50000;
+$amber: #ffab00;
+$blue: #2979ff;
 $blue-bright: #448aff;
-$blue-glow:   rgba(41, 121, 255, 0.2);
-$cyan:        #00b8d4;
+$blue-glow: rgba(41, 121, 255, 0.2);
+$cyan: #00b8d4;
 
-$text:        #e8eaf0;
-$text-dim:    #8899aa;
-$text-muted:  #4a5568;
+$text: #e8eaf0;
+$text-dim: #8899aa;
+$text-muted: #4a5568;
 
-$font-mono:   'DM Mono', 'Fira Code', monospace;
-$font-display:'Syne', sans-serif;
+$font-mono: 'DM Mono', 'Fira Code', monospace;
+$font-display: 'Syne', sans-serif;
 
 // ── Mixins ──────────────────────────────────────────────────────────────────
 @mixin card {
@@ -47,7 +46,7 @@ $font-display:'Syne', sans-serif;
   background: $card-raised;
   border: 1px solid $border;
   border-radius: 6px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 @mixin glow-line($color: $blue-bright) {
@@ -86,9 +85,16 @@ $font-display:'Syne', sans-serif;
 }
 
 // ── Reset & Base ─────────────────────────────────────────────────────────────
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body {
+html,
+body {
   background: $bg;
   color: $text;
   font-family: $font-mono;
@@ -174,7 +180,9 @@ html, body {
     position: relative;
     bottom: -1px;
 
-    &:hover { color: $text; }
+    &:hover {
+      color: $text;
+    }
 
     &.active {
       color: $blue-bright;
@@ -232,7 +240,10 @@ html, body {
 
   &:hover {
     box-shadow: 0 0 16px rgba($blue-bright, 0.4);
-    &::before { opacity: 1; }
+
+    &::before {
+      opacity: 1;
+    }
   }
 
   &:disabled {
@@ -256,7 +267,9 @@ html, body {
   border-left: 3px solid $amber;
   margin-bottom: 16px;
 
-  span { @include mono(12px); }
+  span {
+    @include mono(12px);
+  }
 }
 
 .progress-bar-wrapper {
@@ -299,7 +312,9 @@ html, body {
       white-space: nowrap;
       border-right: 1px solid rgba($border, 0.5);
 
-      &:last-child { border-right: none; }
+      &:last-child {
+        border-right: none;
+      }
     }
   }
 
@@ -308,12 +323,16 @@ html, body {
       border-bottom: 1px solid rgba($border, 0.6);
       transition: background 0.12s;
 
-      &:last-child { border-bottom: none; }
+      &:last-child {
+        border-bottom: none;
+      }
 
       &:hover {
         background: rgba($blue-bright, 0.04);
 
-        .ticker-link-btn { text-decoration: underline; }
+        .ticker-link-btn {
+          text-decoration: underline;
+        }
       }
     }
 
@@ -323,7 +342,9 @@ html, body {
       vertical-align: middle;
       border-right: 1px solid rgba($border, 0.3);
 
-      &:last-child { border-right: none; }
+      &:last-child {
+        border-right: none;
+      }
     }
   }
 
@@ -335,7 +356,9 @@ html, body {
     padding-right: 10px;
   }
 
-  .ticker-cell { width: 80px; }
+  .ticker-cell {
+    width: 80px;
+  }
 
   .company-name-cell {
     color: $text-dim;
@@ -411,26 +434,31 @@ html, body {
     border: 1px solid rgba($green, 0.35);
     text-shadow: 0 0 8px rgba($green, 0.4);
   }
+
   &.buy {
     background: rgba($cyan, 0.12);
     color: $cyan;
     border: 1px solid rgba($cyan, 0.3);
   }
+
   &.watch {
     background: rgba($amber, 0.1);
     color: $amber;
     border: 1px solid rgba($amber, 0.25);
   }
+
   &.hold {
     background: rgba($text-muted, 0.1);
     color: $text-dim;
     border: 1px solid rgba($text-muted, 0.2);
   }
+
   &.avoid {
     background: rgba($red, 0.1);
     color: $red;
     border: 1px solid rgba($red, 0.25);
   }
+
   &.pending {
     background: rgba($text-muted, 0.08);
     color: $text-muted;
@@ -439,7 +467,9 @@ html, body {
 }
 
 // ── Analyze Tab — Search ──────────────────────────────────────────────────────
-.main-content { padding-top: 4px; }
+.main-content {
+  padding-top: 4px;
+}
 
 .search-section {
   margin-bottom: 24px;
@@ -481,7 +511,9 @@ html, body {
     font-size: 12px;
   }
 
-  &:disabled { opacity: 0.5; }
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 
 .analyze-btn {
@@ -496,8 +528,14 @@ html, body {
   text-transform: uppercase;
   transition: background 0.15s;
 
-  &:hover { background: $blue-bright; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover {
+    background: $blue-bright;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .status-msg {
@@ -549,7 +587,9 @@ html, body {
     border-right: 1px solid $border;
     min-width: 90px;
 
-    &:last-child { border-right: none; }
+    &:last-child {
+      border-right: none;
+    }
   }
 }
 
@@ -627,13 +667,15 @@ html, body {
   overflow: hidden;
   flex-shrink: 0;
 
-  > div {
+  >div {
     padding: 10px 18px;
     text-align: center;
     border-right: 1px solid $border;
     min-width: 80px;
 
-    &:last-child { border-right: none; }
+    &:last-child {
+      border-right: none;
+    }
   }
 }
 
@@ -696,8 +738,13 @@ html, body {
   border-bottom: 1px solid rgba($border, 0.5);
   transition: background 0.12s;
 
-  &:last-child { border-bottom: none; }
-  &:hover { background: rgba($blue-bright, 0.03); }
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba($blue-bright, 0.03);
+  }
 }
 
 .criterion-label {
@@ -799,8 +846,13 @@ html, body {
   padding: 10px 18px;
   border-bottom: 1px solid rgba($border, 0.5);
 
-  &:last-child { border-bottom: none; }
-  &:hover { background: rgba($blue-bright, 0.03); }
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba($blue-bright, 0.03);
+  }
 }
 
 .detail-label {
@@ -813,12 +865,13 @@ html, body {
 }
 
 // ── Dash Loading Overlay ──────────────────────────────────────────────────────
-.dash-graph{
+.dash-graph {
   width: 672px;
   height: 500px;
- max-width: 672px;
+  max-width: 672px;
   max-height: 500px;
 }
+
 ._dash-loading-callback {
   opacity: 0.6;
 }
@@ -836,7 +889,7 @@ html, body {
   background: $card-raised !important;
   border: 1px solid $border-glow !important;
   border-radius: 4px !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
 }
 
 .Select-option {
@@ -845,7 +898,8 @@ html, body {
   @include mono(12px);
   padding: 8px 12px !important;
 
-  &:hover, &.is-focused {
+  &:hover,
+  &.is-focused {
     background: rgba($blue-bright, 0.08) !important;
     color: $text !important;
   }
@@ -856,42 +910,98 @@ html, body {
 }
 
 // ── Scrollbar ────────────────────────────────────────────────────────────────
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: $bg; }
-::-webkit-scrollbar-thumb  { background: $border; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: $text-muted; }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $text-muted;
+}
 
 // ── Selection ────────────────────────────────────────────────────────────────
 ::selection {
   background: rgba($blue-bright, 0.25);
   color: $text;
 }
+
 .sort-header-btn {
-    background: none;
-    border: none;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    padding: 0;
-    white-space: nowrap;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
 }
-.sort-header-btn:hover { color: #448aff; }
-.portfolio-add-panel { background: $portfolio-surface; border: 1px solid $portfolio-border; border-radius: 12px; padding: 16px 20px; margin-top: 20px; }
-.portfolio-add-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.portfolio-add-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.portfolio-header { margin-bottom: 16px; }
-.portfolio-meta { display: flex; align-items: baseline; }
-.portfolio-stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; background: $portfolio-surface; padding: 16px; border-radius: 12px; }
-#portfolio-sim-results{
-  .dash-graph{
+
+.sort-header-btn:hover {
+  color: #448aff;
+}
+
+.portfolio-add-panel {
+  background: $portfolio-surface;
+  border: 1px solid $portfolio-border;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 20px;
+}
+
+.portfolio-add-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.portfolio-add-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.portfolio-header {
+  margin-bottom: 16px;
+}
+
+.portfolio-meta {
+  display: flex;
+  align-items: baseline;
+}
+
+.portfolio-stats-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background: $portfolio-surface;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+#portfolio-sim-results {
+  .dash-graph {
     width: 100%;
     max-width: 100%;
   }
 }
-.infolayer{
-  .scrollbox {
-    position: absolute;
 
-    transform: translate(67%, 0px);
-}
+#tab-analyze {
+  .infolayer {
+    .scrollbox {
+      position: absolute;
+
+      transform: translate(67%, 0px);
+    }
+  }
 }
