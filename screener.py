@@ -104,6 +104,7 @@ def _score_one(symbol: str) -> dict | None:
             "div_years":       g.get("div_years", 0),
             # ── Enriched after full analysis ──────────────────────────────────
             "graham_number":   None,
+            "buffett_iv":      None,
             "price":           None,
             "analyzed":        False,
         }
@@ -139,6 +140,7 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
         "verdict":         verdict,
         "verdict_label":   vl,
         "graham_number":   g.get("graham_number"),
+        "buffett_iv":      analysis_result.get("buffett", {}).get("intrinsic_value"),
         "price":           analysis_result.get("price"),
         "analyzed":        True,
     }
@@ -148,7 +150,6 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
             if row["symbol"] == symbol:
                 _progress["results"][i] = {**row, **new_row_data}
                 return
-        # Symbol not in screener yet — add a minimal row
         _progress["results"].append({
             "symbol":          symbol,
             "name":            analysis_result.get("name",   symbol),
@@ -216,6 +217,9 @@ def load_universe_background(tickers: list[str] | None = None):
                 for future in as_completed(futures):
                     _record(futures[future], future.result())
             print(f"  ✅ Phase 1 done: {len(cached_syms)} cached stocks scored")
+            # Restore prior full-analysis data immediately after Phase 1
+            # so users see enriched rows without waiting for Phase 2
+            _enrich_from_analysis_cache()
 
         # ── Phase 2: rate-limited fetching for uncached stocks ────────────────
         if uncached_syms:
@@ -240,12 +244,103 @@ def load_universe_background(tickers: list[str] | None = None):
     threading.Thread(target=_worker, daemon=True).start()
 
 
+# ── Enrich screener rows from persisted analysis cache ───────────────────────
+
+def _enrich_from_analysis_cache() -> int:
+    """
+    After building base screener rows from SEC facts, scan the .cache directory
+    for any previously-saved full analysis results (cache kind 'analysis') and
+    apply the enriched fields (price, graham_number, buffett_iv, composite_score,
+    verdict, etc.) to the matching rows in _progress["results"].
+
+    This restores the post-analysis state of the screener table after a reboot
+    so users don't lose the context of stocks they've already analysed.
+
+    Returns the number of rows enriched.
+    """
+    analysis_symbols = cache.list_cached_kind("analysis")
+    if not analysis_symbols:
+        return 0
+
+    # Build a fast lookup: symbol → row index
+    with _lock:
+        idx_map = {row["symbol"]: i for i, row in enumerate(_progress["results"])}
+
+    enriched = 0
+    for sym in analysis_symbols:
+        data = cache.read("analysis", sym)
+        if not data or "error" in data:
+            continue
+
+        g        = data.get("graham",   {}) or {}
+        q        = data.get("quality",  {}) or {}
+        enhanced = data.get("enhanced", {}) or {}
+        comp     = data.get("composite",{}) or {}
+        b        = data.get("buffett",  {}) or {}
+
+        # Mirror the same logic as update_stock_after_analysis()
+        g_pct     = enhanced.get("graham_pct")    or comp.get("graham_pct",    0)
+        q_pct     = enhanced.get("quality_pct")   or comp.get("quality_pct",   0)
+        composite = enhanced.get("composite_score") or comp.get("composite_score", 0)
+        verdict   = enhanced.get("verdict")       or comp.get("verdict",       "PENDING")
+        vl        = enhanced.get("verdict_label") or comp.get("verdict_label", "pending")
+
+        patch = {
+            "graham_pct":      round(g_pct, 1),
+            "quality_pct":     round(q_pct, 1),
+            "composite_score": round(composite, 1),
+            "verdict":         verdict,
+            "verdict_label":   vl,
+            "graham_number":   g.get("graham_number"),
+            "buffett_iv":      b.get("intrinsic_value"),
+            "price":           data.get("price"),
+            "analyzed":        True,
+        }
+
+        with _lock:
+            i = idx_map.get(sym)
+            if i is not None:
+                _progress["results"][i] = {**_progress["results"][i], **patch}
+            else:
+                # Stock wasn't in universe cache — add a minimal row
+                _progress["results"].append({
+                    "symbol":          sym,
+                    "name":            data.get("name",   sym),
+                    "sector":          data.get("sector", "Unknown"),
+                    "graham_score":    g.get("total_score",  0),
+                    "graham_max":      g.get("total_max",  100),
+                    "graham_pct":      round(g_pct, 1),
+                    "quality_score":   q.get("total_score",  0),
+                    "quality_max":     q.get("total_max",  100),
+                    "quality_pct":     round(q_pct, 1),
+                    "composite_score": round(composite, 1),
+                    "verdict":         verdict,
+                    "verdict_label":   vl,
+                    "roe":             q.get("roe"),
+                    "op_margin":       q.get("op_margin"),
+                    "eps_years":       g.get("eps_years", 0),
+                    "div_years":       g.get("div_years", 0),
+                    "graham_number":   g.get("graham_number"),
+                    "buffett_iv":      b.get("intrinsic_value"),
+                    "price":           data.get("price"),
+                    "analyzed":        True,
+                })
+                idx_map[sym] = len(_progress["results"]) - 1
+        enriched += 1
+
+    if enriched:
+        print(f"  ✅ Enriched {enriched} screener rows from analysis cache")
+    return enriched
+
+
 # ── Load cached only (instant startup) ───────────────────────────────────────
 
 def load_cached_only() -> list[dict]:
     """
     Score only already-cached stocks (instant — no network).
     Returns sorted results list and populates shared state.
+    After building base rows, restores any prior full-analysis enrichment
+    from the persistent analysis cache so reboots don't lose that data.
     """
     symbols = universe.get_cached_universe()
     if not symbols:
@@ -266,5 +361,14 @@ def load_cached_only() -> list[dict]:
     with _lock:
         _progress["results"] = results
 
-    print(f"  ✅ {len(results)} stocks ready")
-    return results
+    # Restore enriched analysis data from persistent cache
+    _enrich_from_analysis_cache()
+
+    # Re-sort after enrichment so composite scores reflect full analysis
+    with _lock:
+        _progress["results"].sort(
+            key=lambda x: x.get("composite_score") or 0, reverse=True
+        )
+
+    print(f"  ✅ {len(_progress['results'])} stocks ready")
+    return _progress["results"]

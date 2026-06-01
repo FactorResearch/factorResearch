@@ -1034,11 +1034,7 @@ canvas {
 }
 
 // Graphs
-.dash-graph,
-.js-plotly-plot {
-  width: 100% !important;
-  max-width: 100% !important;
-}
+
 .js-plotly-plot{
   height: 500px;
   min-height: 500px;
@@ -1078,7 +1074,12 @@ canvas {
 
 // Mobile
 @media (max-width: $mobile) {
-
+.dash-graph,
+.js-plotly-plot {
+  
+  width: 100% !important;
+  max-width: 100% !important;
+}
   html,
   body {
     font-size: 13px;

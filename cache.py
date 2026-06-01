@@ -105,6 +105,15 @@ def list_cached_stocks() -> list[str]:
     )
 
 
+def list_cached_kind(kind: str) -> list[str]:
+    """Return all keys stored under a given cache kind, e.g. 'analysis'."""
+    prefix = f"{kind}-"
+    return sorted(
+        p.stem[len(prefix):].upper()
+        for p in CACHE_DIR.glob(f"{prefix}*.json")
+    )
+
+
 def clear(kind: str, key: str) -> None:
     p = _path(kind, key)
     if p.exists():
