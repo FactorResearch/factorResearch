@@ -689,12 +689,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data)
             else:             verdict, verdict_label = "AVOID*",      "avoid"
 
         badges = []
-        if viewed:
-            badges.append(html.Span("✓ Analyzed", style={
-                "fontSize": "10px", "color": GREEN,
-                "background": "#003318", "border": f"1px solid {GREEN}55",
-                "borderRadius": "4px", "padding": "1px 5px",
-            }))
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
             badges.append(html.Span(f"💼 {pname}", style={
@@ -1041,23 +1035,23 @@ def _risk_card(data: dict) -> html.Div:
         return AMBER
 
     metrics = [
-        ("Sharpe Ratio",       _fv(r.get("sharpe")),
+        ("Sharpe Ratio(Good above 1)",       _fv(r.get("sharpe")),
          _mc(r.get("sharpe"), good_above=1.0, bad_below=0)),
-        ("Sortino Ratio",      _fv(r.get("sortino")),
+        ("Sortino Ratio(good_above=1.5)",      _fv(r.get("sortino")),
          _mc(r.get("sortino"), good_above=1.5, bad_below=0)),
-        ("Beta (vs SPY)",      _fv(r.get("beta")),
+        ("Beta (vs SPY bad_below=1.5)",      _fv(r.get("beta")),
          _mc(r.get("beta"), bad_below=1.5)),
-        ("Alpha (ann.)",       _fv(r.get("alpha"), 1, "%"),
+        ("Alpha (good_above=0)",       _fv(r.get("alpha"), 1, "%"),
          _mc(r.get("alpha"), good_above=0, bad_below=-5)),
-        ("Max Drawdown",       _fv(r.get("max_drawdown"), 1, "%"),
+        ("Max Drawdown(bad_below=-30)",       _fv(r.get("max_drawdown"), 1, "%"),
          _mc(r.get("max_drawdown"), bad_below=-30)),
-        ("Ann. Volatility",    _fv(r.get("volatility_annual"), 1, "%"),
+        ("Ann. Volatility(bad_below=40)",    _fv(r.get("volatility_annual"), 1, "%"),
          _mc(r.get("volatility_annual"), bad_below=40)),
         ("VaR 95% (monthly)",  _fv(r.get("var_95"), 1, "%"), MUTED),
         ("CVaR 95% (monthly)", _fv(r.get("cvar_95"), 1, "%"), MUTED),
-        ("Ann. Return",        _fv(r.get("annual_return"), 1, "%"),
+        ("Ann. Return(good_above=10,bad_below=0)",        _fv(r.get("annual_return"), 1, "%"),
          _mc(r.get("annual_return"), good_above=10, bad_below=0)),
-        ("Calmar Ratio",       _fv(r.get("calmar")),
+        ("Calmar Ratio(good_above=1.0,bad_below=0)",       _fv(r.get("calmar")),
          _mc(r.get("calmar"), good_above=1.0, bad_below=0)),
     ]
 
@@ -1184,9 +1178,7 @@ def _build_analysis_content(data: dict) -> list:
     # New quant cards — side by side when both available
     piotroski_card = _piotroski_card(data)
     altman_card    = _altman_card(data)
-    quant_row = html.Div(style={"display": "grid",
-                                "gridTemplateColumns": "1fr 1fr",
-                                "gap": "16px"}, children=[
+    quant_row = html.Div(className="quant_row", children=[
         piotroski_card, altman_card
     ]) if p_data and a_data else html.Div()
 
@@ -1432,9 +1424,6 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     rows = [
         ("Graham Number",     f"${gn:.2f}"  if gn    else "N/A"),
         ("Graham MoS",        f"{mos:.1f}%" if mos   else "N/A"),
-        ("Buffett IV",        f"${biv:.2f}" if biv   else "N/A"),
-        ("Buffett MoS",       f"{b_mos:.1f}%" if b_mos is not None else "N/A"),
-        ("Buffett Grade",     f"{b_grade} — {b_glabel}" if b_grade else "N/A"),
         ("Current Price",     f"${price:.2f}" if price else "N/A"),
         ("EPS",               f"${g_data.get('eps', 0):.2f}" if g_data.get('eps') else "N/A"),
         ("Book Value/Share",  f"${g_data.get('bvps', 0):.2f}" if g_data.get('bvps') else "N/A"),

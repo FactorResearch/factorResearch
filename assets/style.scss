@@ -35,6 +35,10 @@ $text-muted: #4a5568;
 $font-mono: 'DM Mono', 'Fira Code', monospace;
 $font-display: 'Syne', sans-serif;
 
+$tablet: 1024px;
+$mobile: 768px;
+$small-mobile: 480px;
+
 // ── Mixins ──────────────────────────────────────────────────────────────────
 @mixin card {
   background: $card;
@@ -792,6 +796,10 @@ body {
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
   }
+  @media (max-width: $tablet){
+        grid-template-columns: 1fr;
+  }
+
 
   .js-plotly-plot {
     @include card;
@@ -1000,9 +1008,24 @@ body {
   .infolayer {
     .scrollbox {
       position: absolute;
-
       transform: translate(67%, 0px);
+       @media (max-width: $mobile){
+            transform: translate(50%, 0px);
+       } 
     }
+  }
+}
+
+.quant_row {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  @media (max-width: $tablet) {
+    flex-direction: column;
+
+  }
+  .scorecard{
+    flex: 1 1 50%;
   }
 }
 
@@ -1010,9 +1033,6 @@ body {
 // RESPONSIVE
 // ─────────────────────────────────────────────────────────────
 
-$tablet: 1024px;
-$mobile: 768px;
-$small-mobile: 480px;
 
 // Global responsive media
 img,
@@ -1035,7 +1055,7 @@ canvas {
 
 // Graphs
 
-.js-plotly-plot{
+.js-plotly-plot {
   height: 500px;
   min-height: 500px;
   max-height: 500px;
@@ -1055,7 +1075,7 @@ canvas {
   }
 
   .grade-badge {
-    width: 100%;
+    width: 50%;
   }
 
   .pillar-scores {
@@ -1074,12 +1094,14 @@ canvas {
 
 // Mobile
 @media (max-width: $mobile) {
-.dash-graph,
-.js-plotly-plot {
-  
-  width: 100% !important;
-  max-width: 100% !important;
-}
+
+  .dash-graph,
+  .js-plotly-plot {
+
+    width: 95vw;
+    max-width: 95vw;
+  }
+
   html,
   body {
     font-size: 13px;
