@@ -1,0 +1,249 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// GRAHAM APP MAIN STYLESHEET
+// ═══════════════════════════════════════════════════════════════════════════
+// Import order matters: dependencies first, then specific components
+
+// 1. Configuration & Variables
+@import 'colors';
+@import 'mixins';
+
+// 2. Global Utilities
+@import 'typography';
+@import 'layout';
+@import 'forms';
+
+// 3. Component Styles
+@import 'buttons-badges';
+@import 'cards-panels';
+@import 'screener-table';
+@import 'modals';
+@import 'progress-bars';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GLOBAL STYLES
+// ═══════════════════════════════════════════════════════════════════════════
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background: $dark;
+    color: $text;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: $font-base;
+    line-height: 1.6;
+}
+
+#react-entry-point {
+    width: 100%;
+    height: 100%;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Scrollbar Styling
+// ─────────────────────────────────────────────────────────────────────────
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: $card;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $border;
+    border-radius: 4px;
+    
+    &:hover {
+        background: lighten($border, 10%);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Links
+// ─────────────────────────────────────────────────────────────────────────
+
+a {
+    color: $blue;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    
+    &:hover {
+        color: lighten($blue, 10%);
+        text-decoration: underline;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Global Container Classes
+// ─────────────────────────────────────────────────────────────────────────
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-2xl;
+    
+    @include tablet {
+        padding: $spacing-xl;
+    }
+    
+    @include phones {
+        padding: $spacing-lg;
+    }
+}
+
+.section {
+    margin-bottom: $spacing-3xl;
+    
+    .section-title {
+        font-size: $font-xl;
+        font-weight: $font-bold;
+        color: $text;
+        margin-bottom: $spacing-2xl;
+        padding-bottom: $spacing-lg;
+        border-bottom: 2px solid $border;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Utility Classes for Quick Styling
+// ─────────────────────────────────────────────────────────────────────────
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Error & Success Message Boxes
+// ─────────────────────────────────────────────────────────────────────────
+
+.alert {
+    padding: $spacing-lg;
+    border-radius: 4px;
+    margin-bottom: $spacing-lg;
+    
+    .alert-title {
+        font-weight: $font-bold;
+        margin-bottom: $spacing-sm;
+    }
+    
+    .alert-message {
+        font-size: $font-sm;
+        line-height: 1.5;
+    }
+}
+
+.alert-success {
+    background: rgba($green, 0.1);
+    border-left: 4px solid $green;
+    color: $green;
+}
+
+.alert-error,
+.alert-danger {
+    background: rgba($red, 0.1);
+    border-left: 4px solid $red;
+    color: $red;
+}
+
+.alert-warning {
+    background: rgba($amber, 0.1);
+    border-left: 4px solid $amber;
+    color: $amber;
+}
+
+.alert-info {
+    background: rgba($blue, 0.1);
+    border-left: 4px solid $blue;
+    color: $blue;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Divider
+// ─────────────────────────────────────────────────────────────────────────
+
+.divider {
+    height: 1px;
+    background: $border;
+    margin: $spacing-2xl 0;
+}
+
+.divider--subtle {
+    background: rgba($border, 0.5);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Responsive Grid
+// ─────────────────────────────────────────────────────────────────────────
+
+.grid {
+    display: grid;
+    gap: $spacing-2xl;
+    
+    &.grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+        
+        @include phones {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    &.grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+        
+        @include tablet {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        @include phones {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    &.grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+        
+        @include lg-tablet {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        @include tablet {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        @include phones {
+            grid-template-columns: 1fr;
+        }
+    }
+}

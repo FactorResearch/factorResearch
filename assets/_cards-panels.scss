@@ -1,0 +1,287 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// CARDS & PANELS
+// ═══════════════════════════════════════════════════════════════════════════
+
+@import 'colors';
+@import 'mixins';
+@import 'typography';
+@import 'layout';
+
+// ─────────────────────────────────────────────────────────────────────────
+// Base Card Container
+// ─────────────────────────────────────────────────────────────────────────
+
+.card {
+    background: $card;
+    border: 1px solid $border;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    
+    &:hover {
+        border-color: lighten($border, 10%);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Card Header & Footer
+// ─────────────────────────────────────────────────────────────────────────
+
+.card-header {
+    padding: $spacing-2xl;
+    border-bottom: 1px solid $border;
+    background: linear-gradient(135deg, rgba($blue, 0.05), transparent);
+}
+
+.card-body {
+    padding: $spacing-2xl;
+}
+
+.card-footer {
+    padding: $spacing-2xl;
+    border-top: 1px solid $border;
+    background: rgba($dark, 0.5);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Scorecard Variants (Piotroski, Altman, Risk, etc.)
+// ─────────────────────────────────────────────────────────────────────────
+
+.scorecard {
+    @extend .card;
+    margin-bottom: $spacing-2xl;
+}
+
+.piotroski-card {
+    @extend .scorecard;
+}
+
+.altman-card {
+    @extend .scorecard;
+}
+
+.risk-card {
+    @extend .scorecard;
+}
+
+.quality-card {
+    @extend .scorecard;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Scorecard Header Section
+// ─────────────────────────────────────────────────────────────────────────
+
+.piotroski-header {
+    @include flex-row-gap($spacing-lg);
+    align-items: center;
+    padding: $spacing-xl $spacing-xl $spacing-sm;
+    
+    .label {
+        font-size: $font-sm;
+        font-weight: $font-bold;
+        color: $text;
+    }
+    
+    .score {
+        font-size: $font-3xl;
+        font-weight: $font-extrabold;
+        color: inherit;
+    }
+    
+    .interpretation-label {
+        font-size: $font-xs;
+        color: inherit;
+    }
+}
+
+.piotroski-interpretation {
+    font-size: $font-xs;
+    color: $muted;
+    padding: 0 $spacing-xl $spacing-lg;
+    font-style: italic;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Scorecard Categories & Signals
+// ─────────────────────────────────────────────────────────────────────────
+
+.piotroski-categories {
+    @include flex-row-gap($spacing-2xl);
+    flex-wrap: wrap;
+    padding: 0 $spacing-xl $spacing-2xl;
+}
+
+.piotroski-category-block {
+    flex: 1;
+    min-width: 240px;
+    
+    .category-header {
+        font-size: $font-xs;
+        font-weight: $font-bold;
+        color: $muted;
+        letter-spacing: 0.08em;
+        margin-bottom: $spacing-sm;
+        padding-bottom: $spacing-xs;
+        border-bottom: 2px solid $border;
+        text-transform: uppercase;
+    }
+}
+
+.piotroski-signal-row {
+    @include flex-row-gap($spacing-md);
+    align-items: flex-start;
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid $border;
+    
+    &:last-child {
+        border-bottom: none;
+    }
+    
+    .signal-emoji {
+        font-size: $font-xl;
+        min-width: 20px;
+        margin-top: 1px;
+    }
+    
+    .signal-content {
+        flex: 1;
+    }
+    
+    .signal-label {
+        font-size: $font-xs;
+        font-weight: $font-medium;
+        color: $text;
+        margin-bottom: $spacing-xs;
+    }
+    
+    .signal-value {
+        font-size: $font-xs;
+        color: $muted;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Altman Zone Badge
+// ─────────────────────────────────────────────────────────────────────────
+
+.altman-zone-badge {
+    padding: $spacing-md $spacing-lg;
+    border-radius: 4px;
+    font-weight: $font-bold;
+    text-align: center;
+    margin-bottom: $spacing-lg;
+}
+
+.altman-zone--safe {
+    background: rgba($green, 0.15);
+    color: $green;
+    border-left: 4px solid $green;
+}
+
+.altman-zone--gray {
+    background: rgba($amber, 0.15);
+    color: $amber;
+    border-left: 4px solid $amber;
+}
+
+.altman-zone--distress {
+    background: rgba($red, 0.15);
+    color: $red;
+    border-left: 4px solid $red;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Risk Metric Cells
+// ─────────────────────────────────────────────────────────────────────────
+
+.risk-metric-cell {
+    padding: $spacing-lg;
+    border: 1px solid $border;
+    border-radius: 4px;
+    margin-bottom: $spacing-md;
+    
+    .metric-label {
+        font-size: $font-xs;
+        color: $muted;
+        font-weight: $font-semibold;
+        margin-bottom: $spacing-sm;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .metric-value {
+        font-size: $font-2xl;
+        font-weight: $font-bold;
+        color: $text;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Panel Styles (Add to Portfolio, Compare, Create Portfolio)
+// ─────────────────────────────────────────────────────────────────────────
+
+.panel {
+    @extend .card;
+    margin-bottom: $spacing-2xl;
+}
+
+.add-to-portfolio-panel,
+.compare-panel,
+.portfolio-create-panel {
+    @extend .panel;
+}
+
+.panel-section {
+    padding: $spacing-2xl;
+    border-bottom: 1px solid $border;
+    
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.panel-section-title {
+    font-size: $font-base;
+    font-weight: $font-bold;
+    color: $text;
+    margin-bottom: $spacing-lg;
+    @include flex-row-gap($spacing-md);
+    align-items: center;
+}
+
+.panel-section-title-icon {
+    font-size: $font-2xl;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Horizontal Card for Summary Stats
+// ─────────────────────────────────────────────────────────────────────────
+
+.composite-banner {
+    @extend .card;
+    @include flex-between;
+    padding: $spacing-2xl;
+    background: linear-gradient(135deg, rgba($blue, 0.1), rgba($green, 0.05));
+    margin-bottom: $spacing-2xl;
+}
+
+.banner-stat {
+    @include flex-col;
+    align-items: center;
+    padding: $spacing-lg;
+    
+    .stat-label {
+        font-size: $font-xs;
+        color: $muted;
+        margin-bottom: $spacing-sm;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+    
+    .stat-value {
+        font-size: $font-2xl;
+        font-weight: $font-bold;
+        color: $text;
+    }
+}

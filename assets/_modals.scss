@@ -1,0 +1,224 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// MODALS & OVERLAYS
+// ═══════════════════════════════════════════════════════════════════════════
+
+@import 'colors';
+@import 'mixins';
+@import 'typography';
+@import 'layout';
+
+// ─────────────────────────────────────────────────────────────────────────
+// Modal Overlay
+// ─────────────────────────────────────────────────────────────────────────
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $overlay-dark;
+    backdrop-filter: blur(4px);
+    @include flex-center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Modal Container
+// ─────────────────────────────────────────────────────────────────────────
+
+.modal {
+    background: $card;
+    border: 1px solid $border;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease;
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Modal Header
+// ─────────────────────────────────────────────────────────────────────────
+
+.modal-header {
+    @include flex-between;
+    padding: $spacing-2xl;
+    border-bottom: 1px solid $border;
+    background: linear-gradient(135deg, rgba($blue, 0.1), transparent);
+    
+    .modal-title {
+        font-size: $font-xl;
+        font-weight: $font-bold;
+        color: $text;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        color: $muted;
+        font-size: $font-2xl;
+        cursor: pointer;
+        transition: color 0.2s ease;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        @include flex-center;
+        
+        &:hover {
+            color: $text;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Modal Body
+// ─────────────────────────────────────────────────────────────────────────
+
+.modal-body {
+    padding: $spacing-2xl;
+}
+
+.modal-section {
+    margin-bottom: $spacing-2xl;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+    
+    .section-title {
+        font-size: $font-base;
+        font-weight: $font-bold;
+        color: $text;
+        margin-bottom: $spacing-lg;
+        padding-bottom: $spacing-md;
+        border-bottom: 1px solid $border;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Modal Footer
+// ─────────────────────────────────────────────────────────────────────────
+
+.modal-footer {
+    @include flex-between;
+    padding: $spacing-2xl;
+    border-top: 1px solid $border;
+    background: rgba($dark, 0.5);
+    
+    .modal-actions {
+        @include flex-row-gap($spacing-lg);
+        
+        button {
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Modal Sizes
+// ─────────────────────────────────────────────────────────────────────────
+
+.modal-sm {
+    max-width: 400px;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-xl {
+    max-width: 1000px;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Analysis Modal Specific Styles
+// ─────────────────────────────────────────────────────────────────────────
+
+.analysis-modal {
+    .analysis-header {
+        @include flex-row-gap($spacing-lg);
+        align-items: center;
+        margin-bottom: $spacing-2xl;
+        padding-bottom: $spacing-2xl;
+        border-bottom: 2px solid $border;
+        
+        .ticker {
+            font-size: $font-2xl;
+            font-weight: $font-bold;
+            color: $blue;
+        }
+        
+        .company-name {
+            font-size: $font-base;
+            color: $text;
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Disclosure / Alert Boxes
+// ─────────────────────────────────────────────────────────────────────────
+
+.disclosure-box {
+    padding: $spacing-lg;
+    border-left: 4px solid $amber;
+    background: rgba($amber, 0.05);
+    border-radius: 4px;
+    margin: $spacing-2xl 0;
+    
+    .disclosure-title {
+        font-size: $font-sm;
+        font-weight: $font-bold;
+        color: $amber;
+        margin-bottom: $spacing-sm;
+    }
+    
+    .disclosure-text {
+        font-size: $font-xs;
+        color: $muted;
+        line-height: 1.5;
+    }
+}
+
+.disclosure-box--warning {
+    border-left-color: $red;
+    background: rgba($red, 0.05);
+    
+    .disclosure-title {
+        color: $red;
+    }
+}
+
+.disclosure-box--info {
+    border-left-color: $blue;
+    background: rgba($blue, 0.05);
+    
+    .disclosure-title {
+        color: $blue;
+    }
+}

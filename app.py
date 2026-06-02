@@ -274,7 +274,7 @@ app.layout = html.Div(className="app-container", children=[
     ]),
 
     # ── Tab: Screener ────────────────────────────────────────────────────────
-    html.Div(id="tab-screener", className="screener-content", children=[
+    html.Div(id="tab-screener", className="screener-content block", children=[
         html.Div(className="screener-toolbar", children=[
             html.Div(className="screener-controls", children=[
                 html.Button(
@@ -286,8 +286,8 @@ app.layout = html.Div(className="app-container", children=[
                 ),
                 html.Div(id="screener-progress-info", className="screener-info"),
             ]),
-            html.Div(className="screener-controls", style={"display": "flex", "gap": "10px", "alignItems": "center"}, children=[
-                html.Label("Filter by sector:", style={"fontSize": "13px", "color": MUTED}),
+            html.Div(className="screener-controls flex gap-lg align-items-center", children=[
+                html.Label("Filter by sector:", className="text-sm text-muted"),
                 dcc.Dropdown(
                     id="sector-filter",
                     options=[{"label": "All Sectors", "value": ""}],
@@ -304,7 +304,7 @@ app.layout = html.Div(className="app-container", children=[
             ]),
         ]),
 
-        html.Div(id="screener-progress", style={"marginBottom": "16px"}),
+        html.Div(id="screener-progress", className="mb-2xl"),
 
         dcc.Loading(
             id="screener-loading",
@@ -312,11 +312,11 @@ app.layout = html.Div(className="app-container", children=[
             color=BLUE,
             children=[
                 html.Div(id="screener-table-container", className="screener-table-wrap", children=[
-                    html.Div("Loading screener data...", style={"textAlign": "center", "padding": "40px", "color": MUTED})
+                    html.Div("Loading screener data...", className="text-center p-4xl text-muted")
                 ])
             ]
         ),
-    ], style={"display": "block"}),
+    ]),
 
     # ── Tab: Analyze ─────────────────────────────────────────────────────────
     html.Div(id="tab-analyze", className="main-content", children=[
@@ -349,25 +349,24 @@ app.layout = html.Div(className="app-container", children=[
         ),
 
         # ── Add to Portfolio panel (shown after analysis completes) ──────────
-        html.Div(id="add-to-portfolio-panel", style={"display": "none"}, children=[
+        html.Div(id="add-to-portfolio-panel", className="hidden", children=[
             html.Div(className="portfolio-add-panel", children=[
                 html.Div(className="portfolio-add-header", children=[
-                    html.Span("💼", style={"fontSize": "20px"}),
-                    html.Span("Add to Portfolio", style={"fontWeight": "600", "fontSize": "16px"}),
+                    html.Span("💼", className="text-2xl"),
+                    html.Span("Add to Portfolio", className="font-semibold text-lg"),
                 ]),
                 html.Div(className="portfolio-add-controls", children=[
                     dcc.Dropdown(
                         id="portfolio-select-dropdown",
                         placeholder="Select or create portfolio…",
                         clearable=True,
-                        style={"minWidth": "220px", "color": "#000"},
+                        className="min-w-220",
                     ),
                     dcc.Input(
                         id="portfolio-new-name",
                         type="text",
                         placeholder="Or type new portfolio name…",
-                        className="ticker-input",
-                        style={"maxWidth": "220px"},
+                        className="max-w-220 ticker-input"
                     ),
                     dcc.Input(
                         id="portfolio-shares-input",
@@ -375,15 +374,14 @@ app.layout = html.Div(className="app-container", children=[
                         placeholder="Shares (min 5)",
                         min=5,
                         step=1,
-                        className="ticker-input",
-                        style={"maxWidth": "130px"},
+                        className="ticker-input max-w-130"
                     ),
                     html.Button("Add", id="portfolio-add-btn", className="analyze-btn", n_clicks=0),
                 ]),
                 html.Div(id="portfolio-add-msg", style={"fontSize": "13px", "marginTop": "6px"}),
             ])
         ]),
-    ], style={"display": "none"}),
+    ]),
 
     # ── Tab: Portfolios ──────────────────────────────────────────────────────
     html.Div(id="tab-portfolio", className="main-content", children=[
@@ -395,7 +393,7 @@ app.layout = html.Div(className="app-container", children=[
                     id="portfolio-active-dropdown",
                     placeholder="Select a portfolio…",
                     clearable=False,
-                    style={"minWidth": "240px", "color": "#000"},
+                    className="min-w-240",
                 ),
                 html.Button("＋ New Portfolio", id="portfolio-new-btn",
                             className="load-btn", n_clicks=0),
@@ -410,18 +408,18 @@ app.layout = html.Div(className="app-container", children=[
                     id="portfolio-compare-dropdown",
                     placeholder="Add portfolio to compare…",
                     clearable=True,
-                    style={"minWidth": "200px", "color": "#000"},
+                    className="min-w-200",
                 ),
             ]),
         ]),
 
         # New portfolio name modal (inline, hidden by default)
-        html.Div(id="portfolio-create-panel", style={"display": "none"}, children=[
+        html.Div(id="portfolio-create-panel", className="hidden", children=[
             html.Div(className="portfolio-add-panel", children=[
-                html.Span("Name your portfolio:", style={"color": "#e0e0e0"}),
+                html.Span("Name your portfolio:", className="text-primary"),
                 dcc.Input(id="portfolio-create-name", type="text",
                           placeholder="e.g. Value Picks Q1",
-                          className="ticker-input", style={"maxWidth": "240px"}),
+                          className="ticker-input max-w-240"),
                 html.Button("Create", id="portfolio-create-confirm-btn",
                             className="analyze-btn", n_clicks=0),
                 html.Button("Cancel", id="portfolio-create-cancel-btn",
@@ -444,7 +442,7 @@ app.layout = html.Div(className="app-container", children=[
         # Simulation results (charts)
         html.Div(id="portfolio-sim-results", children=[]),
 
-    ], style={"display": "none"}),
+    ]),
 
     # Stores
     dcc.Store(id="screener-cache"),
@@ -578,8 +576,8 @@ def update_progress(n, ready_val):
 
     if not prog["running"] and prog["total"] == 0:
         return html.Div([
-            html.Span("🟢 Ready to load universe", style={"color": MUTED}),
-        ], style={"display": "flex", "alignItems": "center", "gap": "8px"}), True, new_ready
+            html.Span("🟢 Ready to load universe", className="text-muted"),
+        ], className="flex align-items-center gap-md"), True, new_ready
 
     if prog["running"]:
         pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
@@ -588,15 +586,15 @@ def update_progress(n, ready_val):
             "fetching": "🌐 Phase 2 — fetching from SEC",
         }.get(prog.get("phase", ""), "🔄 Processing")
         return html.Div([
-            html.Span(f"{phase_label}: {prog['current']}", style={"color": BLUE, "fontWeight": "600"}),
-            html.Span(f"({prog['done']}/{prog['total']} — {pct}%)", style={"color": MUTED, "fontSize": "12px"}),
-        ], style={"display": "flex", "alignItems": "center", "gap": "8px"}), False, dash.no_update
+            html.Span(f"{phase_label}: {prog['current']}", className="font-semibold text-info"),
+            html.Span(f"({prog['done']}/{prog['total']} — {pct}%)", className="text-xs text-muted"),
+        ], className="flex align-items-center gap-md"), False, dash.no_update
     else:
         if prog["done"] > 0:
             return html.Div([
-                html.Span("✅ Analysis complete", style={"color": GREEN, "fontWeight": "600"}),
-                html.Span(f"{prog['done']} stocks analyzed", style={"color": MUTED, "fontSize": "12px"}),
-            ], style={"display": "flex", "alignItems": "center", "gap": "8px"}), True, new_ready
+                html.Span("✅ Analysis complete", className="font-semibold text-success"),
+                html.Span(f"{prog['done']} stocks analyzed", className="text-xs text-muted"),
+            ], className="flex align-items-center gap-md"), True, new_ready
         else:
             return "", True, new_ready
 
@@ -632,15 +630,15 @@ def update_progress_bar(n):
         "Complete" if not prog["running"] else "Almost done..."
     )
 
-    return html.Div(className="progress-container", children=[
+    return html.Div(className="progress-container mb-3xl", children=[
         html.Div([
-            html.Span("Processing Universe Data", style={"fontWeight": "600", "color": TEXT}),
-            html.Span(f"({pct}%) {eta_text}", style={"color": MUTED, "fontSize": "12px"})
-        ], style={"display": "flex", "justifyContent": "spaceBetween", "marginBottom": "8px"}),
+            html.Span("Processing Universe Data", className="font-semibold"),
+            html.Span(f"({pct}%) {eta_text}", className="text-xs text-muted")
+        ], className="flex justify-between mb-lg"),
         html.Div(className="progress-bar-wrapper", children=[
             html.Div(className="progress-bar-fill", style={"width": f"{pct}%"})
         ])
-    ], style={"marginBottom": "20px"})
+    ])
 
 
 @callback(
@@ -705,7 +703,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
             )
         return (
             html.Div("Click 'Load Universe' to start analysis",
-                     style={"textAlign": "center", "padding": "40px", "color": MUTED}),
+                     className="text-center p-4xl text-muted"),
             sector_options,
         )
 
@@ -804,7 +802,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
                       (" · Price below GN ✓" if (price and price <= gn) else " · Price above GN"),
             )
         else:
-            gn_cell = html.Td("—", style={"color": MUTED, "fontSize": "12px"},
+            gn_cell = html.Td("—", className="text-xs text-muted",
                               title="Run full analysis to calculate Graham Number")
 
         # Buffett IV cell — populated after full analysis
@@ -817,7 +815,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
                       (" · Price below IV ✓" if (price and price <= biv) else " · Price above IV"),
             )
         else:
-            biv_cell = html.Td("—", style={"color": MUTED, "fontSize": "12px"},
+            biv_cell = html.Td("—", className="text-xs text-muted",
                                title="Run full analysis to calculate Buffett Intrinsic Value")
 
         row_style = {}
@@ -828,7 +826,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
             html.Td(str(i), className="rank-num"),
             ticker_cell,
             html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
-            html.Td(r["sector"][:18], style={"fontSize": "12px", "color": MUTED}),
+            html.Td(r["sector"][:18], className="text-xs text-muted"),
             html.Td(html.Span(f"{r['graham_pct']:.0f}",      className=f"score-pill {get_score_class(r['graham_pct'])}")),
             html.Td(html.Span(f"{r['quality_pct']:.0f}",     className=f"score-pill {get_score_class(r['quality_pct'])}")),
             html.Td(html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")),
@@ -840,10 +838,10 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
     n_analyzed  = sum(1 for r in filtered if r.get("analyzed"))
     n_portfolio = sum(1 for r in filtered if portfolio_symbols.get(r["symbol"]))
     note = html.Div([
-        html.Span(f"{len(filtered):,} stocks", style={"fontWeight": "600"}),
+        html.Span(f"{len(filtered):,} stocks", className="font-semibold"),
         html.Span(f" · {n_analyzed} analyzed · {n_portfolio} in portfolio"
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
-                  style={"color": MUTED}),
+                  className="text-muted"),
     ], style={"fontSize": "11px", "padding": "8px 4px", "fontStyle": "italic"})
 
     table = html.Table(className="screener-table", children=[
@@ -982,7 +980,7 @@ def _composite_banner(data: dict) -> html.Div:
     pillar_els = [_pillar(l, round(v) if isinstance(v, float) else v, w)
                   for l, v, w in pillars]
     pillar_els.append(html.Div([
-        html.Div(f"{score:.0f}", className="pillar-value", style={"fontSize": "28px"}),
+        html.Div(f"{score:.0f}", className="pillar-value text-4xl"),
         html.Div(score_label, className="pillar-label"),
     ]))
 
@@ -1054,7 +1052,7 @@ def _piotroski_card(data: dict) -> html.Div:
                              style={"fontSize": "11px", "color": MUTED, "marginTop": "2px"}),
                 ]),
             ]))
-        cat_blocks.append(html.Div(style={"flex": "1", "minWidth": "240px"}, children=[
+        cat_blocks.append(html.Div(className="flex-1 min-w-240", children=[
             html.Div(cat_name.upper(),
                      style={"fontSize": "10px", "fontWeight": "700", "color": MUTED,
                             "letterSpacing": "0.08em", "marginBottom": "6px",
@@ -1113,7 +1111,7 @@ def _altman_card(data: dict) -> html.Div:
             "padding": "4px 0", "borderBottom": f"1px solid {BORDER}",
             "fontSize": "12px",
         }, children=[
-            html.Span(lbl, style={"color": MUTED}),
+            html.Span(lbl, className="text-muted"),
             html.Span(f"{v:.3f}" if v is not None else "N/A",
                       style={"color": TEXT if v is not None else MUTED,
                              "fontWeight": "600"}),
@@ -1138,7 +1136,7 @@ def _altman_card(data: dict) -> html.Div:
                      style={"fontSize": "10px", "color": MUTED, "marginTop": "3px"}),
         ]),
         # Components
-        html.Div(comp_rows, style={"padding": "0 18px 14px"}),
+        html.Div(comp_rows, className="px-xl pb-2xl"),
     ])
 
 
@@ -1259,7 +1257,7 @@ def _build_analysis_content(data: dict) -> list:
                       "Buffett moat grade: A=Wide Moat, B=Narrow Moat, C=No Clear Moat, D=Avoid. Based on ROE consistency, margins, FCF, ROIC, and intrinsic value."),
             ])
         ]),
-        html.Div(style={"display": "flex", "gap": "12px", "alignItems": "stretch"}, children=[
+        html.Div(className="flex gap-xl align-items-stretch", children=[
             # Graham grade badge
             html.Div(className="grade-badge", children=[
                 html.Div(g["grade"], className="grade-letter",
@@ -1327,7 +1325,7 @@ def _build_analysis_content(data: dict) -> list:
             graham_card, buffett_card, quality_card, momentum_card,
             quant_row, risk_card,
             charts_row, div_chart,
-            html.Div(style={"display": "grid", "gridTemplateColumns": "1fr 1fr", "gap": "16px"},
+            html.Div(className="grid-2 gap-16 grid",
                      children=[graham_details, buffett_details])]
 
 
@@ -1810,11 +1808,11 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
 def render_portfolio_holdings(active, refresh):
     if not active:
         return html.Div("Select or create a portfolio to get started.",
-                        style={"textAlign": "center", "padding": "60px", "color": MUTED})
+                        className="text-center p-5xl text-muted")
 
     p = portfolio_engine.load_portfolio(active)
     if p is None:
-        return html.Div("Portfolio not found.", style={"color": RED})
+        return html.Div("Portfolio not found.", className="text-danger")
 
     holdings = p.get("holdings", {})
     count    = len(holdings)
@@ -1830,7 +1828,7 @@ def render_portfolio_holdings(active, refresh):
 
     if not holdings:
         body = html.Div("No holdings yet. Analyze a stock and click 'Add to Portfolio'.",
-                        style={"padding": "30px", "color": MUTED, "textAlign": "center"})
+                        className="p-4xl text-muted text-center")
     else:
         total_invested = sum(h["shares"] * h["price_at_add"] for h in holdings.values())
 
@@ -1851,11 +1849,11 @@ def render_portfolio_holdings(active, refresh):
             )
 
             rows.append(html.Tr([
-                html.Td(sym, style={"fontWeight": "600", "color": BLUE}),
-                html.Td(h["name"][:28], style={"fontSize": "12px", "color": MUTED}),
+                html.Td(sym, className="font-semibold text-info"),
+                html.Td(h["name"][:28], className="text-xs text-muted"),
                 # Editable shares cell
                 html.Td(
-                    html.Div(style={"display": "flex", "alignItems": "center", "gap": "6px"}, children=[
+                    html.Div(className="flex align-items-center gap-sm", children=[
                         dcc.Input(
                             id={"type": "shares-edit-input", "index": f"{active}|{sym}"},
                             type="number",
@@ -2016,7 +2014,7 @@ def run_simulation(n, active, compare):
     def _build_sim_charts(port_name: str, color: str) -> list:
         sim = portfolio_engine.run_simulation(port_name)
         if sim.get("error"):
-            return [html.Div(f"❌ {sim['error']}", style={"color": RED})]
+            return [html.Div(f"❌ {sim['error']}", className="text-danger")]
 
         bt = sim["backtest"]
         mc = sim["montecarlo"]
@@ -2147,7 +2145,7 @@ def run_simulation(n, active, compare):
                     shares_cell = html.Td(str(d["shares"]))
 
                 detail_rows.append(html.Tr([
-                    html.Td(sym, style={"fontWeight": "600", "color": BLUE}),
+                    html.Td(sym, className="font-semibold text-info"),
                     shares_cell,
                     html.Td(f"${d['entry_price']:.2f}"),
                     html.Td(f"${d['current_price']:.2f}"),
@@ -2230,7 +2228,7 @@ def run_simulation(n, active, compare):
                                    "✅" if verdict == "contributor" else "—")
                         wl_rows.append(html.Tr([
                             html.Td(sym,
-                                    style={"fontWeight": "600", "color": BLUE}),
+                                    className="font-semibold text-info"),
                             html.Td(f"{d['weight']:.1f}%"),
                             html.Td(f"{d['stock_cagr']:+.1f}%",
                                     style={"color": GREEN if d["stock_cagr"] >= 0 else RED}),

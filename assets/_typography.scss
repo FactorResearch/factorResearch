@@ -1,0 +1,165 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// TYPOGRAPHY & TEXT STYLES
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────────────────────────────────────
+// Font Sizes (from inline styles)
+// ─────────────────────────────────────────────────────────────────────────
+
+$font-xs:             12px;
+$font-sm:             13px;
+$font-base:           14px;
+$font-lg:             16px;
+$font-xl:             18px;
+$font-2xl:            20px;
+$font-3xl:            22px;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Font Weights
+// ─────────────────────────────────────────────────────────────────────────
+
+$font-regular:        400;
+$font-medium:         500;
+$font-semibold:       600;
+$font-bold:           700;
+$font-extrabold:      800;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Text Utility Classes
+// ─────────────────────────────────────────────────────────────────────────
+
+.text-xs {
+    font-size: $font-xs;
+}
+
+.text-sm {
+    font-size: $font-sm;
+}
+
+.text-base {
+    font-size: $font-base;
+}
+
+.text-lg {
+    font-size: $font-lg;
+}
+
+.text-xl {
+    font-size: $font-xl;
+}
+
+.text-2xl {
+    font-size: $font-2xl;
+}
+
+.text-3xl {
+    font-size: $font-3xl;
+}
+
+.font-regular {
+    font-weight: $font-regular;
+}
+
+.font-medium {
+    font-weight: $font-medium;
+}
+
+.font-semibold {
+    font-weight: $font-semibold;
+}
+
+.font-bold {
+    font-weight: $font-bold;
+}
+
+.font-extrabold {
+    font-weight: $font-extrabold;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Text Color Utilities
+// ─────────────────────────────────────────────────────────────────────────
+
+.text-primary {
+    color: $text;
+}
+
+.text-muted {
+    color: $muted;
+}
+
+.text-success {
+    color: $green;
+}
+
+.text-danger {
+    color: $red;
+}
+
+.text-warning {
+    color: $amber;
+}
+
+.text-info {
+    color: $blue;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Text Alignment
+// ─────────────────────────────────────────────────────────────────────────
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Text Transform
+// ─────────────────────────────────────────────────────────────────────────
+
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+.text-lowercase {
+    text-transform: lowercase;
+}
+
+.text-capitalize {
+    text-transform: capitalize;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Text Emphasis
+// ─────────────────────────────────────────────────────────────────────────
+
+.italic {
+    font-style: italic;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Letter Spacing
+// ─────────────────────────────────────────────────────────────────────────
+
+.tracking-tight {
+    letter-spacing: -0.02em;
+}
+
+.tracking-normal {
+    letter-spacing: 0;
+}
+
+.tracking-wide {
+    letter-spacing: 0.08em;
+}

@@ -791,7 +791,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-bottom: 16px;
+
 
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
@@ -878,6 +878,7 @@ body {
   height: 500px;
   max-width: 672px;
   max-height: 500px;
+  margin-bottom: 2rem;
 }
 
 ._dash-loading-callback {

@@ -1,0 +1,369 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// LAYOUT & SPACING UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────────────────────────────────────
+// Spacing Scale (from inline styles)
+// ─────────────────────────────────────────────────────────────────────────
+
+$spacing-xs:          4px;
+$spacing-sm:          6px;
+$spacing-md:          8px;
+$spacing-lg:          10px;
+$spacing-xl:          12px;
+$spacing-2xl:         16px;
+$spacing-3xl:         20px;
+$spacing-4xl:         40px;
+$spacing-5xl:         60px;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Padding Utilities
+// ─────────────────────────────────────────────────────────────────────────
+
+.p-xs {
+    padding: $spacing-xs;
+}
+
+.p-sm {
+    padding: $spacing-sm;
+}
+
+.p-md {
+    padding: $spacing-md;
+}
+
+.p-lg {
+    padding: $spacing-lg;
+}
+
+.p-xl {
+    padding: $spacing-xl;
+}
+
+.p-2xl {
+    padding: $spacing-2xl;
+}
+
+.p-3xl {
+    padding: $spacing-3xl;
+}
+
+.p-4xl {
+    padding: $spacing-4xl;
+}
+
+.p-5xl {
+    padding: $spacing-5xl;
+}
+
+// Padding sides
+.px-md {
+    padding-left: $spacing-md;
+    padding-right: $spacing-md;
+}
+
+.px-lg {
+    padding-left: $spacing-lg;
+    padding-right: $spacing-lg;
+}
+
+.px-xl {
+    padding-left: $spacing-xl;
+    padding-right: $spacing-xl;
+}
+
+.py-md {
+    padding-top: $spacing-md;
+    padding-bottom: $spacing-md;
+}
+
+.py-lg {
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-lg;
+}
+
+.pt-xs {
+    padding-top: $spacing-xs;
+}
+
+.pt-sm {
+    padding-top: $spacing-sm;
+}
+
+.pt-md {
+    padding-top: $spacing-md;
+}
+
+.pt-lg {
+    padding-top: $spacing-lg;
+}
+
+.pb-md {
+    padding-bottom: $spacing-md;
+}
+
+.pb-lg {
+    padding-bottom: $spacing-lg;
+}
+
+.pr-md {
+    padding-right: $spacing-md;
+}
+
+.pl-md {
+    padding-left: $spacing-md;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Margin Utilities
+// ─────────────────────────────────────────────────────────────────────────
+
+.m-xs {
+    margin: $spacing-xs;
+}
+
+.m-sm {
+    margin: $spacing-sm;
+}
+
+.m-md {
+    margin: $spacing-md;
+}
+
+.m-lg {
+    margin: $spacing-lg;
+}
+
+.m-xl {
+    margin: $spacing-xl;
+}
+
+.m-2xl {
+    margin: $spacing-2xl;
+}
+
+.m-3xl {
+    margin: $spacing-3xl;
+}
+
+// Margin sides
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.my-md {
+    margin-top: $spacing-md;
+    margin-bottom: $spacing-md;
+}
+
+.my-lg {
+    margin-top: $spacing-lg;
+    margin-bottom: $spacing-lg;
+}
+
+.mb-xs {
+    margin-bottom: $spacing-xs;
+}
+
+.mb-md {
+    margin-bottom: $spacing-md;
+}
+
+.mb-lg {
+    margin-bottom: $spacing-lg;
+}
+
+.mb-2xl {
+    margin-bottom: $spacing-2xl;
+}
+
+.mb-3xl {
+    margin-bottom: $spacing-3xl;
+}
+
+.mt-md {
+    margin-top: $spacing-md;
+}
+
+.mt-lg {
+    margin-top: $spacing-lg;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Gap Utilities (for flex/grid)
+// ─────────────────────────────────────────────────────────────────────────
+
+.gap-xs {
+    gap: $spacing-xs;
+}
+
+.gap-sm {
+    gap: $spacing-sm;
+}
+
+.gap-md {
+    gap: $spacing-md;
+}
+
+.gap-lg {
+    gap: $spacing-lg;
+}
+
+.gap-xl {
+    gap: $spacing-xl;
+}
+
+.gap-2xl {
+    gap: $spacing-2xl;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Display & Visibility
+// ─────────────────────────────────────────────────────────────────────────
+
+.block {
+    display: block;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.inline {
+    display: inline;
+}
+
+.flex {
+    display: flex;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    visibility: visible;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Width & Height Utilities
+// ─────────────────────────────────────────────────────────────────────────
+
+.w-full {
+    width: 100%;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.min-w-220 {
+    min-width: 220px;
+}
+
+.min-w-240 {
+    min-width: 240px;
+}
+
+.max-w-130 {
+    max-width: 130px;
+}
+
+.max-w-220 {
+    max-width: 220px;
+}
+
+.max-w-240 {
+    max-width: 240px;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Alignment Utilities (for flex items)
+// ─────────────────────────────────────────────────────────────────────────
+
+.align-items-center {
+    align-items: center;
+}
+
+.align-items-start {
+    align-items: flex-start;
+}
+
+.align-items-end {
+    align-items: flex-end;
+}
+
+.align-items-stretch {
+    align-items: stretch;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Border Utilities
+// ─────────────────────────────────────────────────────────────────────────
+
+.border {
+    border: 1px solid $border;
+}
+
+.border-t {
+    border-top: 1px solid $border;
+}
+
+.border-b {
+    border-bottom: 1px solid $border;
+}
+
+.border-l {
+    border-left: 1px solid $border;
+}
+
+.border-r {
+    border-right: 1px solid $border;
+}
+
+.rounded {
+    border-radius: 4px;
+}
+
+.rounded-md {
+    border-radius: 6px;
+}
+
+.rounded-lg {
+    border-radius: 8px;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Grid Utilities
+// ─────────────────────────────────────────────────────────────────────────
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-2xl;
+}
+
+.gap-16 {
+    gap: 16px;
+}

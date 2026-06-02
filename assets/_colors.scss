@@ -1,0 +1,34 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// COLOR PALETTE
+// ═══════════════════════════════════════════════════════════════════════════
+// All colors from app.py constants (DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED)
+// Single source of truth for the entire app
+
+// Primary Background & Container Colors
+$dark:                #0f1117;  // Main background
+$card:                #1a1d27;  // Card background
+$border:              #2a2d3e;  // Border color
+
+// Status & Alert Colors
+$green:               #00c853;  // Success, bullish
+$red:                 #ff1744;  // Danger, bearish
+$amber:               #ffc107;  // Warning, neutral/caution
+$blue:                #448aff;  // Info, secondary action
+
+// Text & Muted Colors
+$text:                #e0e0e0;  // Primary text
+$muted:               #9e9e9e;  // Secondary text, disabled states
+
+// Derived color combinations for specific uses
+$positive:            $green;
+$negative:            $red;
+$neutral:             $muted;
+$highlight:           $blue;
+
+// Dark variants for hover/active states
+$dark-hover:          lighten($dark, 5%);
+$card-hover:          lighten($card, 8%);
+
+// Semi-transparent overlays
+$overlay-dark:        rgba($dark, 0.95);
+$overlay-card:        rgba($card, 0.9);
