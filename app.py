@@ -646,13 +646,12 @@ def update_progress_bar(n):
 @callback(
     Output("screener-table-container", "children"),
     Output("sector-filter", "options"),
-    Output("screener-page-store", "data"),
     Input("screener-ready-store",  "data"),
     Input("page-load-interval",    "n_intervals"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
     Input("screener-viewed-store", "data"),
-    State("screener-page-store",   "data"),
+    Input("screener-page-store",   "data"),
     prevent_initial_call=False
 )
 def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data, current_page):
@@ -685,7 +684,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
     state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
     
     if state_hash == _last_screener_state:
-        return dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update
     _last_screener_state = state_hash
 
     sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
@@ -703,13 +702,11 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
                              style={"color": MUTED, "fontSize": "13px"}),
                 ], style={"textAlign": "center", "padding": "40px"}),
                 sector_options,
-                current_page,
             )
         return (
             html.Div("Click 'Load Universe' to start analysis",
                      style={"textAlign": "center", "padding": "40px", "color": MUTED}),
             sector_options,
-            current_page,
         )
 
     portfolio_symbols = _get_portfolio_symbols()
@@ -876,7 +873,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
         ),
     ])
 
-    return html.Div([table, note, pagination_controls]), sector_options, current_page
+    return html.Div([table, note, pagination_controls]), sector_options
 
 
 # ── 1D: Screener pagination controls ──────────────────────────────────────────
