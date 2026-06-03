@@ -41,6 +41,12 @@ app = dash.Dash(
 )
 server = app.server
 
+# ── Mobile touch fix: eliminate 300ms tap delay on all buttons ───────────────
+app.index_string = app.index_string.replace(
+    '</head>',
+    '<style>button,a,[role="button"]{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0.08);}</style></head>'
+)
+
 # ── Color Theme (CSS vars in style.css, keeping for reference) ────────────────
 
 DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED = (
@@ -349,7 +355,7 @@ app.layout = html.Div(className="app-container", children=[
         ),
 
         # ── Add to Portfolio panel (shown after analysis completes) ──────────
-        html.Div(id="add-to-portfolio-panel", className="hidden", children=[
+        html.Div(id="add-to-portfolio-panel",children=[
             html.Div(className="portfolio-add-panel", children=[
                 html.Div(className="portfolio-add-header", children=[
                     html.Span("💼", className="text-2xl"),
@@ -785,7 +791,8 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
 
         ticker_cell = html.Td(html.Div([
             html.Button(sym, id={"type": "screener-ticker-btn", "index": sym},
-                        className="ticker-link-btn", n_clicks=0),
+                        className="ticker-link-btn", n_clicks=0,
+                        style={"touchAction": "manipulation", "cursor": "pointer"}),
             html.Div(badges, style={"display": "flex", "gap": "4px",
                                     "flexWrap": "wrap", "marginTop": "3px"})
             if badges else html.Div(),
@@ -859,7 +866,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
             id="screener-page-prev",
             n_clicks=0,
             disabled=current_page == 0,
-            style={"padding": "4px 12px", "cursor": "pointer" if current_page > 0 else "default"}
+            style={"padding": "4px 12px", "touchAction": "manipulation","cursor": "pointer"  if current_page > 0 else "default"}
         ),
         html.Span(f"Page {current_page + 1} of {max(1, total_pages)} · Showing {len(page_filtered)} rows"),
         html.Button(
@@ -867,7 +874,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, viewed_data,
             id="screener-page-next",
             n_clicks=0,
             disabled=current_page >= total_pages - 1,
-            style={"padding": "4px 12px", "cursor": "pointer" if current_page < total_pages - 1 else "default"}
+            style={"padding": "4px 12px", "touchAction": "manipulation","cursor": "pointer"  if current_page < total_pages - 1 else "default"}
         ),
     ])
 
@@ -1874,7 +1881,7 @@ def render_portfolio_holdings(active, refresh):
                             style={
                                 "background": "none", "border": f"1px solid {BORDER}",
                                 "borderRadius": "5px", "color": GREEN,
-                                "cursor": "pointer", "fontSize": "13px",
+                                "touchAction": "manipulation","cursor": "pointer" , "fontSize": "13px",
                                 "padding": "2px 7px", "lineHeight": "1",
                             }
                         ),
@@ -1888,7 +1895,7 @@ def render_portfolio_holdings(active, refresh):
                     html.Button("✕", n_clicks=0,
                                 id={"type": "remove-holding-btn", "index": f"{active}|{sym}"},
                                 style={"background": "none", "border": "none",
-                                       "color": RED, "cursor": "pointer", "fontSize": "14px"})
+                                       "color": RED, "touchAction": "manipulation","cursor": "pointer" , "fontSize": "14px"})
                 ),
             ]))
 
@@ -2295,6 +2302,29 @@ def run_simulation(n, active, compare):
         ]
 
     return sections
+
+
+# ── Mobile touch: clientside touchend→click bridge for pattern-matched buttons ─
+
+app.clientside_callback(
+    """
+    function(id) {
+        document.addEventListener('touchend', function(e) {
+            var btn = e.target.closest('button');
+            if (btn && !btn._touchBridged) {
+                btn._touchBridged = true;
+                btn.addEventListener('touchend', function(ev) {
+                    ev.preventDefault();
+                    btn.click();
+                }, {passive: false});
+            }
+        }, {capture: true});
+        return id;
+    }
+    """,
+    Output("loading-trigger", "id"),
+    Input("loading-trigger",  "id"),
+)
 
 
 # ── Startup ───────────────────────────────────────────────────────────────────

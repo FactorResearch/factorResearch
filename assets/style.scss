@@ -1,5 +1,5 @@
+@use '_media' as media;
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap');
-
 
 // ── Additional Tokens Extracted From Hard-Coded Values ──────────────────────
 $white: #fff;
@@ -183,6 +183,8 @@ body {
     transition: color 0.15s, border-color 0.15s;
     position: relative;
     bottom: -1px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 
     &:hover {
       color: $text;
@@ -232,6 +234,8 @@ body {
   transition: all 0.2s;
   position: relative;
   overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &::before {
     content: '';
@@ -303,7 +307,15 @@ body {
   width: 100%;
   border-collapse: collapse;
 
+  @include media.phones {
+    display: block;
+  }
+
   thead {
+    @include media.phones {
+      display: none;
+    }
+
     tr {
       background: $card-raised;
       border-bottom: 2px solid $border;
@@ -323,9 +335,18 @@ body {
   }
 
   tbody {
+    @include media.phones {
+      display: block;
+    }
+
     tr {
       border-bottom: 1px solid rgba($border, 0.6);
       transition: background 0.12s;
+
+      @include media.phones {
+        display: block;
+        border-bottom: 2px solid rgb(0 109 255 / 60%);
+      }
 
       &:last-child {
         border-bottom: none;
@@ -346,6 +367,84 @@ body {
       vertical-align: middle;
       border-right: 1px solid rgba($border, 0.3);
 
+      @include media.phones {
+        display: block;
+        padding: 20px 14px;
+        position: relative;
+        border-bottom: 1px solid rgba($border, 0.6);
+
+        width: 100% !important;
+        margin: 10px 0px;
+
+
+        &:before {
+          position: absolute;
+          left: 16px;
+          width: 53%;
+          padding-right: 0px;
+          white-space: nowrap;
+          bottom: 2px;
+          height: 100%;
+        }
+
+        &:nth-child(2) {
+          &:before {
+            content: "Ticker";
+          }
+        }
+
+        &:nth-child(3) {
+          &:before {
+            content: "Company";
+          }
+        }
+
+        &:nth-child(4) {
+          &:before {
+            content: "Sector";
+          }
+        }
+
+        &:nth-child(5) {
+          &:before {
+            content: "Grahm";
+          }
+        }
+
+        &:nth-child(6) {
+          &:before {
+            content: "Quality";
+          }
+        }
+
+        &:nth-child(7) {
+          &:before {
+            content: "Composite";
+          }
+        }
+
+        &:nth-child(8) {
+          &:before {
+            content: "GN Price";
+          }
+        }
+
+        &:nth-child(9) {
+          &:before {
+            content: "Buffet IV";
+          }
+        }
+
+        &:nth-child(10) {
+          &:before {
+            content: "Verdit";
+          }
+        }
+
+
+
+      }
+
       &:last-child {
         border-right: none;
       }
@@ -358,10 +457,14 @@ body {
     width: 36px;
     text-align: right;
     padding-right: 10px;
+    @include media.phones{
+      text-align: left;
+    }
   }
 
   .ticker-cell {
     width: 80px;
+
   }
 
   .company-name-cell {
@@ -386,6 +489,9 @@ body {
   cursor: pointer;
   letter-spacing: 0.04em;
   transition: color 0.15s, text-shadow 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 
   &:hover {
     color: $blue-light;
@@ -531,6 +637,8 @@ body {
   padding: 12px 24px;
   text-transform: uppercase;
   transition: background 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: $blue-bright;
@@ -796,8 +904,9 @@ body {
   @media (max-width: 767px) {
     grid-template-columns: 1fr;
   }
-  @media (max-width: $tablet){
-        grid-template-columns: 1fr;
+
+  @media (max-width: $tablet) {
+    grid-template-columns: 1fr;
   }
 
 
@@ -951,6 +1060,8 @@ body {
   cursor: pointer;
   padding: 0;
   white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .sort-header-btn:hover {
@@ -1010,9 +1121,10 @@ body {
     .scrollbox {
       position: absolute;
       transform: translate(67%, 0px);
-       @media (max-width: $mobile){
-            transform: translate(50%, 0px);
-       } 
+
+      @media (max-width: $mobile) {
+        transform: translate(50%, 0px);
+      }
     }
   }
 }
@@ -1021,11 +1133,13 @@ body {
   display: flex;
   flex-direction: row;
   gap: 16px;
+
   @media (max-width: $tablet) {
     flex-direction: column;
 
   }
-  .scorecard{
+
+  .scorecard {
     flex: 1 1 50%;
   }
 }
