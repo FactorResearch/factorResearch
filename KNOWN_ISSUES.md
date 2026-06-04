@@ -39,7 +39,7 @@ This may cause:
 
 Required Fix:
 
-Increase dividend history retrieval window to approximately 252 years.
+Increase dividend history retrieval window to approximately 10 years.
 
 Acceptance Criteria:
 
