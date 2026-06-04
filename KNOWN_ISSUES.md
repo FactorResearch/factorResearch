@@ -13,41 +13,41 @@ Status values:
 * [?] Requires Investigation
 
 ---
-
 # ISSUE-001
 
 Status: [ ]
 
 Title:
-Dividend History Lookback Too Short
+Sortino Ratio Uses Downside Count Denominator
 
 Priority:
 Critical
 
 File:
-sec_data.py
+risk_metrics.py
 
 Problem:
 
-Dividend history retrieval does not use a sufficiently long lookback period.
+Downside deviation may be divided by downside observations only.
 
-This may cause:
-
-* Incomplete dividend histories
-* Incorrect dividend consistency calculations
-* Graham analysis errors
+Standard Sortino methodology uses total observations.
 
 Required Fix:
 
-Increase dividend history retrieval window to approximately 10 years.
+downside_variance =
+Σ(min(0, r-target)^2) / N
+
+where:
+
+N = total observations
 
 Acceptance Criteria:
 
-* Long historical dividend records are available when data provider supports them.
-* Graham dividend calculations receive complete history.
-* Tests validate extended lookback behavior.
+* Total observations used.
+* Sortino calculation updated.
+* Unit tests added.
 
----
+
 
 # ISSUE-002
 
@@ -296,39 +296,42 @@ Acceptance Criteria:
 
 ---
 
+
+
+---
+
 # ISSUE-009
 
-Status: [ ]
+Status: [?]
 
 Title:
-Sortino Ratio Uses Downside Count Denominator
+Dividend History Lookback Too Short
 
 Priority:
-Critical
+Low
 
 File:
-risk_metrics.py
+sec_data.py
 
 Problem:
 
-Downside deviation may be divided by downside observations only.
+Dividend history retrieval does not use a sufficiently long lookback period.
 
-Standard Sortino methodology uses total observations.
+This may cause:
+
+* Incomplete dividend histories
+* Incorrect dividend consistency calculations
+* Graham analysis errors
 
 Required Fix:
 
-downside_variance =
-Σ(min(0, r-target)^2) / N
-
-where:
-
-N = total observations
+Increase dividend history retrieval window to approximately 10 years.
 
 Acceptance Criteria:
 
-* Total observations used.
-* Sortino calculation updated.
-* Unit tests added.
+* Long historical dividend records are available when data provider supports them.
+* Graham dividend calculations receive complete history.
+* Tests validate extended lookback behavior.
 
 ---
 
