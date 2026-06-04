@@ -807,9 +807,9 @@ def fetch_company_facts(symbol: str) -> dict:
         "DividendsCommonStockCash",
         "PaymentsOfDividends",
         "PaymentsOfOrdinaryDividends",
-    ],years=10)
+    ],years=30)
     if div_df.empty:
-        div_df = annual_per_share(facts, "CommonStockDividendsPerShareDeclared",years=25)
+        div_df = annual_per_share(facts, "CommonStockDividendsPerShareDeclared",years=30)
 
     # ── BVPS ─────────────────────────────────────────────────────────────────
     bvps_df = _bvps_df(equity_df, shares_df)
