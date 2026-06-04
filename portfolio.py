@@ -437,9 +437,14 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
 
     # Portfolio blended monthly stats (weighted)
     port_mean = sum(weights[s] * sym_stats[s][0] for s in symbols)
-    port_std  = math.sqrt(sum(
-        (weights[s] * sym_stats[s][1]) ** 2 for s in symbols
-    ))  # simplified: ignores correlation (conservative)
+  
+    # Approximate: assume average pairwise correlation of 0.4
+    n = len(symbols)
+    rho_avg = 0.4
+    # Diversified component + undiversifiable market component
+    port_var = (1 - rho_avg) / n * sum((w * s)**2 for w, s in ...) \
+         + rho_avg * sum(w * s for w, s in ...)**2
+    port_std = math.sqrt(port_var)
 
     # SPY stats
     spy_df = _load_history("SPY")

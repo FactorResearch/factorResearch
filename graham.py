@@ -84,7 +84,17 @@ def score(price: float | None, sec: dict) -> dict:
         eps_growth = (eps_values[0] - eps_values[-1]) / abs(eps_values[-1]) * 100
 
     # Dividend consecutive years (simple: count years with value > 0)
-    div_years = sum(1 for r in div_hist if r.get("value", 0) and r["value"] > 0)
+    # div_years = sum(1 for r in div_hist if r.get("value", 0) and r["value"] > 0)
+    div_by_year = {r["year"]: r["value"] for r in div_hist
+               if r.get("value") and r["value"] > 0}
+    sorted_years = sorted(div_by_year.keys(), reverse=True)
+    consecutive = 0
+    for i, yr in enumerate(sorted_years):
+        if i == 0 or sorted_years[i-1] - yr == 1:
+            consecutive += 1
+        else:
+            break
+    div_years = consecutive
 
     # NNWC = Current Assets − Total Liabilities
     nnwc     = (ca - total_lib) / 1e6 if ca and total_lib else None
