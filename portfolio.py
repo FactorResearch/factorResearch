@@ -488,8 +488,13 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
             paths[:, t] = paths[:, t - 1] * (1 + shocks[:, t - 1])
         return paths
 
-    port_paths = _simulate(start_value, port_mean, port_std)
-    spy_paths  = _simulate(spy_start,   spy_mean,  spy_std)
+    # Ito / geometric drift correction: μ_geo = μ_arith − σ²/2
+    # Prevents arithmetic-mean bias from overstating long-run compounded growth.
+    port_geo_mean = port_mean - (port_std ** 2) / 2
+    spy_geo_mean  = spy_mean  - (spy_std  ** 2) / 2
+
+    port_paths = _simulate(start_value, port_geo_mean, port_std)
+    spy_paths  = _simulate(spy_start,   spy_geo_mean,  spy_std)
 
     def _percentile_paths(paths: np.ndarray, pct: int) -> list[float]:
         return [round(float(np.percentile(paths[:, t], pct)), 2)
