@@ -325,7 +325,7 @@ Priority: P4
 
 ### options_signal_engine.py
 
-Priority: P5
+Priority: P4
 
 Expected Impact: High (tactical alpha / derivatives layer)
 
