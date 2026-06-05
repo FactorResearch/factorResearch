@@ -260,7 +260,7 @@ Acceptance Criteria:
 
 ## ISSUE-004
 
-**Status:** [ ]  
+**Status:** [x]  
 **Title:** Share dilution handling incorrect  
 **Files:** `graham.py`, `piotroski.py`  
 **Fix:** Consistent threshold-based dilution rule  

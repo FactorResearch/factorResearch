@@ -16,7 +16,7 @@ Scoring breakdown (100 points total):
 
 import math
 import numpy as np
-
+from codes.piotroski import DILUTION_TOLERANCE
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -292,6 +292,27 @@ def score(price: float | None, sec: dict) -> dict:
         "score": nn_score,
         "max": 5,
         "note": nn_note
+    })
+    # 10. Share Dilution (5 pts)
+    sh       = _safe(_first(sec.get("shares",   [])))
+    sh_prev  = _safe(shares[1]["value"] if len(shares) > 1 else None)
+    if sh is None or sh_prev is None:
+        dil_score, dil_note = 0, "Insufficient shares data"
+    elif sh <= sh_prev * (1 + DILUTION_TOLERANCE):
+        dil_score = 5
+        dil_note  = f"No meaningful dilution ({sh/1e6:.1f}M vs {sh_prev/1e6:.1f}M prior)"
+    else:
+        growth_pct = (sh - sh_prev) / sh_prev * 100
+        dil_score  = 0
+        dil_note   = f"Share count grew {growth_pct:.1f}% — dilution detected"
+
+    criteria.append({
+        "label":       "Share Dilution",
+        "requirement": f"≤ {DILUTION_TOLERANCE*100:.0f}% share growth",
+        "actual":      f"{sh/1e6:.1f}M" if sh else "N/A",
+        "score":       dil_score,
+        "max":         5,
+        "note":        dil_note,
     })
 
     # ── Summary ───────────────────────────────────────────────────────────────

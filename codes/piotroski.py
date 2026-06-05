@@ -40,6 +40,7 @@ Add total_assets to sec_data.py — see patch in that file.
 """
 
 import math
+DILUTION_TOLERANCE = 0.01
 from datetime import datetime, timedelta
 
 
@@ -254,13 +255,13 @@ def score(sec: dict) -> dict:
     })
 
     # F7: No share dilution (<=1% tolerance for buybacks/options noise)
-    f7 = 1 if (sh_0 is not None and sh_1 is not None and sh_0 <= sh_1 * 1.01) else 0
+    f7 = 1 if (sh_0 is not None and sh_1 is not None and sh_0 <= sh_1 * (1 + DILUTION_TOLERANCE)) else 0
     signals.append({
         "id":       "F7",
         "label":    "No Share Dilution",
         "category": "Leverage",
         "signal":   f7,
-        "note":     (f"{sh_0/1e6:.1f}M shares vs {sh_1/1e6:.1f}M prior"
+        "note":     (f"{sh_0/1e6:.1f}M vs {sh_1/1e6:.1f}M prior (tol {DILUTION_TOLERANCE*100:.0f}%)"
                      if sh_0 is not None and sh_1 is not None else "Insufficient data"),
     })
 
