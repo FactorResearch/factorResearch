@@ -220,7 +220,7 @@ When working on a task:
 6. Produce minimal diffs.
 7. Stop after completing requested scope.
 
-
+---
 # Future Model Improvements
 
 The following enhancements are candidates for future development after current audit priorities are complete.
