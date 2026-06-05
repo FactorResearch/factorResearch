@@ -302,7 +302,7 @@ Acceptance Criteria:
 
 # ISSUE-009
 
-Status: [?]
+Status: [x]
 
 Title:
 Dividend History Lookback Too Short
