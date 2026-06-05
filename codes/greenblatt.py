@@ -111,6 +111,8 @@ def compute_single(price: float | None, sec: dict) -> dict:
     ppe     = _first(sec.get("ppe_net",   []))      # net PP&E (new field)
     cash    = _first(sec.get("cash",      []))      # cash & equivalents (new field)
     tot_ast = _first(sec.get("total_assets", []))   # fallback if PP&E missing
+    op_cf   = _first(sec.get("op_cf",     []))      # operating cash flow
+    capex   = _first(sec.get("capex",     []))      # capital expenditure
 
     mkt_cap    = (price * shares) if (price and shares) else None
     total_debt = (lt_debt or 0.0)
@@ -121,6 +123,13 @@ def compute_single(price: float | None, sec: dict) -> dict:
 
     # Earnings Yield = EBIT / EV
     earnings_yield = (ebit / ev) if (ebit is not None and ev and ev > 0) else None
+
+    # FCF Yield = FCF / EV  (non-zero EV guard prevents division by zero)
+    # FCF = Operating CF − CapEx; capex is typically reported as a positive outflow
+    fcf = None
+    if op_cf is not None:
+        fcf = op_cf - abs(capex) if capex is not None else op_cf
+    fcf_yield = (fcf / ev) if (fcf is not None and ev and ev > 0) else None
 
     # Invested Capital
     # Primary:  Net Working Capital + Net PP&E
@@ -155,6 +164,7 @@ def compute_single(price: float | None, sec: dict) -> dict:
         "enterprise_value": ev,
         "mkt_cap":          mkt_cap,
         "earnings_yield":   round(earnings_yield * 100, 3) if earnings_yield is not None else None,
+        "fcf_yield":        round(fcf_yield * 100, 3)      if fcf_yield      is not None else None,
         "roic":             round(roic * 100, 3)           if roic           is not None else None,
         "invested_capital": invested_capital,
         "ic_method":        ic_method,

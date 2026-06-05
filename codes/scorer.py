@@ -262,6 +262,9 @@ def enhanced_composite(
         "greenblatt_earnings_yield": (
             greenblatt_result.get("earnings_yield") if greenblatt_result else None
         ),
+        "greenblatt_fcf_yield": (
+            greenblatt_result.get("fcf_yield") if greenblatt_result else None
+        ),
         "greenblatt_roic": (
             greenblatt_result.get("roic") if greenblatt_result else None
         ),
