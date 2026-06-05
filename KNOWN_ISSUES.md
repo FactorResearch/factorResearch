@@ -170,11 +170,11 @@ run ISSUE-003
 Agent:
 
 1. Reads ISSUE-003
-2. Opens only .py
+2. Opens only <filefromissue>.py
 3. Diagnoses covariance error
 4. Applies fix
 5. Adds test
-6. push to dif
+6. push to git
 
 ---
 
