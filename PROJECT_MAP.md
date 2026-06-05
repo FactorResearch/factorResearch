@@ -318,8 +318,47 @@ Expected Impact: Moderate to High
 
 Priority: P4
 
+
 ---
 
+## P5 — Options Trading Intelligence Layer
+
+### options_signal_engine.py
+
+Priority: P5
+
+Expected Impact: High (tactical alpha / derivatives layer)
+
+### Responsibilities:
+
+* CALL vs PUT directional prediction
+* Short-term option price movement modeling (not expiry outcome)
+* Strike + expiry optimization
+* IV regime + volatility expansion detection
+* Options flow anomaly detection
+* Risk-adjusted edge scoring for derivatives trades
+
+### Key Outputs:
+
+* Directional bias (CALL / PUT)
+* Probability option price increases (P_up)
+* Expected short-horizon return
+* Recommended strike / expiry pair
+* Risk score (theta + IV + liquidity)
+* Edge score (alpha strength)
+
+### Core Design Principle:
+
+> Models option mark-to-market movement, not expiration payoff
+
+### Dependencies:
+
+* sec_data.py
+* regime.py
+* risk_metrics.py
+* portfolio.py
+
+---
 # Recommended Development Order
 
 1. profitability.py
@@ -331,6 +370,7 @@ Priority: P4
 7. insider_activity.py
 8. factor_momentum.py
 9. alternative_data.py
+10. options_signal_engine.py
 
 ---
 
