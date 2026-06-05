@@ -169,7 +169,7 @@ Acceptance Criteria:
 
 # ISSUE-005
 
-Status: [ ]
+Status: [x]
 
 Title:
 Piotroski YoY Comparisons May Use Wrong Fiscal Period
