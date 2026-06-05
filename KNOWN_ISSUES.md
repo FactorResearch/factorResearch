@@ -272,7 +272,7 @@ Acceptance Criteria:
 
 **Status:** [ ]  
 **Title:** CAGR calculation inconsistencies  
-**Files:** `portfolio.py`, `utils/returns.py` (if exists)  
+**Files:** `portfolio.py`
 **Fix:** Standard CAGR with proper time delta  
 **Criteria:** Correct compounding, safe missing periods
 
