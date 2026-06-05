@@ -256,19 +256,6 @@ Key metrics:
 * Revenue revision %
 * Earnings surprise %
 
-Purpose:
-
-Earnings estimate revisions are among the most consistently documented predictors of future stock outperformance.
-
-Potential composite weight:
-
-* 8–12%
-
-Dependencies:
-
-* Market data provider
-* Analyst estimate data
-
 ---
 
 ## P1 — Profitability Model
@@ -278,33 +265,6 @@ Dependencies:
 Priority: P1
 
 Expected Impact: Very High
-
-Responsibilities:
-
-* Economic profitability analysis
-* Return quality assessment
-* Margin durability evaluation
-
-Key metrics:
-
-* ROIC
-* ROA
-* Gross Profit / Assets
-* Operating Margin Stability
-* ROIC Persistence
-
-Purpose:
-
-Capture persistent profitability factors not fully represented by Graham, Piotroski, or Altman.
-
-Potential composite weight:
-
-* 5–10%
-
-Dependencies:
-
-* Income statement
-* Balance sheet
 
 ---
 
@@ -316,32 +276,6 @@ Priority: P1
 
 Expected Impact: Very High
 
-Responsibilities:
-
-* Cash flow quality analysis
-* Earnings-to-cash conversion analysis
-* Free cash flow consistency scoring
-
-Key metrics:
-
-* FCF Margin
-* FCF Conversion Ratio
-* FCF Growth
-* FCF Stability
-
-Purpose:
-
-Reduce exposure to accounting-driven earnings and value traps.
-
-Potential composite weight:
-
-* 5–10%
-
-Dependencies:
-
-* Cash flow statements
-* Income statements
-
 ---
 
 ## P2 — Capital Allocation Model
@@ -351,34 +285,6 @@ Dependencies:
 Priority: P2
 
 Expected Impact: High
-
-Responsibilities:
-
-* Management capital allocation analysis
-* Shareholder return assessment
-* Buyback efficiency evaluation
-
-Key metrics:
-
-* Shareholder Yield
-* Buyback Yield
-* Dilution Rate
-* Debt Growth vs Revenue Growth
-* Capital Return Ratio
-
-Purpose:
-
-Identify management teams that consistently create shareholder value.
-
-Potential composite weight:
-
-* 5–10%
-
-Dependencies:
-
-* Share count history
-* Dividend history
-* Debt history
 
 ---
 
@@ -390,32 +296,6 @@ Priority: P2
 
 Expected Impact: High
 
-Responsibilities:
-
-* Sustainable growth evaluation
-* Efficient growth scoring
-* Growth durability analysis
-
-Key metrics:
-
-* Revenue CAGR
-* EPS CAGR
-* FCF CAGR
-* ROIC Trend
-* Margin Expansion
-
-Purpose:
-
-Reward efficient growth while avoiding speculative growth.
-
-Potential composite weight:
-
-* 5–10%
-
-Dependencies:
-
-* Historical financial statements
-
 ---
 
 ## P3 — Market Regime Model
@@ -426,93 +306,17 @@ Priority: P3
 
 Expected Impact: Moderate to High
 
-Responsibilities:
-
-* Market condition classification
-* Dynamic factor weighting
-* Risk-on / risk-off detection
-
-Key metrics:
-
-* SPY 200-Day Moving Average
-* Market Breadth
-* Volatility Regime
-* Trend Strength
-
-Regimes:
-
-* Bull
-* Neutral
-* Bear
-
-Purpose:
-
-Adjust factor exposure dynamically based on market conditions.
-
-Example:
-
-Bull Market:
-
-* Momentum ↑
-* Growth ↑
-
-Bear Market:
-
-* Quality ↑
-* Risk Controls ↑
-
-Dependencies:
-
-* Market data
-* Volatility metrics
-
 ---
 
 ## P4 — Advanced Research Modules
 
-Potential future research candidates:
-
 ### insider_activity.py
 
-Priority: P4
-
-Key metrics:
-
-* Insider purchases
-* Executive buying activity
-* Ownership changes
-
----
-
 ### factor_momentum.py
-
-Priority: P4
-
-Key metrics:
-
-* Value factor strength
-* Momentum factor strength
-* Quality factor strength
-
-Purpose:
-
-Dynamically rotate between factor exposures.
-
----
 
 ### alternative_data.py
 
 Priority: P4
-
-Key metrics:
-
-* Sentiment
-* News flow
-* Social signals
-
-Purpose:
-
-Experimental alpha generation.
 
 ---
 
@@ -530,31 +334,85 @@ Experimental alpha generation.
 
 ---
 
-# Long-Term Composite Target
+# READJUSTED COMPOSITE WEIGHTING (PROPOSED)
 
-Current Factors:
+After adding the new modules, the scoring system should evolve from overlapping legacy factors into a more orthogonal structure.
 
-* Graham
-* Buffett
-* Quality
-* Momentum
-* Piotroski
-* Risk
-* Altman
+## Current Model
 
-Future Factors:
+* Graham — 15%
+* Buffett — 25%
+* Quality — 18%
+* Momentum — 14%
+* Piotroski — 14%
+* Risk — 8%
+* Altman — 6%
 
-* Value
-* Quality
-* Momentum
-* Financial Strength
-* Profitability
-* Free Cash Flow Quality
-* Earnings Revisions
-* Capital Allocation
-* Growth Quality
-* Dynamic Regime Adjustments
+Total: 100%
 
-Goal:
+---
 
-Improve excess return generation while reducing factor overlap and improving robustness across market cycles.
+## Proposed Adjusted Model
+
+To reduce overlap and improve signal independence:
+
+### Core Factors
+
+* Value (Graham + Greenblatt) — 12%
+* Quality (Buffett + Piotroski partial overlap reduced) — 18%
+* Momentum — 12%
+* Risk — 6%
+
+### New Alpha Factors
+
+* Profitability (ROIC-based) — 12%
+* Free Cash Flow Quality — 10%
+* Earnings Revisions — 12%
+* Capital Allocation — 8%
+* Growth Quality — 7%
+
+### Stability / Safety Layer
+
+* Altman Z-Score — 3%
+
+---
+
+## Final Adjusted Allocation
+
+| Factor             | Weight |
+| ------------------ | ------ |
+| Value              | 12%    |
+| Quality            | 18%    |
+| Momentum           | 12%    |
+| Profitability      | 12%    |
+| FCF Quality        | 10%    |
+| Earnings Revisions | 12%    |
+| Capital Allocation | 8%     |
+| Growth Quality     | 7%     |
+| Risk               | 6%     |
+| Altman Z           | 3%     |
+
+**Total: 100%**
+
+---
+
+## Key Structural Change
+
+This new weighting improves the model by:
+
+* Reducing redundancy between Graham / Buffett / Piotroski / Altman
+* Increasing exposure to forward-looking signals (earnings revisions)
+* Introducing cash-flow based validation (FCF quality)
+* Separating profitability from generic “quality”
+* Making the system more orthogonal and less correlated
+
+---
+
+## Expected Impact
+
+If implemented with clean data pipelines and proper backtesting:
+
+* Higher Sharpe ratio potential
+* Reduced drawdowns in value traps
+* Better cyclical adaptability
+* Improved SPY-relative consistency
