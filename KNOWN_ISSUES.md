@@ -195,7 +195,7 @@ No vague instructions allowed.
 
 ## ISSUE-001
 
-Status: [ ]
+Status: [x]
 
 Title: Division by zero in Greenblatt calculation
 
@@ -250,7 +250,7 @@ Acceptance Criteria:
 
 ## ISSUE-003
 
-**Status:** [ ]  
+**Status:** [x]  
 **Title:** Free Cash Flow yield miscalculation  
 **Files:** `greenblatt.py`, `scorer.py`  
 **Fix:** Enforce FCF Yield = FCF / EV with non-zero check  
