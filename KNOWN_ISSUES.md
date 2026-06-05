@@ -51,7 +51,7 @@ Acceptance Criteria:
 
 # ISSUE-002
 
-Status: [ ]
+Status: [x]
 
 Title:
 Graham Counts Total Dividend Years Instead of Consecutive Years
