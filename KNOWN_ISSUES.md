@@ -200,7 +200,7 @@ Acceptance Criteria:
 
 # ISSUE-006
 
-Status: [ ]
+Status: [x]
 
 Title:
 Partial Altman Scores Not Properly Normalized
