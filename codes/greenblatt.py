@@ -214,7 +214,9 @@ def rank_universe(universe_metrics: list[dict]) -> list[dict]:
     for item in valid:
         combined = item["_ey_rank"] + item["_roic_rank"]
         # Convert to 0-100 score: lower combined rank = better = higher score
-        item["magic_score"]     = round((1 - (combined - 2) / (2 * n - 2)) * 100, 1)
+        # Guard: denominator is 0 when n==1 (single stock); award 100.
+        denom = 2 * n - 2
+        item["magic_score"]     = 100.0 if denom == 0 else round((1 - (combined - 2) / denom) * 100, 1)
         item["magic_rank"]      = combined
         item["ey_percentile"]   = round((1 - item["_ey_rank"]   / n) * 100, 1)
         item["roic_percentile"] = round((1 - item["_roic_rank"] / n) * 100, 1)
