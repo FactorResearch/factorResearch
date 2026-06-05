@@ -32,6 +32,10 @@ Safe zones:
 
 Requires new sec_facts keys added to sec_data.py:
   total_assets, retained_earnings
+
+ISSUE-006 fix: partial scores are normalised by the fraction of total
+weight that was available, so missing components do not artificially
+depress the Z-score.  The available_fraction is logged in the return dict.
 """
 
 import math
@@ -55,6 +59,11 @@ def _first(records: list) -> float | None:
     return None
 
 
+# Weight maps (used for ISSUE-006 partial-score normalisation)
+_ZPP_WEIGHTS  = {"x1": 6.56, "x2": 3.26, "x3": 6.72, "x4": 1.05}           # total = 17.60
+_ORIG_WEIGHTS = {"x1": 1.2,  "x2": 1.4,  "x3": 3.3,  "x4": 0.6, "x5": 1.0}  # total = 7.50
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def score(price: float | None, sec: dict) -> dict:
@@ -67,6 +76,11 @@ def score(price: float | None, sec: dict) -> dict:
 
     Returns dict with z_score, zone, zone_label, components, and a scoring
     sub-dict (risk_score 0–100) compatible with enhanced_composite in scorer.py.
+
+    ISSUE-006: when fewer than the full set of components is available the
+    raw weighted sum is divided by the fraction of total weight present so
+    that missing metrics do not artificially depress the score.
+    The available_fraction is included in the return dict for transparency.
     """
     # ── Inputs ────────────────────────────────────────────────────────────────
     cur_ast  = _first(sec.get("cur_ast",          []))
@@ -94,6 +108,9 @@ def score(price: float | None, sec: dict) -> dict:
     # Choose model: Z'' for service/non-manufacturer (no PP&E), else original
     use_zpp = (ppe is None or ppe == 0)   # True → Z'' non-manufacturer model
 
+    # Map component names → values (used for weight lookups below)
+    comp_vals = {"x1": x1, "x2": x2, "x3": x3, "x4": x4, "x5": x5}
+
     # Count available components
     if use_zpp:
         components_used = [x for x in [x1, x2, x3, x4] if x is not None]
@@ -106,24 +123,38 @@ def score(price: float | None, sec: dict) -> dict:
     min_required = 3
 
     z_score = None
+    available_fraction = 1.0   # reported even when z_score is None
+
     if n_available >= min_required:
         if use_zpp:
             # Z'' = 6.56X1 + 3.26X2 + 6.72X3 + 1.05X4
-            z_score = (
+            raw = (
                 (6.56 * x1 if x1 is not None else 0) +
                 (3.26 * x2 if x2 is not None else 0) +
                 (6.72 * x3 if x3 is not None else 0) +
                 (1.05 * x4 if x4 is not None else 0)
             )
+            # ISSUE-006: scale up by available weight fraction
+            total_w = sum(_ZPP_WEIGHTS.values())
+            avail_w = sum(w for k, w in _ZPP_WEIGHTS.items()
+                          if comp_vals.get(k) is not None)
+            available_fraction = avail_w / total_w if total_w else 1.0
+            z_score = raw / available_fraction if available_fraction > 0 else raw
         else:
             # Original: Z = 1.2X1 + 1.4X2 + 3.3X3 + 0.6X4 + 1.0X5
-            z_score = (
+            raw = (
                 (1.2 * x1 if x1 is not None else 0) +
                 (1.4 * x2 if x2 is not None else 0) +
                 (3.3 * x3 if x3 is not None else 0) +
                 (0.6 * x4 if x4 is not None else 0) +
                 (1.0 * x5 if x5 is not None else 0)
             )
+            # ISSUE-006: scale up by available weight fraction
+            total_w = sum(_ORIG_WEIGHTS.values())
+            avail_w = sum(w for k, w in _ORIG_WEIGHTS.items()
+                          if comp_vals.get(k) is not None)
+            available_fraction = avail_w / total_w if total_w else 1.0
+            z_score = raw / available_fraction if available_fraction > 0 else raw
         z_score = round(z_score, 3)
 
     # ── Zone classification ───────────────────────────────────────────────────
@@ -132,21 +163,27 @@ def score(price: float | None, sec: dict) -> dict:
     else:
         safe_thresh, grey_thresh = 2.99, 1.81
 
+    partial_note = (
+        f" (normalised from {n_available}/{4 if use_zpp else 5} components, "
+        f"weight fraction {available_fraction:.0%})"
+        if available_fraction < 1.0 else ""
+    )
+
     if z_score is None:
         zone, zone_label, color = "unknown", "Unknown", "gray"
         note = f"Insufficient data ({n_available}/{4 if use_zpp else 5} components)"
         risk_penalty = 0
     elif z_score > safe_thresh:
         zone, zone_label, color = "safe", "Safe Zone", "green"
-        note = f"Z={z_score:.2f} ({model}) — low bankruptcy risk"
+        note = f"Z={z_score:.2f} ({model}) — low bankruptcy risk{partial_note}"
         risk_penalty = 0
     elif z_score >= grey_thresh:
         zone, zone_label, color = "grey", "Grey Zone", "amber"
-        note = f"Z={z_score:.2f} ({model}) — elevated risk, monitor closely"
+        note = f"Z={z_score:.2f} ({model}) — elevated risk, monitor closely{partial_note}"
         risk_penalty = 15
     else:
         zone, zone_label, color = "distress", "Distress Zone", "red"
-        note = f"Z={z_score:.2f} ({model}) — high bankruptcy risk — value trap risk!"
+        note = f"Z={z_score:.2f} ({model}) — high bankruptcy risk — value trap risk!{partial_note}"
         risk_penalty = 35
 
     # ── Altman risk sub-score (for enhanced_composite) ────────────────────────
@@ -160,15 +197,16 @@ def score(price: float | None, sec: dict) -> dict:
         risk_score = min(100, max(0, round(z_score / 4.0 * 100)))
 
     return {
-        "z_score":         z_score,
-        "model":           model,
-        "zone":            zone,
-        "zone_label":      zone_label,
-        "color":           color,
-        "note":            note,
-        "risk_penalty":    risk_penalty,   # points to subtract from composite
-        "risk_score":      risk_score,     # 0-100 for enhanced_composite
-        "n_available":     n_available,
+        "z_score":             z_score,
+        "model":               model,
+        "zone":                zone,
+        "zone_label":          zone_label,
+        "color":               color,
+        "note":                note,
+        "risk_penalty":        risk_penalty,      # points to subtract from composite
+        "risk_score":          risk_score,         # 0-100 for enhanced_composite
+        "n_available":         n_available,
+        "available_fraction":  round(available_fraction, 4),  # ISSUE-006: transparency
         "components": {
             "x1_working_capital":     round(x1, 4) if x1 is not None else None,
             "x2_retained_earnings":   round(x2, 4) if x2 is not None else None,
