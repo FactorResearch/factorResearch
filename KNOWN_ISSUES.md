@@ -1,231 +1,641 @@
+# CLAUDE CODE ISSUE RUNNER
+
+This system allows deterministic execution of known issues with minimal token usage.
+
+---
+
+# USAGE FORMAT
+
+To execute a task, always use:
+
+```
+run ISSUE-XXX
+```
+
+Example:
+
+```
+run ISSUE-007
+```
+
+---
+
+# EXECUTION RULES (MANDATORY)
+
+When `run ISSUE-XXX` is received:
+
+## Step 1 — Load Context
+
+Only read:
+
+* KNOWN_ISSUES.md
+* AI_CONTEXT.md
+* PROJECT_MAP.md
+
+Then extract:
+
+* issue definition
+* file scope
+* acceptance criteria
+
+Do NOT scan repository.
+
+---
+
+## Step 2 — Scope Lock
+
+Restrict all work to files listed in the issue.
+
+If files are missing or unclear:
+→ STOP and ask a question
+
+---
+
+## Step 3 — Diagnosis Mode (NO CODE CHANGES)
+
+Before editing:
+
+* Identify root cause
+* Identify exact function(s)
+* Identify failure path
+* Confirm fix strategy
+
+Output:
+
+* short explanation
+* affected functions
+* planned patch
+
+STOP.
+
+---
+
+## Step 4 — Implementation Mode
+
+Apply minimal patch only:
+
+Rules:
+
+* no refactors
+* no renames
+* no unrelated formatting changes
+* preserve public APIs
+
+---
+
+## Step 5 — Tests
+
+If tests exist:
+
+* ensure compatibility
+* add missing test cases if required
+
+If no tests exist:
+
+* create minimal unit tests only for issue
+
+---
+
+## Step 6 — Output Format
+
+Return ONLY:
+
+### Files Modified
+
+* file paths
+
+### Patch
+
+```diff
+...
+```
+
+### Tests Added/Updated
+
+* list
+
+### Status
+
+* PASS / NEEDS INFO
+
+---
+
+# GLOBAL CONSTRAINTS
+
+Never:
+
+* scan full repo
+* fix multiple issues in one run
+* rewrite modules
+* “improve architecture”
+* optimize unrelated code
+
+Always:
+
+* minimal diff
+* single issue focus
+* deterministic output
+* push to git after successful run
+# FILE LOCK RULE:
+
+If file is not explicitly listed in ISSUE → it is forbidden to open.
+---
+
+# ISSUE HANDLING MAP
+
+## ISSUE TYPES
+
+### Type A: Single-file bug
+
+→ modify only one file
+
+### Type B: Multi-file logic consistency
+
+→ modify ONLY listed files
+
+### Type C: Investigation required
+
+→ stop after diagnosis
+
+---
+
+# EXAMPLE EXECUTION
+
+User:
+
+```
+run ISSUE-003
+```
+
+Agent:
+
+1. Reads ISSUE-003
+2. Opens only portfolio.py
+3. Diagnoses covariance error
+4. Applies fix
+5. Adds test
+6. push to dif
+
+---
+
+# FAILURE RULE
+
+If issue is ambiguous:
+
+DO NOT GUESS.
+
+Instead output:
+
+```
+NEED CLARIFICATION:
+- missing definition of X
+- unclear expected behavior of Y
+```
+
+Stop immediately.
+
+---
+
+# OPTIMIZATION GOAL
+
+This system is designed to:
+
+* reduce token usage by ~50–70%
+* eliminate repo-wide scanning
+* enforce deterministic patches
+* improve test coverage reliability
+
 # KNOWN_ISSUES.md
 
-# Financial Model Audit Backlog
+# Financial Model Issue System (Agent Optimized)
 
-Purpose:
-Track known mathematical, financial-model, and implementation issues discovered during code review.
-
-Status values:
-
-* [ ] Open
-* [~] In Progress
-* [x] Completed
-* [?] Requires Investigation
+This file is the **single source of truth for all fixable defects**.
 
 ---
-# ISSUE-001
 
-Status: []
+# Global Rules (MANDATORY)
 
-Title:
-Division by zero in greenblatt.py
+When fixing any issue:
 
-Priority:
-Critical
+1. Load only:
 
-File:
-greenblatt.py
+   * KNOWN_ISSUES.md
+   * AI_CONTEXT.md
+   * PROJECT_MAP.md
+   * explicitly selected files
+
+2. Work on exactly ONE issue per run.
+
+3. Do NOT scan the full repository.
+
+4. Do NOT refactor unrelated code.
+
+5. Output must be:
+
+   * pushed to git
+   * tests if required
+   * no extra commentary unless asked
+
+6. If a dependency outside allowed files is required → STOP and ask.
+
+---
+
+# ISSUE FORMAT STANDARD
+
+Each issue must contain:
+
+* Clear root cause
+* Explicit file scope
+* Deterministic fix
+* Verifiable acceptance criteria
+
+No vague instructions allowed.
+
+---
+
+# ACTIVE ISSUES
+
+---
+
+## ISSUE-001
+
+Status: [ ]
+
+Title: Division by zero in Greenblatt calculation
+
+Priority: Critical
+
+Files:
+
+* greenblatt.py
 
 Problem:
-we are dividing by zero
+Division by zero occurs when denominator (likely EV or capital metric) equals 0 during Greenblatt ranking calculation.
 
 Required Fix:
-fix the bug 
+Add safe-guarded division logic:
 
-
-
+* If denominator == 0 → return 0 score OR skip metric consistently
 
 Acceptance Criteria:
 
-* Division by zero is no longer there
-* fixed code is pushed to git
-
-
-
-# Future Audit Candidates
-
-Status: [?]
-
-Potential Review Areas:
-
-* Enterprise value calculations
-* FCF yield calculations
-* Share dilution handling
-* CAGR calculations
-* Earnings normalization
-* Monte Carlo return assumptions
-* Drawdown calculations
-* Correlation estimation methodology
-* Data survivorship bias
-* Missing financial statement handling
+* No runtime ZeroDivisionError
+* Unit test added for denominator = 0 case
+* Existing scoring behavior unchanged otherwise
 
 ---
 
-# Unit Test Coverage Backlog
-
-Purpose:
-Track missing unit test coverage per module.
-All test files live in tests/ at the repository root.
-Use pytest. No test should hit the network or disk — mock all I/O.
-
-Existing partial coverage:
-* tests/test_graham_consecutive_dividends.py  — graham.py (ISSUE-002 only)
-* tests/test_risk_metrics_sortino.py          — risk_metrics.py (ISSUE-001 only)
-* tests/test_issue008_greenblatt_composite.py — greenblatt.py (ISSUE-008 only)
-* test_issue001_div_lookback.py               — sec_data.py (ISSUE-009 only)
-
----
-
-## TEST-005
+## ISSUE-002
 
 Status: [ ]
 
-Title:
-Full Unit Tests for piotroski.py
+Title: Enterprise value calculation correctness
 
-File:
-tests/test_piotroski.py
+Priority: High
 
-Required Tests:
+Files:
 
-* all_pass: sec dict where all 9 signals fire → f_score=9, label="strong"
-* all_fail: sec dict where no signal fires → f_score=0, label="weak"
-* neutral_range: exactly 5 signals fire → label="neutral"
-* f1_roa_positive: net_inc > 0, total_assets > 0 → F1=1
-* f1_roa_negative: net_inc < 0 → F1=0
-* f2_ocf_positive: op_cf > 0 → F2=1
-* f2_ocf_negative: op_cf < 0 → F2=0
-* f3_roa_improving: roa this year > roa prior year → F3=1
-* f3_roa_declining: roa this year < roa prior year → F3=0
-* f4_accruals_pass: ocf/assets > roa → F4=1
-* f4_accruals_fail: ocf/assets <= roa → F4=0
-* f5_leverage_primary: lt_debt present, ratio falling → F5=1
-* f5_leverage_fallback: lt_debt missing, tot_lib present → uses TotalLiab/Assets, still scores
-* f5_leverage_missing: both lt_debt and tot_lib absent → F5=0, no crash
-* f6_current_ratio_improving: cr this year > cr prior year → F6=1
-* f7_no_dilution_within_tolerance: shares up 0.5% → F7=1
-* f7_dilution_detected: shares up 2% → F7=0
-* f8_gross_margin_improving: gm this year > gm prior year → F8=1
-* f9_asset_turnover_improving: at this year > at prior year → F9=1
-* missing_prior_year: only one year of data → F3, F5, F6, F8, F9 all score 0, no crash
-* missing_all_data: empty sec dict → f_score=0, all signals score 0, no crash
+* greenblatt.py
+* scorer.py
+
+Problem:
+Enterprise value formula may be inconsistent or missing adjustments across modules.
+
+Required Fix:
+Standardize EV calculation across all usages.
 
 Acceptance Criteria:
 
-* No network or file I/O.
-* Every signal (F1–F9) has a pass case and a fail case.
-* Fallback and missing-data paths explicitly tested.
+* Single EV definition used everywhere
+* No duplicated logic
+* Tests confirm consistency
 
 ---
 
-## TEST-006
+## ISSUE-003
 
 Status: [ ]
 
-Title:
-Full Unit Tests for graham.py
+Title: Free Cash Flow yield miscalculation
 
-File:
-tests/test_graham.py
+Priority: High
 
-Note:
-tests/test_graham_consecutive_dividends.py covers ISSUE-002 only.
-This test file must cover the full module.
+Files:
 
-Required Tests:
+* greenblatt.py
+* scorer.py
 
-* grade_A: total_score >= 70 → grade="A", grade_label="Defensive"
-* grade_B: total_score 50-69 → grade="B", grade_label="Enterprising"
-* grade_C: total_score 30-49 → grade="C", grade_label="Speculative"
-* grade_D: total_score < 30 → grade="D", grade_label="Avoid"
-* pe_at_ceiling: P/E = 15.0 → pe_score=15
-* pe_above_ceiling: P/E > 20 → pe_score=0
-* pe_negative_earnings: eps < 0 → pe_score=0
-* pe_no_price: price=None → pe=None, pe_score=0
-* pb_deep_value: P/B <= 1.5 → pb_score=10
-* pb_expensive: P/B > 2.5 → pb_score=0
-* gn_full_margin: price <= 67% of Graham Number → gn_score=20
-* gn_partial_margin: 67% < price <= GN → gn_score=10
-* gn_no_margin: price > Graham Number → gn_score=0
-* gn_no_price: price=None → gn_score=0
-* consecutive_dividends_gap: gap in div_hist → div_years stops at gap
-* consecutive_dividends_continuous: uninterrupted 20+ years → dv_score=10
-* consecutive_dividends_empty: no div_hist entries → div_years=0, dv_score=0
-* eps_loss_year: any eps value < 0 in history → eps_score=0 regardless of growth
-* eps_insufficient_history: fewer than 5 years → eps_score=0
-* nnwc_net_net: nnwc > mkt_cap → nn_score=5
-* nnwc_not_net_net: nnwc < mkt_cap → nn_score=0
-* total_score_bounded: total_score always in [0, 100]
+Problem:
+FCF yield may not be normalized correctly against enterprise value.
+
+Required Fix:
+Ensure:
+FCF Yield = FCF / EV
 
 Acceptance Criteria:
 
-* No network or file I/O.
-* consecutive_dividends_gap is a dedicated failing test that passes only after ISSUE-002 fix.
-* Every scoring criterion has at least one pass and one fail case.
+* Correct formula applied everywhere
+* EV denominator validated non-zero
+* Tests added for edge cases
 
 ---
 
-## TEST-007
+## ISSUE-004
 
 Status: [ ]
 
-Title:
-Full Unit Tests for portfolio.py (pure functions only)
+Title: Share dilution handling incorrect
 
-File:
-tests/test_portfolio.py
+Priority: High
 
-Required Tests:
+Files:
 
-* split_factor_no_splits: empty splits list → factor=1.0
-* split_factor_one_split_before: one 2:1 split on date <= as_of → factor=2.0
-* split_factor_one_split_after: split date > as_of → factor=1.0 (not counted)
-* split_factor_cumulative: two splits both before as_of → factors multiplied
-* add_holding_success: valid symbol, shares, price → holding added, error=""
-* add_holding_max_cap: portfolio already at MAX_HOLDINGS → error string returned
-* add_holding_min_shares: shares < MIN_SHARES → error string returned
-* add_holding_duplicate: same symbol twice → error string returned
-* remove_holding_present: symbol in portfolio → removed, error=""
-* remove_holding_missing: symbol not in portfolio → error string returned
-* montecarlo_geometric_drift: drift used in simulation is μ - σ²/2, not μ (ISSUE-004)
-* port_variance_uses_covariance: σp = sqrt(wᵀΣw), not sum of weighted stds (ISSUE-003)
-* run_montecarlo_returns_bands: p10 <= p50 <= p90 at every time step
-* run_montecarlo_start_value: paths[:,0] == start_value for all simulated paths
+* graham.py
+* piotroski.py
+
+Problem:
+Share count growth is not consistently treated as dilution.
+
+Required Fix:
+Define consistent dilution rule:
+
+* threshold-based share increase penalty
 
 Acceptance Criteria:
 
-* No network or file I/O. Mock alpha_vantage_client and cache entirely.
-* montecarlo_geometric_drift and port_variance_uses_covariance are dedicated failing tests
-  that pass only after ISSUE-004 and ISSUE-003 fixes respectively.
-* Storage helpers (save/load/delete/list) tested with a mocked cache module.
+* Same dilution logic across modules
+* Unit tests for dilution thresholds
 
 ---
 
-## Test Infrastructure Notes
+## ISSUE-005
 
-* Test runner: pytest
-* Run all tests with: pytest tests/ -q
-* Mock all external calls with unittest.mock.patch or pytest-mock
-* Shared sec_facts fixture builders belong in tests/conftest.py
-* Do not import app.py in any unit test (pulls in Dash and all dependencies)
-* Each test file is self-contained — no shared mutable state across files
-* Tests for known-open issues should be marked @pytest.mark.xfail(strict=True)
-  so they fail visibly until the issue is resolved, then automatically pass
+Status: [ ]
+
+Title: CAGR calculation inconsistencies
+
+Priority: High
+
+Files:
+
+* portfolio.py
+* utils/returns.py (if exists)
+
+Problem:
+CAGR may not correctly account for compounding or missing periods.
+
+Required Fix:
+Use standard CAGR formula with proper time delta normalization.
+
+Acceptance Criteria:
+
+* Accurate multi-year compounding
+* Handles missing years safely
 
 ---
 
-# AI Agent Instructions
+## ISSUE-006
 
-When working on an issue:
+Status: [ ]
 
-1. Read AI_CONTEXT.md.
-2. Read PROJECT_MAP.md.
-3. Read this file.
-4. Work on only one issue at a time.
-5. Verify issue exists before implementing.
-6. Produce minimal diffs.
-7. Add tests.
-8. Update issue status after completion.
+Title: Earnings normalization inconsistency
 
-Do not refactor unrelated code.
-Do not scan the entire repository unless explicitly requested.
+Priority: High
+
+Files:
+
+* graham.py
+* altman.py
+* scorer.py
+
+Problem:
+Earnings values are not consistently normalized across models.
+
+Required Fix:
+Standardize earnings definition before scoring.
+
+Acceptance Criteria:
+
+* Same earnings input across models
+* No inconsistent scaling
+
+---
+
+## ISSUE-007
+
+Status: [ ]
+
+Title: Monte Carlo return assumptions incorrect
+
+Priority: High
+
+Files:
+
+* portfolio.py
+
+Problem:
+Monte Carlo uses arithmetic returns instead of geometric drift.
+
+Required Fix:
+Apply:
+μ_geo = μ_arith − σ²/2
+
+Acceptance Criteria:
+
+* Correct drift applied
+* Simulation validated via tests
+
+---
+
+## ISSUE-008
+
+Status: [ ]
+
+Title: Drawdown calculation incorrect
+
+Priority: High
+
+Files:
+
+* risk_metrics.py
+
+Problem:
+Max drawdown logic may not track rolling peak correctly.
+
+Required Fix:
+Implement proper peak-to-trough equity curve tracking.
+
+Acceptance Criteria:
+
+* Correct max drawdown
+* Handles all-negative series
+
+---
+
+## ISSUE-009
+
+Status: [ ]
+
+Title: Correlation estimation methodology incorrect
+
+Priority: High
+
+Files:
+
+* portfolio.py
+
+Problem:
+Correlation assumptions may be oversimplified or inconsistent.
+
+Required Fix:
+Use proper covariance-derived correlation matrix.
+
+Acceptance Criteria:
+
+* Symmetric correlation matrix
+* No independence assumptions
+
+---
+
+## ISSUE-010
+
+Status: [ ]
+
+Title: Survivorship bias in data handling
+
+Priority: High
+
+Files:
+
+* sec_data.py
+
+Problem:
+Data pipeline may exclude delisted/failed companies.
+
+Required Fix:
+Document and mitigate survivorship bias where possible.
+
+Acceptance Criteria:
+
+* Bias acknowledged in code/docs
+* Optional handling strategy implemented
+
+---
+
+## ISSUE-011
+
+Status: [ ]
+
+Title: Missing financial statement handling
+
+Priority: High
+
+Files:
+sec_data.py
+graham.py
+piotroski.py
+altman.py
+portfolio.py
+risk_metrics.py
+scorer.py
+
+Problem:
+Missing data fields may cause silent failures or incorrect scoring.
+
+Required Fix:
+Standardize missing-data handling:
+
+* explicit None checks
+* fallback rules per model
+
+Acceptance Criteria:
+
+* No silent NaN propagation
+* All models handle missing inputs safely
+
+---
+
+## ISSUE-012
+
+Status: [ ]
+
+Title: Project folder structure cleanup
+
+Priority: Low
+
+Files:
+
+app.py
+alpha_vantage_client.py
+cache.py
+greenblatt.py
+momentum.py
+quality.py
+screener.py
+universe.py
+sec_data.py
+graham.py
+piotroski.py
+altman.py
+portfolio.py
+risk_metrics.py
+scorer.py
+
+Problem:
+Code organization is inconsistent.
+
+Required Fix:
+Group modules into logical folders:
+
+* models/
+* data/
+* portfolio/
+* risk/
+* core/
+
+Acceptance Criteria:
+
+* Clean modular structure
+* No broken imports
+* Tests still pass
+
+---
+
+# CLOSED ISSUES
+
+(None yet)
+
+---
+
+# TEST MAPPING (REFERENCE ONLY)
+
+Each issue must have at least one test verifying fix.
+
+Tests live in `/tests`.
+
+Naming convention:
+test_issue_XXX_<feature>.py
+
+---
+
+# AI EXECUTION PROTOCOL
+
+When fixing an issue:
+
+1. Identify issue in this file
+2. Read ONLY listed files
+3. Confirm root cause
+4. Apply minimal patch
+5. Add or update tests
+6. push to git
+7. STOP
+
+---
+
+# NON-NEGOTIABLE RULES
+
+* No repo-wide scans
+* No unrelated refactors
+* No multi-issue fixes per run
+* No guessing missing logic
+* Ask if uncertain
