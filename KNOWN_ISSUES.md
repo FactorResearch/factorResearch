@@ -15,7 +15,7 @@ Status values:
 ---
 # ISSUE-001
 
-Status: [ ]
+Status: [x]
 
 Title:
 Sortino Ratio Uses Downside Count Denominator
