@@ -333,7 +333,7 @@ Acceptance Criteria:
 **Status:** [ ]  
 **Title:** Missing financial statement handling  
 **Files:** `sec_data.py`, `graham.py`, `piotroski.py`, `altman.py`, `portfolio.py`, `risk_metrics.py`, `scorer.py`  
-**Fix:** Standardize None checks + fallbacks  
+**Fix:** Standardize None checks + fallbacks + generate test unit to test the fixes 
 **Criteria:** No silent NaN, safe handling
 
 ---
