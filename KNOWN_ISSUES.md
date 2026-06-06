@@ -320,7 +320,7 @@ Acceptance Criteria:
 
 ## ISSUE-010
 
-**Status:** [ ]  
+**Status:** [x]  
 **Title:** Survivorship bias in data handling  
 **Files:** `sec_data.py`  
 **Fix:** Document + mitigate bias  

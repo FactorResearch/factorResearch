@@ -27,6 +27,23 @@ concept fallback lists tuned per sector:
   mining     SIC 1000–1299  (metals, coal, non-metallic minerals)
   biotech    SIC 2830–2836  (pharma/biotech — often pre-revenue, no GP line)
   general    everything else
+
+SURVIVORSHIP BIAS NOTE (MITIGATION)
+────────────────────────────────────
+The SEC company_tickers.json and /companyfacts/ endpoints primarily reflect
+currently active (surviving) companies. Delisted, bankrupt, or acquired firms
+are gradually removed from the live ticker map and may have incomplete
+historical XBRL filings.
+
+This introduces classic survivorship bias when performing long-term backtests
+or cross-sectional analysis: averages/metrics will be optimistically biased
+because failed companies (often poor performers) are excluded.
+
+Mitigation in this module:
+  - Explicit documentation and warnings printed/logged.
+  - Users should supplement with historical ticker databases (e.g., CRSP,
+    Compustat, or paid delisted data sources) for rigorous backtesting.
+  - Cache strategy already minimizes re-fetching; no additional bias introduced.
 """
 
 import requests
@@ -705,7 +722,7 @@ def _gross_profit_df(facts: dict, sector: str, years: int = 11) -> pd.DataFrame:
 
 # ── Main fetch entry-point ────────────────────────────────────────────────────
 
-def fetch_company_facts(symbol: str) -> dict:
+def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> dict:
     """
     Return company facts for ``symbol``, using the local cache when SEC has
     not published a newer 10-K or 10-Q since the last fetch.
@@ -727,6 +744,10 @@ def fetch_company_facts(symbol: str) -> dict:
     """
     cik, name = get_cik(symbol)
     print(f"\n📡 Checking SEC EDGAR for {symbol} (CIK {cik})...")
+
+    if include_delisted_warning:
+        print("  [SEC] ⚠️  Survivorship bias warning: Data reflects surviving "
+              "companies only. Delisted / bankrupt entities are typically excluded.")
 
     # ── Step 1: cheap submissions fetch ───────────────────────────────────────
     subs      = _fetch_submissions(cik)
@@ -807,9 +828,9 @@ def fetch_company_facts(symbol: str) -> dict:
         "DividendsCommonStockCash",
         "PaymentsOfDividends",
         "PaymentsOfOrdinaryDividends",
-    ],years=30)
+    ], years=30)
     if div_df.empty:
-        div_df = annual_per_share(facts, "CommonStockDividendsPerShareDeclared",years=30)
+        div_df = annual_per_share(facts, "CommonStockDividendsPerShareDeclared", years=30)
 
     # ── BVPS ─────────────────────────────────────────────────────────────────
     bvps_df = _bvps_df(equity_df, shares_df)
