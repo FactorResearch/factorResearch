@@ -5,6 +5,12 @@ Graham (15%) + Buffett (25%) + Quality (18%) + Momentum (14%) + Piotroski (14%) 
 """
 
 import traceback
+import sys
+import os
+
+# Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
+# Inserts the project root so that `codes.*` package imports resolve in both cases.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import dash
 from dash import dcc, html, Input, Output, State, callback
@@ -17,21 +23,11 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
-import cache
-import sec_data
-import graham
-import quality
-import momentum
-import scorer
-import screener
-import universe
-import alpha_vantage_client
-import portfolio as portfolio_engine
-import piotroski
-import altman
-import risk_metrics
-import greenblatt
-import buffett
+
+from codes.data   import cache, sec_data, alpha_vantage_client
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett
+from codes.engine import scorer, screener, universe
+import codes.portfolio as portfolio_engine
 
 # ── App Init ──────────────────────────────────────────────────────────────────
 

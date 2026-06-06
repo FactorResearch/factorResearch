@@ -18,12 +18,12 @@ import threading
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import cache
-import sec_data
-import graham
-import quality
-import scorer
-import universe
+from ..data import cache
+from ..data import sec_data
+from ..models import graham
+from ..models import quality
+from . import scorer
+from . import universe
 
 
 # ── Shared state ──────────────────────────────────────────────────────────────
