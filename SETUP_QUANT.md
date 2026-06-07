@@ -28,7 +28,7 @@ mkdir ~/graham-app
 cd ~/graham-app
 # Copy all Python files here: app.py, graham.py, quality.py, momentum.py, 
 # scorer.py, screener.py, universe.py, sec_data.py, cache.py, 
-# alpha_vantage_client.py, requirements.txt
+# api_fetcher.py, requirements.txt
 # Copy assets/style.css and assets/style.scss into assets/ folder
 ```
 

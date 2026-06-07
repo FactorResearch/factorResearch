@@ -8,6 +8,8 @@ import traceback
 import sys
 import os
 
+from data import api_fetcher
+
 # Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
 # Inserts the project root so that `codes.*` package imports resolve in both cases.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -24,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 
-from codes.data   import cache, sec_data, alpha_vantage_client
+from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett,earnings_revision
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
@@ -136,7 +138,7 @@ def _get_spy_history_lazy():
         if _spy_history is not None:  # Double-check after acquiring lock
             return _spy_history
         try:
-            _spy_history = alpha_vantage_client.get_price_history("SPY", years=10)
+            _spy_history = api_fetcher.get_price_history("SPY", years=10)
         except Exception as e:
             print(f"Failed to fetch SPY history: {e}")
             _spy_history = None  # Cache failure so we don't retry every time
@@ -189,7 +191,7 @@ def analyze_stock(symbol: str) -> dict:
     q = quality.score(sec_facts)
 
     # Now try to get price
-    price = alpha_vantage_client.get_price(symbol)
+    price = api_fetcher.get_price(symbol)
     # Earnings revision score
     earnings_revision_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price:
@@ -205,7 +207,7 @@ def analyze_stock(symbol: str) -> dict:
         with ThreadPoolExecutor(max_workers=2) as executor:
             # Fetch stock history + use lazy-loaded SPY history
             hist_future = executor.submit(
-                alpha_vantage_client.get_price_history, symbol, 10
+                api_fetcher.get_price_history, symbol, 10
             )
             spy_hist_future = executor.submit(_get_spy_history_lazy)
             
@@ -1262,45 +1264,6 @@ def _risk_card(data: dict) -> html.Div:
                         ]),
         
     ])
-def _earnings_revision_card(data: dict) -> html.Div:
-    """Earnings Revision Card"""
-    er = data.get("earnings_revision") or {}
-    if not er or er.get("total_score") is None:
-        return html.Div()
-
-    score = er.get("total_score", 0)
-    signal = er.get("signal", "NEUTRAL")
-    criteria = er.get("criteria", [])
-    low_coverage = er.get("low_coverage", False)
-
-    color_map = {
-        "STRONG_UP": GREEN,
-        "UP": GREEN,
-        "NEUTRAL": AMBER,
-        "DOWN": RED,
-        "STRONG_DOWN": RED,
-    }
-    color = color_map.get(signal, MUTED)
-
-    return html.Div(className="scorecard", children=[
-        html.Div("📈 Earnings Revision (Forward Momentum)", className="scorecard-header"),
-        
-        html.Div(style={"textAlign": "center", "padding": "20px 0"}, children=[
-            html.Div(f"{score:.0f}/100", style={
-                "fontSize": "46px", "fontWeight": "800", "color": color
-            }),
-            html.Div(signal.replace("_", " "), style={
-                "fontSize": "17px", "fontWeight": "700", "color": color, "marginTop": "6px"
-            }),
-        ]),
-
-        html.Div(
-            "⚠️ Low analyst coverage — score less reliable" if low_coverage else "",
-            style={"color": AMBER, "textAlign": "center", "fontSize": "12.5px", "paddingBottom": "12px"}
-        ),
-
-        _render_scorecard("Detailed Signals", criteria, "earnings") if criteria else None
-    ])
 
 def _build_analysis_content(data: dict) -> list:
     """Render analysis data into Dash components. Pure function, no side effects."""
@@ -1615,7 +1578,7 @@ def _build_analysis_content(data: dict) -> list:
     )
 
     risk_card = _risk_card(data)
-    earnings_card = _earnings_revision_card(data)
+   
 
     charts_row = html.Div(
         className="charts-grid",
@@ -1636,7 +1599,7 @@ def _build_analysis_content(data: dict) -> list:
         moment_quality_row,
         quant_row,
         risk_card,
-        earnings_card,
+        
         charts_row,
         div_chart,
         html.Div(

@@ -12,7 +12,7 @@ Package layout
 import sys
 
 # Import sub-packages in dependency order
-from .data    import cache, sec_data, alpha_vantage_client   # noqa: F401
+from .data    import api_fetcher, cache, sec_data   # noqa: F401
 from .models  import (                                         # noqa: F401
     piotroski, graham, buffett, altman, greenblatt,
     quality, momentum, risk_metrics, earnings_revision,
@@ -26,7 +26,7 @@ from .        import portfolio                                 # noqa: F401
 _compat = {
     'cache':                cache,
     'sec_data':             sec_data,
-    'alpha_vantage_client': alpha_vantage_client,
+    'api_fetcher': api_fetcher,
     'graham':               graham,
     'buffett':              buffett,
     'piotroski':            piotroski,

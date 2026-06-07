@@ -74,7 +74,7 @@ class TestPortfolio(unittest.TestCase):
         self.assertIn("holdings", p)
 
         # Add holding
-        with patch('codes.portfolio.alpha_vantage_client') as mock_av:
+        with patch('codes.portfolio.api_fetcher') as mock_av:
             mock_av.get_price_history.return_value = pd.DataFrame()
             updated, err = add_holding(self.test_portfolio_name, "AAPL", 10, 150.0, "Apple Inc.")
             self.assertEqual(err, "", f"Add holding failed: {err}")

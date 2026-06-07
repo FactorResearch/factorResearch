@@ -17,7 +17,7 @@ from unittest.mock import patch, MagicMock
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-import codes.data.alpha_vantage_client as client
+import data.api_fetcher as client
 
 
 # ── 1. Candle method removed ──────────────────────────────────────────────────
@@ -108,8 +108,8 @@ def test_get_price_history_uses_fmp_when_key_set():
     with patch.object(client, "FMP_API_KEY", "testkey"), \
          patch.object(client, "_fmp_get_price_history",
                       return_value=pd.DataFrame({"Date": ["2023-01-31"], "Close": [150.0]})) as fmp_mock, \
-         patch("codes.data.alpha_vantage_client.read", return_value=None), \
-         patch("codes.data.alpha_vantage_client.write"):
+         patch("codes.data.api_fetcher.read", return_value=None), \
+         patch("codes.data.api_fetcher.write"):
         df = client.get_price_history("AAPL", years=1)
         fmp_mock.assert_called_once_with("AAPL", 1)
 
@@ -125,8 +125,8 @@ def test_get_price_history_falls_back_to_av_when_fmp_empty():
     with patch.object(client, "FMP_API_KEY", "testkey"), \
          patch.object(client, "_fmp_get_price_history", return_value=pd.DataFrame()), \
          patch.object(client, "_av_get_price_history", return_value=av_df) as av_mock, \
-         patch("codes.data.alpha_vantage_client.read", return_value=None), \
-         patch("codes.data.alpha_vantage_client.write"):
+         patch("codes.data.api_fetcher.read", return_value=None), \
+         patch("codes.data.api_fetcher.write"):
         df = client.get_price_history("ISRG", years=1)
         av_mock.assert_called_once()
 
@@ -139,8 +139,8 @@ def test_get_price_history_uses_av_when_no_fmp_key():
 
     with patch.object(client, "FMP_API_KEY", ""), \
          patch.object(client, "_av_get_price_history", return_value=av_df) as av_mock, \
-         patch("codes.data.alpha_vantage_client.read", return_value=None), \
-         patch("codes.data.alpha_vantage_client.write"):
+         patch("codes.data.api_fetcher.read", return_value=None), \
+         patch("codes.data.api_fetcher.write"):
         df = client.get_price_history("ISRG", years=1)
         av_mock.assert_called_once()
 

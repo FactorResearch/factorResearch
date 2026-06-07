@@ -37,7 +37,7 @@ Signal thresholds (forward_momentum_score 0-100):
   25-39  DOWN
   <  25  STRONG_DOWN
 
-Data source: Finnhub SDK (FINNHUB_API_KEY env var; already wired in alpha_vantage_client).
+Data source: Finnhub SDK (FINNHUB_API_KEY env var; already wired in api_fetcher).
   earnings_surprises()       -> quarterly actual vs estimate history
   eps_estimates()            -> forward quarterly EPS consensus
   revenue_estimates()        -> forward quarterly revenue consensus
@@ -55,7 +55,7 @@ Note on revision proxies:
 import math
 from typing import Optional
 
-from ..data import alpha_vantage_client as _av
+from ..data import api_fetcher as _av
 
 
 # ── Constants ─────────────────────────────────────────────────────────────────

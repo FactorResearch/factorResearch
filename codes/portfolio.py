@@ -31,7 +31,7 @@ import datetime
 import numpy as np
 import pandas as pd
 from .data import cache
-from .data import alpha_vantage_client
+from .data import api_fetcher
 
 MAX_HOLDINGS  = 10
 MIN_SHARES    = 5
@@ -56,10 +56,10 @@ def _splits_since(symbol: str, since_date: str) -> list[dict]:
         if now - ts < _SPLITS_TTL:
             splits = data
         else:
-            splits = alpha_vantage_client.get_splits(symbol)
+            splits = api_fetcher.get_splits(symbol)
             _splits_memo[symbol] = (now, splits)
     else:
-        splits = alpha_vantage_client.get_splits(symbol)
+        splits = api_fetcher.get_splits(symbol)
         _splits_memo[symbol] = (now, splits)
 
     return [s for s in splits if s["date"] >= since_date]
@@ -190,7 +190,7 @@ def remove_holding(name: str, symbol: str) -> tuple[dict, str]:
 
 def _load_history(symbol: str) -> pd.DataFrame:
     """Return monthly price history as a DataFrame with Date + Close."""
-    df = alpha_vantage_client.get_price_history(symbol, years=10)
+    df = api_fetcher.get_price_history(symbol, years=10)
     if df is None or df.empty:
         return pd.DataFrame()
     df = df.copy()

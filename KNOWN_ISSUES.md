@@ -193,13 +193,11 @@ No vague instructions allowed.
 
 ---
 
-
-
-## ISSUE-002
+## ISSUE-001
 
 Status: []
 
-Title: Fix FMP Historical Price API (Legacy Endpoint Removal + Correct EOD Usage)
+Title: Fix error for EarningsRevision
 
 Priority: High
 
@@ -208,62 +206,16 @@ Files: price_client.py
 *
 
 Problem:
-* FMP historical price requests are using deprecated or invalid endpoints:
-  - `/stable/historical-price-eod/{symbol}` ❌ (returns 404)
-  - usage of `from=` / `to=` parameters on EOD endpoint ❌ (not supported)
-* This causes 404 errors for valid symbols (e.g., NVDA, SPY)
-* Incorrect behavior triggers unnecessary fallback to Alpha Vantage
-* Current implementation incorrectly assumes server-side date filtering is supported by FMP
+ * [EarningsRevision] earnings_surprises error for GOOG: 'Client' object has no attribute 'earnings_surprises'
+  [EarningsRevision] eps_estimates error for GOOG: 'Client' object has no attribute 'eps_estimates'
+  [EarningsRevision] revenue_estimates error for GOOG: 'Client' object has no attribute 'revenue_estimates'
 
 Required Fix:
-* Replace ALL historical price calls with the correct endpoint:
-  - `https://financialmodelingprep.com/stable/historical-price-eod/full?symbol={SYMBOL}&apikey={API_KEY}`
-* Remove all usage of:
-  - path-based symbol endpoints
-  - `from=` and `to=` query parameters for FMP EOD history
-* Always fetch full dataset from FMP first
-* Perform all date filtering client-side using pandas:
-  - `df[df["date"] >= cutoff]`
-* Update `_fmp_get_price_history` to:
-  - correctly parse `data["historical"]`
-  - safely handle missing/empty responses
-  - ensure numeric conversion for OHLC fields where applicable
-* Ensure 10-year history logic is implemented client-side using:
-  - `pd.DateOffset(years=10)`
-* Maintain existing monthly resampling logic (no behavioral change)
 
 Acceptance Criteria:
-* No historical request uses legacy or invalid FMP endpoints
-* No 404 errors occur for valid tickers (e.g., NVDA, SPY)
-* All date filtering is performed client-side only
-* Alpha Vantage fallback only triggers on true API failure (not empty/invalid parsing)
-* Monthly resampling output remains unchanged in structure and correctness
-* Logs clearly indicate:
-  - "fetching full history from FMP"
-  - "filtering client-side to N years"
-  - no false fallback due to endpoint misuse
+* no see that error 
 
----
 
-## ISSUE-003
-
-Status: []
-
-Title: Incorprate earning revision into app.p
-
-Priority: Normal
-
-Files: earnings_revision.py app.py
-
-* 
-
-Problem:
-*  we have the earnings_revision we just need it to show in analyze tab
-
-Acceptance Criteria:
-* display earning_revision result in analyze tab
-
----
 ---
 
 ## ISSUE-004
