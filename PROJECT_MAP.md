@@ -117,7 +117,24 @@ Dependencies:
 - Enterprise value calculations
 
 -----
+### earnings_revision.py
 
+Responsibilities:
+- EPS revision tracking
+- Revenue estimate revision tracking
+- Earnings surprise aggregation
+- Analyst revision momentum signal
+
+Key metrics:
+- EPS revision (30d / 90d)
+- Revenue revision (30d)
+- Earnings surprise average
+- Revision breadth
+
+Dependencies:
+- External analyst data API (FMP / Polygon)
+- sec_data.py (shared API client)
+-----
 ## Composite Scoring
 
 ### scorer.py
@@ -235,141 +252,111 @@ Priority definitions:
 
 -----
 
-## P1 — Earnings Revision Model
-
-### earnings_revision.py
-
-Priority: P1
-
-Expected Impact: Very High
-
-Responsibilities:
-
-- Analyst EPS revision tracking
-- Revenue estimate revision tracking
-- Earnings surprise analysis
-- Forward estimate momentum
-
-Key metrics:
-
-- 30-day EPS revision %
-- 90-day EPS revision %
-- Revenue revision %
-- Earnings surprise %
-
-**Data source:** SEC EDGAR has no analyst estimates. Use FMP or Polygon (`/analyst-estimates`, `/earnings-surprises` endpoints). Add API key to config.
-
-**Class skeleton:**
-
-```python
-class EarningsRevisionAnalyzer:
-    def __init__(self, ticker: str, api_client): ...
-
-    def fetch_estimate_history(self) -> pd.DataFrame:
-        # cols: date, fiscal_period, eps_estimate, revenue_estimate, num_analysts
-
-    def fetch_earnings_surprises(self) -> pd.DataFrame:
-        # cols: date, fiscal_period, actual_eps, estimated_eps, surprise_pct
-
-    def calc_eps_revision(self, lookback_days=30) -> float:
-        # (current_consensus - consensus_Nd_ago) / abs(consensus_Nd_ago) * 100
-
-    def calc_revenue_revision(self, lookback_days=30) -> float:
-
-    def calc_earnings_surprise(self, num_periods=4) -> float:
-        # avg surprise % over last N quarters
-
-    def calc_revision_breadth(self) -> float:
-        # (upgrades - downgrades) / total_analysts  → [-1, +1]
-
-    def get_revision_score(self) -> dict:
-        # primary output — see schema below
-```
-
-**`get_revision_score()` output schema:**
-
-```python
-{
-  'ticker': str,
-  'eps_revision_30d': float,
-  'eps_revision_90d': float,
-  'revenue_revision_30d': float,
-  'earnings_surprise_avg': float,
-  'revision_breadth': float,
-  'forward_momentum_score': float,  # 0–100, percentile-ranked across universe
-  'signal': str   # STRONG_UP | UP | NEUTRAL | DOWN | STRONG_DOWN
-}
-```
-
-**Scoring weights:**
-
-|Component            |Weight|
-|---------------------|------|
-|EPS revision 30d     |35%   |
-|EPS revision 90d     |25%   |
-|Revenue revision 30d |20%   |
-|Earnings surprise avg|20%   |
-
-Use percentile rank (not sigmoid) — robust to outlier revisions.
-
-**Signal thresholds:**
-
-|`forward_momentum_score`|Signal     |
-|------------------------|-----------|
-|≥ 75                    |STRONG_UP  |
-|60–74                   |UP         |
-|40–59                   |NEUTRAL    |
-|25–39                   |DOWN       |
-|< 25                    |STRONG_DOWN|
-
-**scorer.py integration:**
-
-```python
-from earnings_revision import EarningsRevisionAnalyzer
-# weight: 12% of composite (see proposed weighting below)
-scores['earnings_revision'] = EarningsRevisionAnalyzer(ticker, api_client).get_revision_score()['forward_momentum_score']
-```
-
-**Edge cases:**
-
-|Case                  |Handling                                    |
-|----------------------|--------------------------------------------|
-|No analyst coverage   |Return `None`; exclude from composite       |
-|1 analyst             |Set `low_coverage=True`; skip breadth metric|
-|Negative EPS          |Use `abs()` denominator                     |
-|Missing history window|Skip that lookback; don’t error             |
-|Outlier revisions     |Filter > 3σ from rolling mean               |
-
-Cache raw estimates 24h. Raise typed exceptions: `EstimateDataUnavailable`, `InsufficientHistoryError`.
-
-**Files to touch:**
-
-|File                       |Change                                                     |
-|---------------------------|-----------------------------------------------------------|
-|`earnings_revision.py`     |New module                                                 |
-|`sec_data.py`              |Add `fetch_analyst_estimates(ticker)` if sharing API client|
-|`scorer.py`                |Import + add 12% weight slot                               |
-|`app.py`                   |Add revision signal row to dashboard                       |
-|`requirements.txt` / config|Add API library + key                                      |
-
-**Build order:**
-
-1. Stub with mock data → validate scorer wiring
-1. Implement fetch methods against chosen API
-1. Unit test each metric (e.g. $1.00→$1.10 EPS = +10%)
-1. Wire normalization + signal logic
-1. Integration test on 5 liquid tickers (AAPL, MSFT, etc.)
-
------
 
 ## P1 — Profitability Model
 
 ### profitability.py
 
-Priority: P1
+You are implementing `ProfitabilityAnalyzer` (P1 module, high impact) for equity fundamental scoring.
 
-Expected Impact: Very High
+### Goal
 
+Compute structural business quality using ROIC, margins, and capital efficiency. Output a normalized profitability score + classification signal.
+
+* * * * *
+
+### Required Metrics
+
+Compute:
+
+-   ROIC (35% weight)
+-   Gross profitability (20%)
+-   Operating margin stability (15%)
+-   Capital efficiency (15%)
+-   Incremental ROIC (15%)\
+    Also return:
+-   ROE adjusted
+-   ROA
+
+* * * * *
+
+### Class Interface
+
+Implement methods:\
+calc_roic, calc_roe_adjusted, calc_roa, calc_gross_profitability, calc_operating_margin_stability, calc_capital_efficiency, calc_incremental_roic
+
+Final method:\
+get_profitability_score()
+
+* * * * *
+
+### Output (STRICT JSON)
+
+Return:
+
+{\
+"ticker": str,\
+"roic": float,\
+"roe_adjusted": float,\
+"roa": float,\
+"gross_profitability": float,\
+"operating_margin_stability": float,\
+"capital_efficiency": float,\
+"incremental_roic": float,\
+"profitability_score": float,\
+"signal": str\
+}
+
+* * * * *
+
+### Scoring
+
+profitability_score = weighted sum:
+
+ROIC 0.35\
+Gross profitability 0.20\
+Operating margin stability 0.15\
+Capital efficiency 0.15\
+Incremental ROIC 0.15
+
+Normalize to 0--100.
+
+* * * * *
+
+### Signal Mapping
+
+-   > =80 → STRONG_HIGH_QUALITY
+
+-   65--79 → HIGH_QUALITY
+-   45--64 → NEUTRAL
+-   30--44 → LOW_QUALITY
+-   <30 → VALUE_TRAP_RISK
+
+* * * * *
+
+### Integration Rule
+
+Used in scorer.py:
+
+scores["profitability"] = ProfitabilityAnalyzer(ticker, financials)\
+.get_profitability_score()["profitability_score"]
+
+Composite weight: 12%
+
+* * * * *
+
+### Constraints
+
+-   Deterministic calculations only
+-   No narrative output
+-   No extra keys in JSON
+-   Must be production-grade, finance-accurate, consistent across runs
+
+### Build order:
+
+1.  Stub with mock data → validate Profitability Model
+2.  Unit test each metric 
+3.  Integration test on 5 liquid tickers (AAPL, MSFT, etc.)
 -----
 
 ## P1 — Free Cash Flow Quality Model
