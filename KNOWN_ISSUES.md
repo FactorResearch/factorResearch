@@ -220,21 +220,50 @@ Acceptance Criteria:
 
 Status: []
 
-Title: Finhub price history
+Title: Fix Finnhub price history failures (403 candle error) and remove unreliable historical dependency
 
 Priority: Normal
 
 Files: alpha_vantage_client.py
 
-* 
+*
 
 Problem:
-*   [Finnhub SDK] candle error for ISRG: FinnhubAPIException(status_code: 403): You don't have access to this resource.
+* Finnhub candle endpoint is failing with 403 errors for certain symbols (e.g. ISRG)
+* Example error:
+  `[Finnhub SDK] candle error for ISRG: FinnhubAPIException(status_code: 403): You don't have access to this resource.`
+* This causes historical price fetching to break or fall back to Alpha Vantage
+* Alpha Vantage is slow, heavily rate-limited, and being overused as a fallback
+* Result is inconsistent and unreliable 10-year historical datasets
 
+Required Fix:
+* Remove Finnhub as a source for historical price data (`stock_candles`)
+* Finnhub must NOT be used for:
+  - price history
+  - OHLC candles
+  - multi-year data aggregation
+* Use FMP (Financial Modeling Prep) as the primary and stable source for historical prices
+* Implement FMP endpoint for historical data:
+  - `/api/v3/historical-price-full/{symbol}`
+* Ensure data supports at least 10 years of monthly price history
+* Keep Finnhub ONLY for real-time quotes (`quote()`), if needed
+* Reduce or eliminate Alpha Vantage dependency where possible
+* Simplify fallback logic:
+  - Historical data: FMP → (optional fallback Alpha Vantage)
+  - Real-time price: Finnhub → fallback FMP quote
+* Remove Finnhub candle rate-limit and retry logic since it will no longer be used for history
 
 Acceptance Criteria:
-* be able to fetch informatino from finhub, because it has never worked and we are over using alpha vantage 
+* No calls to `finnhub.stock_candles()` remain in production code
+* Fetching historical data for symbols (e.g. ISRG, AAPL, MSFT) always returns:
+  - no errors
+  - consistent 10-year dataset
+* No 403 Finnhub permission errors occur in historical data flows
+* System no longer relies on Alpha Vantage as primary or frequent fallback for history
+* FMP successfully provides all historical datasets required for Graham-style analysis
+* Finnhub is only used for real-time pricing (if retained) and does not affect historical reliability
 
+---
 
 
 # CLOSED ISSUES
