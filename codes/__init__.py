@@ -15,7 +15,7 @@ import sys
 from .data    import cache, sec_data, alpha_vantage_client   # noqa: F401
 from .models  import (                                         # noqa: F401
     piotroski, graham, buffett, altman, greenblatt,
-    quality, momentum, risk_metrics,
+    quality, momentum, risk_metrics, earnings_revision,
 )
 from .engine  import scorer, screener, universe               # noqa: F401
 from .        import portfolio                                 # noqa: F401
@@ -35,6 +35,7 @@ _compat = {
     'quality':              quality,
     'momentum':             momentum,
     'risk_metrics':         risk_metrics,
+    'earnings_revision':    earnings_revision,
     'scorer':               scorer,
     'screener':             screener,
     'universe':             universe,

@@ -6,3 +6,4 @@ from . import greenblatt
 from . import quality
 from . import momentum
 from . import risk_metrics
+from . import earnings_revision
