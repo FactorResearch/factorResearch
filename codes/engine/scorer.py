@@ -233,6 +233,30 @@ def enhanced_composite(
 
     composite_score = round(raw_score, 1)
 
+    # ── ISSUE-001: Margin of Safety guard ─────────────────────────────────────
+    # Negative MoS means price > intrinsic value estimate.
+    # Both negative  → hard cap at HOLD/WEAK (≤ 44.9), dual_mos_warning=True
+    # One negative   → cap at WATCH (≤ 59.9),           partial_mos_warning set
+    # None (no data) → treated as not negative; no cap applied
+    g_mos = graham_result.get("margin_of_safety")
+    b_mos = (buffett_result or {}).get("margin_of_safety")
+
+    g_mos_negative = g_mos is not None and g_mos < 0
+    b_mos_negative = b_mos is not None and b_mos < 0
+
+    dual_mos_warning    = False
+    partial_mos_warning = None   # None | "graham" | "buffett"
+
+    if g_mos_negative and b_mos_negative:
+        composite_score  = round(min(composite_score, 44.9), 1)
+        dual_mos_warning = True
+    elif g_mos_negative:
+        composite_score     = round(min(composite_score, 59.9), 1)
+        partial_mos_warning = "graham"
+    elif b_mos_negative:
+        composite_score     = round(min(composite_score, 59.9), 1)
+        partial_mos_warning = "buffett"
+
     # ── Verdict ───────────────────────────────────────────────────────────────
     verdict = label = description = ""
     for threshold, v, l, d in ENHANCED_VERDICTS:
@@ -297,6 +321,8 @@ def enhanced_composite(
         ),
         "compounder_flag":     compounder_flag,
         "altman_cap_applied":  altman_cap_applied,
+        "dual_mos_warning":    dual_mos_warning,
+        "partial_mos_warning": partial_mos_warning,
 
         "weights": ENHANCED_WEIGHTS,
     }
