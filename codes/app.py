@@ -3,17 +3,13 @@ Graham Score App — Full Quant Version
 Pure Python / Dash with SEC EDGAR + Alpha Vantage
 Graham (15%) + Buffett (25%) + Quality (18%) + Momentum (14%) + Piotroski (14%) + Risk (8%) + Altman (6%)
 """
-
 import traceback
 import sys
 import os
-
 from data import api_fetcher
-
 # Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
 # Inserts the project root so that `codes.*` package imports resolve in both cases.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import dash
 from dash import dcc, html, Input, Output, State, callback
 import plotly.graph_objects as go
@@ -25,14 +21,11 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
-
 from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett,earnings_revision
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
-
 # ── App Init ──────────────────────────────────────────────────────────────────
-
 app = dash.Dash(
     __name__,
     title="Graham Score — Quant",
@@ -40,18 +33,13 @@ app = dash.Dash(
     assets_folder='../assets',
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
 )
-
 server = app.server
 @server.after_request
 def _log_errors(response):
     return response
-
 # Patch Dash's internal callback handler to log exceptions
-
 _orig_dispatch = app.server.dispatch_request if hasattr(app.server, 'dispatch_request') else None
-
 _orig_cb = dash.Dash.callback
-
 def _logging_callback(self, *args, **kwargs):
     decorator = _orig_cb(self, *args, **kwargs)
     def wrap(func):
@@ -65,32 +53,40 @@ def _logging_callback(self, *args, **kwargs):
                 raise
         return decorator(inner)
     return wrap
-
 dash.Dash.callback = _logging_callback
 # ── Mobile touch fix: eliminate 300ms tap delay on all buttons ───────────────
 app.index_string = app.index_string.replace(
     '</head>',
-    '<style>button,a,[role="button"]{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0.08);}</style></head>'
+    '<style>'
+    'button,a,[role="button"]{'
+    'touch-action:manipulation;'
+    '-webkit-tap-highlight-color:rgba(0,0,0,0.08);'
+    'cursor:pointer;'
+    '}'
+    '</style></head>'
 )
-
+app.index_string = app.index_string.replace(
+    '</head>',
+    '<script>'
+    'const APP_VERSION = "v3";'  # bump this on each deploy
+    'if (localStorage.getItem("app_version") !== APP_VERSION) {'
+    '    localStorage.setItem("app_version", APP_VERSION);'
+    '    location.reload(true);'
+    '}'
+    '</script></head>'
+)
 # ── Color Theme (CSS vars in style.css, keeping for reference) ────────────────
-
 DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED = (
     "#0f1117", "#1a1d27", "#2a2d3e", "#00c853", "#ff1744",
     "#ffc107", "#448aff", "#e0e0e0", "#9e9e9e"
 )
-
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None
 _spy_history_lock = threading.Lock()
-
 _analysis_cache = {}
 _analysis_cache_lock = threading.Lock()
-
 _last_screener_state = None
-
 # ── Moat grade tooltips (shown on hover in Buffett badge) ────────────────────
-
 _MOAT_TOOLTIPS = {
     "A": (
         "Wide Moat (A) — The company has a durable, hard-to-replicate competitive advantage "
@@ -119,15 +115,11 @@ _MOAT_TOOLTIPS = {
         "don't forget rule #1. This stock fails on multiple quality or value criteria."
     ),
 }
-
 # ── State ──────────────────────────────────────────────────────────────────────
-
 _last_screener_results = None
 _last_progress_state = None
 _last_progress_bar_state = None
-
 # ── Helpers ───────────────────────────────────────────────────────────────────
-
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
     global _spy_history
@@ -143,7 +135,6 @@ def _get_spy_history_lazy():
             print(f"Failed to fetch SPY history: {e}")
             _spy_history = None  # Cache failure so we don't retry every time
         return _spy_history
-
 def analyze_stock(symbol: str) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
@@ -156,19 +147,16 @@ def analyze_stock(symbol: str) -> dict:
     global _analysis_cache, _analysis_cache_lock
     
     symbol = symbol.upper().strip()
-
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
             return _analysis_cache[symbol]
-
     # Then try disk cache
     cached = cache.read("analysis", symbol)
     if cached:
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
         return cached
-
     # Fetch SEC fundamentals
     try:
         sec_facts = sec_data.fetch_company_facts(symbol)
@@ -186,10 +174,8 @@ def analyze_stock(symbol: str) -> dict:
         return {"error": err_msg}
     except Exception as e:
         return {"error": f"SEC EDGAR error: {e}"}
-
     # Quality score (no price) — early calculation
     q = quality.score(sec_facts)
-
     # Now try to get price
     price = api_fetcher.get_price(symbol)
     # Earnings revision score
@@ -220,10 +206,8 @@ def analyze_stock(symbol: str) -> dict:
                 spy_hist = spy_hist_future.result(timeout=30)
             except Exception as e:
                 print(f"SPY history fetch failed: {e}")
-
     # 1G: Calculate Graham score WITH price (if available), eliminating redundant call
     g = graham.score(price, sec_facts) if price else graham.score(None, sec_facts)
-
     # Momentum score (needs price history)
     m_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price and hist is not None:
@@ -231,32 +215,24 @@ def analyze_stock(symbol: str) -> dict:
             m_result = momentum.score(hist, spy_hist, symbol)
         except Exception as e:
             print(f"Momentum calculation failed: {e}")
-
     # Original composite (kept for backward-compat with screener)
     comp = scorer.composite(g, q, m_result)
-
     # ── New quant modules ─────────────────────────────────────────────────
     piotroski_result = piotroski.score(sec_facts)
-
     altman_result = altman.score(price, sec_facts)
-
     risk_result = {"risk_score": 50, "risk_score_max": 100, "risk_criteria": []}
     if hist is not None and not hist.empty:
         try:
             risk_result = risk_metrics.score(hist, spy_hist)
         except Exception as e:
             print(f"Risk metrics calculation failed: {e}")
-
     greenblatt_result = greenblatt.compute_single(price, sec_facts)
-
     buffett_result = buffett.score(price, sec_facts)
-
     # Enhanced 7-factor composite
     enhanced = scorer.enhanced_composite(
         g, q, m_result, piotroski_result, risk_result, altman_result, buffett_result,
         greenblatt_result=greenblatt_result, earnings_revision_result=earnings_revision_result
     )
-
     result = {
         "symbol":    symbol,
         "name":      sec_facts["name"],
@@ -278,7 +254,6 @@ def analyze_stock(symbol: str) -> dict:
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,
     }
-
     # 1F: Defer cache writes to daemon thread (already handled in screener.py)
     cache.write("analysis", symbol, result)
     
@@ -287,7 +262,6 @@ def analyze_stock(symbol: str) -> dict:
         _analysis_cache[symbol] = result
     
     return result
-
 
 def get_score_class(pct: float) -> str:
     """CSS class for score coloring."""
@@ -298,16 +272,12 @@ def get_score_class(pct: float) -> str:
     else:
         return "low"
 
-
 def get_verdict_class(label: str) -> str:
     """CSS class for verdict coloring."""
     return label.lower().replace(" ", "-") if label else "pending"
 
-
 # ── Layout ────────────────────────────────────────────────────────────────────
-
 app.layout = html.Div(className="app-container", children=[
-
     # Header
     html.Div(className="app-header", children=[
         html.Div("📊", className="app-header-icon"),
@@ -316,14 +286,12 @@ app.layout = html.Div(className="app-container", children=[
             html.P("Graham (15%) + Buffett (25%) + Quality (18%) + Momentum (14%) + Piotroski (14%) + Risk (8%) + Altman (6%)")
         ])
     ]),
-
     # Tabs
     html.Div(className="tab-bar", children=[
         html.Button("📊 Screener",  id="tab-screener-btn",  className="tab-btn active"),
         html.Button("🔍 Analyze",   id="tab-analyze-btn",   className="tab-btn"),
         html.Button("💼 Portfolios", id="tab-portfolio-btn", className="tab-btn"),
     ]),
-
     # ── Tab: Screener ────────────────────────────────────────────────────────
     html.Div(id="tab-screener", className="screener-content block", children=[
         html.Div(className="screener-toolbar", children=[
@@ -354,9 +322,7 @@ app.layout = html.Div(className="app-container", children=[
                 ),
             ]),
         ]),
-
         html.Div(id="screener-progress", className="mb-2xl"),
-
         dcc.Loading(
             id="screener-loading",
             type="default",
@@ -368,7 +334,6 @@ app.layout = html.Div(className="app-container", children=[
             ]
         ),
     ]),
-
     # ── Tab: Analyze ─────────────────────────────────────────────────────────
     html.Div(id="tab-analyze", className="main-content", children=[
         html.Div(className="search-section", children=[
@@ -387,7 +352,6 @@ app.layout = html.Div(className="app-container", children=[
                 html.Div(id="status-msg", className="status-msg"),
             ]),
         ]),
-
         html.Div(id="history-section", className="history-section"),
         
         dcc.Loading(
@@ -398,7 +362,6 @@ app.layout = html.Div(className="app-container", children=[
                 html.Div(id="analysis-content", children=[])
             ]
         ),
-
         # ── Add to Portfolio panel (shown after analysis completes) ──────────
         html.Div(id="add-to-portfolio-panel",children=[
             html.Div(className="portfolio-add-panel", children=[
@@ -433,10 +396,8 @@ app.layout = html.Div(className="app-container", children=[
             ])
         ]),
     ]),
-
     # ── Tab: Portfolios ──────────────────────────────────────────────────────
     html.Div(id="tab-portfolio", className="main-content", children=[
-
         # Top toolbar: portfolio switcher + create + compare
         html.Div(className="screener-toolbar", children=[
             html.Div(className="screener-controls", children=[
@@ -463,7 +424,6 @@ app.layout = html.Div(className="app-container", children=[
                 ),
             ]),
         ]),
-
         # New portfolio name modal (inline, hidden by default)
         html.Div(id="portfolio-create-panel", className="hidden", children=[
             html.Div(className="portfolio-add-panel", children=[
@@ -479,9 +439,7 @@ app.layout = html.Div(className="app-container", children=[
                          style={"fontSize": "13px", "color": "#ff1744"}),
             ])
         ]),
-
         html.Div(id="portfolio-msg", style={"fontSize": "13px", "padding": "4px 0 8px"}),
-
         # Main portfolio content (holdings + run sim button)
         dcc.Loading(type="default", color="#448aff", children=[
             html.Div(id="portfolio-content", children=[
@@ -489,12 +447,9 @@ app.layout = html.Div(className="app-container", children=[
                          style={"textAlign": "center", "padding": "60px", "color": "#9e9e9e"})
             ])
         ]),
-
         # Simulation results (charts)
         html.Div(id="portfolio-sim-results", children=[]),
-
     ]),
-
     # Stores
     dcc.Store(id="screener-cache"),
     dcc.Store(id="analysis-store"),
@@ -514,9 +469,7 @@ app.layout = html.Div(className="app-container", children=[
     dcc.Loading(id="loading", type="circle", color=BLUE, children=html.Div(id="loading-trigger"))
 ])
 
-
 # ── Tab Navigation ───────────────────────────────────────────────────────────
-
 @callback(
     Output("tab-screener",     "style"),
     Output("tab-analyze",      "style"),
@@ -534,7 +487,6 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, clicked_ticker):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "tab-btn active", "tab-btn"
-
     if triggered == "screener-click-ticker" and clicked_ticker:
         return HIDE, SHOW, HIDE, IDLE, ACTIVE, IDLE
     if triggered == "tab-analyze-btn":
@@ -544,9 +496,7 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, clicked_ticker):
     # Default: screener
     return SHOW, HIDE, HIDE, ACTIVE, IDLE, IDLE
 
-
 # ── Screener ticker-click → store ─────────────────────────────────────────────
-
 @callback(
     Output("screener-click-ticker", "data"),
     Input({"type": "screener-ticker-btn", "index": dash.ALL}, "n_clicks"),
@@ -559,16 +509,12 @@ def capture_screener_click(n_clicks_list):
         return dash.no_update
     return triggered["index"]  # the symbol string
 
-
 # ── Screener ──────────────────────────────────────────────────────────────────
-
 # In-memory portfolio cache — guards against redundant reads within one render cycle
 _portfolio_cache: dict = {"symbols": {}, "ts": 0.0}
-
 def _invalidate_portfolio_cache() -> None:
     global _portfolio_cache
     _portfolio_cache = {"symbols": {}, "ts": 0.0}
-
 def _get_portfolio_symbols() -> dict[str, list[str]]:
     """Return {symbol: [portfolio_name, ...]}, cached for 10 seconds.
     Always force-cleared by _invalidate_portfolio_cache() on any mutation."""
@@ -592,7 +538,6 @@ def _get_portfolio_symbols() -> dict[str, list[str]]:
     _portfolio_cache = {"symbols": result, "ts": _t.time()}
     return result
 
-
 @callback(
     Output("screener-progress-info", "children"),
     Output("screener-progress-interval", "disabled", allow_duplicate=True),
@@ -603,17 +548,12 @@ def _get_portfolio_symbols() -> dict[str, list[str]]:
 )
 def update_progress(n, ready_val):
     global _last_progress_state
-
     prog = screener.get_progress()
     prog_key = (prog["running"], prog["total"], prog["done"], prog["current"])
-
     if prog_key == _last_progress_state:
         return dash.no_update, dash.no_update, dash.no_update
-
     _last_progress_state = prog_key
-
     interval_disabled = not prog["running"] and prog["done"] > 0
-
     # Bump screener-ready-store whenever loading has finished so the table
     # rebuilds correctly both after initial load AND after a page refresh.
     # We encode the last signalled count as a negative number to distinguish
@@ -624,12 +564,10 @@ def update_progress(n, ready_val):
         new_ready = -current_done
     else:
         new_ready = dash.no_update
-
     if not prog["running"] and prog["total"] == 0:
         return html.Div([
             html.Span("🟢 Ready to load universe", className="text-muted"),
         ], className="flex align-items-center gap-md"), True, new_ready
-
     if prog["running"]:
         pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
         phase_label = {
@@ -649,7 +587,6 @@ def update_progress(n, ready_val):
         else:
             return "", True, new_ready
 
-
 @callback(
     Output("screener-progress", "children"),
     Input("screener-progress-interval", "n_intervals"),
@@ -657,30 +594,22 @@ def update_progress(n, ready_val):
 )
 def update_progress_bar(n):
     global _last_progress_bar_state
-
     prog = screener.get_progress()
     prog_key = (prog["running"], prog["total"], prog["done"])
-
     if prog_key == _last_progress_bar_state:
         return dash.no_update
-
     _last_progress_bar_state = prog_key
-
     if prog["total"] == 0:
         return []
-
     pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
-
     if not prog["running"] and pct == 0:
         return []
-
     remaining_stocks = prog["total"] - prog["done"]
     eta_seconds = int(remaining_stocks * 0.35)
     minutes, seconds = divmod(eta_seconds, 60)
     eta_text = f"~{minutes}m {seconds:02d}s remaining" if prog["running"] and eta_seconds > 0 else (
         "Complete" if not prog["running"] else "Almost done..."
     )
-
     return html.Div(className="progress-container mb-3xl", children=[
         html.Div([
             html.Span("Processing Universe Data", className="font-semibold"),
@@ -690,7 +619,6 @@ def update_progress_bar(n):
             html.Div(className="progress-bar-fill", style={"width": f"{pct}%"})
         ])
     ])
-
 
 @callback(
     Output("screener-table-container", "children"),
@@ -713,18 +641,15 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
     # never gets stuck behind a stale dedup-cache value.
     if dash.ctx.triggered_id == "page-load-interval":
         _last_screener_state = None
-
     results    = screener.get_screener_results()
     prog       = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
     sort_col   = (sort_state or {}).get("col", "composite_score")
     sort_asc   = (sort_state or {}).get("asc", False)
     current_page = current_page or 0
-
     # Reset page to 0 when filters/sorts change
     if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
         current_page = 0
-
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
     state_tuple = (
         json.dumps([r["symbol"] for r in results], sort_keys=True),
@@ -739,12 +664,10 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
     if state_hash == _last_screener_state:
         return dash.no_update, dash.no_update
     _last_screener_state = state_hash
-
     sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
         {"label": s, "value": s} for s in sectors
     ]
-
     if not results:
         if prog["running"]:
             return (
@@ -761,16 +684,13 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
                      className="text-center p-4xl text-muted"),
             sector_options,
         )
-
     portfolio_symbols = _get_portfolio_symbols()
-
     filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
     text_cols = {"symbol", "name", "sector"}
     if sort_col in text_cols:
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-
     SORT_COLS = [
         ("#",           None,               None),
         ("Ticker",      "symbol",           "Stock ticker symbol. Click to run full analysis."),
@@ -799,7 +719,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
             ))
         else:
             header_cells.append(html.Th(label, title=tooltip or "", style=th_style))
-
     rows = []
     # 1D: Server-side pagination — 50 rows per page
     PAGE_SIZE = 50
@@ -818,7 +737,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
         sym     = r["symbol"]
         viewed  = sym in viewed_set
         in_port = bool(portfolio_symbols.get(sym))
-
         verdict       = r["verdict"]
         verdict_label = r["verdict_label"]
         if verdict == "PENDING":
@@ -828,7 +746,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
             elif score >= 40: verdict, verdict_label = "WATCH*",      "watch"
             elif score >= 25: verdict, verdict_label = "WEAK*",       "hold"
             else:             verdict, verdict_label = "AVOID*",      "avoid"
-
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
@@ -837,16 +754,22 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
                 "background": "#2a1e00", "border": f"1px solid {AMBER}55",
                 "borderRadius": "4px", "padding": "1px 5px",
             }))
-
         ticker_cell = html.Td(html.Div([
             html.Button(sym, id={"type": "screener-ticker-btn", "index": sym},
-                        className="ticker-link-btn", n_clicks=0,
-                        style={"touchAction": "manipulation", "cursor": "pointer"}),
+            className="ticker-link-btn", n_clicks=0,
+            style={
+                "touchAction": "manipulation",
+                "cursor": "pointer",
+                "WebkitUserSelect": "none",
+                "userSelect": "none",
+                "WebkitTapHighlightColor": "rgba(0,0,0,0.08)",
+                "minWidth": "44px",
+                "minHeight": "44px",
+            }),
             html.Div(badges, style={"display": "flex", "gap": "4px",
                                     "flexWrap": "wrap", "marginTop": "3px"})
             if badges else html.Div(),
         ]), className="ticker-cell")
-
         # Graham Number cell — populated after full analysis
         gn    = r.get("graham_number")
         price = r.get("price")
@@ -860,7 +783,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
         else:
             gn_cell = html.Td("—", className="text-xs text-muted",
                               title="Run full analysis to calculate Graham Number")
-
         # Buffett IV cell — populated after full analysis
         biv = r.get("buffett_iv")
         if biv:
@@ -873,11 +795,9 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
         else:
             biv_cell = html.Td("—", className="text-xs text-muted",
                                title="Run full analysis to calculate Buffett Intrinsic Value")
-
         row_style = {}
         if in_port:  row_style = {"borderLeft": f"3px solid {AMBER}"}
         elif viewed: row_style = {"borderLeft": f"3px solid {GREEN}44"}
-
         rows.append(html.Tr(style=row_style, children=[
             html.Td(str(i), className="rank-num"),
             ticker_cell,
@@ -890,7 +810,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
             biv_cell,
             html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
         ]))
-
     n_analyzed  = sum(1 for r in filtered if r.get("analyzed"))
     n_portfolio = sum(1 for r in filtered if portfolio_symbols.get(r["symbol"]))
     note = html.Div([
@@ -899,12 +818,10 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
                   className="text-muted"),
     ], style={"fontSize": "11px", "padding": "8px 4px", "fontStyle": "italic"})
-
     table = html.Table(className="screener-table", children=[
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
     ])
-
     # 1D: Build pagination controls
     pagination_controls = html.Div(className="pagination-controls", style={
         "display": "flex", "justifyContent": "space-between", "alignItems": "center",
@@ -926,12 +843,9 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
             style={"padding": "4px 12px", "touchAction": "manipulation","cursor": "pointer"  if current_page < total_pages - 1 else "default"}
         ),
     ])
-
     return html.Div([table, note, pagination_controls]), sector_options
 
-
 # ── 1D: Screener pagination controls ──────────────────────────────────────────
-
 @callback(
     Output("screener-page-store", "data"),
     Input("screener-page-prev", "n_clicks"),
@@ -950,9 +864,7 @@ def handle_pagination(prev_clicks, next_clicks, current_page):
     
     return current_page
 
-
 # ── Screener column sort ──────────────────────────────────────────────────────
-
 @callback(
     Output("screener-sort-store", "data"),
     Input({"type": "screener-sort-btn", "index": dash.ALL}, "n_clicks"),
@@ -970,7 +882,6 @@ def update_sort(n_clicks_list, sort_state):
         return {"col": col, "asc": not sort_state["asc"]}
     text_cols = {"symbol", "name", "sector"}
     return {"col": col, "asc": col in text_cols}
-
 
 @callback(
     Output("loading-trigger", "children"),
@@ -992,11 +903,8 @@ def load_universe(n_clicks, n_load):
         return "", False   # enable the interval so progress callbacks fire
     return "", True
 
-
 # ── Analyze ───────────────────────────────────────────────────────────────────
-
 # ── New quant UI helpers ──────────────────────────────────────────────────────
-
 def _composite_banner(data: dict) -> html.Div:
     """
     Smart composite banner: shows 6-pillar enhanced composite when available,
@@ -1006,12 +914,10 @@ def _composite_banner(data: dict) -> html.Div:
     comp     = data.get("composite") or {}
     has_enh  = bool(enhanced.get("composite_score") is not None)
     src      = enhanced if has_enh else comp
-
     verdict       = src.get("verdict",      "N/A")
     verdict_label = src.get("verdict_label","pending")
     verdict_desc  = src.get("verdict_desc", "")
     score         = src.get("composite_score", 0) or 0
-
     # Pillar list
     if has_enh:
         has_buffett = enhanced.get("buffett_pct") is not None
@@ -1032,14 +938,12 @@ def _composite_banner(data: dict) -> html.Div:
             ("Momentum", comp.get("momentum_pct") or 0, "25%"),
         ]
         score_label = "Composite"
-
     pillar_els = [_pillar(l, round(v) if isinstance(v, float) else v, w)
                   for l, v, w in pillars]
     pillar_els.append(html.Div([
         html.Div(f"{score:.0f}", className="pillar-value text-4xl"),
         html.Div(score_label, className="pillar-label"),
     ]))
-
     # Flags row
     flags = []
     if enhanced.get("value_trap_warning") or comp.get("value_trap_warning"):
@@ -1057,7 +961,6 @@ def _composite_banner(data: dict) -> html.Div:
                                style={"background": "#3a0000", "color": RED,
                                       "borderRadius": "6px", "padding": "3px 10px",
                                       "fontSize": "12px", "fontWeight": "600"}))
-
     return html.Div(className="composite-banner", children=[
         html.Div([
             html.Div(verdict, className="composite-banner-verdict",
@@ -1070,25 +973,20 @@ def _composite_banner(data: dict) -> html.Div:
         html.Div(className="pillar-scores", children=pillar_els),
     ])
 
-
 def _piotroski_card(data: dict) -> html.Div:
     """Piotroski F-Score card: 9 binary signals in 3 category blocks."""
     p = data.get("piotroski") or {}
     if not p:
         return html.Div()
-
     f_score  = p.get("f_score", 0)
     label    = p.get("label", "neutral")
     interp   = p.get("interpretation", "")
     signals  = p.get("signals", [])
-
     lc = {"strong": GREEN, "neutral": AMBER, "weak": RED}.get(label, MUTED)
-
     # Group signals by category
     cats: dict = {}
     for s in signals:
         cats.setdefault(s.get("category", "Other"), []).append(s)
-
     cat_blocks = []
     for cat_name, sigs in cats.items():
         rows = []
@@ -1115,7 +1013,6 @@ def _piotroski_card(data: dict) -> html.Div:
                             "paddingBottom": "4px", "borderBottom": f"2px solid {BORDER}"}),
             *rows,
         ]))
-
     return html.Div(className="scorecard", children=[
         html.Div(style={"display": "flex", "alignItems": "center",
                         "gap": "10px", "padding": "14px 18px 10px"}, children=[
@@ -1133,13 +1030,11 @@ def _piotroski_card(data: dict) -> html.Div:
                         "padding": "0 18px 16px"}),
     ])
 
-
 def _altman_card(data: dict) -> html.Div:
     """Altman Z-Score card: zone badge + component breakdown."""
     a = data.get("altman") or {}
     if not a:
         return html.Div()
-
     z_score    = a.get("z_score")
     zone       = a.get("zone", "unknown")
     zone_label = a.get("zone_label", "Unknown")
@@ -1147,11 +1042,9 @@ def _altman_card(data: dict) -> html.Div:
     model      = a.get("model", "")
     n_avail    = a.get("n_available", 0)
     comps      = a.get("components") or {}
-
     zc = {"safe": GREEN, "grey": AMBER, "distress": RED, "unknown": MUTED}.get(zone, MUTED)
     zbg = {"safe": "#001a0a", "grey": "#2a2000", "distress": "#2a0000",
            "unknown": CARD}.get(zone, CARD)
-
     comp_labels = [
         ("x1_working_capital",    "X1 — Working Capital / Assets"),
         ("x2_retained_earnings",  "X2 — Retained Earnings / Assets"),
@@ -1172,7 +1065,6 @@ def _altman_card(data: dict) -> html.Div:
                       style={"color": TEXT if v is not None else MUTED,
                              "fontWeight": "600"}),
         ]))
-
     return html.Div(className="scorecard", children=[
         html.Div("Altman Z-Score (Bankruptcy Risk)",
                  style={"fontSize": "14px", "fontWeight": "700", "color": TEXT,
@@ -1195,20 +1087,16 @@ def _altman_card(data: dict) -> html.Div:
         html.Div(comp_rows, className="px-xl pb-2xl"),
     ])
 
-
 def _risk_card(data: dict) -> html.Div:
     """Risk & performance metrics dashboard."""
     r = data.get("risk") or {}
     if not r or r.get("error") and not r.get("sharpe"):
         return html.Div()
-
     n_yrs = r.get("n_years", 0)
     if not n_yrs:
         return html.Div()
-
     def _fv(val, decimals=2, suffix=""):
         return f"{val:.{decimals}f}{suffix}" if val is not None else "N/A"
-
     def _mc(val, good_above=None, bad_below=None):
         if val is None:
             return MUTED
@@ -1217,7 +1105,6 @@ def _risk_card(data: dict) -> html.Div:
         if bad_below is not None and val <= bad_below:
             return RED
         return AMBER
-
     metrics = [
         ("Sharpe Ratio(Good above 1)",       _fv(r.get("sharpe")),
          _mc(r.get("sharpe"), good_above=1.0, bad_below=0)),
@@ -1238,7 +1125,6 @@ def _risk_card(data: dict) -> html.Div:
         ("Calmar Ratio(good_above=1.0,bad_below=0)",       _fv(r.get("calmar")),
          _mc(r.get("calmar"), good_above=1.0, bad_below=0)),
     ]
-
     metric_cells = [
         html.Div(style={
           
@@ -1248,9 +1134,7 @@ def _risk_card(data: dict) -> html.Div:
         ])
         for lbl, val, col in metrics
     ]
-
     risk_criteria = r.get("risk_criteria") or []
-
     return html.Div(children=[
       
         html.Div(className="risk-row",children=[
@@ -1264,27 +1148,22 @@ def _risk_card(data: dict) -> html.Div:
                         ]),
         
     ])
-
 def _build_analysis_content(data: dict) -> list:
     """Render analysis data into Dash components. Pure function, no side effects."""
     if not data or "error" in data:
         return []
-
     symbol = data["symbol"]
     name   = data["name"]
     sector = data["sector"]
     g      = data["graham"]
     q      = data["quality"]
     m      = data["momentum"]
-
     comp = (
         data.get("composite_score")
         or data.get("composite", {}).get("composite_score", 0)
     )
-
     price = data.get("price")
     er    = data.get("earnings_revision") or {}
-
     # ── Color Logic ──────────────────────────────────────────────────────────
     def _score_color(val, rule):
         """
@@ -1297,30 +1176,25 @@ def _build_analysis_content(data: dict) -> list:
         """
         if val is None:
             return MUTED
-
         direction = rule.get("direction", "high")
         good = rule.get("good_threshold")
         bad = rule.get("bad_threshold")
-
         if direction == "high":
             if good is not None and val >= good:
                 return GREEN
             if bad is not None and val <= bad:
                 return RED
             return AMBER
-
         else:  # low is better
             if good is not None and val <= good:
                 return GREEN
             if bad is not None and val >= bad:
                 return RED
             return AMBER
-
     
     # Earnings Revision Color + Display
     er_color = MUTED
     er_signal = er.get("signal", "NEUTRAL")
-
     if er and er.get("signal"):
         color_map = {
             "STRONG_UP": GREEN, "UP": GREEN,
@@ -1328,12 +1202,10 @@ def _build_analysis_content(data: dict) -> list:
             "DOWN": RED, "STRONG_DOWN": RED,
         }
         er_color = color_map.get(er_signal, MUTED)
-
     er_display = html.Span(
         f"{er.get('total_score', 0):.0f}/100 ({er_signal.replace('_', ' ')})",
         style={"color": er_color, "fontWeight": "700"}
     )
-
     # ── Extra stat row items ──────────────────────────────────────────────────
     p_data = data.get("piotroski") or {}
     a_data = data.get("altman") or {}
@@ -1356,7 +1228,6 @@ def _build_analysis_content(data: dict) -> list:
                 children=[
                     html.H2(name),
                     html.Div(f"{symbol} · {sector}", className="company-meta"),
-
                     html.Div(
                         className="stats-row",
                         children=[
@@ -1365,7 +1236,6 @@ def _build_analysis_content(data: dict) -> list:
                                 f"${price:.2f}" if price else "N/A",
                                 "Current market price per share."
                             ),
-
                             _stat(
                                 "P/E",
                                 html.Span(
@@ -1374,7 +1244,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Price-to-Earnings ratio. Graham's ceiling: 15×. Lower = cheaper."
                             ),
-
                             _stat(
                                 "P/B",
                                 html.Span(
@@ -1383,7 +1252,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Price-to-Book ratio. Graham's ceiling: 1.5×. Lower = better value."
                             ),
-
                             _stat(
                                 "ROE",
                                 html.Span(
@@ -1392,7 +1260,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Return on Equity. Target: ≥15%."
                             ),
-
                             _stat(
                                 "Op Margin",
                                 html.Span(
@@ -1402,7 +1269,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Operating Margin. Target: ≥15%."
                             ),
-
                             _stat(
                                 "Sharpe",
                                 html.Span(
@@ -1411,7 +1277,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Sharpe Ratio. ≥1.0 = good, ≥1.5 = excellent."
                             ),
-
                             _stat(
                                 "Beta",
                                 html.Span(
@@ -1420,7 +1285,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Beta vs SPY. <1.0 = defensive, >1.0 = more volatile."
                             ),
-
                             _stat(
                                 "F-Score",
                                 html.Span(
@@ -1429,7 +1293,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Piotroski F-Score. 8–9 = strong."
                             ),
-
                             _stat(
                                 "Buffett IV",
                                 html.Span(
@@ -1443,7 +1306,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Buffett Intrinsic Value. Green = Price below IV (margin of safety)."
                             ),
-
                             _stat(
                                 "Moat",
                                 html.Span(
@@ -1460,7 +1322,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Buffett moat grade: A=Wide Moat (best), D=Avoid."
                             ),
-
                             _stat(
                                 "Comp",
                                 html.Span(
@@ -1475,7 +1336,6 @@ def _build_analysis_content(data: dict) -> list:
                                 ),
                                 "Overall Composite Score (higher = better)."
                             ),
-
                             _stat(
                                 "E. Rev",
                                 er_display,
@@ -1485,7 +1345,6 @@ def _build_analysis_content(data: dict) -> list:
                     ),
                 ]
             ),
-
             html.Div(
                 className="badges",
                 children=[
@@ -1504,7 +1363,6 @@ def _build_analysis_content(data: dict) -> list:
                             ),
                         ]
                     ),
-
                     html.Div(
                         className="grade-badge",
                         style={"borderLeft": f"1px solid {BORDER}"},
@@ -1546,40 +1404,30 @@ def _build_analysis_content(data: dict) -> list:
             ),
         ]
     )
-
     banner = _composite_banner(data)
-
     graham_card  = _render_scorecard("Graham Value Analysis", g["criteria"], "graham")
     quality_card = _render_scorecard("Quality Analysis", q["criteria"], "quality")
-
     value_row = html.Div(className="card-row", children=[quality_card, graham_card])
-
     buffett_card = (
         _render_scorecard("Buffett Quality & Value", b_data.get("criteria", []), "buffett")
         if b_data.get("criteria") else html.Div()
     )
-
     momentum_card = (
         _render_scorecard("Momentum Analysis", m.get("criteria", []), "momentum")
         if m.get("criteria") else html.Div()
     )
-
     moment_quality_row = html.Div(
         className="moment_quality_row",
         children=[buffett_card, momentum_card]
     )
-
     piotroski_card = _piotroski_card(data)
     altman_card = _altman_card(data)
-
     quant_row = (
         html.Div(className="quant_row", children=[piotroski_card, altman_card])
         if p_data and a_data else html.Div()
     )
-
     risk_card = _risk_card(data)
    
-
     charts_row = html.Div(
         className="charts-grid",
         children=[
@@ -1587,11 +1435,9 @@ def _build_analysis_content(data: dict) -> list:
             _price_chart(data.get("price_history"), data.get("spy_history"), symbol),
         ]
     )
-
     div_chart = _div_chart(g.get("div_history", []), symbol)
     graham_details = _graham_details_card(g, b_data)
     buffett_details = _buffett_details_card(data)
-
     return [
         header,
         banner,
@@ -1630,27 +1476,20 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
     Dash shows the spinner for the entire duration of this callback.
     """
     triggered = dash.ctx.triggered_id
-
     if triggered == "screener-click-ticker" and clicked_ticker:
         ticker = clicked_ticker
     else:
         ticker = ticker_input_value
-
     if not ticker or not ticker.strip():
         return [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
-
     symbol = ticker.strip().upper()
     result = analyze_stock(symbol)
-
     if "error" in result:
         return [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update
-
     viewed_updated = list(set((viewed_list or []) + [symbol]))
     content = _build_analysis_content(result)
-
     # Update screener row with full analysis data (Graham Number, live price, enhanced score)
     screener.update_stock_after_analysis(symbol, result)
-
     return (
         content,
         result,
@@ -1661,9 +1500,7 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
         viewed_updated,
     )
 
-
 # ── UI Components ─────────────────────────────────────────────────────────────
-
 def _stat(label, value, tooltip=None):
     return html.Div([
         html.Div(label, className="stat-label",
@@ -1672,7 +1509,6 @@ def _stat(label, value, tooltip=None):
         html.Div(value, className="stat-value")
     ], className="stat-item")
 
-
 def _pillar(label, score, weight):
     return html.Div([
         html.Div(f"{score}%", className="pillar-value") if isinstance(score, (int, float)) else html.Div(score, className="pillar-value"),
@@ -1680,10 +1516,8 @@ def _pillar(label, score, weight):
         html.Div(f"({weight})", className="pillar-weight"),
     ])
 
-
 def _grade_color(grade: str) -> str:
     return {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(grade, MUTED)
-
 
 def _verdict_color(label: str) -> str:
     return {
@@ -1695,7 +1529,6 @@ def _verdict_color(label: str) -> str:
         "pending": MUTED,
     }.get(label, MUTED)
 
-
 def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
     rows = []
     for c in criteria:
@@ -1703,7 +1536,6 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
         max_s = c["max"]
         pct = score / max_s * 100 if max_s else 0
         color = GREEN if pct >= 66 else AMBER if pct >= 33 else RED
-
         rows.append(html.Div(className="criterion-row", children=[
             html.Div([
                 html.Div(c["label"], className="criterion-label"),
@@ -1716,12 +1548,10 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
             ]),
             html.Div(f"{score}/{max_s}", className="criterion-pts", style={"color": color}),
         ]))
-
     return html.Div(className="scorecard", children=[
         html.Div(title, className="scorecard-header"),
         html.Div(rows)
     ])
-
 
 def _eps_chart(eps_history: list, symbol: str) -> html.Div:
     if not eps_history:
@@ -1730,10 +1560,8 @@ def _eps_chart(eps_history: list, symbol: str) -> html.Div:
             html.Div("No EPS data", className="empty-title"),
             html.Div("Insufficient data available", className="empty-msg"),
         ])
-
     df = pd.DataFrame(eps_history).sort_values("year")
     colors = [GREEN if v >= 0 else RED for v in df["value"]]
-
     fig = go.Figure(go.Bar(
         x=df["year"].astype(str), y=df["value"],
         marker_color=colors,
@@ -1743,21 +1571,17 @@ def _eps_chart(eps_history: list, symbol: str) -> html.Div:
     fig.update_layout(**_chart_layout(f"{symbol} EPS History (10yr)"))
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
 
-
 def _price_chart(price_history_dict, spy_history_dict, symbol: str) -> html.Div:
     # Convert stored dict data back to DataFrames
     hist = pd.DataFrame(price_history_dict) if price_history_dict else pd.DataFrame()
     spy_hist = pd.DataFrame(spy_history_dict) if spy_history_dict else pd.DataFrame()
-
     if hist.empty:
         return html.Div(className="empty-card", children=[
             html.Div("Price History", className="empty-card-title"),
             html.Div("No price data", className="empty-title"),
             html.Div("Insufficient history available", className="empty-msg"),
         ])
-
     fig = go.Figure()
-
     def _normalise(df):
         df = df.copy()
         df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
@@ -1766,14 +1590,12 @@ def _price_chart(price_history_dict, spy_history_dict, symbol: str) -> html.Div:
             return df
         df["norm"] = df["Close"] / df["Close"].iloc[0] * 100
         return df
-
     hist = _normalise(hist)
     if not hist.empty:
         fig.add_trace(go.Scatter(
             x=hist["Date"], y=hist["norm"], name=symbol,
             line=dict(color=BLUE, width=2)
         ))
-
     if not spy_hist.empty:
         spy_hist = _normalise(spy_hist)
         if not spy_hist.empty:
@@ -1781,11 +1603,9 @@ def _price_chart(price_history_dict, spy_history_dict, symbol: str) -> html.Div:
                 x=spy_hist["Date"], y=spy_hist["norm"], name="SPY",
                 line=dict(color=MUTED, width=1.5, dash="dot")
             ))
-
     fig.update_layout(**_chart_layout(f"{symbol} vs SPY (10yr normalised)"))
     fig.update_yaxes(title_text="Index (100 = start)")
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
-
 
 def _div_chart(div_history: list, symbol: str) -> html.Div:
     if not div_history:
@@ -1794,7 +1614,6 @@ def _div_chart(div_history: list, symbol: str) -> html.Div:
             html.Div("No dividends", className="empty-title"),
             html.Div("This company has not paid dividends", className="empty-msg"),
         ])
-
     df = pd.DataFrame(div_history).sort_values("year")
     df = df[df["value"] > 0]
     if df.empty:
@@ -1803,7 +1622,6 @@ def _div_chart(div_history: list, symbol: str) -> html.Div:
             html.Div("No dividends", className="empty-title"),
             html.Div("No dividend payments on record", className="empty-msg"),
         ])
-
     fig = go.Figure(go.Bar(
         x=df["year"].astype(str),
         y=df["value"] / 1e6,
@@ -1814,19 +1632,16 @@ def _div_chart(div_history: list, symbol: str) -> html.Div:
     fig.update_layout(**_chart_layout(f"{symbol} Dividend Payments (USD Millions)"))
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
 
-
 def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     gn    = g_data.get("graham_number")
     price = g_data.get("price")
     mos   = g_data.get("margin_of_safety")
-
     # Buffett IV fields
     b_data   = b_data or {}
     biv      = b_data.get("intrinsic_value")
     b_mos    = b_data.get("margin_of_safety")
     b_grade  = b_data.get("grade")
     b_glabel = b_data.get("grade_label", "")
-
     rows = [
         ("Graham Number",     f"${gn:.2f}"  if gn    else "N/A"),
         ("Graham MoS",        f"{mos:.1f}%" if mos   else "N/A"),
@@ -1836,17 +1651,14 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
         ("Div Years",         str(g_data.get("div_years", 0))),
         ("EPS Years",         str(g_data.get("eps_years", 0))),
     ]
-
     gn_color  = GREEN if mos and mos > 0 else RED
     biv_color = GREEN if b_mos and b_mos > 0 else RED
     grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(b_grade or "", MUTED)
-
     def _row_color(label):
         if label == "Graham MoS":       return gn_color
         if label == "Buffett MoS":      return biv_color
         if label == "Buffett Grade":    return grade_color
         return TEXT
-
     detail_rows = [
         html.Div(className="detail-row", children=[
             html.Span(label, className="detail-label"),
@@ -1855,19 +1667,16 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
         ])
         for label, value in rows
     ]
-
     return html.Div(className="detail-card", children=[
         html.Div("Graham Number & Buffett IV", className="card-header"),
         html.Div(detail_rows)
     ])
-
 
 def _buffett_details_card(data: dict) -> html.Div:
     b = data.get("buffett") or {}
     iv  = b.get("intrinsic_value")
     mos = b.get("margin_of_safety")
     price = b.get("price")
-
     rows = [
         ("Grade",             f"{b.get('grade', 'N/A')} — {b.get('grade_label', '')}"),
         ("Intrinsic Value",   f"${iv:.2f} ({b.get('iv_base', '')})" if iv else "N/A"),
@@ -1880,9 +1689,7 @@ def _buffett_details_card(data: dict) -> html.Div:
         ("ROIC",              f"{b.get('roic', 0):.1f}%" if b.get("roic") else "N/A"),
         ("Debt Payback",      f"{b.get('de_years', 0):.1f}yr" if b.get("de_years") is not None else "N/A"),
     ]
-
     iv_color = GREEN if mos and mos > 0 else RED
-
     detail_rows = [
         html.Div(className="detail-row", children=[
             html.Span(label, className="detail-label"),
@@ -1891,12 +1698,10 @@ def _buffett_details_card(data: dict) -> html.Div:
         ])
         for label, value in rows
     ]
-
     return html.Div(className="detail-card", children=[
         html.Div("Buffett DCF Details", className="card-header"),
         html.Div(detail_rows)
     ])
-
 
 def _chart_layout(title: str, many_traces: bool = False) -> dict:
     """
@@ -1928,7 +1733,6 @@ def _chart_layout(title: str, many_traces: bool = False) -> dict:
             yanchor="bottom",
         )
         margin = dict(l=16, r=16, t=44, b=16)
-
     return dict(
         title=dict(text=title, font=dict(size=13, color=MUTED), x=0),
         paper_bgcolor=CARD,
@@ -1940,13 +1744,10 @@ def _chart_layout(title: str, many_traces: bool = False) -> dict:
         legend=legend,
     )
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # Portfolio callbacks
 # ══════════════════════════════════════════════════════════════════════════════
-
 # ── Populate portfolio dropdowns ──────────────────────────────────────────────
-
 @callback(
     Output("portfolio-select-dropdown", "options"),
     Output("portfolio-active-dropdown", "options"),
@@ -1959,9 +1760,7 @@ def refresh_portfolio_dropdowns(refresh):
     opts  = [{"label": n, "value": n} for n in names]
     return opts, opts, opts
 
-
 # ── Show/hide new-portfolio creation panel ────────────────────────────────────
-
 @callback(
     Output("portfolio-create-panel", "style"),
     Input("portfolio-new-btn",            "n_clicks"),
@@ -1975,9 +1774,7 @@ def toggle_create_panel(new, confirm, cancel):
         return {"display": "block"}
     return {"display": "none"}
 
-
 # ── Create portfolio ──────────────────────────────────────────────────────────
-
 @callback(
     Output("portfolio-refresh-store",    "data", allow_duplicate=True),
     Output("portfolio-active-dropdown",  "value"),
@@ -2000,9 +1797,7 @@ def create_portfolio(n, name, refresh):
     portfolio_engine.create_portfolio(name)
     return (refresh or 0) + 1, name, "", ""
 
-
 # ── Delete portfolio ──────────────────────────────────────────────────────────
-
 @callback(
     Output("portfolio-refresh-store",   "data", allow_duplicate=True),
     Output("portfolio-active-dropdown", "value", allow_duplicate=True),
@@ -2019,9 +1814,7 @@ def delete_portfolio(n, active, refresh):
     _invalidate_portfolio_cache()
     return (refresh or 0) + 1, None, f"🗑 Portfolio '{active}' deleted."
 
-
 # ── Add holding from Analyze tab ──────────────────────────────────────────────
-
 @callback(
     Output("portfolio-add-msg",       "children"),
     Output("portfolio-add-msg",       "style"),
@@ -2039,12 +1832,10 @@ def delete_portfolio(n, active, refresh):
 def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     if not n:
         return "", {}, dash.no_update, dash.no_update
-
     # Resolve portfolio name
     port_name = (new_name or "").strip() or selected
     if not port_name:
         return "❌ Select or name a portfolio first.", {"color": RED}, dash.no_update, dash.no_update
-
     # Shares validation
     try:
         shares = int(shares or 0)
@@ -2052,21 +1843,16 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
         shares = 0
     if shares < 5:
         return "❌ Minimum 5 shares.", {"color": RED}, dash.no_update, dash.no_update
-
     if not symbol:
         return "❌ Analyze a stock first.", {"color": RED}, dash.no_update, dash.no_update
-
     # Create portfolio if it doesn't exist
     if port_name not in portfolio_engine.list_portfolios():
         portfolio_engine.create_portfolio(port_name)
-
     price       = (analysis or {}).get("price") or 0
     company     = (analysis or {}).get("name", symbol)
     _, err = portfolio_engine.add_holding(port_name, symbol, shares, price, company)
-
     if err:
         return f"❌ {err}", {"color": RED}, dash.no_update, dash.no_update
-
     portfolio_engine.invalidate_simulation_cache(port_name)
     _invalidate_portfolio_cache()
     p = portfolio_engine.load_portfolio(port_name)
@@ -2074,9 +1860,7 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     msg = f"✅ Added {shares}× {symbol} to '{port_name}' ({count}/{portfolio_engine.MAX_HOLDINGS} stocks)"
     return msg, {"color": GREEN}, (refresh or 0) + 1, None
 
-
 # ── Render active portfolio holdings ─────────────────────────────────────────
-
 @callback(
     Output("portfolio-content", "children"),
     Input("portfolio-active-dropdown", "value"),
@@ -2087,15 +1871,12 @@ def render_portfolio_holdings(active, refresh):
     if not active:
         return html.Div("Select or create a portfolio to get started.",
                         className="text-center p-5xl text-muted")
-
     p = portfolio_engine.load_portfolio(active)
     if p is None:
         return html.Div("Portfolio not found.", className="text-danger")
-
     holdings = p.get("holdings", {})
     count    = len(holdings)
     cap      = portfolio_engine.MAX_HOLDINGS
-
     header = html.Div(className="portfolio-header", children=[
         html.Div(className="portfolio-meta", children=[
             html.Span(active, style={"fontSize": "20px", "fontWeight": "700", "color": TEXT}),
@@ -2103,18 +1884,15 @@ def render_portfolio_holdings(active, refresh):
                       style={"fontSize": "13px", "color": MUTED, "marginLeft": "12px"}),
         ]),
     ])
-
     if not holdings:
         body = html.Div("No holdings yet. Analyze a stock and click 'Add to Portfolio'.",
                         className="p-4xl text-muted text-center")
     else:
         total_invested = sum(h["shares"] * h["price_at_add"] for h in holdings.values())
-
         rows = []
         for sym, h in holdings.items():
             invested = h["shares"] * h["price_at_add"]
             weight   = invested / total_invested * 100 if total_invested > 0 else 0
-
             # Pull Sharpe from cached analysis if available
             sharpe_val = None
             cached_analysis = cache.read("analysis", sym)
@@ -2125,7 +1903,6 @@ def render_portfolio_holdings(active, refresh):
                 AMBER if (sharpe_val is not None and sharpe_val >= 0) else RED
                 if sharpe_val is not None else MUTED
             )
-
             rows.append(html.Tr([
                 html.Td(sym, className="font-semibold text-info"),
                 html.Td(h["name"][:28], className="text-xs text-muted"),
@@ -2169,7 +1946,6 @@ def render_portfolio_holdings(active, refresh):
                                        "color": RED, "touchAction": "manipulation","cursor": "pointer" , "fontSize": "14px"})
                 ),
             ]))
-
         table = html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
                 html.Th("Ticker"), html.Th("Company"), html.Th("Shares"),
@@ -2179,13 +1955,11 @@ def render_portfolio_holdings(active, refresh):
             ])),
             html.Tbody(rows),
         ])
-
         total_row = html.Div(
             f"Total invested: ${total_invested:,.2f}",
             style={"textAlign": "right", "fontSize": "14px",
                    "fontWeight": "600", "color": TEXT, "padding": "8px 4px"}
         )
-
         ready = count >= 10
         sim_btn = html.Button(
             f"🚀 Run Simulation ({count}/10 stocks)" if not ready else "🚀 Run Simulation",
@@ -2197,14 +1971,10 @@ def render_portfolio_holdings(active, refresh):
                    "background": GREEN if ready else AMBER,
                    "opacity": "1" if count > 0 else "0.5"},
         )
-
         body = html.Div([table, total_row, sim_btn])
-
     return html.Div([header, body])
 
-
 # ── Remove holding ────────────────────────────────────────────────────────────
-
 @callback(
     Output("portfolio-refresh-store", "data", allow_duplicate=True),
     Input({"type": "remove-holding-btn", "index": dash.ALL}, "n_clicks"),
@@ -2221,9 +1991,7 @@ def remove_holding(n_clicks_list, refresh):
     _invalidate_portfolio_cache()
     return (refresh or 0) + 1
 
-
 # ── Update shares ─────────────────────────────────────────────────────────────
-
 @callback(
     Output("portfolio-refresh-store", "data", allow_duplicate=True),
     Output("portfolio-msg",           "children", allow_duplicate=True),
@@ -2237,7 +2005,6 @@ def update_shares(n_clicks_list, values, ids, refresh):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update, dash.no_update
-
     # Find the matching input value by aligning triggered index with ids list
     triggered_index = triggered["index"]
     new_shares = None
@@ -2245,39 +2012,29 @@ def update_shares(n_clicks_list, values, ids, refresh):
         if id_dict["index"] == triggered_index:
             new_shares = val
             break
-
     if new_shares is None:
         return dash.no_update, "❌ Could not read share count."
-
     try:
         new_shares = int(new_shares)
     except (ValueError, TypeError):
         return dash.no_update, "❌ Shares must be a whole number."
-
     if new_shares < portfolio_engine.MIN_SHARES:
         return dash.no_update, f"❌ Minimum {portfolio_engine.MIN_SHARES} shares."
-
     port_name, symbol = triggered_index.split("|", 1)
     p = portfolio_engine.load_portfolio(port_name)
     if p is None:
         return dash.no_update, f"❌ Portfolio '{port_name}' not found."
-
     if symbol not in p["holdings"]:
         return dash.no_update, f"❌ {symbol} not in portfolio."
-
     old_shares = p["holdings"][symbol]["shares"]
     if new_shares == old_shares:
         return dash.no_update, f"ℹ️ {symbol} shares unchanged ({old_shares})."
-
     p["holdings"][symbol]["shares"] = new_shares
     portfolio_engine.save_portfolio(p)
     portfolio_engine.invalidate_simulation_cache(port_name)
-
     return (refresh or 0) + 1, f"✅ {symbol} updated to {new_shares} shares."
 
-
 # ── Run simulation ────────────────────────────────────────────────────────────
-
 @callback(
     Output("portfolio-sim-results", "children"),
     Input("run-simulation-btn",        "n_clicks"),
@@ -2288,23 +2045,19 @@ def update_shares(n_clicks_list, values, ids, refresh):
 def run_simulation(n, active, compare):
     if not n or not active:
         return []
-
     def _build_sim_charts(port_name: str, color: str) -> list:
         sim = portfolio_engine.run_simulation(port_name)
         if sim.get("error"):
             return [html.Div(f"❌ {sim['error']}", className="text-danger")]
-
         bt = sim["backtest"]
         mc = sim["montecarlo"]
         components = []
-
         # ── Summary stats row ──────────────────────────────────────────────
         def _delta(val, ref):
             d = val - ref
             c = GREEN if d >= 0 else RED
             sign = "+" if d >= 0 else ""
             return html.Span(f" ({sign}${d:,.0f})", style={"color": c, "fontSize": "12px"})
-
         if not bt.get("error"):
             components.append(html.Div(className="portfolio-stats-row", children=[
                 html.Div(className="stat-item", children=[
@@ -2341,7 +2094,6 @@ def run_simulation(n, active, compare):
                              style={"color": GREEN if bt["cagr"] > bt["spy_cagr"] else RED}),
                 ]),
             ]))
-
         # ── Backtest chart ─────────────────────────────────────────────────
         if not bt.get("error"):
             fig_bt = go.Figure()
@@ -2356,11 +2108,9 @@ def run_simulation(n, active, compare):
             fig_bt.update_layout(**_chart_layout(f"{port_name} — 10yr Backtest vs SPY (actual $)", many_traces=True))
             fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
             components.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
-
         # ── Monte Carlo chart ──────────────────────────────────────────────
         if not mc.get("error"):
             fig_mc = go.Figure()
-
             # SPY band (grey)
             fig_mc.add_trace(go.Scatter(
                 x=mc["dates"] + mc["dates"][::-1],
@@ -2372,7 +2122,6 @@ def run_simulation(n, active, compare):
                 x=mc["dates"], y=mc["spy_p50"],
                 name="SPY median", line=dict(color=MUTED, width=1.5, dash="dot")
             ))
-
             # Portfolio band (colour)
             r, g_c, b = int(color[1:3],16), int(color[3:5],16), int(color[5:7],16)
             fill_rgba = f"rgba({r},{g_c},{b},0.15)"
@@ -2394,19 +2143,16 @@ def run_simulation(n, active, compare):
                 x=mc["dates"], y=mc["p90"],
                 name="Best case (p90)", line=dict(color=color, width=1, dash="dash")
             ))
-
             fig_mc.update_layout(**_chart_layout(
                 f"{port_name} — 2yr Monte Carlo Projection (1,000 paths)", many_traces=True
             ))
             fig_mc.update_yaxes(title_text="Projected Value ($)", tickprefix="$")
             components.append(dcc.Graph(figure=fig_mc, config={"displayModeBar": False}))
-
         # ── Holdings detail table ──────────────────────────────────────────
         if not bt.get("error") and bt.get("holdings_detail"):
             detail_rows = []
             for sym, d in bt["holdings_detail"].items():
                 gain_color = GREEN if d["gain_pct"] >= 0 else RED
-
                 # Build shares cell — show split badge when a forward split occurred
                 factor = d.get("split_factor", 1.0)
                 orig   = d.get("original_shares", d["shares"])
@@ -2421,7 +2167,6 @@ def run_simulation(n, active, compare):
                     ])
                 else:
                     shares_cell = html.Td(str(d["shares"]))
-
                 detail_rows.append(html.Tr([
                     html.Td(sym, className="font-semibold text-info"),
                     shares_cell,
@@ -2441,7 +2186,6 @@ def run_simulation(n, active, compare):
                     html.Tbody(detail_rows),
                 ]),
             ]))
-
         # ── Weak-link analysis ─────────────────────────────────────────────
         if not bt.get("error"):
             p_obj = portfolio_engine.load_portfolio(port_name)
@@ -2460,7 +2204,6 @@ def run_simulation(n, active, compare):
                         f"SPY {wl['spy_cagr']:+.1f}%  —  {gap:+.2f}% / yr gap "
                         f"over {wl['n_years']:.1f} yr"
                     )
-
                     # Banner: weakest link callout OR all-clear
                     if wl.get("weakest"):
                         ws  = wl["weakest"]
@@ -2494,7 +2237,6 @@ def run_simulation(n, active, compare):
                                 "fontWeight": "600",
                             }
                         )
-
                     # Per-holding rows — worst to best (ranking is worst-first)
                     wl_rows = []
                     for sym in wl["ranking"]:
@@ -2521,7 +2263,6 @@ def run_simulation(n, active, compare):
                                 style={"color": v_col, "fontWeight": "600"}
                             ),
                         ]))
-
                     components.append(html.Div(className="scorecard", children=[
                         html.Div("🔍 Weak Link Analysis", className="scorecard-header"),
                         html.Div(gap_text, style={
@@ -2553,17 +2294,13 @@ def run_simulation(n, active, compare):
                             }
                         ),
                     ]))
-
         return components
-
     PALETTE = [BLUE, GREEN, AMBER, "#e040fb", "#00bcd4"]
-
     sections = [
         html.Div(f"📊 {active}", className="scorecard-header",
                  style={"marginTop": "24px", "fontSize": "16px"}),
         *_build_sim_charts(active, PALETTE[0]),
     ]
-
     if compare and compare != active:
         sections += [
             html.Div(f"📊 {compare} (comparison)",
@@ -2571,37 +2308,56 @@ def run_simulation(n, active, compare):
                      style={"marginTop": "32px", "fontSize": "16px", "color": PALETTE[1]}),
             *_build_sim_charts(compare, PALETTE[1]),
         ]
-
     return sections
 
-
-# ── Mobile touch: clientside touchend→click bridge for pattern-matched buttons ─
-
+# # ── Mobile touch: clientside touchend→click bridge for pattern-matched buttons ─
+# ── Mobile Touch Bridge for Pattern-Matched Buttons ─────────────────────
 app.clientside_callback(
     """
-    function(id) {
-        document.addEventListener('touchend', function(e) {
-            var btn = e.target.closest('button');
-            if (btn && !btn._touchBridged) {
-                btn._touchBridged = true;
-                btn.addEventListener('touchend', function(ev) {
-                    ev.preventDefault();
-                    btn.click();
-                }, {passive: false});
+    function(_) {
+        const bridge = function(e) {
+            let target = e.target;
+            
+            // Walk up to find button or element with click handler
+            while (target && target !== document.body) {
+                if (target.tagName === 'BUTTON' || 
+                    target.getAttribute('role') === 'button' ||
+                    target.classList.contains('ticker-link-btn') ||
+                    target.classList.contains('sort-header-btn') ||
+                    target.classList.contains('analyze-btn') ||
+                    target.classList.contains('load-btn')) {
+                    
+                    if (!target._touchBridged) {
+                        target._touchBridged = true;
+                        
+                        target.addEventListener('touchend', function(ev) {
+                            ev.preventDefault();
+                            // Small delay helps with iOS Safari
+                            setTimeout(() => {
+                                target.click();
+                            }, 10);
+                        }, { passive: false });
+                    }
+                    break;
+                }
+                target = target.parentElement;
             }
-        }, {capture: true});
-        return id;
+        };
+
+        // Capture phase for best chance
+        document.addEventListener('touchstart', bridge, { capture: true, passive: false });
+        
+        return window.dash_clientside.no_update;
     }
     """,
-    Output("loading-trigger", "id"),
-    Input("loading-trigger",  "id"),
+    Output("loading-trigger", "id"),   # dummy output
+    Input("loading-trigger", "id"),    # fires once on load
+    prevent_initial_call=False
 )
-
 
 # ── Mobile fix: scroll screener to top when tab becomes visible ───────────────
 # On mobile, returning to the screener tab should scroll back to the table top
 # so the user sees the current page (not a stale scroll position mid-page).
-
 app.clientside_callback(
     """
     function(screener_style) {
@@ -2618,23 +2374,17 @@ app.clientside_callback(
     Input("tab-screener", "style"),
 )
 
-
 # ── Startup ───────────────────────────────────────────────────────────────────
-
 def startup():
     print("\n🚀 Graham Score — Quant Edition")
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     print("Graham (15%) + Buffett (25%) + Quality (18%) + Momentum (14%) + Piotroski (14%) + Risk (8%) + Altman (6%)")
     print("SEC EDGAR (free) + Alpha Vantage (free)\n")
-
     sec_data.get_ticker_map()
     universe.get_universe()
-
     results = screener.load_cached_only()
     print(f"✅ {len(results)} cached stocks ready\n")
 
-
 startup()
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0",debug=True, port=8050)
