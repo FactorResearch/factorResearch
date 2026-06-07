@@ -191,7 +191,7 @@ def analyze_stock(symbol: str) -> dict:
     # Now try to get price
     price = alpha_vantage_client.get_price(symbol)
     # Earnings revision score
-    earnings_revision_result = {"score": 0}
+    earnings_revision_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price:
         try:
             earnings_revision_result = earnings_revision.get_revision_score(symbol)
@@ -1262,7 +1262,45 @@ def _risk_card(data: dict) -> html.Div:
                         ]),
         
     ])
+def _earnings_revision_card(data: dict) -> html.Div:
+    """Earnings Revision Card"""
+    er = data.get("earnings_revision") or {}
+    if not er or er.get("total_score") is None:
+        return html.Div()
 
+    score = er.get("total_score", 0)
+    signal = er.get("signal", "NEUTRAL")
+    criteria = er.get("criteria", [])
+    low_coverage = er.get("low_coverage", False)
+
+    color_map = {
+        "STRONG_UP": GREEN,
+        "UP": GREEN,
+        "NEUTRAL": AMBER,
+        "DOWN": RED,
+        "STRONG_DOWN": RED,
+    }
+    color = color_map.get(signal, MUTED)
+
+    return html.Div(className="scorecard", children=[
+        html.Div("📈 Earnings Revision (Forward Momentum)", className="scorecard-header"),
+        
+        html.Div(style={"textAlign": "center", "padding": "20px 0"}, children=[
+            html.Div(f"{score:.0f}/100", style={
+                "fontSize": "46px", "fontWeight": "800", "color": color
+            }),
+            html.Div(signal.replace("_", " "), style={
+                "fontSize": "17px", "fontWeight": "700", "color": color, "marginTop": "6px"
+            }),
+        ]),
+
+        html.Div(
+            "⚠️ Low analyst coverage — score less reliable" if low_coverage else "",
+            style={"color": AMBER, "textAlign": "center", "fontSize": "12.5px", "paddingBottom": "12px"}
+        ),
+
+        _render_scorecard("Detailed Signals", criteria, "earnings") if criteria else None
+    ])
 
 def _build_analysis_content(data: dict) -> list:
     """Render analysis data into Dash components. Pure function, no side effects."""
@@ -1275,118 +1313,337 @@ def _build_analysis_content(data: dict) -> list:
     g      = data["graham"]
     q      = data["quality"]
     m      = data["momentum"]
-    comp   = data["composite"]
-    price  = data.get("price")
+
+    comp = (
+        data.get("composite_score")
+        or data.get("composite", {}).get("composite_score", 0)
+    )
+
+    price = data.get("price")
+    er    = data.get("earnings_revision") or {}
+
+    # ── Color Logic ──────────────────────────────────────────────────────────
+    def _score_color(val, rule):
+        """
+        rule:
+            {
+                "direction": "high" | "low",
+                "good_threshold": float,
+                "bad_threshold": float | None
+            }
+        """
+        if val is None:
+            return MUTED
+
+        direction = rule.get("direction", "high")
+        good = rule.get("good_threshold")
+        bad = rule.get("bad_threshold")
+
+        if direction == "high":
+            if good is not None and val >= good:
+                return GREEN
+            if bad is not None and val <= bad:
+                return RED
+            return AMBER
+
+        else:  # low is better
+            if good is not None and val <= good:
+                return GREEN
+            if bad is not None and val >= bad:
+                return RED
+            return AMBER
+
     
+    # Earnings Revision Color + Display
+    er_color = MUTED
+    er_signal = er.get("signal", "NEUTRAL")
+
+    if er and er.get("signal"):
+        color_map = {
+            "STRONG_UP": GREEN, "UP": GREEN,
+            "NEUTRAL": AMBER,
+            "DOWN": RED, "STRONG_DOWN": RED,
+        }
+        er_color = color_map.get(er_signal, MUTED)
+
+    er_display = html.Span(
+        f"{er.get('total_score', 0):.0f}/100 ({er_signal.replace('_', ' ')})",
+        style={"color": er_color, "fontWeight": "700"}
+    )
 
     # ── Extra stat row items ──────────────────────────────────────────────────
     p_data = data.get("piotroski") or {}
-    a_data = data.get("altman")    or {}
-    r_data = data.get("risk")      or {}
-    b_data = data.get("buffett")   or {}
+    a_data = data.get("altman") or {}
+    r_data = data.get("risk") or {}
+    b_data = data.get("buffett") or {}
+    RULES = {
+    "pe": {"direction": "low", "good_threshold": 15, "bad_threshold": 25},
+    "pb": {"direction": "low", "good_threshold": 1.5, "bad_threshold": 3},
+    "roe": {"direction": "high", "good_threshold": 15, "bad_threshold": 8},
+    "op_margin": {"direction": "high", "good_threshold": 15, "bad_threshold": 5},
+    "sharpe": {"direction": "high", "good_threshold": 1.0, "bad_threshold": 0.5},
+    "beta": {"direction": "low", "good_threshold": 1.0, "bad_threshold": 1.5},
+    "f_score": {"direction": "high", "good_threshold": 7, "bad_threshold": 4},
+    }
+    header = html.Div(
+        className="company-header",
+        children=[
+            html.Div(
+                className="company-header-left",
+                children=[
+                    html.H2(name),
+                    html.Div(f"{symbol} · {sector}", className="company-meta"),
 
-    header = html.Div(className="company-header", children=[
-        html.Div(className="company-header-left", children=[
-            html.H2(name),
-            html.Div(f"{symbol} · {sector}", className="company-meta"),
-            html.Div(className="stats-row", children=[
-                _stat("Price",     f"${price:.2f}"                  if price                      else "N/A",
-                      "Current market price per share."),
-                _stat("P/E",       f"{g.get('pe', 0):.1f}×"        if g.get('pe')                else "N/A",
-                      "Price-to-Earnings ratio. Graham's ceiling: 15×. Lower = cheaper relative to earnings."),
-                _stat("P/B",       f"{g.get('pb', 0):.2f}×"        if g.get('pb')                else "N/A",
-                      "Price-to-Book ratio. Graham's ceiling: 1.5×. Below 1.0 means trading below net asset value."),
-                _stat("ROE",       f"{q.get('roe', 0):.1f}%"       if q.get('roe')               else "N/A",
-                      "Return on Equity — net income ÷ shareholders' equity. Target: ≥15%. Measures how efficiently management generates profit from equity."),
-                _stat("Op Margin", f"{q.get('op_margin', 0):.1f}%" if q.get('op_margin')         else "N/A",
-                      "Operating Margin — operating income ÷ revenue. Target: ≥15%. Reflects pricing power and cost efficiency."),
-                _stat("Sharpe",    f"{r_data['sharpe']:.2f}"        if r_data.get('sharpe') is not None else "N/A",
-                      "Sharpe Ratio — annualised excess return ÷ volatility (vs 4.5% risk-free rate). ≥1.0 = good, ≥1.5 = excellent. Measures risk-adjusted return."),
-                _stat("Beta",      f"{r_data['beta']:.2f}"          if r_data.get('beta')  is not None else "N/A",
-                      "Beta vs SPY — measures market sensitivity. 1.0 = moves with market. <0.7 = defensive. >1.3 = amplified swings."),
-                _stat("F-Score",   f"{p_data['f_score']}/9"         if p_data.get('f_score') is not None else "N/A",
-                      "Piotroski F-Score (0–9): 9-point accounting health check. 8–9 = strong, 5–7 = neutral, 0–4 = weak. Filters value traps."),
-                _stat("Buffett IV", f"${b_data['intrinsic_value']:.2f}" if b_data.get("intrinsic_value") else "N/A",
-                      "Buffett Intrinsic Value: 10-yr two-stage DCF on owner earnings (FCF/share or EPS), 12% discount rate, 3% terminal growth. Compare to current price for margin of safety."),
-                _stat("Moat",      f"{b_data['grade']} ({b_data['grade_label']})" if b_data.get("grade") else "N/A",
-                      "Buffett moat grade: A=Wide Moat, B=Narrow Moat, C=No Clear Moat, D=Avoid. Based on ROE consistency, margins, FCF, ROIC, and intrinsic value."),
-            ])
-        ]),
-        html.Div(className="flex gap-xl align-items-stretch", children=[
-            # Graham grade badge
-            html.Div(className="grade-badge", children=[
-                html.Div(g["grade"], className="grade-letter",
-                         style={"color": _grade_color(g["grade"])}),
-                html.Div("Graham Grade", className="grade-label"),
-                html.Div(f"{g['total_score']}/{g['total_max']}", className="grade-score"),
-            ]),
-            # Buffett IV + moat badge
-            html.Div(className="grade-badge", style={"borderLeft": f"1px solid {BORDER}"}, children=[
-                html.Div(
-                    f"${b_data['intrinsic_value']:.0f}" if b_data.get("intrinsic_value") else "—",
-                    className="grade-letter",
-                    style={
-                        "color": (
-                            GREEN if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
-                            else RED if b_data.get("intrinsic_value") and price
-                            else MUTED
-                        ),
-                        "fontSize": "22px",
-                    },
-                ),
-                html.Div("Buffett IV", className="grade-label"),
-                html.Span(
-                    f"{b_data['grade']} — {b_data['grade_label']}" if b_data.get("grade") else "N/A",
-                    className="grade-score",
-                    style={
-                        "color": {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(b_data.get("grade", ""), MUTED),
-                        "cursor": "help",
-                        "borderBottom": f"1px dashed {MUTED}",
-                    },
-                    title=_MOAT_TOOLTIPS.get(b_data.get("grade", ""), ""),
-                ),
-            ]),
-        ])
-    ])
+                    html.Div(
+                        className="stats-row",
+                        children=[
+                            _stat(
+                                "Price",
+                                f"${price:.2f}" if price else "N/A",
+                                "Current market price per share."
+                            ),
+
+                            _stat(
+                                "P/E",
+                                html.Span(
+                                    f"{g.get('pe', 0):.1f}×",
+                                    style={"color": _score_color(g.get("pe"), RULES["pe"])}
+                                ),
+                                "Price-to-Earnings ratio. Graham's ceiling: 15×. Lower = cheaper."
+                            ),
+
+                            _stat(
+                                "P/B",
+                                html.Span(
+                                    f"{g.get('pb', 0):.2f}×",
+                                    style={"color": _score_color(g.get("pb"), RULES["pb"])}
+                                ),
+                                "Price-to-Book ratio. Graham's ceiling: 1.5×. Lower = better value."
+                            ),
+
+                            _stat(
+                                "ROE",
+                                html.Span(
+                                    f"{q.get('roe', 0):.1f}%",
+                                    style={"color": _score_color(g.get("roe"), RULES["roe"])}
+                                ),
+                                "Return on Equity. Target: ≥15%."
+                            ),
+
+                            _stat(
+                                "Op Margin",
+                                html.Span(
+                                    f"{q.get('op_margin', 0):.1f}%",
+                                     style={"color": _score_color(q.get("op_margin"), RULES["op_margin"])}
+                                    
+                                ),
+                                "Operating Margin. Target: ≥15%."
+                            ),
+
+                            _stat(
+                                "Sharpe",
+                                html.Span(
+                                    f"{r_data.get('sharpe', 0):.2f}",
+                                    style={"color": _score_color(r_data.get('sharpe'), RULES["sharpe"])}
+                                ),
+                                "Sharpe Ratio. ≥1.0 = good, ≥1.5 = excellent."
+                            ),
+
+                            _stat(
+                                "Beta",
+                                html.Span(
+                                    f"{r_data.get('beta', 0):.2f}",
+                                    style={"color": _score_color(r_data.get('beta'), RULES["beta"])}
+                                ),
+                                "Beta vs SPY. <1.0 = defensive, >1.0 = more volatile."
+                            ),
+
+                            _stat(
+                                "F-Score",
+                                html.Span(
+                                    f"{p_data.get('f_score', 0)}/9",
+                                    style={"color": _score_color(p_data.get('f_score'), RULES["f_score"])}
+                                ),
+                                "Piotroski F-Score. 8–9 = strong."
+                            ),
+
+                            _stat(
+                                "Buffett IV",
+                                html.Span(
+                                    f"${b_data.get('intrinsic_value'):.2f}"
+                                    if b_data.get("intrinsic_value") else "N/A",
+                                    style={
+                                        "color": GREEN
+                                        if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
+                                        else RED if b_data.get("intrinsic_value") else MUTED
+                                    }
+                                ),
+                                "Buffett Intrinsic Value. Green = Price below IV (margin of safety)."
+                            ),
+
+                            _stat(
+                                "Moat",
+                                html.Span(
+                                    f"{b_data.get('grade')} ({b_data.get('grade_label', '')})"
+                                    if b_data.get("grade") else "N/A",
+                                    style={
+                                        "color": {
+                                            "A": GREEN,
+                                            "B": BLUE,
+                                            "C": AMBER,
+                                            "D": RED
+                                        }.get(b_data.get("grade"), MUTED)
+                                    }
+                                ),
+                                "Buffett moat grade: A=Wide Moat (best), D=Avoid."
+                            ),
+
+                            _stat(
+                                "Comp",
+                                html.Span(
+                                    f"{comp:.0f}/100",
+                                    style={
+                                        "fontWeight": "700",
+                                        "color": _verdict_color(
+                                            data.get("enhanced", {}).get("verdict_label")
+                                            or data.get("composite", {}).get("verdict_label", "pending")
+                                        )
+                                    }
+                                ),
+                                "Overall Composite Score (higher = better)."
+                            ),
+
+                            _stat(
+                                "E. Rev",
+                                er_display,
+                                "Earnings Revision Score (0–100) — Measures analyst revisions."
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+
+            html.Div(
+                className="badges",
+                children=[
+                    html.Div(
+                        className="grade-badge",
+                        children=[
+                            html.Div(
+                                g["grade"],
+                                className="grade-letter",
+                                style={"color": _grade_color(g["grade"])}
+                            ),
+                            html.Div("Graham Grade", className="grade-label"),
+                            html.Div(
+                                f"{g['total_score']}/{g['total_max']}",
+                                className="grade-score"
+                            ),
+                        ]
+                    ),
+
+                    html.Div(
+                        className="grade-badge",
+                        style={"borderLeft": f"1px solid {BORDER}"},
+                        children=[
+                            html.Div(
+                                f"${b_data.get('intrinsic_value', 0):.0f}"
+                                if b_data.get("intrinsic_value") else "—",
+                                className="grade-letter",
+                                style={
+                                    "color": (
+                                        GREEN
+                                        if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
+                                        else RED if b_data.get("intrinsic_value") and price
+                                        else MUTED
+                                    ),
+                                    "fontSize": "22px",
+                                },
+                            ),
+                            html.Div("Buffett IV", className="grade-label"),
+                            html.Span(
+                                f"{b_data.get('grade')} — {b_data.get('grade_label')}"
+                                if b_data.get("grade") else "N/A",
+                                className="grade-score",
+                                style={
+                                    "color": {
+                                        "A": GREEN,
+                                        "B": BLUE,
+                                        "C": AMBER,
+                                        "D": RED
+                                    }.get(b_data.get("grade", ""), MUTED),
+                                    "cursor": "help",
+                                    "borderBottom": f"1px dashed {MUTED}",
+                                },
+                                title=_MOAT_TOOLTIPS.get(b_data.get("grade", ""), ""),
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+        ]
+    )
 
     banner = _composite_banner(data)
-    
-    graham_card   = _render_scorecard("Graham Value Analysis", g["criteria"], "graham")
-    quality_card  = _render_scorecard("Quality Analysis",      q["criteria"], "quality")
-    value_row=html.Div(className="card-row",children=[
-        quality_card,graham_card 
-    ])
-    buffett_card  = (_render_scorecard("Buffett Quality & Value", b_data["criteria"], "buffett")
-                     if b_data.get("criteria") else html.Div())
-    momentum_card = (_render_scorecard("Momentum Analysis", m["criteria"], "momentum")
-                     if m.get("criteria") else html.Div())
-    moment_quality_row=html.Div(className="moment_quality_row",children=[buffett_card,momentum_card])
-    # New quant cards — side by side when both available
+
+    graham_card  = _render_scorecard("Graham Value Analysis", g["criteria"], "graham")
+    quality_card = _render_scorecard("Quality Analysis", q["criteria"], "quality")
+
+    value_row = html.Div(className="card-row", children=[quality_card, graham_card])
+
+    buffett_card = (
+        _render_scorecard("Buffett Quality & Value", b_data.get("criteria", []), "buffett")
+        if b_data.get("criteria") else html.Div()
+    )
+
+    momentum_card = (
+        _render_scorecard("Momentum Analysis", m.get("criteria", []), "momentum")
+        if m.get("criteria") else html.Div()
+    )
+
+    moment_quality_row = html.Div(
+        className="moment_quality_row",
+        children=[buffett_card, momentum_card]
+    )
+
     piotroski_card = _piotroski_card(data)
-    altman_card    = _altman_card(data)
-    quant_row = html.Div(className="quant_row", children=[
-        piotroski_card, altman_card
-    ]) if p_data and a_data else html.Div()
+    altman_card = _altman_card(data)
+
+    quant_row = (
+        html.Div(className="quant_row", children=[piotroski_card, altman_card])
+        if p_data and a_data else html.Div()
+    )
 
     risk_card = _risk_card(data)
-   
-    charts_row = html.Div(className="charts-grid", children=[
-        _eps_chart(g.get("eps_history", []), symbol),
-        _price_chart(data.get("price_history"), data.get("spy_history"), symbol),
-    ])
+    earnings_card = _earnings_revision_card(data)
 
-    div_chart      = _div_chart(g.get("div_history", []), symbol)
+    charts_row = html.Div(
+        className="charts-grid",
+        children=[
+            _eps_chart(g.get("eps_history", []), symbol),
+            _price_chart(data.get("price_history"), data.get("spy_history"), symbol),
+        ]
+    )
+
+    div_chart = _div_chart(g.get("div_history", []), symbol)
     graham_details = _graham_details_card(g, b_data)
     buffett_details = _buffett_details_card(data)
 
-    return [header, banner,
-            value_row, moment_quality_row,
-            quant_row, risk_card,
-            charts_row, div_chart,
-            html.Div(className="grid-2 gap-16 grid",
-                     children=[graham_details, buffett_details])]
-
-
+    return [
+        header,
+        banner,
+        value_row,
+        moment_quality_row,
+        quant_row,
+        risk_card,
+        earnings_card,
+        charts_row,
+        div_chart,
+        html.Div(
+            className="grid-2 gap-16 grid",
+            children=[graham_details, buffett_details]
+        )
+    ]
 @callback(
     Output("analysis-content",        "children"),
     Output("analysis-store",          "data"),
