@@ -408,7 +408,10 @@ Expected Impact: Moderate to High
 ### alternative_data.py
 
 Priority: P4
+-----
+## P5 - On demand SEC data fetch
 
+make sec data download on demand, instead of downloading them all on fly we download only when we need to analyze. after the first fetch we rely on current cache system, in portfolio when we do simulation if sec data is out dated we do refetch 
 -----
 
 ## P5 — Options Trading Intelligence Layer
