@@ -44,7 +44,7 @@ _fh_client: finnhub.Client | None = (
 
 # ── FMP (Financial Modeling Prep) — primary history source ───────────────────
 FMP_API_KEY  = os.getenv("FMP_API_KEY", "")
-FMP_BASE_URL = "https://financialmodelingprep.com/api/v3"
+FMP_BASE_URL = "https://financialmodelingprep.com/stable"
 
 # ── Alpha Vantage — last-resort fallback ──────────────────────────────────────
 AV_API_KEY       = os.getenv("AV_API_KEY", "demo")
@@ -151,7 +151,7 @@ def _fmp_get_price_history(symbol: str, years: int = 10) -> pd.DataFrame:
         return pd.DataFrame()
 
     cutoff = (pd.Timestamp.now() - pd.DateOffset(years=years)).strftime("%Y-%m-%d")
-    url    = f"{FMP_BASE_URL}/historical-price-full/{symbol.upper()}"
+    url    = f"{FMP_BASE_URL}/historical-price-eod/{symbol.upper()}"
     try:
         resp = requests.get(
             url,

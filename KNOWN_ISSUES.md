@@ -220,51 +220,71 @@ Acceptance Criteria:
 
 Status: []
 
-Title: Fix Finnhub price history failures (403 candle error) and remove unreliable historical dependency
+Title: Fix FMP Historical Price API (Legacy Endpoint Removal + Correct EOD Usage)
 
-Priority: Normal
+Priority: High
 
-Files: alpha_vantage_client.py
+Files: price_client.py
 
 *
 
 Problem:
-* Finnhub candle endpoint is failing with 403 errors for certain symbols (e.g. ISRG)
-* Example error:
-  `[Finnhub SDK] candle error for ISRG: FinnhubAPIException(status_code: 403): You don't have access to this resource.`
-* This causes historical price fetching to break or fall back to Alpha Vantage
-* Alpha Vantage is slow, heavily rate-limited, and being overused as a fallback
-* Result is inconsistent and unreliable 10-year historical datasets
+* FMP historical price requests are using deprecated or invalid endpoints:
+  - `/stable/historical-price-eod/{symbol}` ❌ (returns 404)
+  - usage of `from=` / `to=` parameters on EOD endpoint ❌ (not supported)
+* This causes 404 errors for valid symbols (e.g., NVDA, SPY)
+* Incorrect behavior triggers unnecessary fallback to Alpha Vantage
+* Current implementation incorrectly assumes server-side date filtering is supported by FMP
 
 Required Fix:
-* Remove Finnhub as a source for historical price data (`stock_candles`)
-* Finnhub must NOT be used for:
-  - price history
-  - OHLC candles
-  - multi-year data aggregation
-* Use FMP (Financial Modeling Prep) as the primary and stable source for historical prices
-* Implement FMP endpoint for historical data:
-  - `/api/v3/historical-price-full/{symbol}`
-* Ensure data supports at least 10 years of monthly price history
-* Keep Finnhub ONLY for real-time quotes (`quote()`), if needed
-* Reduce or eliminate Alpha Vantage dependency where possible
-* Simplify fallback logic:
-  - Historical data: FMP → (optional fallback Alpha Vantage)
-  - Real-time price: Finnhub → fallback FMP quote
-* Remove Finnhub candle rate-limit and retry logic since it will no longer be used for history
+* Replace ALL historical price calls with the correct endpoint:
+  - `https://financialmodelingprep.com/stable/historical-price-eod/full?symbol={SYMBOL}&apikey={API_KEY}`
+* Remove all usage of:
+  - path-based symbol endpoints
+  - `from=` and `to=` query parameters for FMP EOD history
+* Always fetch full dataset from FMP first
+* Perform all date filtering client-side using pandas:
+  - `df[df["date"] >= cutoff]`
+* Update `_fmp_get_price_history` to:
+  - correctly parse `data["historical"]`
+  - safely handle missing/empty responses
+  - ensure numeric conversion for OHLC fields where applicable
+* Ensure 10-year history logic is implemented client-side using:
+  - `pd.DateOffset(years=10)`
+* Maintain existing monthly resampling logic (no behavioral change)
 
 Acceptance Criteria:
-* No calls to `finnhub.stock_candles()` remain in production code
-* Fetching historical data for symbols (e.g. ISRG, AAPL, MSFT) always returns:
-  - no errors
-  - consistent 10-year dataset
-* No 403 Finnhub permission errors occur in historical data flows
-* System no longer relies on Alpha Vantage as primary or frequent fallback for history
-* FMP successfully provides all historical datasets required for Graham-style analysis
-* Finnhub is only used for real-time pricing (if retained) and does not affect historical reliability
+* No historical request uses legacy or invalid FMP endpoints
+* No 404 errors occur for valid tickers (e.g., NVDA, SPY)
+* All date filtering is performed client-side only
+* Alpha Vantage fallback only triggers on true API failure (not empty/invalid parsing)
+* Monthly resampling output remains unchanged in structure and correctness
+* Logs clearly indicate:
+  - "fetching full history from FMP"
+  - "filtering client-side to N years"
+  - no false fallback due to endpoint misuse
 
 ---
 
+## ISSUE-003
+
+Status: []
+
+Title: Incorprate earning revision into app.p
+
+Priority: Normal
+
+Files: earnings_revision.py app.py
+
+* 
+
+Problem:
+*  we have the earnings_revision we just need it to show in analyze tab
+
+Acceptance Criteria:
+* display earning_revision result in analyze tab
+
+---
 
 # CLOSED ISSUES
 

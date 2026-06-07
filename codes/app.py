@@ -25,7 +25,7 @@ import hashlib
 import functools
 
 from codes.data   import cache, sec_data, alpha_vantage_client
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett,earnings_revision
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
 
@@ -190,6 +190,13 @@ def analyze_stock(symbol: str) -> dict:
 
     # Now try to get price
     price = alpha_vantage_client.get_price(symbol)
+    # Earnings revision score
+    earnings_revision_result = {"score": 0}
+    if price:
+        try:
+            earnings_revision_result = earnings_revision.get_revision_score(symbol)
+        except Exception as e:
+            print(f"Earnings revision calculation failed: {e}")
     hist = None
     spy_hist = None
     
@@ -245,7 +252,7 @@ def analyze_stock(symbol: str) -> dict:
     # Enhanced 7-factor composite
     enhanced = scorer.enhanced_composite(
         g, q, m_result, piotroski_result, risk_result, altman_result, buffett_result,
-        greenblatt_result=greenblatt_result   # ISSUE-008: display only, not in weighted sum
+        greenblatt_result=greenblatt_result, earnings_revision_result=earnings_revision_result
     )
 
     result = {
@@ -263,6 +270,7 @@ def analyze_stock(symbol: str) -> dict:
         "risk":        risk_result,
         "greenblatt":  greenblatt_result,
         "buffett":     buffett_result,
+        "earnings_revision": earnings_revision_result,
         "enhanced":    enhanced,
         # ─────────────────────────────────────────────────
         "price_history": hist.to_dict() if hist is not None else None,
@@ -1269,6 +1277,7 @@ def _build_analysis_content(data: dict) -> list:
     m      = data["momentum"]
     comp   = data["composite"]
     price  = data.get("price")
+    
 
     # ── Extra stat row items ──────────────────────────────────────────────────
     p_data = data.get("piotroski") or {}
