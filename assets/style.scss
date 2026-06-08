@@ -236,6 +236,10 @@ body {
   overflow: hidden;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  @include media.phones {
+    white-space: break-spaces;
+    
+  }
 
   &::before {
     content: '';
@@ -1307,9 +1311,6 @@ canvas {
     flex-wrap: wrap;
   }
 
-  .load-btn {
-    width: 100%;
-  }
 
   // Search
   .search-container {

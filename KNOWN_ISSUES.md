@@ -259,6 +259,9 @@ Acceptance Criteria:
 
 ---
 
+
+
+---
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
 
 # AI EXECUTION PROTOCOL
