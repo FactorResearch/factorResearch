@@ -2310,48 +2310,31 @@ def run_simulation(n, active, compare):
         ]
     return sections
 
-# # ── Mobile touch: clientside touchend→click bridge for pattern-matched buttons ─
-# ── Mobile Touch Bridge for Pattern-Matched Buttons ─────────────────────
+# ── Mobile Touch Bridge (event delegation on touchend) ───────────────────────
+# Replaces the old touchstart→per-element-touchend approach which broke when
+# the screener table re-rendered between touchstart and touchend (dead elements).
+# Event delegation on touchend always resolves the live DOM node.
 app.clientside_callback(
     """
     function(_) {
-        const bridge = function(e) {
-            let target = e.target;
-            
-            // Walk up to find button or element with click handler
+        document.addEventListener('touchend', function(e) {
+            var target = e.target;
             while (target && target !== document.body) {
-                if (target.tagName === 'BUTTON' || 
-                    target.getAttribute('role') === 'button' ||
-                    target.classList.contains('ticker-link-btn') ||
-                    target.classList.contains('sort-header-btn') ||
-                    target.classList.contains('analyze-btn') ||
-                    target.classList.contains('load-btn')) {
-                    
-                    if (!target._touchBridged) {
-                        target._touchBridged = true;
-                        
-                        target.addEventListener('touchend', function(ev) {
-                            ev.preventDefault();
-                            // Small delay helps with iOS Safari
-                            setTimeout(() => {
-                                target.click();
-                            }, 10);
-                        }, { passive: false });
-                    }
-                    break;
+                if (target.classList && target.classList.contains('ticker-link-btn')) {
+                    e.preventDefault();
+                    target.dispatchEvent(new MouseEvent('click', {
+                        bubbles: true, cancelable: true, view: window
+                    }));
+                    return;
                 }
                 target = target.parentElement;
             }
-        };
-
-        // Capture phase for best chance
-        document.addEventListener('touchstart', bridge, { capture: true, passive: false });
-        
+        }, { passive: false });
         return window.dash_clientside.no_update;
     }
     """,
-    Output("loading-trigger", "id"),   # dummy output
-    Input("loading-trigger", "id"),    # fires once on load
+    Output("loading-trigger", "id"),
+    Input("loading-trigger", "id"),
     prevent_initial_call=False
 )
 
