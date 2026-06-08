@@ -16,6 +16,7 @@ from .data    import api_fetcher, cache, sec_data   # noqa: F401
 from .models  import (                                         # noqa: F401
     piotroski, graham, buffett, altman, greenblatt,
     quality, momentum, risk_metrics, earnings_revision,
+    profitability,
 )
 from .engine  import scorer, screener, universe               # noqa: F401
 from .        import portfolio                                 # noqa: F401

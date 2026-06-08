@@ -118,14 +118,15 @@ def fundamental_only(graham_result: dict, quality_result: dict) -> dict:
 # Altman also acts as a HARD CAP: distress zone stocks cannot exceed 50/100.
 
 ENHANCED_WEIGHTS = {
-    "graham":             0.13,   # was 0.15; reduced for earnings_revision slot
-    "buffett":            0.23,   # was 0.25
-    "quality":            0.16,   # was 0.18
-    "momentum":           0.12,   # was 0.14
-    "piotroski":          0.12,   # was 0.14
-    "risk":               0.07,   # was 0.08
-    "altman":             0.05,   # was 0.06
-    "earnings_revision":  0.12,   # new — P1 forward momentum factor
+    "graham":             0.11,   # reduced to accommodate profitability slot
+    "buffett":            0.20,   # reduced to accommodate profitability slot
+    "quality":            0.14,   # reduced to accommodate profitability slot
+    "momentum":           0.11,   # reduced to accommodate profitability slot
+    "piotroski":          0.11,   # reduced to accommodate profitability slot
+    "risk":               0.06,   # reduced to accommodate profitability slot
+    "altman":             0.03,   # reduced to accommodate profitability slot
+    "earnings_revision":  0.12,   # P1 forward momentum factor
+    "profitability":      0.12,   # P1 structural quality factor (ROIC-based)
     # Sum = 1.00
 }
 
@@ -175,6 +176,7 @@ def enhanced_composite(
     buffett_result:   dict | None = None,
     greenblatt_result: dict | None = None,          # display only; not scored (ISSUE-008)
     earnings_revision_result: dict | None = None,   # P1 forward momentum; 12% weight
+    profitability_result: dict | None = None,        # P1 structural quality; 12% weight
 ) -> dict:
     """
     Eight-factor composite score (seven when buffett_result is None for
@@ -189,6 +191,8 @@ def enhanced_composite(
       altman_result              → altman.score()
       buffett_result             → buffett.score()          (optional; defaults to neutral 50)
       earnings_revision_result   → earnings_revision.get_revision_score()
+                                   (optional; defaults to neutral 50 when not available)
+      profitability_result        → profitability.ProfitabilityAnalyzer.get_profitability_score()
                                    (optional; defaults to neutral 50 when not available)
 
     Returns a dict with composite_score (0-100), verdict, and per-pillar
@@ -209,6 +213,7 @@ def enhanced_composite(
     a_pct  = (altman_result or {}).get("risk_score", 50) or 50           # 0-100 already
     b_pct  = _pct(buffett_result) if buffett_result else 50              # neutral fallback
     er_pct = _pct(earnings_revision_result) if earnings_revision_result else 50  # neutral fallback
+    p_pct  = (profitability_result.get("profitability_score") or 50) if profitability_result else 50  # neutral fallback
 
     # ── Weighted sum ──────────────────────────────────────────────────────────
     raw_score = (
@@ -219,7 +224,8 @@ def enhanced_composite(
         f_pct  * ENHANCED_WEIGHTS["piotroski"]         +
         r_pct  * ENHANCED_WEIGHTS["risk"]              +
         a_pct  * ENHANCED_WEIGHTS["altman"]            +
-        er_pct * ENHANCED_WEIGHTS["earnings_revision"]
+        er_pct * ENHANCED_WEIGHTS["earnings_revision"]  +
+        p_pct  * ENHANCED_WEIGHTS["profitability"]
     )
 
     # ── Altman hard cap — distress zone stocks cannot score above 50 ──────────
@@ -289,6 +295,7 @@ def enhanced_composite(
         "risk_pct":               round(r_pct,  1),
         "altman_pct":             round(a_pct,  1),
         "earnings_revision_pct":  round(er_pct, 1),
+        "profitability_pct":      round(p_pct,  1),
 
         # Greenblatt — display only, not in weighted sum (see ISSUE-008)
         "greenblatt_earnings_yield": (
@@ -307,6 +314,11 @@ def enhanced_composite(
         # Earnings revision signal (display + scoring)
         "earnings_revision_signal": (
             earnings_revision_result.get("signal") if earnings_revision_result else None
+        ),
+
+        # Profitability signal (display + scoring)
+        "profitability_signal": (
+            profitability_result.get("signal") if profitability_result else None
         ),
 
         # Score and verdict

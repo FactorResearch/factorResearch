@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 from codes.data   import cache, sec_data
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett,earnings_revision
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
@@ -228,10 +228,17 @@ def analyze_stock(symbol: str) -> dict:
             print(f"Risk metrics calculation failed: {e}")
     greenblatt_result = greenblatt.compute_single(price, sec_facts)
     buffett_result = buffett.score(price, sec_facts)
-    # Enhanced 7-factor composite
+    # Profitability score (P1)
+    profitability_result = None
+    try:
+        profitability_result = profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score()
+    except Exception as e:
+        print(f"Profitability calculation failed: {e}")
+    # Enhanced 9-factor composite
     enhanced = scorer.enhanced_composite(
         g, q, m_result, piotroski_result, risk_result, altman_result, buffett_result,
-        greenblatt_result=greenblatt_result, earnings_revision_result=earnings_revision_result
+        greenblatt_result=greenblatt_result, earnings_revision_result=earnings_revision_result,
+        profitability_result=profitability_result
     )
     result = {
         "symbol":    symbol,
@@ -249,6 +256,7 @@ def analyze_stock(symbol: str) -> dict:
         "greenblatt":  greenblatt_result,
         "buffett":     buffett_result,
         "earnings_revision": earnings_revision_result,
+        "profitability": profitability_result,
         "enhanced":    enhanced,
         # ─────────────────────────────────────────────────
         "price_history": hist.to_dict() if hist is not None else None,
