@@ -210,10 +210,12 @@ def enhanced_composite(
     m_pct  = _pct(momentum_result)
     f_pct  = ((piotroski_result or {}).get("f_score", 0) or 0) / 9 * 100  # 0-9 scale
     r_pct  = _pct(risk_result, "risk_score", "risk_score_max")
-    a_pct  = (altman_result or {}).get("risk_score", 50) or 50           # 0-100 already
+    _a_raw = (altman_result or {}).get("risk_score")
+    a_pct  = _a_raw if _a_raw is not None else 50  # neutral fallback only when data absent
     b_pct  = _pct(buffett_result) if buffett_result else 50              # neutral fallback
     er_pct = _pct(earnings_revision_result) if earnings_revision_result else 50  # neutral fallback
-    p_pct  = (profitability_result.get("profitability_score") or 50) if profitability_result else 50  # neutral fallback
+    _p_raw = profitability_result.get("profitability_score") if profitability_result else None
+    p_pct  = _p_raw if _p_raw is not None else 50  # neutral fallback only when data absent
 
     # ── Weighted sum ──────────────────────────────────────────────────────────
     raw_score = (
