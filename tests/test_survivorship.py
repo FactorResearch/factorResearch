@@ -1,6 +1,11 @@
 import pytest
 import pandas as pd
 from unittest.mock import patch, MagicMock
+import sys
+import os
+
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from codes.sec_data import (
     get_ticker_map, get_cik, _sector_class, _annual_df,
     _revenue_concepts, fetch_company_facts, _latest_filing_date

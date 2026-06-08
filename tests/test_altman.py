@@ -4,6 +4,15 @@ TEST-001 — Altman Z-Score partial-score normalisation (ISSUE-006)
 Verifies that missing components do not artificially depress the Z-score.
 """
 
+import sys
+import os
+
+# Ensure project root is on sys.path when run directly with python3.
+# pytest handles this via tests/conftest.py; this block covers direct execution.
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
 import math
 import pytest
 from codes import altman

@@ -1,3 +1,13 @@
+
+import sys
+import os
+
+# Ensure project root is on sys.path when run directly with python3.
+# pytest handles this via tests/conftest.py; this block covers direct execution.
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
 """Tests for ISSUE-001: Dividend history lookback extended to 30 years."""
 from codes.sec_data import _annual_df, _try_concepts
 

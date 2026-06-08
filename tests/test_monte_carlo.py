@@ -1,5 +1,8 @@
-# tests/test_montecarlo.py
+import sys
+import os
 
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import numpy as np
 
 from codes.portfolio import MC_PATHS

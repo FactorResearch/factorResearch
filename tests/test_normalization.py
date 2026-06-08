@@ -1,3 +1,8 @@
+import sys
+import os
+
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from codes.graham import score as graham_score
 from codes.altman import score as altman_score
 from codes.scorer import enhanced_composite
