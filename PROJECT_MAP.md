@@ -18,9 +18,8 @@ CORE ARCHITECTURE RULES (HARD CONSTRAINTS)
 - Avoid cross-module entanglement unless defined
 
 
-========================================================
 DATA LAYER
-========================================================
+===
 sec_data.py:
 - SEC + fundamentals ingestion
 - Dividend + financial history provider
@@ -35,9 +34,9 @@ P5 UPGRADE:
   annual=7d, quarterly=1–3d
 - Cache-first behavior; fetch only when needed
 
-========================================================
+
 CORE VALUE MODELS
-========================================================
+===
 graham.py:
 - dividend stability, earnings consistency, value score
 
@@ -59,9 +58,9 @@ fcf_quality.py:
 profitability.py (weight 12%):
 - ROIC, ROE, margins, capital efficiency, incremental ROIC
 
-========================================================
+
 NEW P2–P3–P4 MODELS
-========================================================
+===
 
 P2 CAPITAL ALLOCATION (capital_allocation.py, weight 8%):
 - reinvestment rate
@@ -103,9 +102,9 @@ P4 ALTERNATIVE DATA (framework only):
 - hiring velocity (stub)
 - sentiment (stub)
 
-========================================================
+
 OPTIONS LAYER (P4 EXPANSION)
-========================================================
+===
 options_signal_engine.py:
 - CALL vs PUT directional bias
 - short-horizon option price movement prediction
@@ -120,9 +119,9 @@ Models option mark-to-market movement, NOT expiry payoff
 Dependencies:
 sec_data.py, regime.py, risk_metrics.py, portfolio.py
 
-========================================================
 P5 INFRASTRUCTURE UPGRADES
-========================================================
+===
+
 
 1. SEC LAZY FETCH (critical):
 - eliminate bulk ingestion
@@ -142,9 +141,8 @@ value_metrics SQLite table:
 - single active expanded stat
 - requires (label, value, description)
 
-========================================================
 SCORER SYSTEM (UNCHANGED CORE LOGIC)
-========================================================
+===
 Current weights (legacy):
 - Graham 15%
 - Buffett 25%
@@ -174,9 +172,8 @@ KEY DESIGN SHIFT:
 - Increase forward-looking signals (earnings revisions, growth)
 - Improve factor independence (orthogonal decomposition)
 
-========================================================
 EXECUTION PRIORITY ORDER
-========================================================
+===
 1. profitability.py
 2. fcf_quality.py
 3. earnings_revision.py
@@ -191,9 +188,9 @@ EXECUTION PRIORITY ORDER
 12. persistence layer
 13. mobile UX
 
-========================================================
+
 GLOBAL AI AGENT RULES
-========================================================
+===
 - Read only relevant files
 - Avoid repo-wide scans
 - No unrelated refactors
@@ -202,9 +199,9 @@ GLOBAL AI AGENT RULES
 - Minimal diff output
 - Stop after scoped task completion
 
-========================================================
 EXPECTED SYSTEM OUTCOME
-========================================================
+===
+
 - Higher Sharpe ratio via orthogonal factors
 - Reduced value traps via revisions + growth filters
 - Better regime-aware risk control
