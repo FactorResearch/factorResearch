@@ -119,7 +119,7 @@ def fundamental_only(graham_result: dict, quality_result: dict) -> dict:
 
 ENHANCED_WEIGHTS = {
     "graham":             0.11,   # reduced to accommodate profitability slot
-    "buffett":            0.20,   # reduced to accommodate profitability slot
+    "buffett":            0.10,   # reduced to accommodate fcf_quality slot
     "quality":            0.14,   # reduced to accommodate profitability slot
     "momentum":           0.11,   # reduced to accommodate profitability slot
     "piotroski":          0.11,   # reduced to accommodate profitability slot
@@ -127,6 +127,7 @@ ENHANCED_WEIGHTS = {
     "altman":             0.03,   # reduced to accommodate profitability slot
     "earnings_revision":  0.12,   # P1 forward momentum factor
     "profitability":      0.12,   # P1 structural quality factor (ROIC-based)
+    "fcf_quality":        0.10,   # P1 cash generation quality factor
     # Sum = 1.00
 }
 
@@ -177,9 +178,10 @@ def enhanced_composite(
     greenblatt_result: dict | None = None,          # display only; not scored (ISSUE-008)
     earnings_revision_result: dict | None = None,   # P1 forward momentum; 12% weight
     profitability_result: dict | None = None,        # P1 structural quality; 12% weight
+    fcf_quality_result: dict | None = None,          # P1 cash generation quality; 10% weight
 ) -> dict:
     """
-    Eight-factor composite score (seven when buffett_result is None for
+    Ten-factor composite score (fewer when optional results are None for
     backward-compatibility with older cached analyses).
 
     All input dicts are the return values of their respective score() functions:
@@ -193,6 +195,8 @@ def enhanced_composite(
       earnings_revision_result   → earnings_revision.get_revision_score()
                                    (optional; defaults to neutral 50 when not available)
       profitability_result        → profitability.ProfitabilityAnalyzer.get_profitability_score()
+                                   (optional; defaults to neutral 50 when not available)
+      fcf_quality_result          → fcf_quality.FCFQualityAnalyzer.get_fcf_quality_score()
                                    (optional; defaults to neutral 50 when not available)
 
     Returns a dict with composite_score (0-100), verdict, and per-pillar
@@ -216,6 +220,8 @@ def enhanced_composite(
     er_pct = _pct(earnings_revision_result) if earnings_revision_result else 50  # neutral fallback
     _p_raw = profitability_result.get("profitability_score") if profitability_result else None
     p_pct  = _p_raw if _p_raw is not None else 50  # neutral fallback only when data absent
+    _fcf_raw = fcf_quality_result.get("fcf_quality_score") if fcf_quality_result else None
+    fcf_pct  = _fcf_raw if _fcf_raw is not None else 50  # neutral fallback only when data absent
 
     # ── Weighted sum ──────────────────────────────────────────────────────────
     raw_score = (
@@ -227,7 +233,8 @@ def enhanced_composite(
         r_pct  * ENHANCED_WEIGHTS["risk"]              +
         a_pct  * ENHANCED_WEIGHTS["altman"]            +
         er_pct * ENHANCED_WEIGHTS["earnings_revision"]  +
-        p_pct  * ENHANCED_WEIGHTS["profitability"]
+        p_pct  * ENHANCED_WEIGHTS["profitability"]     +
+        fcf_pct * ENHANCED_WEIGHTS["fcf_quality"]
     )
 
     # ── Altman hard cap — distress zone stocks cannot score above 50 ──────────
@@ -298,6 +305,7 @@ def enhanced_composite(
         "altman_pct":             round(a_pct,  1),
         "earnings_revision_pct":  round(er_pct, 1),
         "profitability_pct":      round(p_pct,  1),
+        "fcf_quality_pct":        round(fcf_pct, 1),
 
         # Greenblatt — display only, not in weighted sum (see ISSUE-008)
         "greenblatt_earnings_yield": (
@@ -321,6 +329,11 @@ def enhanced_composite(
         # Profitability signal (display + scoring)
         "profitability_signal": (
             profitability_result.get("signal") if profitability_result else None
+        ),
+
+        # FCF Quality signal (display + scoring)
+        "fcf_quality_signal": (
+            fcf_quality_result.get("signal") if fcf_quality_result else None
         ),
 
         # Score and verdict

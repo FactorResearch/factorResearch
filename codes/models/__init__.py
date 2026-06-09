@@ -7,3 +7,4 @@ from . import quality
 from . import momentum
 from . import risk_metrics
 from . import earnings_revision
+from . import fcf_quality

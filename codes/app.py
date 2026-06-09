@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 from codes.data   import cache, sec_data
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
@@ -234,11 +234,17 @@ def analyze_stock(symbol: str) -> dict:
         profitability_result = profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score()
     except Exception as e:
         print(f"Profitability calculation failed: {e}")
+    # FCF Quality score (P1)
+    fcf_quality_result = None
+    try:
+        fcf_quality_result = fcf_quality_model.FCFQualityAnalyzer(symbol, sec_facts).get_fcf_quality_score()
+    except Exception as e:
+        print(f"FCF quality calculation failed: {e}")
     # Enhanced 9-factor composite
     enhanced = scorer.enhanced_composite(
         g, q, m_result, piotroski_result, risk_result, altman_result, buffett_result,
         greenblatt_result=greenblatt_result, earnings_revision_result=earnings_revision_result,
-        profitability_result=profitability_result
+        profitability_result=profitability_result, fcf_quality_result=fcf_quality_result
     )
     result = {
         "symbol":    symbol,
@@ -257,6 +263,7 @@ def analyze_stock(symbol: str) -> dict:
         "buffett":     buffett_result,
         "earnings_revision": earnings_revision_result,
         "profitability": profitability_result,
+        "fcf_quality": fcf_quality_result,
         "enhanced":    enhanced,
         # ─────────────────────────────────────────────────
         "price_history": hist.to_dict() if hist is not None else None,
@@ -933,13 +940,16 @@ def _composite_banner(data: dict) -> html.Div:
     if has_enh:
         has_buffett = enhanced.get("buffett_pct") is not None
         pillars = [
-            ("Graham",    enhanced.get("graham_pct",    0), "15%"),
-            ("Buffett",   enhanced.get("buffett_pct",   0), "25%"),
-            ("Quality",   enhanced.get("quality_pct",   0), "18%"),
-            ("Momentum",  enhanced.get("momentum_pct",  0), "14%"),
-            ("Piotroski", enhanced.get("piotroski_pct", 0), "14%"),
-            ("Risk",      enhanced.get("risk_pct",      0), " 8%"),
-            ("Altman",    enhanced.get("altman_pct",    0), " 6%"),
+            ("Graham",    enhanced.get("graham_pct",    0), "11%"),
+            ("Buffett",   enhanced.get("buffett_pct",   0), "10%"),
+            ("Quality",   enhanced.get("quality_pct",   0), "14%"),
+            ("Momentum",  enhanced.get("momentum_pct",  0), "11%"),
+            ("Piotroski", enhanced.get("piotroski_pct", 0), "11%"),
+            ("Risk",      enhanced.get("risk_pct",      0), " 6%"),
+            ("Altman",    enhanced.get("altman_pct",    0), " 3%"),
+            ("E.Rev",     enhanced.get("earnings_revision_pct", 0), "12%"),
+            ("Profit.",   enhanced.get("profitability_pct", 0), "12%"),
+            ("FCF Qual.", enhanced.get("fcf_quality_pct", 0), "10%"),
         ]
         score_label = "Enhanced Score"
     else:
@@ -983,6 +993,71 @@ def _composite_banner(data: dict) -> html.Div:
         ]),
         html.Div(className="pillar-scores", children=pillar_els),
     ])
+
+def _fcf_quality_card(data: dict) -> html.Div:
+    """FCF Quality card: key metrics + scorecard criteria."""
+    fcf = data.get("fcf_quality") or {}
+    if not fcf:
+        return html.Div()
+
+    score  = fcf.get("fcf_quality_score")
+    signal = fcf.get("signal", "")
+    if score is None:
+        return html.Div()
+
+    sig_color = {
+        "STRONG_CASH_GENERATOR": GREEN,
+        "HIGH_CASH_QUALITY":     BLUE,
+        "NEUTRAL":               AMBER,
+        "WEAK_CASH_QUALITY":     MUTED,
+        "EARNINGS_QUALITY_RISK": RED,
+    }.get(signal, MUTED)
+
+    def _fmt(v, fmt=",.2f", prefix="", suffix=""):
+        if v is None:
+            return "N/A"
+        try:
+            return f"{prefix}{v:{fmt}}{suffix}"
+        except (ValueError, TypeError):
+            return "N/A"
+
+    metrics = [
+        ("FCF",              _fmt(fcf.get("fcf"), ",.0f", "$")),
+        ("Operating CF",     _fmt(fcf.get("operating_cash_flow"), ",.0f", "$")),
+        ("CapEx",            _fmt(fcf.get("capex"), ",.0f", "$")),
+        ("FCF Margin",       _fmt(fcf.get("fcf_margin"), ".1f", suffix="%")),
+        ("FCF Conversion",   _fmt(fcf.get("fcf_conversion"), ".1f", suffix="%")),
+        ("FCF Stability CV", _fmt(fcf.get("fcf_stability"), ".3f")),
+        ("Growth Consist.",  _fmt(fcf.get("fcf_growth_consistency"), ".0%") if fcf.get("fcf_growth_consistency") is not None else "N/A"),
+        ("Accrual Ratio",    _fmt(fcf.get("accrual_ratio"), ".4f")),
+        ("FCF CAGR 5yr",     _fmt(fcf.get("fcf_cagr_5y"), ".1f", suffix="%")),
+    ]
+
+    metric_rows = [
+        html.Div(style={
+            "display": "flex", "justifyContent": "space-between",
+            "padding": "4px 0", "borderBottom": f"1px solid {BORDER}",
+            "fontSize": "12px",
+        }, children=[
+            html.Span(lbl, className="text-muted"),
+            html.Span(val, style={"color": TEXT, "fontWeight": "600"}),
+        ])
+        for lbl, val in metrics
+    ]
+
+    return html.Div(className="scorecard", children=[
+        html.Div(style={"display": "flex", "alignItems": "center",
+                        "gap": "10px", "padding": "14px 18px 10px"}, children=[
+            html.Span("FCF Quality",
+                      style={"fontSize": "14px", "fontWeight": "700", "color": TEXT}),
+            html.Span(f"{score:.0f}/100",
+                      style={"fontSize": "22px", "fontWeight": "800", "color": sig_color}),
+            html.Span(f"— {signal.replace('_', ' ').title()}",
+                      style={"fontSize": "13px", "color": sig_color}),
+        ]),
+        html.Div(metric_rows, className="px-xl pb-2xl"),
+    ])
+
 
 def _piotroski_card(data: dict) -> html.Div:
     """Piotroski F-Score card: 9 binary signals in 3 category blocks."""
@@ -1439,6 +1514,7 @@ _stat(
         if p_data and a_data else html.Div()
     )
     risk_card = _risk_card(data)
+    fcf_quality_card = _fcf_quality_card(data)
    
     charts_row = html.Div(
         className="charts-grid",
@@ -1457,7 +1533,7 @@ _stat(
         moment_quality_row,
         quant_row,
         risk_card,
-        
+        fcf_quality_card,
         charts_row,
         div_chart,
         html.Div(
