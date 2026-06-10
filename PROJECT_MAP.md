@@ -62,31 +62,6 @@ profitability.py (weight 12%):
 NEW P2–P3–P4 MODELS
 ===
 
-P2 CAPITAL ALLOCATION (capital_allocation.py, weight 8%):
-- reinvestment rate
-- ROIC spread
-- buyback yield
-- dilution rate
-- dividend stability
-- debt allocation trend
-- M&A efficiency
-=> capital_allocation_score + signal
-
-P2 GROWTH QUALITY (growth_quality.py, weight 8%):
-- revenue CAGR (5Y/10Y)
-- EPS CAGR
-- FCF CAGR
-- margin stability
-- incremental ROIC
-=> growth_quality_score + signal
-
-P3 REGIME MODEL (regime.py):
-- market trend score
-- volatility percentile (20D/60D)
-- drawdown depth
-=> regimes:
-BULL_LOW_VOL | BULL_HIGH_VOL | BEAR_LOW_VOL | BEAR_HIGH_VOL | SIDEWAYS
-
 P4 INSIDER ACTIVITY:
 - net insider buying
 - cluster buying detection
