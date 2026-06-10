@@ -9,3 +9,4 @@ from . import risk_metrics
 from . import earnings_revision
 from . import fcf_quality
 from . import capital_allocation
+from . import growth_quality
