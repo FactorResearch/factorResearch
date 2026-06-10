@@ -1681,7 +1681,7 @@ _stat(
     banner = _composite_banner(data)
     graham_card  = _render_scorecard("Graham Value Analysis", g["criteria"], "graham")
     quality_card = _render_scorecard("Quality Analysis", q["criteria"], "quality")
-    value_row = html.Div(className="card-row", children=[quality_card, graham_card])
+    
     buffett_card = (
         _render_scorecard("Buffett Quality & Value", b_data.get("criteria", []), "buffett")
         if b_data.get("criteria") else html.Div()
@@ -1690,46 +1690,36 @@ _stat(
         _render_scorecard("Momentum Analysis", m.get("criteria", []), "momentum")
         if m.get("criteria") else html.Div()
     )
-    moment_quality_row = html.Div(
-        className="moment_quality_row",
-        children=[buffett_card, momentum_card]
-    )
+    
     piotroski_card = _piotroski_card(data)
     altman_card = _altman_card(data)
-    quant_row = (
-        html.Div(className="quant_row", children=[piotroski_card, altman_card])
-        if p_data and a_data else html.Div()
-    )
     risk_card = _risk_card(data)
     fcf_quality_card = _fcf_quality_card(data)
-    capital_allocation_card = _capital_allocation_card(data)
     regime_card = _regime_card(data)
-    row=(html.Div(className="card-row", children=[fcf_quality_card, regime_card]))
-    charts_row = html.Div(
-        className="charts-grid",
-        children=[
-            _eps_chart(g.get("eps_history", []), symbol),
-            _price_chart(data.get("price_history"), data.get("spy_history"), symbol),
-        ]
-    )
+    capital_allocation_card = _capital_allocation_card(data)
     div_chart = _div_chart(g.get("div_history", []), symbol)
     graham_details = _graham_details_card(g, b_data)
     buffett_details = _buffett_details_card(data)
+    row=(
+        html.Div(className="card-row", children=[graham_details, buffett_details]),
+        html.Div(className="moment_quality_row",children=[buffett_card, momentum_card]),
+        risk_card,
+        html.Div(className="card-row", children=[quality_card, graham_card]),
+        html.Div(className="quant_row", children=[piotroski_card, altman_card])
+        if p_data and a_data else html.Div(),
+        html.Div(className="card-row", children=[fcf_quality_card, regime_card]),
+        html.Div(className="card-row", children=capital_allocation_card),
+        html.Div(className="charts-grid",children=[_eps_chart(g.get("eps_history", []), symbol), _price_chart(data.get("price_history"), data.get("spy_history"), symbol),])
+        )
+    
+  
+   
     return [
         header,
         banner,
-        value_row,
-        moment_quality_row,
-        quant_row,
-        risk_card,
-        row,
-        capital_allocation_card,
-        charts_row,
-        div_chart,
-        html.Div(
-            className="grid-2 gap-16 grid",
-            children=[graham_details, buffett_details]
-        )
+
+        *row,
+        div_chart
     ]
 @callback(
     Output("analysis-content",        "children"),
@@ -1957,7 +1947,7 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
         ])
         for label, value in rows
     ]
-    return html.Div(className="detail-card", children=[
+    return html.Div(className="scorecard", children=[
         html.Div("Graham Number & Buffett IV", className="card-header"),
         html.Div(detail_rows)
     ])
@@ -1988,7 +1978,7 @@ def _buffett_details_card(data: dict) -> html.Div:
         ])
         for label, value in rows
     ]
-    return html.Div(className="detail-card", children=[
+    return html.Div(className="scorecard", children=[
         html.Div("Buffett DCF Details", className="card-header"),
         html.Div(detail_rows)
     ])
