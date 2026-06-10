@@ -366,3 +366,59 @@ def enhanced_composite(
 
         "weights": ENHANCED_WEIGHTS,
     }
+
+
+# ── Regime overlay (portfolio-level risk control) ─────────────────────────────
+#
+# Regime is NOT a per-stock composite weight.  It is a market-condition
+# multiplier applied AFTER composite scoring to adjust position sizing.
+#
+# Usage:
+#   regime_result  = regime.score(spy_hist)
+#   overlay        = apply_regime_overlay(composite_score, regime_result)
+#   final_score    = overlay["adjusted_score"]
+#   position_size  = base_size * overlay["max_equity_exposure"]
+
+def apply_regime_overlay(composite_score: float,
+                         regime_result: dict | None) -> dict:
+    """
+    Apply regime risk multiplier to a stock's composite score.
+
+    Args:
+        composite_score:  Raw enhanced composite score (0-100).
+        regime_result:    Output of regime.score(spy_hist); None → no adjustment.
+
+    Returns dict:
+        {
+            "adjusted_score":      float,   # composite × regime_multiplier
+            "regime":              str | None,
+            "regime_multiplier":   float,
+            "risk_level":          str | None,
+            "max_equity_exposure": float,
+            "risk_alert":          bool,
+        }
+    """
+    if not regime_result or regime_result.get("error"):
+        return {
+            "adjusted_score":      composite_score,
+            "regime":              None,
+            "regime_multiplier":   1.0,
+            "risk_level":          None,
+            "max_equity_exposure": 1.0,
+            "risk_alert":          False,
+        }
+
+    multiplier = regime_result.get("regime_multiplier", 1.0) or 1.0
+    exposure   = regime_result.get("max_equity_exposure", 1.0) or 1.0
+
+    # Scale composite into [0,100]; multiplier > 1.0 may push above 100
+    adjusted = round(min(composite_score * multiplier, 100.0), 1)
+
+    return {
+        "adjusted_score":      adjusted,
+        "regime":              regime_result.get("regime"),
+        "regime_multiplier":   multiplier,
+        "risk_level":          regime_result.get("risk_level"),
+        "max_equity_exposure": exposure,
+        "risk_alert":          bool(regime_result.get("risk_alert", False)),
+    }

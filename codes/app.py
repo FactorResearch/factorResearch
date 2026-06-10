@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 from codes.data   import cache, sec_data
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, regime as regime_model
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
@@ -256,6 +256,17 @@ def analyze_stock(symbol: str) -> dict:
         profitability_result=profitability_result, fcf_quality_result=fcf_quality_result,
         capital_allocation_result=capital_allocation_result,
     )
+
+    # Regime overlay — uses SPY history already loaded above (portfolio risk layer)
+    regime_result = None
+    if spy_hist is not None and not spy_hist.empty:
+        try:
+            regime_result = regime_model.score(spy_hist)
+        except Exception as e:
+            print(f"Regime calculation failed: {e}")
+    regime_overlay = scorer.apply_regime_overlay(
+        enhanced.get("composite_score", 0), regime_result
+    )
     result = {
         "symbol":    symbol,
         "name":      sec_facts["name"],
@@ -275,6 +286,8 @@ def analyze_stock(symbol: str) -> dict:
         "profitability": profitability_result,
         "fcf_quality": fcf_quality_result,
         "capital_allocation": capital_allocation_result,
+        "regime":             regime_result,
+        "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,
         # ─────────────────────────────────────────────────
         "price_history": hist.to_dict() if hist is not None else None,
@@ -1323,6 +1336,95 @@ def _risk_card(data: dict) -> html.Div:
                         ]),
         
     ])
+def _regime_card(data: dict) -> html.Div:
+    """Regime model card: market condition + portfolio risk overlay."""
+    r = data.get("regime") or {}
+    ov = data.get("regime_overlay") or {}
+    if not r or r.get("error"):
+        return html.Div()
+
+    regime        = r.get("regime", "N/A")
+    risk_level    = r.get("risk_level", "N/A")
+    risk_alert    = r.get("risk_alert", False)
+    multiplier    = ov.get("regime_multiplier", 1.0)
+    exposure      = ov.get("max_equity_exposure", 1.0)
+    adjusted      = ov.get("adjusted_score")
+    trend_score   = r.get("market_trend_score")
+    vol_pct       = r.get("volatility_percentile")
+    drawdown      = r.get("drawdown_depth")
+
+    regime_colors = {
+        "BULL_LOW_VOL":  GREEN,
+        "BULL_HIGH_VOL": AMBER,
+        "SIDEWAYS":      MUTED,
+        "BEAR_LOW_VOL":  AMBER,
+        "BEAR_HIGH_VOL": RED,
+        "CRISIS":        RED,
+    }
+    risk_colors = {"NORMAL": GREEN, "ELEVATED": AMBER, "HIGH": RED, "CRISIS": RED}
+    rc = regime_colors.get(regime, MUTED)
+    rlc = risk_colors.get(risk_level, MUTED)
+
+    def _fmt(v, suffix="", decimals=1):
+        return f"{v:.{decimals}f}{suffix}" if v is not None else "N/A"
+
+    metrics = [
+        ("Trend Score",       _fmt(trend_score, "/100", 0),   AMBER if trend_score and trend_score < 40 else GREEN if trend_score and trend_score >= 60 else MUTED),
+        ("Vol Percentile",    _fmt(vol_pct, "%", 0),           RED if vol_pct and vol_pct >= 75 else AMBER if vol_pct and vol_pct >= 50 else GREEN),
+        ("Drawdown (252D)",   _fmt(drawdown, "%"),              RED if drawdown and drawdown <= -20 else AMBER if drawdown and drawdown <= -10 else GREEN),
+        ("SMA 50",            f"${r.get('sma_50'):.2f}" if r.get("sma_50") else "N/A",  TEXT),
+        ("SMA 200",           f"${r.get('sma_200'):.2f}" if r.get("sma_200") else "N/A", TEXT),
+        ("Vol 20D (ann.)",    _fmt(r.get("vol_20d"), "%"),     TEXT),
+        ("Vol 60D (ann.)",    _fmt(r.get("vol_60d"), "%"),     TEXT),
+        ("Regime Multiplier", f"×{multiplier:.2f}",             GREEN if multiplier >= 1.0 else AMBER if multiplier >= 0.8 else RED),
+        ("Max Equity Exp.",   f"{exposure*100:.0f}%",           GREEN if exposure >= 1.0 else AMBER if exposure >= 0.7 else RED),
+        ("Adjusted Score",    f"{adjusted:.1f}/100" if adjusted is not None else "N/A",
+                              GREEN if adjusted and adjusted >= 60 else AMBER if adjusted and adjusted >= 40 else RED),
+    ]
+
+    metric_rows = [
+        html.Div(style={
+            "display": "flex", "justifyContent": "space-between",
+            "padding": "4px 0", "borderBottom": f"1px solid {BORDER}", "fontSize": "12px",
+        }, children=[
+            html.Span(lbl, className="text-muted"),
+            html.Span(val, style={"color": col, "fontWeight": "600"}),
+        ])
+        for lbl, val, col in metrics
+    ]
+
+    alert_banner = html.Div(
+        "⚡ Fast Deterioration Alert — reduce position sizes",
+        style={
+            "background": "#3a0000", "color": RED, "borderRadius": "6px",
+            "padding": "6px 12px", "margin": "0 0 10px 0", "fontSize": "12px",
+            "fontWeight": "700", "border": f"1px solid {RED}",
+        }
+    ) if risk_alert else html.Div()
+
+    return html.Div(className="scorecard", children=[
+        html.Div(style={"display": "flex", "alignItems": "center",
+                        "gap": "10px", "padding": "14px 18px 10px"}, children=[
+            html.Span("Market Regime",
+                      style={"fontSize": "14px", "fontWeight": "700", "color": TEXT}),
+            html.Span(regime.replace("_", " "),
+                      style={"fontSize": "18px", "fontWeight": "800", "color": rc}),
+            html.Span(f"· {risk_level}",
+                      style={"fontSize": "13px", "color": rlc, "fontWeight": "600"}),
+        ]),
+        html.Div(style={"padding": "0 18px 14px"}, children=[
+            alert_banner,
+            *metric_rows,
+            html.Div(
+                "Regime multiplier adjusts final score; max equity exposure governs position sizing. "
+                "Based on SPY price history.",
+                style={"fontSize": "11px", "color": MUTED, "marginTop": "8px",
+                       "fontStyle": "italic", "lineHeight": "1.5"},
+            ),
+        ]),
+    ])
+
+
 def _build_analysis_content(data: dict) -> list:
     """Render analysis data into Dash components. Pure function, no side effects."""
     if not data or "error" in data:
@@ -1603,6 +1705,7 @@ _stat(
     risk_card = _risk_card(data)
     fcf_quality_card = _fcf_quality_card(data)
     capital_allocation_card = _capital_allocation_card(data)
+    regime_card = _regime_card(data)
    
     charts_row = html.Div(
         className="charts-grid",
@@ -1621,6 +1724,7 @@ _stat(
         moment_quality_row,
         quant_row,
         risk_card,
+        regime_card,
         fcf_quality_card,
         capital_allocation_card,
         charts_row,
