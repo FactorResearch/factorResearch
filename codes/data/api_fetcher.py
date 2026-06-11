@@ -780,6 +780,71 @@ def get_splits(symbol: str) -> list[dict]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Insider transactions  — Finnhub only (no free-tier fallback)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _fh_get_insider_transactions(symbol: str, years: int = 1) -> list[dict]:
+    """Open-market insider transactions from Finnhub (codes P and S only)."""
+    if not _fh_client:
+        return []
+    _fh_limiter.check()
+    try:
+        cutoff = pd.Timestamp.now() - pd.DateOffset(years=years)
+        result = _fh_client.company_insider_transactions(
+            symbol.upper(),
+            _from=cutoff.strftime("%Y-%m-%d"),
+            to=pd.Timestamp.now().strftime("%Y-%m-%d"),
+        )
+        _fh_limiter.record()
+        out = []
+        for item in (result.get("data") or []):
+            code   = str(item.get("transactionCode", "")).strip().upper()
+            change = float(item.get("change") or 0)
+            if code == "P":
+                tx, is_open = "buy",  True
+            elif code == "S":
+                tx, is_open = "sell", True
+            elif change > 0:
+                tx, is_open = "buy",  False
+            elif change < 0:
+                tx, is_open = "sell", False
+            else:
+                continue
+            shares = abs(change)
+            if shares <= 0:
+                continue
+            out.append({
+                "date":           item.get("transactionDate") or item.get("filingDate", ""),
+                "insider_id":     str(item.get("name", "unknown")),
+                "role":           str(item.get("relationship", "")),
+                "transaction":    tx,
+                "shares":         shares,
+                "is_open_market": is_open,
+            })
+        return out
+    except RateLimitError:
+        raise
+    except Exception as e:
+        print(f"  [Finnhub] insider_transactions error for {symbol}: {e}")
+        return []
+
+
+def get_insider_transactions(symbol: str, years: int = 1) -> list[dict]:
+    """
+    Insider transaction history (cached).
+    Returns list compatible with insider_activity.get_insider_score().
+    Empty list when Finnhub key is absent.
+    """
+    symbol = symbol.upper().strip()
+    cached = read("insiders", symbol)
+    if cached is not None:
+        return cached
+    transactions = _fh_get_insider_transactions(symbol, years) if _fh_client else []
+    write("insiders", symbol, transactions)
+    return transactions
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Diagnostics
 # ══════════════════════════════════════════════════════════════════════════════
 

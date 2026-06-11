@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 from codes.data   import cache, sec_data
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, regime as regime_model
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, regime as regime_model, insider_activity as insider_activity_model
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
@@ -249,6 +249,22 @@ def analyze_stock(symbol: str) -> dict:
         ).get_capital_allocation_score()
     except Exception as e:
         print(f"Capital allocation calculation failed: {e}")
+    # Insider Activity (P4)
+    insider_activity_result = None
+    try:
+        transactions = api_fetcher.get_insider_transactions(symbol)
+        shares_out = None
+        sh_recs = sec_facts.get("shares", [])
+        if sh_recs:
+            try:
+                shares_out = float(sh_recs[0]["value"])
+            except (KeyError, TypeError, ValueError):
+                pass
+        insider_activity_result = insider_activity_model.get_insider_score(
+            symbol, transactions, shares_outstanding=shares_out
+        )
+    except Exception as e:
+        print(f"Insider activity calculation failed: {e}")
     # Enhanced 9-factor composite
     enhanced = scorer.enhanced_composite(
         g, q, m_result, piotroski_result, risk_result, altman_result, buffett_result,
@@ -286,6 +302,7 @@ def analyze_stock(symbol: str) -> dict:
         "profitability": profitability_result,
         "fcf_quality": fcf_quality_result,
         "capital_allocation": capital_allocation_result,
+        "insider_activity":   insider_activity_result,
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,
@@ -1159,6 +1176,55 @@ def _capital_allocation_card(data: dict) -> html.Div:
     ])
 
 
+def _insider_activity_card(data: dict) -> html.Div:
+    """Insider buying/selling activity card."""
+    ia = data.get("insider_activity") or {}
+    if not ia or ia.get("low_coverage"):
+        return html.Div()
+    score  = ia.get("insider_confidence_score")
+    signal = ia.get("signal", "NEUTRAL")
+    if score is None:
+        return html.Div()
+    sig_color = {"BULLISH": GREEN, "NEUTRAL": AMBER, "BEARISH": RED}.get(signal, MUTED)
+
+    def _fmt(v, fmt=".2f", suffix=""):
+        return f"{v:{fmt}}{suffix}" if v is not None else "N/A"
+
+    cluster_txt = "\u2705 Detected" if ia.get("cluster_detected") else "\u2014"
+    metrics = [
+        ("Net Insider Buying",  _fmt(ia.get("net_insider_buying"),  "+.2f", "%")),
+        ("Cluster Buying",      cluster_txt),
+        ("Type Quality Score",  _fmt(ia.get("insider_type_quality"), ".1f", "/100")),
+        ("Buy Transactions",    str(ia.get("n_buy_transactions",  0))),
+        ("Sell Transactions",   str(ia.get("n_sell_transactions", 0))),
+        ("Distinct Buyers",     str(ia.get("n_distinct_buyers",   0))),
+    ]
+    rows = [
+        html.Div(style={
+            "display": "flex", "justifyContent": "space-between",
+            "padding": "4px 0", "borderBottom": f"1px solid {BORDER}", "fontSize": "12px",
+        }, children=[
+            html.Span(lbl, className="text-muted"),
+            html.Span(val, style={"color": TEXT, "fontWeight": "600"}),
+        ])
+        for lbl, val in metrics
+    ]
+    return html.Div(className="scorecard", children=[
+        html.Div(style={
+            "display": "flex", "alignItems": "center",
+            "gap": "10px", "padding": "14px 18px 10px",
+        }, children=[
+            html.Span("Insider Activity",
+                      style={"fontSize": "14px", "fontWeight": "700", "color": TEXT}),
+            html.Span(f"{score:.0f}/100",
+                      style={"fontSize": "22px", "fontWeight": "800", "color": sig_color}),
+            html.Span(f"\u2014 {signal}",
+                      style={"fontSize": "13px", "color": sig_color}),
+        ]),
+        html.Div(rows, className="px-xl pb-2xl"),
+    ])
+
+
 def _piotroski_card(data: dict) -> html.Div:
     """Piotroski F-Score card: 9 binary signals in 3 category blocks."""
     p = data.get("piotroski") or {}
@@ -1708,7 +1774,7 @@ _stat(
         html.Div(className="quant_row", children=[piotroski_card, altman_card])
         if p_data and a_data else html.Div(),
         html.Div(className="card-row", children=[fcf_quality_card, regime_card]),
-        html.Div(className="card-row", children=capital_allocation_card),
+        html.Div(className="card-row", children=[capital_allocation_card, _insider_activity_card(data)]),
         html.Div(className="charts-grid",children=[_eps_chart(g.get("eps_history", []), symbol), _price_chart(data.get("price_history"), data.get("spy_history"), symbol),])
         )
     
