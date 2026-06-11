@@ -1171,6 +1171,11 @@ body {
     flex: 1 1 50%;
   }
 }
+.bg{
+  @include media.phones {
+    flex-direction: row;
+  }
+}
 
 .risk-row {
   .metric_cell {
@@ -1348,13 +1353,11 @@ canvas {
 
   // Stats
   .stats-row {
-    flex-direction: column;
-  }
-
-  .stats-row .stat-item {
+    flex-direction: row;
+      .stat-item {
     border-right: none;
     border-bottom: 1px solid $border;
-
+        flex:1 1 50%;}
     &:last-child {
       border-bottom: none;
     }
@@ -1427,9 +1430,6 @@ canvas {
     font-size: 18px;
   }
 
-  .pillar-scores {
-    grid-template-columns: 1fr;
-  }
 
   .score-pill,
   .verdict-pill {

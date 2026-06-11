@@ -1766,7 +1766,7 @@ _stat(
     graham_details = _graham_details_card(g, b_data)
     buffett_details = _buffett_details_card(data)
     row=(
-        html.Div(className="card-row", children=[graham_details, buffett_details]),
+        html.Div(className="card-row bg", children=[graham_details, buffett_details]),
         html.Div(className="moment_quality_row",children=[buffett_card, momentum_card]),
         risk_card,
         html.Div(className="card-row", children=[quality_card, graham_card]),
@@ -2014,7 +2014,7 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     ]
     return html.Div(className="scorecard", children=[
         html.Div("Graham Number & Buffett IV", className="card-header"),
-        html.Div(detail_rows)
+        *detail_rows
     ])
 
 def _buffett_details_card(data: dict) -> html.Div:
