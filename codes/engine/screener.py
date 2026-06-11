@@ -73,18 +73,13 @@ def get_screener_results() -> list[dict]:
 # ── Score one stock ───────────────────────────────────────────────────────────
 
 def _score_one(symbol: str) -> dict | None:
-    """Score a single stock from cache or fresh fetch. Returns row dict or None."""
+    """Score a single stock using lazy fetch (cache-first, SEC only when stale)."""
     try:
-        cached_sec = cache.read("sec_facts", symbol)
-        if not cached_sec:
+        # get_financials() returns cached data instantly when up-to-date;
+        # falls back to SEC EDGAR only when no cache entry or a newer filing exists.
+        if cache.read("sec_facts", symbol) is None:
             _sec_rate_wait()
-            cached_sec = sec_data.fetch_company_facts(symbol)
-            # Defer cache write to background thread (non-blocking)
-            threading.Thread(
-                target=cache.write, 
-                args=("sec_facts", symbol, cached_sec),
-                daemon=True
-            ).start()
+        cached_sec = sec_data.get_financials(symbol)
 
         g    = graham.score(None, cached_sec)
         q    = quality.score(cached_sec)

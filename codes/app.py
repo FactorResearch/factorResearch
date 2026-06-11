@@ -157,9 +157,9 @@ def analyze_stock(symbol: str) -> dict:
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
         return cached
-    # Fetch SEC fundamentals
+    # Fetch SEC fundamentals — lazy: returns cache instantly when not stale
     try:
-        sec_facts = sec_data.fetch_company_facts(symbol)
+        sec_facts = sec_data.get_financials(symbol)
     except ValueError as e:
         err_msg = str(e)
         # Provide a more actionable message for foreign-listed tickers that
