@@ -424,6 +424,25 @@ class TestGetInsiderScore:
         assert _signal(39.9) == "BEARISH"
 
 
+class TestApiFetcherInsiderMethod:
+    """Verify api_fetcher uses the correct Finnhub SDK method name."""
+
+    def test_stock_insider_transactions_used_not_company(self):
+        """
+        Finnhub SDK exposes stock_insider_transactions, NOT company_insider_transactions.
+        Regression guard: fails if the wrong method name is used.
+        """
+        import inspect
+        from codes.data import api_fetcher
+        src = inspect.getsource(api_fetcher._fh_get_insider_transactions)
+        assert "company_insider_transactions" not in src, (
+            "api_fetcher still calls company_insider_transactions — must use stock_insider_transactions"
+        )
+        assert "stock_insider_transactions" in src, (
+            "api_fetcher must call stock_insider_transactions"
+        )
+
+
 if __name__ == "__main__":
     import pytest as _pytest
     _pytest.main([__file__, "-v"])

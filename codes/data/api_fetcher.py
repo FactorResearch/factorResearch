@@ -790,7 +790,7 @@ def _fh_get_insider_transactions(symbol: str, years: int = 1) -> list[dict]:
     _fh_limiter.check()
     try:
         cutoff = pd.Timestamp.now() - pd.DateOffset(years=years)
-        result = _fh_client.company_insider_transactions(
+        result = _fh_client.stock_insider_transactions(
             symbol.upper(),
             _from=cutoff.strftime("%Y-%m-%d"),
             to=pd.Timestamp.now().strftime("%Y-%m-%d"),
