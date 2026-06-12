@@ -118,18 +118,18 @@ def fundamental_only(graham_result: dict, quality_result: dict) -> dict:
 # Altman also acts as a HARD CAP: distress zone stocks cannot exceed 50/100.
 
 ENHANCED_WEIGHTS = {
-    "graham":             0.12,   # value anchor
-    "buffett":            0.06,   # DCF IV signal
-    "quality":            0.10,   # business quality (ROE, margins, FCF, rev growth)
-    "momentum":           0.12,   # price trend confirmation
-    "piotroski":          0.09,   # accounting health / value-trap filter
-    "risk":               0.06,   # risk-adjusted profile
-    "altman":             0.03,   # bankruptcy safety cap
-    "earnings_revision":  0.12,   # P1 forward momentum factor
-    "profitability":      0.12,   # P1 structural quality (ROIC-based)
-    "fcf_quality":        0.10,   # P1 cash generation quality
-    "capital_allocation": 0.08,   # P2 capital allocation efficiency
-    # Sum = 1.00
+    "graham":             0.12,
+    "buffett":            0.06,
+    "quality":            0.10,
+    "momentum":           0.10,
+    "piotroski":          0.09,
+    "risk":               0.06,
+    "altman":             0.03,
+    "earnings_revision":  0.10,
+    "profitability":      0.12,
+    "fcf_quality":        0.10,
+    "capital_allocation": 0.08,
+    "factor_momentum":    0.07,
 }
 
 ENHANCED_VERDICTS = [
@@ -181,6 +181,7 @@ def enhanced_composite(
     profitability_result: dict | None = None,          # P1 structural quality; 12% weight
     fcf_quality_result: dict | None = None,            # P1 cash generation quality; 10% weight
     capital_allocation_result: dict | None = None,     # P2 capital allocation; 8% weight
+    factor_momentum_result: dict | None = None,       # P4 factor momentum; 10% weight
 ) -> dict:
     """
     Eleven-factor composite score (fewer when optional results are None for
@@ -228,7 +229,8 @@ def enhanced_composite(
     fcf_pct  = _fcf_raw if _fcf_raw is not None else 50  # neutral fallback only when data absent
     _ca_raw = capital_allocation_result.get("capital_allocation_score") if capital_allocation_result else None
     ca_pct  = _ca_raw if _ca_raw is not None else 50  # neutral fallback only when data absent
-
+    _fm_raw = factor_momentum_result.get("factor_momentum_score") if factor_momentum_result else None
+    fm_pct  = _fm_raw if _fm_raw is not None else 50
     # ── Weighted sum ──────────────────────────────────────────────────────────
     raw_score = (
         g_pct  * ENHANCED_WEIGHTS["graham"]            +
@@ -241,7 +243,8 @@ def enhanced_composite(
         er_pct * ENHANCED_WEIGHTS["earnings_revision"]  +
         p_pct  * ENHANCED_WEIGHTS["profitability"]     +
         fcf_pct * ENHANCED_WEIGHTS["fcf_quality"]      +
-        ca_pct  * ENHANCED_WEIGHTS["capital_allocation"]
+        ca_pct  * ENHANCED_WEIGHTS["capital_allocation"] +
+        fm_pct  * ENHANCED_WEIGHTS["factor_momentum"]
     )
 
     # ── Altman hard cap — distress zone stocks cannot score above 50 ──────────
@@ -314,6 +317,7 @@ def enhanced_composite(
         "profitability_pct":        round(p_pct,  1),
         "fcf_quality_pct":          round(fcf_pct, 1),
         "capital_allocation_pct":   round(ca_pct,  1),
+        "factor_momentum_pct":      round(fm_pct, 1),
 
         # Greenblatt — display only, not in weighted sum (see ISSUE-008)
         "greenblatt_earnings_yield": (
@@ -347,6 +351,9 @@ def enhanced_composite(
         # Capital Allocation signal (display + scoring)
         "capital_allocation_signal": (
             capital_allocation_result.get("signal") if capital_allocation_result else None
+        ),
+        "factor_momentum_signal": (
+            factor_momentum_result.get("signal") if factor_momentum_result else None
         ),
 
         # Score and verdict

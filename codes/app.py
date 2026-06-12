@@ -22,7 +22,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 from codes.data   import cache, sec_data
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, regime as regime_model, insider_activity as insider_activity_model
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, regime as regime_model, insider_activity as insider_activity_model,factor_momentum as factor_momentum_model
 from codes.engine import scorer, screener, universe
 import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
@@ -265,12 +265,25 @@ def analyze_stock(symbol: str) -> dict:
         )
     except Exception as e:
         print(f"Insider activity calculation failed: {e}")
+    # Factor Momentum (P4)
+    factor_momentum_result = None
+    try:
+        factor_momentum_result = (
+            factor_momentum_model.FactorMomentumAnalyzer(
+                symbol,
+                hist,
+                sec_facts
+            ).get_factor_momentum_score()
+        )
+    except Exception as e:
+        print(f"Factor momentum calculation failed: {e}")
     # Enhanced 9-factor composite
     enhanced = scorer.enhanced_composite(
         g, q, m_result, piotroski_result, risk_result, altman_result, buffett_result,
         greenblatt_result=greenblatt_result, earnings_revision_result=earnings_revision_result,
         profitability_result=profitability_result, fcf_quality_result=fcf_quality_result,
         capital_allocation_result=capital_allocation_result,
+        factor_momentum_result=factor_momentum_result,
     )
 
     # Regime overlay — uses SPY history already loaded above (portfolio risk layer)
@@ -317,6 +330,7 @@ def analyze_stock(symbol: str) -> dict:
         "fcf_quality": fcf_quality_result,
         "capital_allocation": capital_allocation_result,
         "insider_activity":   insider_activity_result,
+        "factor_momentum": factor_momentum_result,
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,
