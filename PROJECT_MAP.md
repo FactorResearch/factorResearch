@@ -62,11 +62,6 @@ profitability.py (weight 12%):
 NEW P2–P3–P4 MODELS
 ===
 
-P4 INSIDER ACTIVITY:
-- net insider buying
-- cluster buying detection
-- insider confidence score
-
 P4 FACTOR MOMENTUM:
 - 3M/6M/12M returns
 - earnings momentum
