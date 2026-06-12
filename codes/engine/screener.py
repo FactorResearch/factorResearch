@@ -143,7 +143,9 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
     verdict    = enhanced.get("verdict")       or comp.get("verdict",       "PENDING")
     vl         = enhanced.get("verdict_label") or comp.get("verdict_label", "pending")
 
-    mkt_cap       = g.get("market_cap")          # $M from graham.score()
+    # $M — prefer top-level market_cap (live-price fallback computed in
+    # app.analyze_stock); falls back to graham.score()'s value.
+    mkt_cap       = analysis_result.get("market_cap") or g.get("market_cap")
     graham_number = g.get("graham_number")
     buffett_iv    = b.get("intrinsic_value")
 
@@ -323,7 +325,7 @@ def _enrich_from_analysis_cache() -> int:
             "verdict_label":   vl,
             "graham_number":   g.get("graham_number"),
             "buffett_iv":      b.get("intrinsic_value"),
-            "market_cap":      g.get("market_cap"),
+            "market_cap":      data.get("market_cap") or g.get("market_cap"),
             "price":           data.get("price"),
             "analyzed":        True,
         }
@@ -353,7 +355,7 @@ def _enrich_from_analysis_cache() -> int:
                     "div_years":       g.get("div_years", 0),
                     "graham_number":   g.get("graham_number"),
                     "buffett_iv":      b.get("intrinsic_value"),
-                    "market_cap":      g.get("market_cap"),
+                    "market_cap":      data.get("market_cap") or g.get("market_cap"),
                     "price":           data.get("price"),
                     "analyzed":        True,
                 })

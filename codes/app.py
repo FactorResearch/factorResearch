@@ -283,11 +283,25 @@ def analyze_stock(symbol: str) -> dict:
     regime_overlay = scorer.apply_regime_overlay(
         enhanced.get("composite_score", 0), regime_result
     )
+    # Market cap for persistence/screener ordering.
+    # Prefer graham.score()'s value (price × shares, $M); if unavailable
+    # (no live price), fall back to live price (Tiingo/Finnhub via
+    # api_fetcher.get_price) × shares outstanding from sec_facts.
+    market_cap = g.get("market_cap")
+    if market_cap is None and price:
+        try:
+            shares_recs = sec_facts.get("shares", [])
+            shares_val = float(shares_recs[0]["value"]) if shares_recs else None
+            if shares_val:
+                market_cap = price * shares_val / 1e6
+        except (KeyError, TypeError, ValueError, IndexError):
+            pass
     result = {
         "symbol":    symbol,
         "name":      sec_facts["name"],
         "sector":    sec_facts["sector"],
         "price":     price,
+        "market_cap": market_cap,
         "graham":    g,
         "quality":   q,
         "momentum":  m_result,
