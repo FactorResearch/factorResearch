@@ -1,0 +1,1773 @@
+{
+  "ts": 1781372932.2660394,
+  "data": [
+    {
+      "date": "2026-06-11",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Huffington Arianna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Huffington Arianna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Campion Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Campion Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Ready William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1304.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Ready William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1304.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Dahnke Scott Arnold",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2103.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Dahnke Scott Arnold",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2103.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Dahnke Scott Arnold",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2103.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Finucane Anne A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1280.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Finucane Anne A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1280.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "VAN PAASSCHEN FRITS D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1391.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "VAN PAASSCHEN FRITS D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1391.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-08",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 522.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-27",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2609.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9689.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7302.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "buy",
+      "shares": 151.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Huffington Arianna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 145.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Campion Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 151.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Ready William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 161.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1517.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 750.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 116.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 191.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 666.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 340.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1374.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 687.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 702.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 702.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 687.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6412.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-26",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1106.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-26",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-26",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4114.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-26",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21915.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-26",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1749.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5522.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4831.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2208.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10077.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4141.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38654.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2396.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2396.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1198.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1198.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 798.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 287.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 798.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2794.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1536.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2794.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1198.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1198.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11178.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5688.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-22",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11178.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7348.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20077.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29222.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3739.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7348.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1085.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20077.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14869.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29222.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3674.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2666.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14611.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1870.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3674.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1357.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2666.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6593.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14611.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 377.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8818.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6396.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4846.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8818.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3515.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6396.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29974.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3778.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1923.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3778.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2170.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11053.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18274.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 311719.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12818.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18274.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 157762.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-21",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 311719.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20077.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29222.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14611.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 311719.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1291.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3822.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1799.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7926.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5162.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "buy",
+      "shares": 132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Huffington Arianna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 128.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Campion Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Ready William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 142.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Finucane Anne A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 137.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1221.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 409.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 409.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-25",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-25",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-25",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9748.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11699.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5822.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7731.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 767.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5390.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-26",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12161.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9260.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 253.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1676.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1456.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5194.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1418.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 721.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1418.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-23",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1574.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-23",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-23",
+      "insider_id": "Brooks Jeremy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1574.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "buy",
+      "shares": 139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Huffington Arianna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 135.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Campion Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Ready William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 149.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Finucane Anne A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-24",
+      "insider_id": "Yearout Karalyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-18",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1139.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-18",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1558.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-18",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-18",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 322.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 106.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32278.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 49569.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5667.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1318.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1062.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6984.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3831.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6984.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "King David Randolph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Huffington Arianna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 126.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Campion Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Ready William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Finucane Anne A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1649.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Bhargava Monica",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3898.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3994.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6606.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4736.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6291.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "ALBER LAURA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4475.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 325.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 282.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1634.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 739.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 251.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 327.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 144.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 250.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Howie Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 48.0,
+      "is_open_market": true
+    }
+  ]
+}

@@ -1,0 +1,1781 @@
+{
+  "ts": 1781295224.7644815,
+  "data": [
+    {
+      "date": "2026-06-09",
+      "insider_id": "Portman Robert Jones",
+      "role": "",
+      "transaction": "buy",
+      "shares": 51.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-09",
+      "insider_id": "McEvoy Ashley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-09",
+      "insider_id": "Kempczinski Christopher J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 258.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-09",
+      "insider_id": "McCarthy Christine M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 253.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-09",
+      "insider_id": "JIMENEZ JOSEPH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 320.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-09",
+      "insider_id": "ARNOLD CRAIG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Portman Robert Jones",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Portman Robert Jones",
+      "role": "",
+      "transaction": "buy",
+      "shares": 193.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "McEvoy Ashley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 161.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Kempczinski Christopher J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "McCarthy Christine M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 209.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "JIMENEZ JOSEPH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 273.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "ARNOLD CRAIG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 161.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 130.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5249.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1809.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 57.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15169.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36093.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36093.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 36093.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 162232.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 162232.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 162232.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12827.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12827.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12827.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11036.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11036.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11036.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 95903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 95903.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 95903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "Portman Robert Jones",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "McEvoy Ashley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "Kempczinski Christopher J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 260.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "McCarthy Christine M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 269.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "JIMENEZ JOSEPH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 341.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "ARNOLD CRAIG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Bharucha Freddy P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Bharucha Freddy P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Bharucha Freddy P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 45.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 59.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 59.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 89.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 68.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 89.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 89.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 716.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1077.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "sell",
+      "shares": 221.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 74.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "sell",
+      "shares": 279.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 51.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 151.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 719.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 95.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 95.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 95.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 64.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 33.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 63.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 42.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 244.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 258.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-30",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 725.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Portman Robert Jones",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Bonini Sheila",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "McEvoy Ashley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Subramaniam Rajesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Biggs M. Brett",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Allen Bertrand Marc",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Kempczinski Christopher J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Chang Amy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "McCarthy Christine M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "JIMENEZ JOSEPH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "WOERTZ PATRICIA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "ARNOLD CRAIG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "LUNDGREN TERRY J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "LEE DEBRA L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3986.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "sell",
+      "shares": 490.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2408.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3227.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4252.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "sell",
+      "shares": 399.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1855.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3535.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11684.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 42670.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26531.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5742.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 68869.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 68869.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22738.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4921.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 62338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 105581.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22849.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14163.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 62338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 46754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3373.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 169684.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12241.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49065.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11420.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6852.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26231.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "Portman Robert Jones",
+      "role": "",
+      "transaction": "buy",
+      "shares": 48.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "McEvoy Ashley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "Kempczinski Christopher J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 197.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "McCarthy Christine M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 236.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "JIMENEZ JOSEPH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "WOERTZ PATRICIA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "ARNOLD CRAIG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "LUNDGREN TERRY J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9554.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "sell",
+      "shares": 766.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10697.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10194.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15314.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8596.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6167.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 319.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11638.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13039.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40119.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9849.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2019.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15811.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1044.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27924.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22649.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31025.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24091.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22959.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 89970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 62.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 214.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 675.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 772.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1026.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 245.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1055.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1260.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 780.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1260.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Jejurikar Shailesh",
+      "role": "",
+      "transaction": "buy",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1370.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 361.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Coombe Gary A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2243.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1253.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Purushothaman Balaji",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Whaley Susan Street",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Davis Jennifer L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Janzaruk Matthew W.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Raman Sundar G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Schulten Andre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Aguilar Moses Victor Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Francisco Ma. Fatima",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Moeller Jon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Pritchard Marc S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    }
+  ]
+}

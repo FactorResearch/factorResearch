@@ -1,0 +1,1557 @@
+{
+  "ts": 1781362807.0222213,
+  "data": [
+    {
+      "date": "2026-06-08",
+      "insider_id": "Brown Timothy W.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22279.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 689.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 416.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7534.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3211.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Beams Mary E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Richer Clare Stack",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Pickerell Blair",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Mitchell H Elizabeth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Nordin Diane C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Muruzabal Claudio",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Carter Miller Jocelyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Auerbach Jonathan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9183.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4737.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1080.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2571.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Richer Clare Stack",
+      "role": "",
+      "transaction": "buy",
+      "shares": 174.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Pickerell Blair",
+      "role": "",
+      "transaction": "buy",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 182.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 307.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Auerbach Jonathan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 52.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 680.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 278.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 660.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 707.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "buy",
+      "shares": 176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 667.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "buy",
+      "shares": 509.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Agrawal Vivek",
+      "role": "",
+      "transaction": "buy",
+      "shares": 278.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Nordin Diane C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Mitchell H Elizabeth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 100.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Muruzabal Claudio",
+      "role": "",
+      "transaction": "buy",
+      "shares": 124.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Carter Miller Jocelyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 805.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Beams Mary E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 262.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 88.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1316.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2299.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 781.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5321.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 42.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 556.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3693.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1870.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3801.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1288.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3781.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3071.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5570.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13557.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27511.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2690.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3071.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3093.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9375.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4721.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5417.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9653.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9959.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3504.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6576.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2938.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6962.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8032.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Agrawal Vivek",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5960.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Agrawal Vivek",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Muruzabal Claudio",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7340.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8025.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-08",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22680.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15557.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38237.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38237.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-24",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7123.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-24",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-24",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20715.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-24",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20715.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-23",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-23",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-23",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 137.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 520.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 180.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 82.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "buy",
+      "shares": 149.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 384.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 548.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "buy",
+      "shares": 469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Agrawal Vivek",
+      "role": "",
+      "transaction": "buy",
+      "shares": 182.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Richer Clare Stack",
+      "role": "",
+      "transaction": "buy",
+      "shares": 167.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Pickerell Blair",
+      "role": "",
+      "transaction": "buy",
+      "shares": 326.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Nordin Diane C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 253.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Mitchell H Elizabeth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 95.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Muruzabal Claudio",
+      "role": "",
+      "transaction": "buy",
+      "shares": 119.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Carter Miller Jocelyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 770.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Beams Mary E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 128.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 244.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 294.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Auerbach Jonathan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 194.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8388.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8388.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8388.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2921.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-05",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-05",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 828.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1524.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1887.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 178.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 310.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Auerbach Jonathan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Beams Mary E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 135.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Carter Miller Jocelyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 811.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Muruzabal Claudio",
+      "role": "",
+      "transaction": "buy",
+      "shares": 125.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Nordin Diane C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 266.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Djurasovic George",
+      "role": "",
+      "transaction": "buy",
+      "shares": 157.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Pickerell Blair",
+      "role": "",
+      "transaction": "buy",
+      "shares": 343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 81.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 545.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Richer Clare Stack",
+      "role": "",
+      "transaction": "buy",
+      "shares": 175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 145.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 86.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 548.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 404.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 576.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 613.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "buy",
+      "shares": 521.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Agrawal Vivek",
+      "role": "",
+      "transaction": "buy",
+      "shares": 191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-26",
+      "insider_id": "Mitchell H Elizabeth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 101.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Beams Mary E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 92.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "STRABLE-SOETHOUT DEANNA D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 549.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Pitz Joel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 190.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Houston Daniel Joseph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Houston Daniel Joseph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 859.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "McCullum Kenneth A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 87.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "LITTLEFIELD CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Kay Kathleen B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 405.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Friedrich Amy Christine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 579.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Cheong Wee Yee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 617.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Lamarque Natalie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Bhatia Kamal",
+      "role": "",
+      "transaction": "buy",
+      "shares": 523.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Agrawal Vivek",
+      "role": "",
+      "transaction": "buy",
+      "shares": 192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "RIVERA ALFREDO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Richer Clare Stack",
+      "role": "",
+      "transaction": "buy",
+      "shares": 177.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Pickerell Blair",
+      "role": "",
+      "transaction": "buy",
+      "shares": 346.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Nordin Diane C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 268.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Muruzabal Claudio",
+      "role": "",
+      "transaction": "buy",
+      "shares": 126.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Carter Miller Jocelyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 817.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Auerbach Jonathan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 206.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 172.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Mills Scott",
+      "role": "",
+      "transaction": "buy",
+      "shares": 312.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "HOCHSCHILD ROGER C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 361.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Mitchell H Elizabeth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 101.0,
+      "is_open_market": false
+    }
+  ]
+}

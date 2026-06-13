@@ -1,0 +1,309 @@
+{
+  "ts": 1781373387.7323508,
+  "data": [
+    {
+      "date": "2026-05-21",
+      "insider_id": "Smith Gunner",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Barner Sharon R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Alving Amy E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Miller Jody",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "CANTIE JOSEPH S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "LEDUC ROBERT F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "ALBAUGH JAMES F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "SCHMIDT ULRICH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Marchuk Neil Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41932.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Arena Jonathan A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3544.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-02",
+      "insider_id": "CANTIE JOSEPH S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 155.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Shultz Barbara Lou",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Marchuk Neil Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45150.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "CHANATRY MICHAEL NIEM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2693.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Shultz Barbara Lou",
+      "role": "",
+      "transaction": "buy",
+      "shares": 446.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Winterlich Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3168.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Marchuk Neil Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3881.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "PLANT JOHN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22333.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "CHANATRY MICHAEL NIEM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9579.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Shultz Barbara Lou",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Marchuk Neil Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "CHANATRY MICHAEL NIEM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10741.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "CHANATRY MICHAEL NIEM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16764.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Shultz Barbara Lou",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4076.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Marchuk Neil Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50292.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-05",
+      "insider_id": "Miller Jody",
+      "role": "",
+      "transaction": "buy",
+      "shares": 158.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-05",
+      "insider_id": "CANTIE JOSEPH S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 158.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-05",
+      "insider_id": "LEDUC ROBERT F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Marchuk Neil Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5255.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "CHANATRY MICHAEL NIEM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 886.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Miller Jody",
+      "role": "",
+      "transaction": "buy",
+      "shares": 176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "CANTIE JOSEPH S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "LEDUC ROBERT F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-05",
+      "insider_id": "LIN LOLA FELICE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13102.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "Miller Jody",
+      "role": "",
+      "transaction": "buy",
+      "shares": 191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "CANTIE JOSEPH S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "LEDUC ROBERT F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "PLANT JOHN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 255363.0,
+      "is_open_market": false
+    }
+  ]
+}

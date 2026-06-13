@@ -1,0 +1,1021 @@
+{
+  "ts": 1781295185.9073632,
+  "data": [
+    {
+      "date": "2026-05-22",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "buy",
+      "shares": 108809.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Lamba Sanjiv",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Altobello Nancy A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Wolff Anne Clarke",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Singh Prahlad R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 108809.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 51134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 70690.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Falck David P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Lane Rita S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 83020.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 133161.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Livingston Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "buy",
+      "shares": 108809.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 464989.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21508.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21508.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 43086.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43086.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-19",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 69108.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52203.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 52203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 61072.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 61072.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 61072.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93052.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 515281.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93052.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 93052.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 515281.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 515281.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "Livingston Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2536.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-08",
+      "insider_id": "Lamba Sanjiv",
+      "role": "",
+      "transaction": "buy",
+      "shares": 548.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "LOEFFLER MARTIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 70000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 70000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 132000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 132000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "buy",
+      "shares": 132000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 80000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-26",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29012.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29012.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40076.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40076.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40076.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 258000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 300000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-31",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-31",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-31",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 80000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 120000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "NORWITT RICHARD ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 152318.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 212800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 152318.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "buy",
+      "shares": 152318.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 212800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "buy",
+      "shares": 212800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Straub Peter",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "WALTER LUC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18048.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Silverman David M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40076.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40076.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40076.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 199848.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 199848.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Lampo Craig A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 199848.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "D'AMICO LANCE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 113000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 113000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 113000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 113000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 113000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Doherty William J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 113000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Ivas Michael R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50000.0,
+      "is_open_market": false
+    }
+  ]
+}

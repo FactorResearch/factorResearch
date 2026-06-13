@@ -1,0 +1,1437 @@
+{
+  "ts": 1781300276.1766298,
+  "data": [
+    {
+      "date": "2026-06-09",
+      "insider_id": "Hartnett Joseph J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 643.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-09",
+      "insider_id": "Hartnett Joseph J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 643.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-06",
+      "insider_id": "Ball Susan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-06",
+      "insider_id": "Hartnett Joseph J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-06",
+      "insider_id": "LEWIS CATHERINE A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-06",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Ball Susan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 753.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Hartnett Joseph J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 753.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "LEWIS CATHERINE A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 753.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 85.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1288.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 355.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 272.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 753.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-27",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4345.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4166.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4166.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 182000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 182000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 88000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 88000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 249000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 249000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 92000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 94000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 94000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 92000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 984.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 400000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 144534.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 433600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 225000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 225000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 330000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 330000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 330000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 330000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "LINK EDWARD J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1275.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 746.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10448.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8286.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 434.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2742.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Munn Matthew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Munn Matthew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4675.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 155.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1920.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1412.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 364.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3220.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3110.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "LYMAN SUSAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 991.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "LYMAN SUSAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2814.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14802.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "MAXFIELD JOSHUA H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "TRENKLE BRADLEY C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "LINK EDWARD J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 792.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Munn Matthew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1591.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3732.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 912.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5138.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Straub Philip",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Biddlecombe Sean",
+      "role": "",
+      "transaction": "sell",
+      "shares": 877.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "LYMAN SUSAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 988.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 167000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 167000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 400000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 837.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 167000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 167000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2075.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Biddlecombe Sean",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1071.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Biddlecombe Sean",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1197.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8574.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Wang Cheng-Wei",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1995.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Munn Matthew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3987.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "LINK EDWARD J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1995.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "MAXFIELD JOSHUA H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2394.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1596.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "LYMAN SUSAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2595.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6780.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Straub Philip",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26313.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "TRENKLE BRADLEY C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5982.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 479.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-07",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1488.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-07",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2190.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3933.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6498.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 508.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1977.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 999.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 581.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Wang Cheng-Wei",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1248.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14964.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Munn Matthew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2493.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Munn Matthew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Straub Philip",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4740.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Straub Philip",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2620.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "TRENKLE BRADLEY C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4989.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "TRENKLE BRADLEY C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1901.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "LINK EDWARD J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1248.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "LINK EDWARD J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 505.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MAXFIELD JOSHUA H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1995.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MAXFIELD JOSHUA H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 756.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1984.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "LYMAN SUSAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1746.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "LYMAN SUSAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 629.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5361.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Desbois Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2933.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Biddlecombe Sean",
+      "role": "",
+      "transaction": "buy",
+      "shares": 747.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Biddlecombe Sean",
+      "role": "",
+      "transaction": "sell",
+      "shares": 577.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2742.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "TRENKLE BRADLEY C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 252.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 445000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 445000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1450.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12100.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12100.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 470000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 470000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 190500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 190500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 200000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 190500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 190500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 200000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 65567.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 196700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 104000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 104000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "KAO MIN H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Wang Cheng-Wei",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1287.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Wang Cheng-Wei",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8915.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 277000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 277000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 45000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "LINK EDWARD J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1718.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Straub Philip",
+      "role": "",
+      "transaction": "sell",
+      "shares": 440.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Straub Philip",
+      "role": "",
+      "transaction": "sell",
+      "shares": 440.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 816902.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 250000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 816902.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 250000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "MINARD LAURIE A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 787.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-03",
+      "insider_id": "Boessen Douglas G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1859.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 879.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5846.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "PEMBLE CLIFTON A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1174.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1012098.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 308000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 337366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-13",
+      "insider_id": "BURRELL JONATHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 308000.0,
+      "is_open_market": false
+    }
+  ]
+}

@@ -1,0 +1,5325 @@
+{
+  "ts": 1781291606.4569447,
+  "data": [
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5199.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98663.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27027.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18376.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16082.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2076.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29438.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7999.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 61328.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 96672.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 403.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26383.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11950.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18660.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23984.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9107.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 123450.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8646.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4511.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7540.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5366.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 96672.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 61328.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1406.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1413.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1092.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1271.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1467.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 916.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 81.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 302.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2175.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3794.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7740.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2448.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1185.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36494.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 47035.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11535.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34960.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55818.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32973.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7057.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51221.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38002.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24105.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60234.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "BECHTOLSHEIM ANDREAS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24381.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 168.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 170.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13855.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19816.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15545.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19816.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10916.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10916.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 76.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 242.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 329.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 324.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 807.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 807.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 284.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 345.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 963.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3876.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4532.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 455.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 552.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1540.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6202.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7251.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 910.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1103.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3081.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12405.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14501.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 179.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3151.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3203.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 467.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52324.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 247676.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11162.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52838.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11162.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52838.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1020.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6906.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36685.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21090.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 219.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1480.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7862.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4519.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 219.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1480.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7862.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4519.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 214299.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45920.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45920.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1494.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2998.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2003.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3091.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 414.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2391.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4796.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3205.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4946.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 662.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4782.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9592.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6410.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9892.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1324.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20827.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 229173.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4166.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45834.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4166.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45834.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 290.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 607.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 414.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 78.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8890.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-13",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 112812.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3702.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3898.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 629.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2681.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4377.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2313.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1006.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4290.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7003.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3701.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2013.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8581.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14005.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7401.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 539.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 232.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 360.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 264.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 111628.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55814.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55814.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 504.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 835.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 357.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 49.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 70.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 119.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 121.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 808.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 808.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 77640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27660.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 57240.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 111544.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 57240.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27660.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Nightingale Todd",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10360.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Nightingale Todd",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10360.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Nightingale Todd",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4232.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Nightingale Todd",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10360.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3880.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44240.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44240.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19816.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19576.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19576.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54823.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19576.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19816.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44240.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3880.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15864.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15864.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20305.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15864.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2262.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5494.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5182.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3034.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1414.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3434.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3238.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1897.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4524.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10989.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10363.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6069.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19170.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3910.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1590.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 802.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3585.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2413.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1284.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5736.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3860.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2407.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10756.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7237.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3524.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2476.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 89.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 875.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1518.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2263.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5255.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 143.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2429.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3619.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8409.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 268.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2625.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4553.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6788.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15766.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 150000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2884.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4552.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 564.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12742.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 158148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79074.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79074.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 42.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 42.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 264.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27660.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24218.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27660.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5712.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19816.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17764.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19816.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5712.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10916.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5457.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10916.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 807.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 807.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 758.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 959.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 726.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3087.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1121.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1580.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1769.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1214.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1535.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1160.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4940.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1792.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2528.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2831.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2275.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2877.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2177.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9262.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3362.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4740.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5307.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 935000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5232.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2168.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1356.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5784.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1887.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 537.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 436.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2168.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9255.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3020.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 860.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 697.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4067.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17352.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5662.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1612.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1307.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2150.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2350.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2953.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3301.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1718.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 172.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18458.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20633.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-19",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10737.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1982.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1567.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 715.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 321.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3172.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2506.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8666.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1142.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 514.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5946.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4699.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16247.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2143.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 965.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 420658.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5532.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 289618.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 169497.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18051.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80171.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1054.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55197.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32304.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3440.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80171.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1054.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55197.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32304.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3440.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4091.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36851.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 780.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7023.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 780.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7023.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 150000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17907.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 126563.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 173204.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3413.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24122.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33010.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3413.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24122.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33010.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 125930.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 62965.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 62965.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16440.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3432.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2568.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5712.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1832.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7818.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1832.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4148.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5712.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5455.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Breithaupt Chantelle Yvette",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Scheinman Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 808.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Lavender Robert G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 808.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "TEMPLETON MARK B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 971.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Wassenaar Yvonne",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2735.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4901.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2364.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4375.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7843.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3782.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8204.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14704.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7092.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 139729.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26625.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26625.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54668.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 195732.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10420.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37308.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10420.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37308.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30529.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 107716.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 527418.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 527454.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 99386.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5818.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20529.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100518.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100524.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18942.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5818.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20529.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100518.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100524.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18942.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1841.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4357.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1802.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 420658.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5347.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 185140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26127.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80171.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1019.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35285.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4979.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80171.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1019.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35285.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-31",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4979.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 208972.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39827.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39827.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80193.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 345533.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15283.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 65854.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15283.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 65854.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3115.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 378665.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 593.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 72168.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 593.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 72168.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43946.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8376.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8376.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 497.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Battles Kelly Bodnar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 367.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1042.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7335.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 987.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 636.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1667.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11735.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1580.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1018.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3126.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22004.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2962.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1908.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-11",
+      "insider_id": "Nightingale Todd",
+      "role": "",
+      "transaction": "buy",
+      "shares": 466060.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 243.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1660.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 296.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3548.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Giancarlo Charles H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2253.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19722.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 509486.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 326.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8430.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 326.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8430.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3759.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97103.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3759.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97103.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3483.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 89985.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1271.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 241.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 241.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 223.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74039.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1224.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1224.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14110.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14110.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Ullal Jayshree",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13075.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 728.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2436.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1248.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2905.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2683.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1163.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3898.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1997.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4649.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4293.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2182.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7309.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3743.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8716.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8050.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "Duda Kenneth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    }
+  ]
+}

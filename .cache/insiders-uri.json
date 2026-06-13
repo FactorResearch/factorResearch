@@ -1,0 +1,677 @@
+{
+  "ts": 1781373115.9214528,
+  "data": [
+    {
+      "date": "2026-05-08",
+      "insider_id": "Taussig Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "Singh Shiv",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "Lopez-Balboa Francisco J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "Kelly Terri L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "Jones Kim Harris",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "De Shon Larry D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "Bruno Marc A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "HEUER BRANDT JULIE M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "MARTORE GRACIA C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "MARTORE GRACIA C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 213.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 306.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2466.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-24",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 548.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-24",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22768.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "Bruno Marc A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 51.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 297.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 73.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 92.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 440.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 207.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 374.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1304.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 90.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 195.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 114.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 405.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 142.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 306.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 485.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 72.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 172.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 356.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 987.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 431.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1017.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2583.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 987.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 273.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 82.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 94.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 420.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Taussig Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 57.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1498.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Singh Shiv",
+      "role": "",
+      "transaction": "buy",
+      "shares": 68.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Singh Shiv",
+      "role": "",
+      "transaction": "buy",
+      "shares": 68.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2490.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2058.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "PINTOFF CRAIG ADAM",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3709.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 292.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 527.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Leopold Anthony S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1119.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 665.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1417.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2542.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Flannery Matthew John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12231.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 958.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2217.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Bruno Marc A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 47.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "Gross Joli L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "Durand Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 764.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Bruno Marc A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-03",
+      "insider_id": "Limoges Andrew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Grace William E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 164.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Bruno Marc A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 46.0,
+      "is_open_market": false
+    }
+  ]
+}

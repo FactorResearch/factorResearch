@@ -1,0 +1,669 @@
+{
+  "ts": 1781373776.474656,
+  "data": [
+    {
+      "date": "2026-05-29",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Tolliver Paula",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Crawford Kermit R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Kozlak Jodee A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Robbins Paige K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "MCGARRY MICHAEL H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "GUILFOILE MARY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Goodburn Mark A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Gokey Timothy C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Feitzinger Edward G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Capers Dorothy Trefon",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "Gokey Timothy C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 193.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "Goodburn Mark A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3009.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6787.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9030.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7803.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 594.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Bozeman David P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1223.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 605.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Lee Damon J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 620.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8579.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5926.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6368.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3787.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7225.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11780.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3618.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2621.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3930.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1805.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4940.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Lee Damon J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Capers Dorothy Trefon",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3480.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Bozeman David P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Bozeman David P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Bozeman David P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20740.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2849.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1230.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7848.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Lee Damon J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2603.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Bozeman David P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11209.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6197.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2390.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Capers Dorothy Trefon",
+      "role": "",
+      "transaction": "sell",
+      "shares": 711.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2390.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2163.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Goodburn Mark A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Gokey Timothy C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 211.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19092.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10572.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11146.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38738.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19092.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10572.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 658.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6904.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10012.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19216.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26050.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6904.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10012.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Castagnetto Michael D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Gokey Timothy C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 256.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Goodburn Mark A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 275.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "RAJAN ARUN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Freeman Angela K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5713.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Feitzinger Edward G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1270.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6364.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Short Michael John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-08",
+      "insider_id": "Lee Damon J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5848.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Goodburn Mark A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 380.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Gokey Timothy C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 354.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-26",
+      "insider_id": "Bozeman David P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17538.0,
+      "is_open_market": false
+    }
+  ]
+}

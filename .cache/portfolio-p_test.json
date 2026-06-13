@@ -1,0 +1,27 @@
+{
+  "ts": 1781374319.1726024,
+  "data": {
+    "name": "test",
+    "created": "2026-06-13T12:55:55.491101",
+    "holdings": {
+      "WST": {
+        "shares": 10,
+        "price_at_add": 328.84,
+        "name": "WEST PHARMACEUTICAL SERVICES INC",
+        "added_date": "2026-06-13"
+      },
+      "SNA": {
+        "shares": 10,
+        "price_at_add": 387.5,
+        "name": "Snap-on Inc",
+        "added_date": "2026-06-13"
+      },
+      "CME": {
+        "shares": 10,
+        "price_at_add": 269.55,
+        "name": "CME GROUP INC.",
+        "added_date": "2026-06-13"
+      }
+    }
+  }
+}

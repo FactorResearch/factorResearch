@@ -1,0 +1,4381 @@
+{
+  "ts": 1781373279.9699378,
+  "data": [
+    {
+      "date": "2026-06-04",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2118.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2118.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2118.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Schiff Alexandra W.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2118.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1598.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1667.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 830.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 165514.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50849.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93218.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11483.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7203.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2761.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 165514.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 397744.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 122195.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 224009.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27595.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17310.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6635.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 397744.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5262.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9647.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1188.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 745.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 286.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6040.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11074.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1364.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 856.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 328.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 319934.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98291.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 180187.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22196.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13923.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5337.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 319934.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 526.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 964.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 119.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-26",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21141.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3342.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1596.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3353.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2353.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3603.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1037.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8655.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7045.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51383.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 488783.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 721136.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 419113.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 222837.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 46722.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "THIEL PETER",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50026.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1232.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 168004.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9670.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 46188.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43685.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51831.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16630.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 168004.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 90000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 403025.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8596.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35656.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19309.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20259.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6180.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 90000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23198.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 110800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 104796.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 124338.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39893.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 403025.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1004.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4794.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4534.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5380.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1726.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1151.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5495.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5197.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6167.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1978.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 327088.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18827.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 89924.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 85051.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100910.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32376.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 327088.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 156.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 743.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 703.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 834.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 268.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1233.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9212.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6310.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2525.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 720.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 302.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 788.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1533.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2821.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1666.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1143.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1013.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1323.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1489.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2319.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 387.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3908.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1308.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3831.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5574.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9048.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2791.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1466.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1121.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8356.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6016.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4393.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4309.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1974.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-24",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1252.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19004.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 227.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 177.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19004.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 545.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44593.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 426.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 45564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1931.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 468.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38303.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 365.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 293.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 149872.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1729.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18720.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16512.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14065.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4304.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2275.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2777.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3277.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2010.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2598.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4332.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1238.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5367.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7243.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8457.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18178.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18631.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9259.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 149872.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 359325.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4145.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44883.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39589.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33722.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10320.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5454.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6657.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7857.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4819.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6228.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10387.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2968.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12867.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17365.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20275.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43582.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44669.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21338.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 359325.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 179.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1943.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1714.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1460.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 447.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 236.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 288.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 340.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 209.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 270.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 450.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 128.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 557.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 752.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 878.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1887.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1934.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 924.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 961.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 205.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2219.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1957.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1667.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 510.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 270.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 329.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 388.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 238.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 308.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 513.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 147.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 636.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 858.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1002.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2154.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2208.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1055.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1097.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 308635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3560.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38551.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34005.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28965.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8864.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4684.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5718.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6749.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4139.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5349.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8921.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2549.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11052.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14916.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37434.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38368.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18328.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19068.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 308635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 295.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 261.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 222.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 68.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 68.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 85.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 114.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 133.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 287.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 294.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 146.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3834.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3992.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3667.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6202.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2305.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-03",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1805.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1095.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13388.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-18",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-11",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-11",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3391.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-11",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7936.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-11",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1673.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36048.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-04",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4001.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1199.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26513.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8569.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4631.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26513.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2803.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1746.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2779.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8764.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4526.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6773.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3275.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2137.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 453.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 557.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 92.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3880.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4763.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 476.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3390.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4161.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 416.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 77769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 775.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32763.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40216.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4015.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 160164.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1596.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 67474.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 82824.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8270.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 160164.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 186194.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1855.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 78440.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 96285.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9614.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 186194.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 164.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 292.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 175.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 83.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 102.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 632.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1404.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2502.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1494.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 635.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 228.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 795.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 714.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 285.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 471.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 869.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 313.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 312.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 372.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 552.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1227.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2185.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1305.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 555.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 694.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 624.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 249.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 412.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 273.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 272.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Glazer David A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 325.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93092.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5332.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11853.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21121.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12611.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5362.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1929.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6712.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6031.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2406.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3979.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7340.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2643.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2631.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3142.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 93092.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45273.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28360.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 58739.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 53219.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27628.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9370.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31587.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21753.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12721.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16974.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31141.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14530.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10596.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13109.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Sankar Shyam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 191720.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 675000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10982.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24411.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43497.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25972.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11043.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3973.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13823.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12420.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4956.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8195.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15117.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5443.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5418.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6470.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Cohen Stephen Andrew",
+      "role": "",
+      "transaction": "buy",
+      "shares": 191720.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 222878.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 877500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12766.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28379.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50567.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30194.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12837.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4619.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16069.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14439.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5761.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9527.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17574.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6327.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6298.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7521.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Karp Alexander C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 222878.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-05",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-05",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-05",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1006.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2109.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3431.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6634.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2213.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2803.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1804.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33335.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 33335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-09",
+      "insider_id": "Stat Lauren Elaina Friedman",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10700.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Moore Alexander D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5399.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woersching Eric H.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1315.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33335.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Taylor Ryan D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 33335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-20",
+      "insider_id": "Buckley Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21850.0,
+      "is_open_market": false
+    }
+  ]
+}

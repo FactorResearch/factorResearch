@@ -1,0 +1,1669 @@
+{
+  "ts": 1781372901.300196,
+  "data": [
+    {
+      "date": "2026-06-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 589.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 283.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 589.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2796.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1341.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2796.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 533.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 263.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 533.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4213.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2796.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1341.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2796.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1038.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3062.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8374.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11177.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7749.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Horning Sandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Horning Sandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "MANWANI HARISH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "MANWANI HARISH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "MANWANI HARISH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Rodriguez Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Rodriguez Javier",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "WELTERS ANTHONY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "WELTERS ANTHONY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "LOVE TED W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "LOVE TED W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "BARTON JACQUELINE K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "BARTON JACQUELINE K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3050.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6950.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35880.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6617.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6617.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35880.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3147.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18885.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Burkhart Erin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5455.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Burkhart Erin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8415.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2133.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1063.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2133.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 122755.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32815.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20026.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9767.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20026.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11090.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11090.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Cain Wettan Keeley M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 470.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8530.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6419.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3481.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38396.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9395.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18405.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115640.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 115640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44867.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74461.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 131675.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24802.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44867.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4968.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5032.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115640.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 115640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-20",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16326.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6944.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Berger Dietmar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16326.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-29",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3842.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1814.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3842.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10426.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4931.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10426.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3693.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1745.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3693.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6788.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3212.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2805.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2805.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2805.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-26",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2806.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-26",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2806.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-26",
+      "insider_id": "Kramer Kelly A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2806.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2476.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25524.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35965.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17181.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35965.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35965.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17181.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17181.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2022.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7978.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 515.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 241.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 515.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-29",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1961.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-29",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8039.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-22",
+      "insider_id": "Burkhart Erin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8890.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1315.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 634.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1315.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3844.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1819.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3844.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10427.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4949.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10427.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Wilfong Diane E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 921.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Wilfong Diane E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Wilfong Diane E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 921.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1751.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 700.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8345.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1655.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8229.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 514.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3823.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8229.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Telman Deborah H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 514.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-14",
+      "insider_id": "Bluestone Jeffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "O'Day Daniel Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Mercier Johanna",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Dickinson Andrew D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    }
+  ]
+}

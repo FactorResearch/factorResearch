@@ -1,0 +1,933 @@
+{
+  "ts": 1781300207.49066,
+  "data": [
+    {
+      "date": "2026-05-14",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2221.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6255.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2221.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-08",
+      "insider_id": "Sharpe Robert Francis JR",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "Shea Brian T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "Sharpe Robert Francis JR",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "DiGeso Amy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "BRYAN GLYNIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "WILLIAMS CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "NEAL BLIXT DIANNE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "PELLETIER LIANE J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "WILLIAMS CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 43.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-10",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4865.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3428.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4658.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4950.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4865.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3428.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15696.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2928.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1782.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6886.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4507.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5643.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4235.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7136.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "WILLIAMS CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "PELLETIER LIANE J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 182.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 339.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 177.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1906.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 583.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1326.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "buy",
+      "shares": 405.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1729.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "buy",
+      "shares": 529.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3315.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1014.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9117.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2790.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5561.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1702.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8288.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2536.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 33299.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11988.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 46.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "sell",
+      "shares": 78.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "sell",
+      "shares": 423.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 235.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 345.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-31",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1729.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 306.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 999.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 336.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1109.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "sell",
+      "shares": 935.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1989.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1115.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2887.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5102.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9993.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2553.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8661.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35534.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 42.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "sell",
+      "shares": 429.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 66.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Alvero Gumer",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Davies William",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 114.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Berman Walter Stanley",
+      "role": "",
+      "transaction": "sell",
+      "shares": 387.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 206.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 292.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "CRACCHIOLO JAMES M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1731.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Sharpe Robert Francis JR",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "WILLIAMS CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 46.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "BRYAN GLYNIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 69.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-04",
+      "insider_id": "MELLOH HEATHER J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28546.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9929.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18617.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28546.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Sharpe Robert Francis JR",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "BRYAN GLYNIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "WILLIAMS CHRISTOPHER J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 309.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "sell",
+      "shares": 145.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Sweeney Joseph Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 309.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Brockman Dawn M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 89.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "Smyth Gerard P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 530.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "sell",
+      "shares": 244.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-10",
+      "insider_id": "TRUSCOTT WILLIAM F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 530.0,
+      "is_open_market": false
+    }
+  ]
+}

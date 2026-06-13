@@ -1,0 +1,2221 @@
+{
+  "ts": 1781373533.7677777,
+  "data": [
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 163.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 108.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 180.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 177.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 102.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 48.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 343.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 750.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-11",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 294.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 829.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 315.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 45.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 171.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 316.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 425.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 440.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 314.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 171.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 316.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 424.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 78.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 86.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 48.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 86.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 82.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 48.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 66.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 156.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 366.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 180.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 336.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 132.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 188.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 72.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-13",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 529.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-13",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1971.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-02",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 85.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 262.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 538.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Kolter Jeremy Z",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "ACEVEDO SYLVIA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "MYERS MARIE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Henderson Jeffrey William",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Miller Jamie S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "LIVERMORE ANN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "FIELDS MARK",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "ROSENFELD IRENE B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2563.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 581.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 363.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 719.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 397.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 961.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "ACEVEDO SYLVIA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "ACEVEDO SYLVIA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "Henderson Jeffrey William",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "Henderson Jeffrey William",
+      "role": "",
+      "transaction": "sell",
+      "shares": 759.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "Henderson Jeffrey William",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 759.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "Miller Jamie S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "Miller Jamie S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "LIVERMORE ANN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-08",
+      "insider_id": "LIVERMORE ANN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 312.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 170.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 314.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 423.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 488.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 311.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 314.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 423.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26542.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26542.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 842.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1259.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 814.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 418.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1594.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1599.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 531.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 197.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Young Christopher David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 168.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Smit Neil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 168.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 401.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1263.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1191.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2181.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4943.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-18",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2802.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1436.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1709.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4035.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5413.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8443.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2061.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5249.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5079.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5249.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7387.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6989.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7313.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6241.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5999.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7313.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9875.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1418.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2999.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6999.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8537.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9055.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6999.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8537.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12186.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13047.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11529.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3934.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5656.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6056.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5351.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19998.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24385.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20984.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19998.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24385.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34807.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 37271.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32932.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 203.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 513.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 312.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 421.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 379.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 311.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 420.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 571.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 203.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 174.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 436.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 514.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1245.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 880.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3729.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17495.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28353.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18098.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15082.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 61532.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-20",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4779.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-20",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 816.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-20",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 842.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-20",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1616.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-20",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 282.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2387.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2860.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1894.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "CHAPLIN ANN C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8111.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3109.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8111.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 591.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5087.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1639.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ROGERS ALEXANDER H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5086.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5070.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1753.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5069.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1941.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16715.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1940.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1940.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7331.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16715.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9887.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 57684.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 82429.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Young Christopher David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 172.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Smit Neil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 172.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 428.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-22",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 529.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-20",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1352.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 273.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Kolter Jeremy Z",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1049.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 453.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 466.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1148.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1266.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Grech Patricia Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 236.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 791.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1143.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "sell",
+      "shares": 396.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "ACHOUR BAAZIZ",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1143.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 423.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 562.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 422.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 561.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "MARTIN NEIL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 146.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 362.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 582.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2243.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "ACE HEATHER S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1258.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1089.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 428.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-02",
+      "insider_id": "Palkhiwala Akash J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 558.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "TRICOIRE JEAN-PASCAL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 211.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Smit Neil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 180.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 186.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "MCLAUGHLIN MARK D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 455.0,
+      "is_open_market": false
+    }
+  ]
+}

@@ -1,0 +1,1853 @@
+{
+  "ts": 1781309925.5687618,
+  "data": [
+    {
+      "date": "2026-06-03",
+      "insider_id": "Verdeschi Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6519.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-28",
+      "insider_id": "Wurster Richard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21959.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Dea Joan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Dea Joan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "ADAMS JOHN K JR",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "ADAMS JOHN K JR",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Brown Marianne Catherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Brown Marianne Catherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "SNEED PAULA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "SNEED PAULA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Sarin Arun",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Sarin Arun",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1602.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 210000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Dea Joan",
+      "role": "",
+      "transaction": "sell",
+      "shares": 835.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-18",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-13",
+      "insider_id": "Sarin Arun",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7866.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-13",
+      "insider_id": "Sarin Arun",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-13",
+      "insider_id": "Sarin Arun",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7866.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 109300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9910.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 109300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-29",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 63743.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7866.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2520.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7866.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36450.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-23",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36450.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7941.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7941.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7941.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7942.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7942.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7942.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21750.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21750.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21750.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41297.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41297.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-14",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41297.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Brown Marianne Catherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 434.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1286.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 393.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 474.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7866.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1899.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7866.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1899.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3839.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6269.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5449.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9032.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2740.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4463.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3626.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Verdeschi Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 62134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24509.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 72489.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7942.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7942.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15884.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Wurster Richard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 230411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 42458.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21057.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50052.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30377.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 42113.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15283.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2030.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8156.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Wurster Richard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22879.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Wurster Richard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 62140.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16312.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4311.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11263.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11152.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25633.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9109.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16312.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60743.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 141757.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2030.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10725.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27903.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Howard Dennis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-10",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32413.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 126200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 67514.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 67514.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 67514.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2732.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4390.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11825.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2732.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DODDS CHRISTOPHER V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4390.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 67975.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 94948.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 94948.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 94948.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 96625.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 162462.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21429.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 141033.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 162462.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7595.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7595.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7595.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 145650.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44962.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26475.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44962.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-28",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44962.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134895.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134895.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134895.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4765.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9525.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9525.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19050.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Brown Marianne Catherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 394.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 357.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 431.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-23",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-23",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-23",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1922.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1922.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-19",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8372.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "SNEED PAULA A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8680.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3072.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3072.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3072.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1032.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 61388.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 398.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 398.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1089.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35188.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Craig Jonathan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44750.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-29",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3823.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31750.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-23",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18595.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-02",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Brown Marianne Catherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 407.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 921.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1292.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1913.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-23",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2105.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-23",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2105.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-04",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-04",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3205.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6144.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3296.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "sell",
+      "shares": 47813.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50016.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "buy",
+      "shares": 47813.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Morgan Peter J. III",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-27",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 136500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-26",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 136500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-25",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13542.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 104500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28653.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Schwab Charles R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22721.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3290.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Wurster Richard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24096.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24096.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24096.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Dea Joan",
+      "role": "",
+      "transaction": "sell",
+      "shares": 513.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Bettinger Walter W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 173876.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-03",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-03",
+      "insider_id": "Schwab-Pomerantz Carolyn",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Brown Marianne Catherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 412.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Ruffel Charles A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1322.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 371.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 909.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "HERRINGER FRANK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3290.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Beatty Jonathan S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1035.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-24",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-24",
+      "insider_id": "Ellis Stephen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-18",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10129.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-18",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10129.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-18",
+      "insider_id": "Woolway Paul V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10129.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-18",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20872.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-18",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20872.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-18",
+      "insider_id": "Murtagh Nigel J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20872.0,
+      "is_open_market": false
+    }
+  ]
+}

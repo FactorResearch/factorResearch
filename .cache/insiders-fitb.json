@@ -1,0 +1,1021 @@
+{
+  "ts": 1781372928.2917027,
+  "data": [
+    {
+      "date": "2026-04-29",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Sefzik Peter L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Sefzik Peter L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Sefzik Peter L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18767.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Sefzik Peter L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 435.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Sefzik Peter L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "Sefzik Peter L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 398.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Desmangles Laurent",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Almodovar Priscilla",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Rogers Kathleen A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Benitez Jorge L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Blackburn Katherine H.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Smith Barbara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Bayh Evan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Clement-Holmes Linda W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Daniels C. Bryan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "MALLESCH EILEEN A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Akins Nicholas K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Van de Ven Michael G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Heminger Gary R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "KERR DEREK J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-21",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2838.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-20",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-20",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3835.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2046.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-17",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3835.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3501.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 395.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7170.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3267.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 547.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10332.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2231.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Chayt Bridgit",
+      "role": "",
+      "transaction": "sell",
+      "shares": 947.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 221.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Preston Bryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "sell",
+      "shares": 621.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Pinckney Nancy C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1212.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Stevens Melissa S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 943.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2693.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1346.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9531.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-19",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14496.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Chayt Bridgit",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6765.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Gonzalez Christian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6765.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2013.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Preston Bryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4283.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Preston Bryan D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9755.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Preston Bryan D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20133.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4283.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9755.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6765.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Pinckney Nancy C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8089.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Pinckney Nancy C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18425.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Pinckney Nancy C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8697.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Stevens Melissa S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6662.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Stevens Melissa S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15174.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Stevens Melissa S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6765.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10468.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23844.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19328.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9517.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21677.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14496.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 57746.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 130058.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 101671.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16654.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 37934.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27683.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "King Darren J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14496.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-18",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3420.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15887.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12467.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15887.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 439.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 581.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Chayt Bridgit",
+      "role": "",
+      "transaction": "sell",
+      "shares": 118.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Chayt Bridgit",
+      "role": "",
+      "transaction": "sell",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-16",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 226.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 981.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Chayt Bridgit",
+      "role": "",
+      "transaction": "sell",
+      "shares": 492.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Chayt Bridgit",
+      "role": "",
+      "transaction": "sell",
+      "shares": 492.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 309.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Lopper Jeffrey A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 309.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Preston Bryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Preston Bryan D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 520.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "sell",
+      "shares": 710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Gibson Kala",
+      "role": "",
+      "transaction": "sell",
+      "shares": 520.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Pinckney Nancy C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 877.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Pinckney Nancy C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 937.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Stevens Melissa S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 682.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Stevens Melissa S.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 790.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1948.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1151.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 974.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Schramm Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1067.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9873.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2574.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-14",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1706.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 49175.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 101.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32769.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2137.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Leonard James C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 77.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 49175.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 101.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32769.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 581.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5674.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Feiger Mitchell Stuart",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9139.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14035.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10680.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shaffer Robert P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14035.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Spence Timothy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Khanna Kevin J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6773.0,
+      "is_open_market": false
+    }
+  ]
+}

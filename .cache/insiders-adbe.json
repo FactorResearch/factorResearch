@@ -1,0 +1,3317 @@
+{
+  "ts": 1781372877.4517882,
+  "data": [
+    {
+      "date": "2026-04-30",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 755.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10341.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13237.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-28",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51422.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-20",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1336.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3894.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 59.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 198.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1229.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "sell",
+      "shares": 648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "sell",
+      "shares": 609.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1229.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Boulden Melanie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Boulden Melanie",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Boulden Melanie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 381.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Pandey Dheeraj",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Pandey Dheeraj",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Pandey Dheeraj",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Oberg Kathleen K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Oberg Kathleen K.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Oberg Kathleen K.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Pentland Adele Louise",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Pentland Adele Louise",
+      "role": "",
+      "transaction": "sell",
+      "shares": 444.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Pentland Adele Louise",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1726.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 650.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1726.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 549.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 650.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 560.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 344.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "AMON CRISTIANO R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Banse Amy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Banse Amy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Banse Amy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Desmond Laura",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Desmond Laura",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Desmond Laura",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Neumann Spencer Adam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Neumann Spencer Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Neumann Spencer Adam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Ricks David A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Ricks David A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Ricks David A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 560.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 344.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "CALDERONI FRANK",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "CALDERONI FRANK",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "CALDERONI FRANK",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "ROSENSWEIG DANIEL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "ROSENSWEIG DANIEL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "ROSENSWEIG DANIEL",
+      "role": "",
+      "transaction": "buy",
+      "shares": 900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2857.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2199.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1416.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2857.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 980.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 627.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1090.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2199.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 78.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-27",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1646.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9211.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20933.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20933.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Pentland Adele Louise",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20933.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 27631.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18086.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18086.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-26",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 45717.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 528.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 528.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 425.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4933.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 146.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 425.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15054.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7879.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15054.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23607.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11702.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23607.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23607.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11582.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23607.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 209.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 68298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1255.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 68298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 622.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1255.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4919.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1976.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4919.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 443.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 770.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 153.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 443.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 770.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1051.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1051.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 438.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 345.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 217.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 438.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 406.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 438.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 240.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 151.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 438.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 292.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 980.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 627.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1108.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 247.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1912.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1168.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4801.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2773.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1717.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7059.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4284.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11070.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4284.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11070.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12182.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7789.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-14",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32027.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 112.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 116.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-31",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 149.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 424.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 210.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 424.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1254.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 621.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1254.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 381.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 650.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 549.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 650.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1132.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 344.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 344.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 980.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 626.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1090.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-24",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11430.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 112.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 424.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 210.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 424.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 317.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 606.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1254.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 621.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1254.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 443.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 770.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 359.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 443.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "sell",
+      "shares": 381.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chen Gloria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 770.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1051.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1051.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Durn Daniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 345.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "sell",
+      "shares": 377.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chakravarthy Anil",
+      "role": "",
+      "transaction": "buy",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 345.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 437.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 377.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 761.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 980.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 627.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1090.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "NARAYEN SHANTANU",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-07",
+      "insider_id": "Balazs Lara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Pentland Adele Louise",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31197.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 83.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 227.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "Forusz Jillian",
+      "role": "",
+      "transaction": "buy",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-14",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1933.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-14",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 958.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-14",
+      "insider_id": "Wadhwani David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1933.0,
+      "is_open_market": false
+    }
+  ]
+}

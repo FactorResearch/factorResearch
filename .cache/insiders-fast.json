@@ -1,0 +1,621 @@
+{
+  "ts": 1781363650.7840972,
+  "data": [
+    {
+      "date": "2026-04-24",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-24",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Wisecup Reyne K",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Wisecup Reyne K",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36920.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Wisecup Reyne K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 36920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "SATTERLEE SCOTT",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15964.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "SATTERLEE SCOTT",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15964.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-23",
+      "insider_id": "SATTERLEE SCOTT",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15964.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 85365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Tunnicliff Max Hughes",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28841.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Papenfuss Donnalee Kathleen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13719.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17560.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Quarshie Irene Ayeley",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15258.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Oas Noelle Joan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17560.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "HSU Hsenghung Sam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16431.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Drazkowski William Joseph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31097.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Miller Charles S.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35670.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24390.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17560.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Heise Rita J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23474.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Eastman Stephen L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11737.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Ericson Brady D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23474.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23474.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Jansen James C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17560.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Nielsen Sarah N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14084.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "SATTERLEE SCOTT",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17605.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Wisecup Reyne K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11737.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 83365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-19",
+      "insider_id": "Nielsen Sarah N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Johnson Daniel L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "HSU Hsenghung Sam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "HSU Hsenghung Sam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Eastman Stephen L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-16",
+      "insider_id": "HSU Hsenghung Sam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-14",
+      "insider_id": "Ancius Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Drazkowski William Joseph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6842.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Drazkowski William Joseph",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6842.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Drazkowski William Joseph",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6842.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84612.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 84612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 84612.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "FLORNESS DANIEL L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 84612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34612.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32724.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Watts Jeffery Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32724.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34612.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Soderberg John Lewis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4934.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4934.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4934.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8648.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-24",
+      "insider_id": "Broersma Anthony Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8648.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5052.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5052.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5052.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "Lisowski Sheryl Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12000.0,
+      "is_open_market": false
+    }
+  ]
+}

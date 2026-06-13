@@ -1,0 +1,1125 @@
+{
+  "ts": 1781300359.7146566,
+  "data": [
+    {
+      "date": "2026-04-06",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 392.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Bolster Brian W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 428.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 316.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 47.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "PORGES DAVID L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "CAMAREN JAMES LAWRENCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 218.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 745.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4189.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3845.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2489.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4672.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4720.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9340.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9340.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4720.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4720.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5612.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5612.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5079.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 101.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bolster Brian W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 912.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 623.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4388.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 206.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 568.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1044.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1544.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1965.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7373.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2035.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4486.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 394.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1622.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2178.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Bolster Brian W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 53098.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Bolster Brian W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1229.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Bolster Brian W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7790.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 529.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 726.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2983.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Daggs Nicole J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2099.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 523.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5485.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13941.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4819.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5493.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1237.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5082.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 806.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Stahlkopf Deborah L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14746.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1029.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6623.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16833.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3328.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8992.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 702.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3661.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9306.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1319.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9836.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 484.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 801.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3290.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4773.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Wilson Darryl L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21869.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1052.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10446.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Crews Terrell Kirk II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3208.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 161445.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4813.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60092.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 152713.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4372.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Martha Geoffrey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "buy",
+      "shares": 73831.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1796.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30043.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2741.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13595.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 34551.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4407.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "Gursahaney Naren K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "HENRY MARIA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "PORGES DAVID L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "CAMAREN JAMES LAWRENCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "HACHIGIAN KIRK S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "LANE AMY B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "STALL JOHN A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24535.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75068.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24535.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24535.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75068.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "KETCHUM JOHN W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75068.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12620.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12620.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12620.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 30000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-22",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10826.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-07",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 463.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "PORGES DAVID L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 42.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "CAMAREN JAMES LAWRENCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-11",
+      "insider_id": "Reagan Ronald R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12129.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Gough William John",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 145140.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 145140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Pimentel Armando Jr",
+      "role": "",
+      "transaction": "buy",
+      "shares": 145140.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-03",
+      "insider_id": "Sieving Charles E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11336.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 808.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 458.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-25",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 846.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 52.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "PORGES DAVID L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 52.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "CAMAREN JAMES LAWRENCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Lemasney Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 846.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-08",
+      "insider_id": "Dunne Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-28",
+      "insider_id": "Coffey Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-22",
+      "insider_id": "May James Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2177.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 497.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Arnaboldi Nicole S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 46.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "PORGES DAVID L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "CAMAREN JAMES LAWRENCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 260.0,
+      "is_open_market": false
+    }
+  ]
+}

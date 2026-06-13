@@ -1,0 +1,901 @@
+{
+  "ts": 1781363658.853351,
+  "data": [
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7659.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18170.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6010.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6010.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6010.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3382.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3199.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "TALWALKAR ABHIJIT Y",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4571.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26480.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51270.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50057.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26480.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 51270.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37980.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16620.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40329.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11710.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 37980.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16620.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1362.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1421.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "sell",
+      "shares": 942.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "sell",
+      "shares": 996.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4306.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12979.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3180.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10113.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3290.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1809.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1298.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10694.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8274.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18820.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5047.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2572.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3168.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26126.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11065.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1923.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2994.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24675.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9053.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8685.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1988.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7106.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18820.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5525.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2186.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 76580.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19584.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8111.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134624.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 51053.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "LORD PATRICK J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "LORD PATRICK J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1755.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "LORD PATRICK J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2325.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "LORD PATRICK J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31406.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7080.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1141.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "BRANDT ERIC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "BRANDT ERIC",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 181020.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 271530.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6030.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Correia Christina",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9045.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14380.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Fernandes Neil J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21570.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35950.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Varadarajan Seshasayee",
+      "role": "",
+      "transaction": "buy",
+      "shares": 53925.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33180.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49770.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51280.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 76920.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "LORD PATRICK J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 42230.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "LORD PATRICK J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 63345.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 113300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 113300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 113300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "ARCHER TIMOTHY",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "Bettinger Douglas R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40080.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Mayer Bethany",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1622.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Mayer Bethany",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1622.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Kang Ho Kyu",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Mehra Jyoti",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Ahmed Sohail U",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Dineen John M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Mayer Bethany",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Mayer Bethany",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "TALWALKAR ABHIJIT Y",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "CANNON MICHAEL R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "FIELDS MARK",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "BRANDT ERIC",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Ahmed Sohail U",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2950.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Ahmed Sohail U",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2950.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Mayer Bethany",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1298.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-31",
+      "insider_id": "Kang Ho Kyu",
+      "role": "",
+      "transaction": "sell",
+      "shares": 664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6010.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6010.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6010.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-13",
+      "insider_id": "Vahedi Vahid",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52190.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-05",
+      "insider_id": "Harter Ava",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5270.0,
+      "is_open_market": false
+    }
+  ]
+}

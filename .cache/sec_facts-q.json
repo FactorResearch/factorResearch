@@ -1,0 +1,135 @@
+{
+  "ts": 1781178638.7644808,
+  "data": {
+    "cik": "0002058873",
+    "name": "Qnity Electronics, Inc.",
+    "sector": "Semiconductors & Related Devices",
+    "sector_cls": "general",
+    "sic": 3674,
+    "eps": [
+      {
+        "year": 2025,
+        "value": 3.3,
+        "end": "2025-12-31"
+      }
+    ],
+    "bvps": [
+      {
+        "year": 2025,
+        "value": 33.84068009092502
+      }
+    ],
+    "cur_ast": [
+      {
+        "year": 2025,
+        "value": 2638000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "cur_lib": [
+      {
+        "year": 2025,
+        "value": 1356000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "lt_debt": [
+      {
+        "year": 2025,
+        "value": 4100000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "tot_lib": [
+      {
+        "year": 2025,
+        "value": 6704000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "equity": [
+      {
+        "year": 2025,
+        "value": 7095000000
+      },
+      {
+        "year": 2024,
+        "value": 10644000000
+      }
+    ],
+    "shares": [
+      {
+        "year": 2026,
+        "value": 209658907
+      }
+    ],
+    "total_assets": [
+      {
+        "year": 2025,
+        "value": 14070000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "retained_earnings": [
+      {
+        "year": 2025,
+        "value": 18000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "ppe_net": [
+      {
+        "year": 2025,
+        "value": 1701000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "cash": [
+      {
+        "year": 2025,
+        "value": 915000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "net_inc": [],
+    "revenue": [
+      {
+        "year": 2025,
+        "value": 4754000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "gross_profit": [],
+    "op_income": [
+      {
+        "year": 2025,
+        "value": 962000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "op_cf": [
+      {
+        "year": 2025,
+        "value": 1273000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "capex": [],
+    "r_and_d": [
+      {
+        "year": 2025,
+        "value": 354000000,
+        "end": "2025-12-31"
+      }
+    ],
+    "acquisitions": [],
+    "dividends": [
+      {
+        "year": 2025,
+        "value": 13000000,
+        "end": "2025-12-31"
+      }
+    ]
+  },
+  "latest_filing": "2026-05-12"
+}

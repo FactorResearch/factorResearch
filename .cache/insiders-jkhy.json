@@ -1,0 +1,853 @@
+{
+  "ts": 1781358012.241702,
+  "data": [
+    {
+      "date": "2026-05-14",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 375.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-12",
+      "insider_id": "FLANIGAN MATTHEW C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 440.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-01",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 183.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-01",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 67.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-01",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 183.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Nelson Lisa M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "LoCascio Tammy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Campbell Curtis A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Miyashiro Shruti S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Wilson Thomas Hampton Jr.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Brown Wesley A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "FLANIGAN MATTHEW C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "WIMSETT THOMAS A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Nelson Lisa M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Nelson Lisa M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "LoCascio Tammy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "LoCascio Tammy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Campbell Curtis A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Campbell Curtis A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Miyashiro Shruti S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Miyashiro Shruti S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Wilson Thomas Hampton Jr.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Wilson Thomas Hampton Jr.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Brown Wesley A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Brown Wesley A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "FLANIGAN MATTHEW C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "FLANIGAN MATTHEW C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "WIMSETT THOMAS A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "WIMSETT THOMAS A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 227.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 263.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 233.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 527.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1852.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1119.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2522.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "sell",
+      "shares": 740.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1677.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5755.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14623.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5780.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2905.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 784.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 217.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 289.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 784.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 217.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "McLachlan Shanon G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 698.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 222.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 210.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 222.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 93.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 210.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "sell",
+      "shares": 77.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Swearingen Renee Ann",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5253.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1462.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "sell",
+      "shares": 608.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "sell",
+      "shares": 473.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1462.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "sell",
+      "shares": 197.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Carsley Mimi",
+      "role": "",
+      "transaction": "buy",
+      "shares": 608.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14347.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3917.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1456.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 829.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1738.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3917.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 646.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1456.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 368.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Adelson Gregory R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 829.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2376.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "buy",
+      "shares": 708.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "sell",
+      "shares": 708.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "sell",
+      "shares": 670.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "sell",
+      "shares": 551.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "sell",
+      "shares": 296.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "buy",
+      "shares": 670.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "sell",
+      "shares": 243.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Morgan Craig Keith",
+      "role": "",
+      "transaction": "buy",
+      "shares": 551.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14687.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6232.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4805.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5780.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14687.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2453.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6232.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Foss David B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4805.0,
+      "is_open_market": false
+    }
+  ]
+}

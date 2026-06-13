@@ -1,0 +1,1781 @@
+{
+  "ts": 1781372859.0278358,
+  "data": [
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 48.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25005.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7081.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7081.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7081.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26821.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51822.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26821.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 321.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 440.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 280.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 360.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 462.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2117.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 51887.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Taxay Marc",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1415.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Taxay Marc",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1384.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Van den hove Luc",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Liuson Julia",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Krakauer Mary L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Adams Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Adams Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "Adams Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "PLUMMER JAMES D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "PLUMMER JAMES D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "PLUMMER JAMES D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 779.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "CHEW LEWIS",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "SOHN YOUNG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "SANGIOVANNI VINCENTELLI ALBERTO",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-07",
+      "insider_id": "GAVRIELOV MOSHE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 714.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "SOHN YOUNG",
+      "role": "",
+      "transaction": "sell",
+      "shares": 72.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 380.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1280.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1907.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1021.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 412.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4492.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8962.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3546.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39032.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3546.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39032.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8416.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 43239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Taxay Marc",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5460.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "Taxay Marc",
+      "role": "",
+      "transaction": "buy",
+      "shares": 973.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18138.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 43318.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-18",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 146849.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2362.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2867.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7559.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 73.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2362.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13386.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1827.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16598.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13386.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1827.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16598.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13943.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15616.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2301.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19516.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Taxay Marc",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40562.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5850.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64684.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 112.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-21",
+      "insider_id": "GAVRIELOV MOSHE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6319.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-01",
+      "insider_id": "Van den hove Luc",
+      "role": "",
+      "transaction": "buy",
+      "shares": 265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3418.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1387.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1040.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11437.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9828.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3418.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1387.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 759.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4731.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2489.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5977.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2489.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-08",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "GAVRIELOV MOSHE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-17",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 159.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 802.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 130.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1442.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 213.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1895.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-05",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1068.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-31",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 605.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 605.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 758.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2497.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 855.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3463.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2531.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 526.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 115.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1827.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1827.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "WALL JOHN M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2300.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "DEVGAN ANIRUDH",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5627.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Brennan Ita M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 860.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1520.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 650.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1520.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1215.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1525.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-18",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 181.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Scannell Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 274.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5588.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 521.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1827.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1152.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 119.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3674.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1795.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5588.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5392.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1537.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2478.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1377.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5392.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1076.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1534.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-17",
+      "insider_id": "TENG CHIN-CHI",
+      "role": "",
+      "transaction": "sell",
+      "shares": 890.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-13",
+      "insider_id": "Cunningham Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    }
+  ]
+}

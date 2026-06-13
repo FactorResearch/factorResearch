@@ -1,0 +1,901 @@
+{
+  "ts": 1781373423.4492428,
+  "data": [
+    {
+      "date": "2026-06-02",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16656.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16656.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16656.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Harrison Peter",
+      "role": "",
+      "transaction": "sell",
+      "shares": 103.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Harrison Peter",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Hartmann Judith",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1349.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Ingram Tamara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Lute Jane H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Anderson Anthony",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Yates Lloyd M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Siegmund Jan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "SCHAPIRO MORTON O",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "HANWAY H EDWARD",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1349.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "BROUSSARD BRUCE D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1349.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "MILLS STEVEN A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1349.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "HOPKINS DEBORAH C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1350.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Ingram Tamara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 43.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Lute Jane H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Lute Jane H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 169.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Anderson Anthony",
+      "role": "",
+      "transaction": "buy",
+      "shares": 88.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Yates Lloyd M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Yates Lloyd M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 226.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Siegmund Jan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "SCHAPIRO MORTON O",
+      "role": "",
+      "transaction": "buy",
+      "shares": 495.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "SCHAPIRO MORTON O",
+      "role": "",
+      "transaction": "buy",
+      "shares": 257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "MILLS STEVEN A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "HOPKINS DEBORAH C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 112.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8945.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Beswick Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14907.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "buy",
+      "shares": 89441.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14907.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Brennan Katherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Klisura Dean Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14907.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "South Martin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fernandez Carmen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5963.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "MCGIVNEY MARK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59627.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5766.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 627.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2362.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16655.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16655.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16655.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3837.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2464.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Brennan Katherine",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Brennan Katherine",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3855.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Brennan Katherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Klisura Dean Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Klisura Dean Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Klisura Dean Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Fernandez Carmen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Fernandez Carmen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3855.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Fernandez Carmen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "sell",
+      "shares": 59510.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30380.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59510.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "South Martin",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14476.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "South Martin",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8006.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "South Martin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14476.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8044.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8044.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Beswick Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Beswick Paul",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3403.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Beswick Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Mills Stacy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2723.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Mills Stacy",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1277.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Mills Stacy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2723.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "MCGIVNEY MARK C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17961.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "MCGIVNEY MARK C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9170.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "MCGIVNEY MARK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17961.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Klisura Dean Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Klisura Dean Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24858.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "South Martin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14476.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "South Martin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39772.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Fernandez Carmen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Fernandez Carmen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18643.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "MCGIVNEY MARK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17961.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "MCGIVNEY MARK C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44743.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1609.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Tomlinson Patrick",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28586.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Jones John Jude",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15536.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Brennan Katherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Brennan Katherine",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22372.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8044.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Studer Nicholas Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21129.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Beswick Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Beswick Paul",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22372.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Mills Stacy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1625.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Mills Stacy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1342.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Mills Stacy",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3574.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59510.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "Doyle John Q",
+      "role": "",
+      "transaction": "buy",
+      "shares": 217501.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Lute Jane H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 157.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Yates Lloyd M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 209.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "SCHAPIRO MORTON O",
+      "role": "",
+      "transaction": "buy",
+      "shares": 238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MILLS STEVEN A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 244.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Ingram Tamara",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Lute Jane H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 37.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Anderson Anthony",
+      "role": "",
+      "transaction": "buy",
+      "shares": 81.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Yates Lloyd M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Siegmund Jan",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "SCHAPIRO MORTON O",
+      "role": "",
+      "transaction": "buy",
+      "shares": 456.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "HOPKINS DEBORAH C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 103.0,
+      "is_open_market": false
+    }
+  ]
+}

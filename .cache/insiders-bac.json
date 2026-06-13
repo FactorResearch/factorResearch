@@ -1,0 +1,3661 @@
+{
+  "ts": 1781310451.7965467,
+  "data": [
+    {
+      "date": "2026-05-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 126756.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Zuber Maria T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Woods Thomas D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2473.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Woods Thomas D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Martinez Maria",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Allen Sharon L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Ramos Denise L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "ROSE CLAYTON STUART",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "WHITE MICHAEL D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "ALMEIDA JOSE E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "NOWELL LIONEL L III",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8718.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "LOZANO MONICA C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "DONALD ARNOLD W",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "BANK OF AMERICA CORP /DE/",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-30",
+      "insider_id": "BANK OF AMERICA CORP /DE/",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "de Weck Pierre J.P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1096.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18083.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18082.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18082.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18082.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-12",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 94000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 83832.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 136558.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 149876.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 82882.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 149876.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17521.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17521.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1432.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1432.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1432.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16493.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 37469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 47877.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23199.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 47877.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79101.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43743.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 79101.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39551.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20231.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39551.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 99917.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55165.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 99917.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 107411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52137.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 107411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 107411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 54911.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 107411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 87428.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 42518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 87428.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 395504.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 193328.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 395504.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 68000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19814.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26230.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23938.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10798.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10108.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19814.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13389.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26230.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12217.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23938.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5496.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10798.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26324.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26324.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 63064.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12921.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26324.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26324.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14558.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26324.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41476.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20721.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 37469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34875.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 63064.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17521.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17521.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29787.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29788.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29788.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16435.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16435.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16435.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14190.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24966.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24966.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24966.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29763.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29764.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29764.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25346.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29787.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16435.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6670.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14190.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11735.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24966.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8460.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13989.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29763.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11913.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25346.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6075.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6075.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15528.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6075.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6075.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2676.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6075.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3190.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4124.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21939.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6814.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15528.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7897.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7897.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11969.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17477.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4032.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7897.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7897.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3799.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7897.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5776.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11969.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8451.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17477.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19775.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16113.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7495.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8007.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10936.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19775.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8911.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16113.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29908.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15269.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "buy",
+      "shares": 29908.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7953.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3547.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6910.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5070.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38375.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4080.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7953.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11846.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11846.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24979.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20271.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8411.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11846.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11846.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5865.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11846.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24979.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37057.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10016.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20271.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21830.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7675.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15888.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8596.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13007.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36353.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10553.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21830.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21830.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6919.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13552.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7392.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13709.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26853.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 38335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11144.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21830.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21857.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40385.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20266.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20266.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36163.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5890.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7020.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10608.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21857.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24297.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 50000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 40385.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9859.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20265.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17756.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 36163.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8878.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35783.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31705.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17489.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35783.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 41366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19311.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 39550.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15276.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 31705.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24969.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24969.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49938.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 96137.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 96136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 192273.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49213.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 49213.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Mensah Bernard A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 98426.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28841.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28841.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 57682.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38455.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 38454.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Mogensen Lauren A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 76909.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60887.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60886.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Borthwick Alastair M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 121773.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "buy",
+      "shares": 69219.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28841.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28841.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 57682.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32046.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32045.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 64091.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 80114.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 80114.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 160228.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 52875.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 52875.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 105750.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54478.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54477.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 108955.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 144663.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 361656.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 216994.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "LOZANO MONICA C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 387.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-11",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-11",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-11",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-11",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 465.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-09",
+      "insider_id": "Greener Geoffrey S",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Scrivener Thomas M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-30",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26784.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-30",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13674.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-30",
+      "insider_id": "Okpara Johnbull",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26784.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Schimpf Eric A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Schimpf Eric A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 524.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Schimpf Eric A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Hans Lindsay D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Hans Lindsay D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "Hans Lindsay D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Athanasia Dean C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-22",
+      "insider_id": "Bronstein Sheri B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-10",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 75000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1351.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Gopalkrishnan Hari",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2703.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Schimpf Eric A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1235.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Schimpf Eric A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 521.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Schimpf Eric A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1235.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Hans Lindsay D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 974.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Hans Lindsay D.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 467.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Hans Lindsay D.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 974.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Thompson Bruce R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "DeMare James P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 148391.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-23",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 248016.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-23",
+      "insider_id": "Nguyen Thong M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 248016.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17891.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-15",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-13",
+      "insider_id": "MOYNIHAN BRIAN T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 40000.0,
+      "is_open_market": false
+    }
+  ]
+}

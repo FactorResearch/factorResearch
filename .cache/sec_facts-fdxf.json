@@ -1,0 +1,31 @@
+{
+  "ts": 1781211648.3878822,
+  "data": {
+    "cik": "0002082247",
+    "name": "FedEx Freight Holding Company, Inc.",
+    "sector": "Air Courier Services",
+    "sector_cls": "general",
+    "sic": 4513,
+    "eps": [],
+    "bvps": [],
+    "cur_ast": [],
+    "cur_lib": [],
+    "lt_debt": [],
+    "tot_lib": [],
+    "equity": [],
+    "shares": [],
+    "total_assets": [],
+    "retained_earnings": [],
+    "ppe_net": [],
+    "cash": [],
+    "net_inc": [],
+    "revenue": [],
+    "gross_profit": [],
+    "op_income": [],
+    "op_cf": [],
+    "capex": [],
+    "r_and_d": [],
+    "acquisitions": [],
+    "dividends": []
+  }
+}

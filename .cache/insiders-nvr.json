@@ -1,0 +1,397 @@
+{
+  "ts": 1781305796.3861299,
+  "data": [
+    {
+      "date": "2026-05-29",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "DeVito Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Jung Alexandra A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Malzahn Daniel David",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1335.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Bredow Eugene James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Martinez Melquiades R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Oliver George",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "ROSIER WILLIAM GRADY",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "FESTA ALFRED E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "BAILEY SALLIE B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "ANDREWS CHARLES ELLIOTT",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "SAVILLE PAUL C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "PREISER DAVID A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 154.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-14",
+      "insider_id": "Bredow Eugene James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "Bredow Eugene James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 80.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-24",
+      "insider_id": "DeVito Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-20",
+      "insider_id": "ANDREWS CHARLES ELLIOTT",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-10",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-10",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-10",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-05",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 220.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-04",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "ANDREWS CHARLES ELLIOTT",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "Malzahn Daniel David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "PREISER DAVID A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "DeVito Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Oliver George",
+      "role": "",
+      "transaction": "buy",
+      "shares": 338.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-26",
+      "insider_id": "Jung Alexandra A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-26",
+      "insider_id": "Jung Alexandra A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-26",
+      "insider_id": "Jung Alexandra A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "Jung Alexandra A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 50.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Kelpy Matthew B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 125.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 125.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Ross Susan Williamson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 125.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Malzahn Daniel David",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "DeVito Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 342.0,
+      "is_open_market": false
+    }
+  ]
+}

@@ -1,0 +1,2013 @@
+{
+  "ts": 1781372914.4732044,
+  "data": [
+    {
+      "date": "2026-05-20",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "WEISLER DION J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "WEISLER DION J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 80.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Spar Debora L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Jacks Tyler",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "CHANDY RUBY R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Lynch Karen S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Chai Nelson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "HARRIS C MARTIN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "SPERLING SCOTT M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "JOHNSON JENNIFER M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 499.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-27",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-28",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 66.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-28",
+      "insider_id": "WEISLER DION J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 79.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-28",
+      "insider_id": "Lynch Karen S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 66.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-28",
+      "insider_id": "SPERLING SCOTT M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 90.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-28",
+      "insider_id": "JOHNSON JENNIFER M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 66.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1607.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 264.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 516.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 106.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 348.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 570.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1133.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 411.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 214.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 99.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 58.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 20.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 118.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 119.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 212.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 815.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1241.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1370.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 678.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 447.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 759.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 931.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 448.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 360.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 382.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 240.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 680.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 480.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 360.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 85.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 263.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 252.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 466.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 332.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 742.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 264.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 522.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 111.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 247.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 675.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 360.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 837.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1211.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-28",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3474.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 872.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 13698.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3129.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1569.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 985.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 337.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 433.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1534.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Shropshire Thomas B Jr.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4281.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Shropshire Thomas B Jr.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 978.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16270.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3715.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2057.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1638.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2231.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 32109.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7333.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7515.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "JOHNSON JENNIFER M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "WEISLER DION J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 65.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Lynch Karen S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "SPERLING SCOTT M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 73.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-10",
+      "insider_id": "SPERLING SCOTT M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4386.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 18637.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22046.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22046.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22046.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-04",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18637.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 68000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2521.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29479.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 68000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Shropshire Thomas B Jr.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 337.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6912.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6912.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6912.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-02",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 36000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6913.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6913.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6913.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2250.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8475.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 433.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4638.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4638.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-13",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4638.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-12",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1058.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2250.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 725.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-10",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "buy",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8475.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8475.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1750.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 348.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 728.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 670.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 189.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 141.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 181.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 937.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2513.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1193.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 241.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 109.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7250.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17104.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1293.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7331.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4762.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2469.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1249.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-24",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17104.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-27",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 67.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-27",
+      "insider_id": "WEISLER DION J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 81.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-27",
+      "insider_id": "Lynch Karen S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 67.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-27",
+      "insider_id": "SPERLING SCOTT M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 92.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-27",
+      "insider_id": "JOHNSON JENNIFER M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 67.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 385.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 285.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 385.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 114.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 162.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Shafer Michael D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 145.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 149.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 253.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 212.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Holmes Joseph R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 119.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 187.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 187.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lowery Frederick M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 175.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 63.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 88.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Britt Lisa P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 81.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 111.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 238.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Williamson Stephen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 162.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 275.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 262.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "Lagarde Michel",
+      "role": "",
+      "transaction": "sell",
+      "shares": 262.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 725.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 687.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 598.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3579.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5823.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-22",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 295.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 95.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 295.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 596.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1988.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2678.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1552.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1186.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-07",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 96.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 149.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 251.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 529.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1354.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 566.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 811.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 631.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 887.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1736.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1147.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1257.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "sell",
+      "shares": 548.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "CASPER MARC N",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-25",
+      "insider_id": "Pettiti Gianluca",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-28",
+      "insider_id": "Keith R. Alexandra",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-28",
+      "insider_id": "WEISLER DION J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 92.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-28",
+      "insider_id": "Lynch Karen S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-28",
+      "insider_id": "SPERLING SCOTT M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 102.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-28",
+      "insider_id": "JOHNSON JENNIFER M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 77.0,
+      "is_open_market": false
+    }
+  ]
+}

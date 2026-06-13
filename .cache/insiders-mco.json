@@ -1,0 +1,1861 @@
+{
+  "ts": 1781373522.332396,
+  "data": [
+    {
+      "date": "2026-06-05",
+      "insider_id": "Sawicki Lisa P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 158.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1167.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 158.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1167.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 124.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 93.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Sawicki Lisa P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 528.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Phillips Jason D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 333.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4250.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 375.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5213.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 732.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1308.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 23164.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35556.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Phillips Jason D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 208.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "sell",
+      "shares": 328.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4050.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1188.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2139.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2139.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Dhawan Sumit",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Serafin Zig",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 684.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Phillips Jason D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 541.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3079.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 924.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7885.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2366.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5256.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1578.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 25081.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7528.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-05",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-05",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-05",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 82.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-12",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1167.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 575.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 592.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 546.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 546.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-28",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 546.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 135.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 135.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 86.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Phillips Jason D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 414.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Esperdy Therese",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "FORLENZA VINCENT A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Seidman Leslie",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "Bermudez Jorge A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-05",
+      "insider_id": "VAN SAUN BRUCE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-04",
+      "insider_id": "Tulenko Stephen T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Tulenko Stephen T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-30",
+      "insider_id": "Dhawan Sumit",
+      "role": "",
+      "transaction": "buy",
+      "shares": 427.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1002.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1188.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1188.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1002.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1002.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1375.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "West Michael L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 139.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 730.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 727.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 730.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 730.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "sell",
+      "shares": 727.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Steele Richard G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 727.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "sell",
+      "shares": 783.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "sell",
+      "shares": 783.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "buy",
+      "shares": 783.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-29",
+      "insider_id": "Heuland Noemie Clemence",
+      "role": "",
+      "transaction": "sell",
+      "shares": 114.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Minaya Jose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-01",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 56.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "sell",
+      "shares": 415.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 134.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-16",
+      "insider_id": "Fauber Robert",
+      "role": "",
+      "transaction": "buy",
+      "shares": 56.0,
+      "is_open_market": false
+    }
+  ]
+}

@@ -1,0 +1,925 @@
+{
+  "ts": 1781372965.0387123,
+  "data": [
+    {
+      "date": "2026-06-05",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2655.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2655.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-05",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2655.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Dalby Marcel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2257.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2544.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 566.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Chinn Bruce E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Sylvester Maryrose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Bene Thomas",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Gluski Andres",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "MAZZARELLA KATHLEEN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1314.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "PLUMMER WILLIAM B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "MENKE SEAN E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "HOLT VICTORIA M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 861.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-04",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 192.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 121.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "DeSantis Christopher P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 61.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 47.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5484.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4211.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5484.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-07",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 121.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-07",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 193.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-07",
+      "insider_id": "DeSantis Christopher P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 107.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-07",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7979.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10806.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6404.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6404.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "DeSantis Christopher P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10006.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 892.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10006.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8405.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6804.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8405.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 19011.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Fish James C Jr",
+      "role": "",
+      "transaction": "buy",
+      "shares": 57034.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Boettcher Charles C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7805.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 617.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12642.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12642.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4609.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12642.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4818.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-01",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 37.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-25",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 60.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2377.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2465.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7352.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4842.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2377.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-17",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2465.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7352.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-11",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1021.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-10",
+      "insider_id": "Fish James C Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5706.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-09",
+      "insider_id": "Fish James C Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30390.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-06",
+      "insider_id": "Fish James C Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 657.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 270.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 157.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 428.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "DeSantis Christopher P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 220.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 690.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 690.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 687.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 690.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 690.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-30",
+      "insider_id": "Boettcher Charles C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 689.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 444.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1717.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1006.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "sell",
+      "shares": 694.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Varkey Johnson",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2746.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "DeSantis Christopher P.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 430.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "DeSantis Christopher P.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1373.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 371.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 339.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Carroll John A.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1053.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4166.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Smith Donald J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12208.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4166.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12208.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3372.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Watson Michael J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8668.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3685.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10988.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5839.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Morris John J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16481.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Fish James C Jr",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22763.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Fish James C Jr",
+      "role": "",
+      "transaction": "buy",
+      "shares": 59516.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Boettcher Charles C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4107.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-29",
+      "insider_id": "Boettcher Charles C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10378.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-25",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 693.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-20",
+      "insider_id": "Carrasco Rafael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1380.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "Reed David L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2628.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-03",
+      "insider_id": "MENKE SEAN E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-04",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-03",
+      "insider_id": "Stith Kimberly G.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 255.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Hemmer Tara J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Chinn Bruce E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Sylvester Maryrose",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Bene Thomas",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "Gluski Andres",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "MAZZARELLA KATHLEEN M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1063.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "PLUMMER WILLIAM B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "MENKE SEAN E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-15",
+      "insider_id": "HOLT VICTORIA M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 696.0,
+      "is_open_market": false
+    }
+  ]
+}

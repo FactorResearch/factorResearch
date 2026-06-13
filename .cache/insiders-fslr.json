@@ -1,0 +1,3069 @@
+{
+  "ts": 1781373726.9900544,
+  "data": [
+    {
+      "date": "2026-06-02",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-28",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 10628.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 126.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 473.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 726.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 632.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1009.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 628.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1237.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 364.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 47.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 149.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 75.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 916.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 218.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 97.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 172.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-22",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 239.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 582.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 521.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 179.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 261.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 569.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 472.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1131.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 179.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 98.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 229.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 136.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 362.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 672.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-13",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1455.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1363.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1498.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1877.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2262.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1026.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 352.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-11",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1864.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 270.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 31.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 228.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 498.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 215.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 235.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 409.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 420.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 19.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 262.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 479.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1526.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-05",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 566.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1210.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1210.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 518.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 553.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 553.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 968.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 968.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 968.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 968.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 622.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 622.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 44.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1106.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1106.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3802.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3802.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1358.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-15",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 573.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "Sweeney Michael T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "KRO LISA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "Wright Norman L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "George Anita M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "RENDUCHINTALA VENKATA S M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "Ahearn Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 374.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "POST WILLIAM J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 267.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 180.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 96.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9022.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 351.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 346.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5075.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5376.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-17",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2958.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1937.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 392.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 335.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 264.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 368.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 358.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 180.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 590.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 245.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4856.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4856.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 907.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 907.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 131.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 800.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 280.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 280.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 640.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 854.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 854.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 854.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 854.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 427.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 427.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1441.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1441.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 587.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 587.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 408.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 324.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 555.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 395.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 196.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 610.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 253.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 184.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 181.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 455.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 323.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 202.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 325.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 448.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 358.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 199.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 320.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 233.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 180.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 78.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 265.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 62.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 61.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 106.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 229.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 293.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 102.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 417.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 32.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 27.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 514.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 399.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 199.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 274.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1703.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1282.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 480.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2072.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 120.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 161.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-09",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 309.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4229.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1334.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 947.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1465.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1334.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 947.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1465.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 434.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 610.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 434.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2960.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1067.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 758.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1067.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 758.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3066.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1067.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 852.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1067.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 852.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 760.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 572.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 572.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 442.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 189.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 171.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 142.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 124.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 244.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 171.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 142.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 124.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 244.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1903.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 686.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 537.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 236.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 686.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 537.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 236.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 635.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 171.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 95.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 82.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 133.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 171.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 95.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 82.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 133.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3594.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 947.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 947.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 471.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 651.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12685.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4194.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3156.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1178.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5101.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4194.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3156.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1178.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5101.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2749.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 476.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 379.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 283.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 732.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 476.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 379.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 283.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-06",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 732.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 92.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 728.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-04",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3640.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3194.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1361.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 111.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1330.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3425.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 49.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3426.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3273.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7738.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1650.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-03",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1958.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Bradley Alexander R.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7065.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 211.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Koralewski Michael",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2826.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Gloeckler Markus",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7065.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 141.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Verma Kuntal Kumar",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7065.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7065.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 17664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-27",
+      "insider_id": "Stockdale Caroline",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3532.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 79.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-15",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 234.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Ahearn Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 245.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "George Anita M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "George Anita M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "KRO LISA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Sweeney Michael T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "RENDUCHINTALA VENKATA S M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "Wright Norman L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-31",
+      "insider_id": "POST WILLIAM J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 921.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4656.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-07",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1423.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-06",
+      "insider_id": "Sweeney Michael T",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2561.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3026.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8204.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4724.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4339.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8110.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4348.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 800.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-04",
+      "insider_id": "ANTOUN GEORGES",
+      "role": "",
+      "transaction": "sell",
+      "shares": 300.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Wright Norman L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Sweeney Michael T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "RENDUCHINTALA VENKATA S M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "KRO LISA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "George Anita M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "Ahearn Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 290.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "POST WILLIAM J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 205.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-02",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 140.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Dymbort Jason E.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1824.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Sloan Samantha L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1751.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 34.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 83.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 512.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 509.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 152.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 160.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 58.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 83.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 36.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 179.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 24.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 33.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 30.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 192.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 152.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 47.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-14",
+      "insider_id": "Theurer Nathan B.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 686.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 788.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 274.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 786.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 581.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1367.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2834.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5456.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14322.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "Widmar Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 200.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-03",
+      "insider_id": "Buehler Patrick James",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1600.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "RENDUCHINTALA VENKATA S M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Wright Norman L.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Sweeney Michael T",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "KRO LISA A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "George Anita M.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 81.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "George Anita M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Joseph Molly",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "Ahearn Michael J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 386.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "STEBBINS PAUL H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-30",
+      "insider_id": "POST WILLIAM J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    }
+  ]
+}

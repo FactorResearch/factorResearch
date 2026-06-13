@@ -1,0 +1,877 @@
+{
+  "ts": 1781373742.2405481,
+  "data": [
+    {
+      "date": "2026-06-08",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "Hu W. Bradford",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9212.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-26",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 14553.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Porter Brian J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Halliday Patricia",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Gordon Susan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "O'Sullivan Sean",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "DeMaio Donna",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Rhea John B",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2533.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Chandoha Marie A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Freda William C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Meaney William L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Portalatin Julio A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "Fawcett Amelia C.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-20",
+      "insider_id": "MATHEW SARA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1526.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 195.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 191.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-13",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9611.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-22",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "Gordon Susan M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 324.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "PLANSKY JOHN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16100.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "Porter Brian J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-02",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 29107.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14259.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "sell",
+      "shares": 355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 746.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10716.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Hu W. Bradford",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12310.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Hung Yie-Hsin",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20202.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 43873.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Shelton Mark",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10726.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5967.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "PLANSKY JOHN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12769.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4216.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Horgan Kathryn M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9507.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-26",
+      "insider_id": "Woods John F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16112.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-24",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8765.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-23",
+      "insider_id": "Horgan Kathryn M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5676.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Shelton Mark",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2529.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2269.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1639.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10193.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3953.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 11115.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "sell",
+      "shares": 938.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2464.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "AMBROSIUS JOERG",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12351.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "PLANSKY JOHN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7729.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "PLANSKY JOHN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9595.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "PLANSKY JOHN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 22786.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 211.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Horgan Kathryn M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4792.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Horgan Kathryn M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6773.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Horgan Kathryn M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16950.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Hu W. Bradford",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6958.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Hu W. Bradford",
+      "role": "",
+      "transaction": "sell",
+      "shares": 12477.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Hu W. Bradford",
+      "role": "",
+      "transaction": "buy",
+      "shares": 26676.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "Hung Yie-Hsin",
+      "role": "",
+      "transaction": "sell",
+      "shares": 16467.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21589.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43918.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 93783.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-02-13",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-28",
+      "insider_id": "Horgan Kathryn M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5676.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 74.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 333.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "PLANSKY JOHN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3601.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-14",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Hung Yie-Hsin",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-27",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-15",
+      "insider_id": "Porter Brian J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1398.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-29",
+      "insider_id": "Woods John F",
+      "role": "",
+      "transaction": "buy",
+      "shares": 78103.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-28",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 17410.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-26",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-21",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 13330.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-19",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1576.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Keating Mark R",
+      "role": "",
+      "transaction": "sell",
+      "shares": 590.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Bisegna Anthony",
+      "role": "",
+      "transaction": "sell",
+      "shares": 567.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "TAHIRI MOSTAPHA",
+      "role": "",
+      "transaction": "sell",
+      "shares": 70.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 206.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "Schaefer Elizabeth",
+      "role": "",
+      "transaction": "sell",
+      "shares": 173.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2203.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-15",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1343.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1699.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-12",
+      "insider_id": "O HANLEY RONALD P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39466.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Hung Yie-Hsin",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1700.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-06",
+      "insider_id": "Chandoha Marie A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5469.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-22",
+      "insider_id": "RICHARDS MICHAEL L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 990.0,
+      "is_open_market": true
+    }
+  ]
+}
