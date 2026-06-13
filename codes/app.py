@@ -565,18 +565,21 @@ app.layout = html.Div(className="app-container", children=[
     dcc.Store(id="screener-cache"),
     dcc.Store(id="analysis-store"),
     dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
-    dcc.Store(id="screener-page-store", data=0, storage_type="session"),  # 1D: pagination — current page (0-indexed), session-persisted so mobile tab switches don't reset it
+    dcc.Store(id="screener-visible-count", data=50, storage_type="session"),  # infinite scroll — rows rendered so far, session-persisted
     dcc.Store(id="search-history-store"),
     dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table
     dcc.Store(id="portfolio-refresh-store", data=0),  # increment to trigger refresh
     dcc.Store(id="active-analysis-symbol"),           # symbol currently analyzed
     dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
     dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
+    dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
     # interval disabled=True once loading finishes to stop constant re-renders
     dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
     # fires once 600ms after page load to render already-cached screener data
     # and re-enable the progress interval so a post-refresh render always works
     dcc.Interval(id="page-load-interval", interval=600, max_intervals=1, disabled=False),
+    # polls the screener tab's scroll position so it can be restored on tab switch
+    dcc.Interval(id="screener-scroll-poll-interval", interval=1000, disabled=False),
     dcc.Loading(id="loading", type="circle", color=BLUE, children=html.Div(id="loading-trigger"))
 ])
 
@@ -737,15 +740,15 @@ def update_progress_bar(n):
     Input("page-load-interval",    "n_intervals"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
-    Input("screener-page-store",   "data"),
+    Input("screener-visible-count","data"),
     # screener-viewed-store is a State (not Input) so that analyzing a stock
     # does NOT trigger a re-render that could reset the page on mobile.
     # The viewed highlights update when the next natural re-render occurs
-    # (e.g. pagination, sort, filter, or screener-ready signal).
+    # (e.g. infinite scroll, sort, filter, or screener-ready signal).
     State("screener-viewed-store", "data"),
     prevent_initial_call=False
 )
-def render_screener_table(ready, n_load, sector_filter, sort_state, current_page, viewed_data):
+def render_screener_table(ready, n_load, sector_filter, sort_state, visible_count, viewed_data):
     global _last_screener_state
     # Always allow a fresh render on page-load trigger so a browser refresh
     # never gets stuck behind a stale dedup-cache value.
@@ -756,10 +759,10 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
     viewed_set = frozenset(viewed_data or [])
     sort_col   = (sort_state or {}).get("col", "composite_score")
     sort_asc   = (sort_state or {}).get("asc", False)
-    current_page = current_page or 0
-    # Reset page to 0 when filters/sorts change
+    visible_count = visible_count or 50
+    # Reset visible row count to initial page size when filters/sorts change
     if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
-        current_page = 0
+        visible_count = 50
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
     state_tuple = (
         json.dumps([r["symbol"] for r in results], sort_keys=True),
@@ -767,7 +770,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
         sort_col,
         sort_asc,
         sorted(viewed_set),
-        current_page
+        visible_count
     )
     state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
     
@@ -829,20 +832,13 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
         else:
             header_cells.append(html.Th(label, title=tooltip or "", style=th_style))
     rows = []
-    # 1D: Server-side pagination — 50 rows per page
-    PAGE_SIZE = 50
+    # Infinite scroll — render only the first `visible_count` rows; more are
+    # appended as the user scrolls near the bottom of the table container.
     total_rows = len(filtered)
-    total_pages = (total_rows + PAGE_SIZE - 1) // PAGE_SIZE
-    
-    # Ensure current_page is within bounds
-    current_page = max(0, min(current_page, total_pages - 1)) if total_pages > 0 else 0
-    
-    # Calculate slice for current page
-    start_idx = current_page * PAGE_SIZE
-    end_idx = start_idx + PAGE_SIZE
-    page_filtered = filtered[start_idx:end_idx]
-    
-    for i, r in enumerate(page_filtered, start_idx + 1):
+    visible_count = max(50, min(visible_count, total_rows)) if total_rows else 50
+    page_filtered = filtered[:visible_count]
+
+    for i, r in enumerate(page_filtered, 1):
         sym     = r["symbol"]
         viewed  = sym in viewed_set
         in_port = bool(portfolio_symbols.get(sym))
@@ -934,47 +930,38 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, current_page
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
     ])
-    # 1D: Build pagination controls
-    pagination_controls = html.Div(className="pagination-controls", style={
-        "display": "flex", "justifyContent": "space-between", "alignItems": "center",
-        "marginTop": "16px", "padding": "8px", "fontSize": "13px", "color": MUTED
-    }, children=[
-        html.Button(
-            "← Prev",
-            id="screener-page-prev",
-            n_clicks=0,
-            disabled=current_page == 0,
-            style={"padding": "4px 12px", "touchAction": "manipulation","cursor": "pointer"  if current_page > 0 else "default"}
-        ),
-        html.Span(f"Page {current_page + 1} of {max(1, total_pages)} · Showing {len(page_filtered)} rows"),
-        html.Button(
-            "Next →",
-            id="screener-page-next",
-            n_clicks=0,
-            disabled=current_page >= total_pages - 1,
-            style={"padding": "4px 12px", "touchAction": "manipulation","cursor": "pointer"  if current_page < total_pages - 1 else "default"}
-        ),
-    ])
-    return html.Div([table, note, pagination_controls]), sector_options
+    # Infinite scroll — sentinel div observed by clientside callback; loading
+    # text shown only while more rows remain to be appended.
+    has_more = visible_count < total_rows
+    scroll_sentinel = html.Div(
+        f"Loading more… ({len(page_filtered):,} of {total_rows:,})" if has_more
+        else f"Showing all {total_rows:,} rows",
+        id="screener-scroll-sentinel",
+        style={
+            "textAlign": "center", "padding": "12px", "fontSize": "12px",
+            "color": MUTED,
+        }
+    )
+    return html.Div([table, note, scroll_sentinel]), sector_options
 
-# ── 1D: Screener pagination controls ──────────────────────────────────────────
-@callback(
-    Output("screener-page-store", "data"),
-    Input("screener-page-prev", "n_clicks"),
-    Input("screener-page-next", "n_clicks"),
-    State("screener-page-store", "data"),
-    prevent_initial_call=True
+# ── Infinite scroll: bump visible row count when sentinel nears viewport ─────
+app.clientside_callback(
+    """
+    function(n_intervals, scroll_pos, visible_count) {
+        var wrap = document.getElementById('screener-table-container');
+        if (!wrap) { return window.dash_clientside.no_update; }
+        var rect = wrap.getBoundingClientRect();
+        var nearBottom = rect.bottom - window.innerHeight < 400;
+        if (!nearBottom) { return window.dash_clientside.no_update; }
+        return (visible_count || 50) + 50;
+    }
+    """,
+    Output("screener-visible-count", "data"),
+    Input("page-load-interval", "n_intervals"),
+    Input("screener-scroll-pos", "data"),
+    State("screener-visible-count", "data"),
+    prevent_initial_call=True,
 )
-def handle_pagination(prev_clicks, next_clicks, current_page):
-    triggered = dash.ctx.triggered_id
-    current_page = current_page or 0
-    
-    if triggered == "screener-page-prev" and current_page > 0:
-        return current_page - 1
-    elif triggered == "screener-page-next":
-        return current_page + 1
-    
-    return current_page
 
 # ── Screener column sort ──────────────────────────────────────────────────────
 @callback(
@@ -2956,23 +2943,44 @@ def run_simulation(n, active, compare):
 
 # Touch bridge removed — ticker n_clicks now on <td> which handles touch natively on all browsers (ISSUE-003)
 
-# ── Mobile fix: scroll screener to top when tab becomes visible ───────────────
-# On mobile, returning to the screener tab should scroll back to the table top
-# so the user sees the current page (not a stale scroll position mid-page).
+# ── Screener tab: remember scroll position; other tabs reset to top ──────────
+# Polls window.scrollY while the screener tab is visible and stores it so it
+# can be restored when the user navigates back.
 app.clientside_callback(
     """
-    function(screener_style) {
+    function(n_intervals) {
+        var tab = document.getElementById('tab-screener');
+        if (tab && tab.style.display !== 'none') {
+            return window.scrollY;
+        }
+        return window.dash_clientside.no_update;
+    }
+    """,
+    Output("screener-scroll-pos", "data"),
+    Input("screener-scroll-poll-interval", "n_intervals"),
+)
+
+# Restore the saved scroll position when the screener tab becomes visible.
+# Analyze / Portfolio tabs always reset to top on switch.
+app.clientside_callback(
+    """
+    function(screener_style, analyze_style, portfolio_style, saved_pos) {
         if (screener_style && screener_style.display !== 'none') {
-            var el = document.getElementById('screener-table-container');
-            if (el) {
-                el.scrollIntoView({behavior: 'smooth', block: 'start'});
-            }
+            requestAnimationFrame(function() {
+                window.scrollTo(0, saved_pos || 0);
+            });
+        } else if ((analyze_style && analyze_style.display !== 'none') ||
+                   (portfolio_style && portfolio_style.display !== 'none')) {
+            window.scrollTo(0, 0);
         }
         return window.dash_clientside.no_update;
     }
     """,
     Output("screener-table-container", "id"),
     Input("tab-screener", "style"),
+    Input("tab-analyze", "style"),
+    Input("tab-portfolio", "style"),
+    State("screener-scroll-pos", "data"),
 )
 
 # ── Startup ───────────────────────────────────────────────────────────────────
