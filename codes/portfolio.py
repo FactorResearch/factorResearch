@@ -844,3 +844,51 @@ def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
     score_a = _composite(cagr_a, alpha_a, norm_final_a, norm_p50_a, wl_score_a)
     score_b = _composite(cagr_b, alpha_b, norm_final_b, norm_p50_b, wl_score_b)
 
+    # ── Winner determination ──────────────────────────────────────────────
+    # "Nearly identical" threshold: scores within 1.0 point of each other.
+    SCORE_TIE_THRESHOLD = 1.0
+    score_diff = score_a - score_b
+
+    if abs(score_diff) < SCORE_TIE_THRESHOLD:
+        winner = None
+    elif score_diff > 0:
+        winner = portfolio_a_name
+    else:
+        winner = portfolio_b_name
+
+    # ── Reasons (only populated when there's a winner) ─────────────────────
+    reasons: list[str] = []
+    if winner is not None:
+        winner_is_a = winner == portfolio_a_name
+        w_cagr, l_cagr = (cagr_a, cagr_b) if winner_is_a else (cagr_b, cagr_a)
+        w_alpha, l_alpha = (alpha_a, alpha_b) if winner_is_a else (alpha_b, alpha_a)
+        w_final, l_final = (final_a, final_b) if winner_is_a else (final_b, final_a)
+        w_p50, l_p50 = (p50_a, p50_b) if winner_is_a else (p50_b, p50_a)
+        w_wl, l_wl = (wl_score_a, wl_score_b) if winner_is_a else (wl_score_b, wl_score_a)
+
+        if w_cagr > l_cagr:
+            reasons.append("Higher CAGR")
+        if w_alpha > l_alpha:
+            reasons.append("Better alpha vs SPY")
+        if w_final > l_final:
+            reasons.append("Higher final portfolio value")
+        if w_p50 is not None and l_p50 is not None and w_p50 > l_p50:
+            reasons.append("Higher projected median value")
+        if w_wl > l_wl:
+            reasons.append("Fewer weak-link holdings")
+
+        if not reasons:
+            reasons.append("Higher overall composite score")
+    else:
+        reasons.append("Both portfolios perform similarly.")
+
+    return {
+        "winner":      winner,
+        "score_a":     round(score_a, 2),
+        "score_b":     round(score_b, 2),
+        "reasons":     reasons,
+        "portfolio_a": sim_a,
+        "portfolio_b": sim_b,
+        "error":       None,
+    }
+
