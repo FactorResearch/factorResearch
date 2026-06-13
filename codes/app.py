@@ -224,6 +224,11 @@ def analyze_stock(symbol: str) -> dict:
             
             try:
                 hist = hist_future.result(timeout=30)
+            except RateLimitError as e:
+                # Hard rate-limit block on the primary price-history source —
+                # abort rather than complete a degraded analysis (no momentum/
+                # risk metrics). Surface via the same error path as above.
+                return {"error": str(e)}
             except Exception as e:
                 print(f"Price history fetch failed for {symbol}: {e}")
             

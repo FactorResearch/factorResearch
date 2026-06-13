@@ -52,6 +52,31 @@ def test_rate_limit_error_surfaced_as_result_error():
     assert "Approaching hourly limit" in result["error"]
 
 
+def test_price_history_rate_limit_aborts_with_error():
+    """A hard RateLimitError from get_price_history must abort analyze_stock
+    with {"error": ...} rather than continuing with hist=None (degraded
+    analysis missing momentum/risk metrics)."""
+    sec_facts = _make_sec_facts("AMGN")
+    err = RateLimitError(
+        provider="Tiingo", window="hourly", used=47, limit=50, resets_in=2702.0,
+    )
+
+    with patch.object(app, "_analysis_cache", {}), \
+         patch("codes.app.cache.read", return_value=None), \
+         patch("codes.app.sec_data.get_financials", return_value=sec_facts), \
+         patch("codes.app.quality.score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
+         patch("codes.app.api_fetcher.get_price", return_value=150.0), \
+         patch("codes.app.earnings_revision.get_revision_score",
+               return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
+         patch("codes.app.api_fetcher.get_price_history", side_effect=err), \
+         patch.object(app, "_get_spy_history_lazy", return_value=None):
+
+        result = app.analyze_stock("AMGN")
+
+    assert result == {"error": str(err)}
+    assert "Tiingo" in result["error"]
+
+
 def test_rate_limit_error_does_not_propagate_as_exception():
     """analyze_stock must not raise — run_analysis relies on dict-shaped errors."""
     sec_facts = _make_sec_facts("MSFT")
