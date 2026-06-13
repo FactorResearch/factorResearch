@@ -195,32 +195,24 @@ No vague instructions allowed.
 
 ## ISSUE-001
 
-Status: [closed]
+Status: []
 
-Title: Insider trading information are not coming
+Title: when filter is selected page constantly refresh 
 
 Priority: High
 
-Files: api_fetcher.py insider_activity
+Files: app.py
 
 *
 
 Problem:
- * (venv) amin@amin-UX430UNR:~/Downloads/graham-app$ find ./.cache -type f -name "*.json" -exec grep -H "company_insider_transactions" {} + returns nothing
- * [CACHE SAVED] hist:ADP
-  [Finnhub] insider_transactions error for ADP: 'Client' object has no attribute 'company_insider_transactions'
-[CACHE SAVED] insiders:ADP
-/home/amin/Downloads/graham-app/venv/lib/python3.14/site-packages/numpy/_core/_methods.py:219: RuntimeWarning: Degrees of freedom <= 0 for slice
-  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
-/home/amin/Downloads/graham-app/venv/lib/python3.14/site-packages/numpy/_core/_methods.py:211: RuntimeWarning: invalid value encountered in scalar divide
-  ret = ret.dtype.type(ret / rcount)
-[CACHE SAVED] analysis:ADP
+ * page constantly refreshes when sector filter is applied
 
 
 Required Fix:
 
 Acceptance Criteria:
-* be able to retrive insider trading information and process it 
+* sector filter should not refresh the page constantly 
 
 
 ---
