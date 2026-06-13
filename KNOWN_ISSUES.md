@@ -193,7 +193,7 @@ No vague instructions allowed.
 
 ---
 
-## ISSUE-001
+## ISSUE-003
 
 Status: []
 
@@ -238,7 +238,7 @@ Acceptance Criteria:
 
 ---
 
-## ISSUE-003
+## ISSUE-001
 
 Status: []
 
