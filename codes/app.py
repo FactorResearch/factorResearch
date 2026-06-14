@@ -977,13 +977,14 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
     return html.Div([table, note, scroll_sentinel]), sector_options, visible_count_reset
 
 # ── Infinite scroll: bump visible row count when sentinel nears viewport ─────
+# ── Infinite scroll: bump visible row count when sentinel nears viewport ─────
 app.clientside_callback(
     """
-   function(n_intervals, scroll_pos, visible_count) {
+    function(n_intervals, scroll_pos, visible_count) {
         var wrap = document.getElementById('screener-table-container');
         if (!wrap) { return window.dash_clientside.no_update; }
         var sentinel = document.getElementById('screener-scroll-sentinel');
-        if (sentinel && sentinel.textContent.indexOf('Showing all') !== -1) {
+        if (sentinel && sentinel.innerText.indexOf('Showing all') !== -1) {
             return window.dash_clientside.no_update;
         }
         var rect = wrap.getBoundingClientRect();
