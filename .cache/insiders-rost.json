@@ -1,0 +1,469 @@
+{
+  "ts": 1781413278.4274306,
+  "data": [
+    {
+      "date": "2026-05-29",
+      "insider_id": "Mueller Patricia H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1354.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "Mueller Patricia H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1354.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "GARRETT SHARON D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1354.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-29",
+      "insider_id": "GARRETT SHARON D",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1354.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Cannizzaro Edward G",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Sutton Doniel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "Mueller Patricia H",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "MILLIGAN STEPHEN D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "BUSH MICHAEL J",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "BJORKLUND GUNNAR K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 643.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "BJORKLUND GUNNAR K",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-05-21",
+      "insider_id": "GARRETT SHARON D",
+      "role": "",
+      "transaction": "buy",
+      "shares": 896.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-27",
+      "insider_id": "Burrill Jeffrey P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 565.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-26",
+      "insider_id": "Sheehan William W II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4883.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "Sykes Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5506.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "Hartshorn Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15813.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Brinkley Stephen C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4154.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-24",
+      "insider_id": "Hartshorn Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6061.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Sheehan William W II",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4617.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Sheehan William W II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2574.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Sykes Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8947.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Sykes Karen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8579.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 9931.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 12868.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Brinkley Stephen C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2802.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Brinkley Stephen C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8579.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Burrill Jeffrey P",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2970.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Burrill Jeffrey P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1716.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Conroy James Grant",
+      "role": "",
+      "transaction": "sell",
+      "shares": 8268.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Conroy James Grant",
+      "role": "",
+      "transaction": "buy",
+      "shares": 54901.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Hartshorn Michael J.",
+      "role": "",
+      "transaction": "sell",
+      "shares": 22654.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Hartshorn Michael J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23163.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-16",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7047.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Sheehan William W II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5638.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Sykes Karen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6577.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Brinkley Stephen C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6108.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Burrill Jeffrey P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1880.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Conroy James Grant",
+      "role": "",
+      "transaction": "buy",
+      "shares": 21140.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-11",
+      "insider_id": "Hartshorn Michael J.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8456.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Mueller Patricia H",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1881.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "BUSH MICHAEL J",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-10",
+      "insider_id": "Sykes Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2556.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-09",
+      "insider_id": "BALMUTH MICHAEL",
+      "role": "",
+      "transaction": "sell",
+      "shares": 383.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-08",
+      "insider_id": "Brinkley Stephen C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6437.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Sheehan William W II",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7833.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Burrill Jeffrey P",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4570.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-25",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2932.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-24",
+      "insider_id": "Conroy James Grant",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39351.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 907.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Brinkley Stephen C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6641.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Conroy James Grant",
+      "role": "",
+      "transaction": "sell",
+      "shares": 43024.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-12",
+      "insider_id": "Orvos Adam M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7928.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-04",
+      "insider_id": "Sykes Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-03",
+      "insider_id": "Fleming Karen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "ORBAN GEORGE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28863.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "ORBAN GEORGE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28863.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-07-17",
+      "insider_id": "ORBAN GEORGE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 28864.0,
+      "is_open_market": false
+    }
+  ]
+}

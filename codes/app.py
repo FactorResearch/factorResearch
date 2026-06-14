@@ -766,17 +766,14 @@ def update_progress_bar(n):
 @callback(
     Output("screener-table-container", "children"),
     Output("sector-filter", "options"),
+    Output("screener-visible-count", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
     Input("page-load-interval",    "n_intervals"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
     Input("screener-visible-count","data"),
-    # screener-viewed-store is a State (not Input) so that analyzing a stock
-    # does NOT trigger a re-render that could reset the page on mobile.
-    # The viewed highlights update when the next natural re-render occurs
-    # (e.g. infinite scroll, sort, filter, or screener-ready signal).
     State("screener-viewed-store", "data"),
-    prevent_initial_call=False
+    prevent_initial_call=True
 )
 def render_screener_table(ready, n_load, sector_filter, sort_state, visible_count, viewed_data):
     global _last_screener_state
@@ -793,6 +790,9 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
     # Reset visible row count to initial page size when filters/sorts change
     if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
         visible_count = 50
+        visible_count_reset = 50
+    else:
+        visible_count_reset = dash.no_update
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
     state_tuple = (
         json.dumps([r["symbol"] for r in results], sort_keys=True),
@@ -805,7 +805,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
     state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
     
     if state_hash == _last_screener_state:
-        return dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, visible_count_reset
     _last_screener_state = state_hash
     sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
@@ -821,11 +821,13 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
                              style={"color": MUTED, "fontSize": "13px"}),
                 ], style={"textAlign": "center", "padding": "40px"}),
                 sector_options,
+                visible_count_reset,
             )
         return (
             html.Div("Click 'Load Universe' to start analysis",
                      className="text-center p-4xl text-muted"),
             sector_options,
+            visible_count_reset,
         )
     portfolio_symbols = _get_portfolio_symbols()
     filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
@@ -972,14 +974,18 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
             "color": MUTED,
         }
     )
-    return html.Div([table, note, scroll_sentinel]), sector_options
+    return html.Div([table, note, scroll_sentinel]), sector_options, visible_count_reset
 
 # ── Infinite scroll: bump visible row count when sentinel nears viewport ─────
 app.clientside_callback(
     """
-    function(n_intervals, scroll_pos, visible_count) {
+   function(n_intervals, scroll_pos, visible_count) {
         var wrap = document.getElementById('screener-table-container');
         if (!wrap) { return window.dash_clientside.no_update; }
+        var sentinel = document.getElementById('screener-scroll-sentinel');
+        if (sentinel && sentinel.textContent.indexOf('Showing all') !== -1) {
+            return window.dash_clientside.no_update;
+        }
         var rect = wrap.getBoundingClientRect();
         var nearBottom = rect.bottom - window.innerHeight < 400;
         if (!nearBottom) { return window.dash_clientside.no_update; }

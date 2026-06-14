@@ -240,7 +240,7 @@ Acceptance Criteria:
 
 ## ISSUE-001
 
-Status: []
+Status: [closed]
 
 Title: constant refresh
 

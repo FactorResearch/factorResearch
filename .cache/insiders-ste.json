@@ -1,0 +1,925 @@
+{
+  "ts": 1781413287.0771182,
+  "data": [
+    {
+      "date": "2026-06-05",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1374.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 195.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Kohler Kenneth E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 150.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "sell",
+      "shares": 600.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 65.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 90.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3054.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1889.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-04",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 401.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 239.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Kohler Kenneth E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 184.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "sell",
+      "shares": 311.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 64.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 190.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2619.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-03",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 365.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "McGowan Lindsey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4036.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "McGowan Lindsey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 329.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "McGowan Lindsey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1155.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Majors Cary L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 16548.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Majors Cary L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 67.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Majors Cary L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4746.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8080.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 127.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2316.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Kohler Kenneth E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7668.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Kohler Kenneth E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 66.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Kohler Kenneth E",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2199.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "buy",
+      "shares": 10492.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "sell",
+      "shares": 591.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3009.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Boulud Pierre",
+      "role": "",
+      "transaction": "buy",
+      "shares": 367.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2620.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 41.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "buy",
+      "shares": 750.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 18564.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 66.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5325.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 82740.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 995.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "buy",
+      "shares": 23736.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15200.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 247.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4359.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3781.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1481.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-06-02",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3781.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "McGowan Lindsey",
+      "role": "",
+      "transaction": "sell",
+      "shares": 198.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Majors Cary L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 768.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 208.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Kohler Kenneth E",
+      "role": "",
+      "transaction": "sell",
+      "shares": 109.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "sell",
+      "shares": 673.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 81.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 99.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1254.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-01",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 337.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3098.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3098.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-05",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3098.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-01-02",
+      "insider_id": "McGowan Lindsey",
+      "role": "",
+      "transaction": "buy",
+      "shares": 798.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2872.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2136.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2136.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2872.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-21",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2872.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3536.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1500.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 212.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3324.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-18",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3536.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 15000.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-11-11",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15000.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-06",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 159.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Majors Cary L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 303.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Madsen Julia",
+      "role": "",
+      "transaction": "sell",
+      "shares": 52.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Fraser Mary Clare",
+      "role": "",
+      "transaction": "sell",
+      "shares": 207.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 26.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 8356.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2349.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 39.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Carestio Daniel A",
+      "role": "",
+      "transaction": "sell",
+      "shares": 130.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-10-01",
+      "insider_id": "Zangerle John Adam",
+      "role": "",
+      "transaction": "sell",
+      "shares": 91.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3204.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-20",
+      "insider_id": "Tamaro Renato",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3204.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4110.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-13",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4110.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 7900.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Burton Karen L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 7900.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Sohi Mohsen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4110.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Sohi Mohsen",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4110.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "Sohi Mohsen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4110.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3495.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3495.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-08-11",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3495.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Shapiro Louis",
+      "role": "",
+      "transaction": "buy",
+      "shares": 975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Alegria Esther M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 487.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Alegria Esther M.",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1407.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Shah Nirav R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 487.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Shah Nirav R",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1407.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Martin Paul Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 487.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Martin Paul Edward",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1407.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 487.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 297.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Breeden Richard C",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1407.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Sohi Mohsen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 506.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Sohi Mohsen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 772.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "Sohi Mohsen",
+      "role": "",
+      "transaction": "buy",
+      "shares": 2226.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "HOLLAND CHRISTOPHER S",
+      "role": "",
+      "transaction": "buy",
+      "shares": 975.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 487.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-08-08",
+      "insider_id": "FELDMANN CYNTHIA L",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1407.0,
+      "is_open_market": false
+    }
+  ]
+}
