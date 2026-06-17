@@ -1,0 +1,541 @@
+{
+  "ts": 1781446408.2880895,
+  "data": [
+    {
+      "date": "2026-06-09",
+      "insider_id": "Bracey Esi Eggleston",
+      "role": "",
+      "transaction": "buy",
+      "shares": 247.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-08",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 55.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-06-08",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 28.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-04-08",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 622.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-04-01",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3275.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 400.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 369.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-31",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 357.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 4692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2206.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1979.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 3754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 201.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1977.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 246.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 220.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-25",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 224.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-20",
+      "insider_id": "Bergh Charles V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6090.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "Das Ranju",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14722.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "Das Ranju",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3926.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20384.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5436.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 14042.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3745.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 20384.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 5436.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "GRANT SHANE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "Mahe Isabel",
+      "role": "",
+      "transaction": "buy",
+      "shares": 664.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "McNeill Jon",
+      "role": "",
+      "transaction": "buy",
+      "shares": 355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "Bergh Charles V",
+      "role": "",
+      "transaction": "buy",
+      "shares": 272.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-19",
+      "insider_id": "MUSSAFER DAVID M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1087.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4692.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2026-03-13",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3754.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1399.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 2658.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1399.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-30",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1364.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-19",
+      "insider_id": "MORFITT MARTHA A M",
+      "role": "",
+      "transaction": "sell",
+      "shares": 6500.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "MORFITT MARTHA A M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9157.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-17",
+      "insider_id": "MORFITT MARTHA A M",
+      "role": "",
+      "transaction": "buy",
+      "shares": 3608.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "BURGOYNE CELESTE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 11605.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-16",
+      "insider_id": "BURGOYNE CELESTE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 1906.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24607.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4614.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "MAESTRINI ANDRE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1212.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 24607.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 4614.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 9695.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "FRANK MEGHAN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 1212.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 15379.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-12-15",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6059.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-30",
+      "insider_id": "NEUBURGER NICOLE",
+      "role": "",
+      "transaction": "sell",
+      "shares": 615.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "Das Ranju",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6909.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-09-09",
+      "insider_id": "Das Ranju",
+      "role": "",
+      "transaction": "buy",
+      "shares": 6176.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "MCDONALD CALVIN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 35355.0,
+      "is_open_market": false
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "MCDONALD CALVIN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 5072.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "MCDONALD CALVIN",
+      "role": "",
+      "transaction": "sell",
+      "shares": 21977.0,
+      "is_open_market": true
+    },
+    {
+      "date": "2025-06-27",
+      "insider_id": "MCDONALD CALVIN",
+      "role": "",
+      "transaction": "buy",
+      "shares": 35355.0,
+      "is_open_market": false
+    }
+  ]
+}

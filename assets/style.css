@@ -48,9 +48,8 @@ body {
   background: linear-gradient(90deg, #448aff, transparent);
 }
 .app-header-icon {
-  font-size: 28px;
-  line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(68, 138, 255, 0.6));
+  max-width: 28px;
+  max-height: 28px;
 }
 .app-header-content h1 {
   font-family: "Syne", sans-serif;

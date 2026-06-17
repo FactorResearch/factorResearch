@@ -48,7 +48,7 @@ body {
   background: linear-gradient(90deg, #448aff, transparent);
 }
 .app-header-icon {
-  font-size: 28px;
+  max-width: 28px;
   line-height: 1;
   filter: drop-shadow(0 0 8px rgba(68, 138, 255, 0.6));
 }
@@ -935,8 +935,8 @@ body {
 }
 @media screen and (min-width: 1209px) and (max-width: 1800px) {
   .dash-graph {
-    width: 336px;
-    max-width: 336px;
+    width: 555px;
+    max-width: 555px;
     flex: 1 1 50%;
   }
 }

@@ -148,9 +148,9 @@ body {
     }
 
     &-icon {
-      font-size: 28px;
-      line-height: 1;
-      filter: drop-shadow(0 0 8px rgba(68, 138, 255, 0.6));
+      max-width: 28px;
+      max-height: 28px;
+     
     }
 
     &-content {

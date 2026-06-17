@@ -421,9 +421,13 @@ def get_verdict_class(label: str) -> str:
 app.layout = html.Div(className="app-container", children=[
     # Header
     html.Div(className="app-header", children=[
-        html.Div("📊", className="app-header-icon"),
+        html.Img(src="./assets/sm-logo.svg", className="app-header-icon"),
         html.Div(className="app-header-content", children=[
-            html.H1("Graham Score — Quant Edition"),
+           
+            html.H1(children=[
+                "Intrinsic ",html.Span("IQ", style={"color": GREEN})
+            ]),
+            
             html.P("Orthogonal factor score: Value, Quality, Momentum, Profitability, FCF Quality, Earnings Revisions, Capital Allocation, Growth Quality, Risk, and Altman.")
         ])
     ]),
