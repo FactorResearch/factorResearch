@@ -113,13 +113,13 @@ _MOAT_TOOLTIPS = {
         "that protects its profits for 10–20+ years. Examples: strong brand (Coca-Cola), "
         "network effects (Visa), switching costs (Oracle), low-cost producer (GEICO), "
         "or regulatory monopoly. ROE ≥15% consistently, high margins, strong FCF growth, "
-        "and the stock is trading at or below Buffett's DCF intrinsic value."
+        "and the stock is trading at or below DCF intrinsic value."
     ),
     "B": (
         "Narrow Moat (B) — The company has a real but limited competitive advantage that "
         "may erode within 5–10 years without reinvestment. It earns above-average returns "
         "but faces meaningful competitive pressure. Solid ROE and margins, but not the "
-        "consistent dominance Buffett prizes most. Worth owning at the right price."
+        "Worth owning at the right price."
     ),
     "C": (
         "No Clear Moat (C) — The company competes in a commoditised or highly competitive "
@@ -846,9 +846,9 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
         ("Company",     "name",             "Company name."),
         ("Sector",      "sector",           "Industry sector from SEC filings."),
         ("Market Cap ↕","market_cap",       "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock."),
-        ("Composite ↕", "composite_score",  "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses Graham+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals."),
-        ("GN Price ↕",  "graham_number",    "Graham Number — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock."),
-        ("Buffett IV ↕","buffett_iv",       "Buffett Intrinsic Value — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock."),
+        ("Composite ↕", "composite_score",  "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals."),
+        ("Fair Value ↕",  "graham_number",    "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock."),
+        ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock."),
         ("Updated",     "updated_at",       "Date this stock was last fully analyzed."),
         ("Verdict",     None,               "Investment verdict based on composite score: STRONG BUY ≥75 · BUY ≥60 · WATCH ≥45 · HOLD ≥30 · AVOID <30. * = fundamentals only (momentum not yet loaded)."),
     ]
@@ -933,12 +933,12 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
             biv_color = GREEN if (price and price <= biv) else MUTED
             biv_cell = html.Td(
                 html.Span(f"${biv:.0f}", style={"color": biv_color, "fontWeight": "600"}),
-                title=f"Buffett IV ${biv:.2f}" + (f" · Price ${price:.2f}" if price else "") +
+                title=f"Economic Moat Rating ${biv:.2f}" + (f" · Price ${price:.2f}" if price else "") +
                       (" · Price below IV ✓" if (price and price <= biv) else " · Price above IV"),
             )
         else:
             biv_cell = html.Td("—", className="text-xs text-muted",
-                               title="Run full analysis to calculate Buffett Intrinsic Value")
+                               title="Run full analysis to calculate Intrinsic Value")
         row_style = {}
         if in_port:  row_style = {"borderLeft": f"3px solid {AMBER}"}
         elif viewed: row_style = {"borderLeft": f"3px solid {GREEN}44"}
@@ -1061,7 +1061,7 @@ def _composite_banner(data: dict) -> html.Div:
     # Pillar list
     if has_enh:
         pillars = [
-            ("Graham",    enhanced.get("graham_pct",    0), "12%"),
+            ("IVE",    enhanced.get("graham_pct",    0), "12%"),
             ("Quality",   enhanced.get("quality_pct",   0), "18%"),
             ("Momentum",  enhanced.get("momentum_pct",  0), "12%"),
             ("Risk",      enhanced.get("risk_pct",      0), " 6%"),
@@ -1573,7 +1573,7 @@ def _piotroski_card(data: dict) -> html.Div:
     return html.Div(className="scorecard", children=[
         html.Div(style={"display": "flex", "alignItems": "center",
                         "gap": "10px", "padding": "14px 18px 10px"}, children=[
-            html.Span("Piotroski F-Score",
+            html.Span("Financial Health",
                       style={"fontSize": "14px", "fontWeight": "700", "color": TEXT}),
             html.Span(f"{f_score}/9",
                       style={"fontSize": "22px", "fontWeight": "800", "color": lc}),
@@ -1623,7 +1623,7 @@ def _altman_card(data: dict) -> html.Div:
                              "fontWeight": "600"}),
         ]))
     return html.Div(className="scorecard", children=[
-        html.Div("Altman Z-Score (Bankruptcy Risk)",
+        html.Div("Stability Score (Bankruptcy Risk)",
                  style={"fontSize": "14px", "fontWeight": "700", "color": TEXT,
                         "padding": "14px 18px 10px"}),
         # Zone badge
@@ -1938,7 +1938,7 @@ _stat(
     "Piotroski F-Score. 8–9 = strong."
 ),
                             _stat(
-                                "Buffett IV",
+                                "Economic Moat Rating",
                                 html.Span(
                                     f"${b_data.get('intrinsic_value'):.2f}"
                                     if b_data.get("intrinsic_value") else "N/A",
@@ -1948,7 +1948,7 @@ _stat(
                                         else RED if b_data.get("intrinsic_value") else MUTED
                                     }
                                 ),
-                                "Buffett Intrinsic Value. Green = Price below IV (margin of safety)."
+                                "Intrinsic Value. Green = Price below IV (margin of safety)."
                             ),
                             _stat(
                                 "Moat",
@@ -1964,7 +1964,7 @@ _stat(
                                         }.get(b_data.get("grade"), MUTED)
                                     }
                                 ),
-                                "Buffett moat grade: A=Wide Moat (best), D=Avoid."
+                                "Economic Moat Rating: A=Wide Moat (best), D=Avoid."
                             ),
                             _stat(
                                 "Comp",
@@ -2000,7 +2000,7 @@ _stat(
                                 className="grade-letter",
                                 style={"color": _grade_color(g["grade"])}
                             ),
-                            html.Div("Graham Grade", className="grade-label"),
+                            html.Div("Intrinsic Value Estimate", className="grade-label"),
                             html.Div(
                                 f"{g['total_score']}/{g['total_max']}",
                                 className="grade-score"
@@ -2025,7 +2025,7 @@ _stat(
                                     "fontSize": "22px",
                                 },
                             ),
-                            html.Div("Buffett IV", className="grade-label"),
+                            html.Div("Economic Moat Rating", className="grade-label"),
                             html.Span(
                                 f"{b_data.get('grade')} — {b_data.get('grade_label')}"
                                 if b_data.get("grade") else "N/A",
@@ -2049,11 +2049,11 @@ _stat(
         ]
     )
     banner = _composite_banner(data)
-    graham_card  = _render_scorecard("Graham Value Analysis", g["criteria"], "graham")
-    quality_card = _render_scorecard("Quality Analysis", q["criteria"], "quality")
+    graham_card  = _render_scorecard("Intrinsic Value Analysis", g["criteria"], "graham")
+    quality_card = _render_scorecard("Moat Rating Analysis", q["criteria"], "quality")
     
     buffett_card = (
-        _render_scorecard("Buffett Quality & Value", b_data.get("criteria", []), "buffett")
+        _render_scorecard("Economic Moat Quality & Value", b_data.get("criteria", []), "buffett")
         if b_data.get("criteria") else html.Div()
     )
     momentum_card = (
@@ -2315,8 +2315,8 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     b_grade  = b_data.get("grade")
     b_glabel = b_data.get("grade_label", "")
     rows = [
-        ("Graham Number",     f"${gn:.2f}"  if gn    else "N/A"),
-        ("Graham MoS",        f"{mos:.1f}%" if mos   else "N/A"),
+        ("Fair Value",     f"${gn:.2f}"  if gn    else "N/A"),
+        ("Margin of Safety",        f"{mos:.1f}%" if mos   else "N/A"),
         ("Current Price",     f"${price:.2f}" if price else "N/A"),
         ("EPS",               f"${g_data.get('eps', 0):.2f}" if g_data.get('eps') else "N/A"),
         ("Book Value/Share",  f"${g_data.get('bvps', 0):.2f}" if g_data.get('bvps') else "N/A"),
@@ -2327,9 +2327,9 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     biv_color = GREEN if b_mos and b_mos > 0 else RED
     grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(b_grade or "", MUTED)
     def _row_color(label):
-        if label == "Graham MoS":       return gn_color
-        if label == "Buffett MoS":      return biv_color
-        if label == "Buffett Grade":    return grade_color
+        if label == "Margin of Safety":       return gn_color
+        if label == "Margin of Safety":      return biv_color
+        if label == "Economic Moat Rating":    return grade_color
         return TEXT
     detail_rows = [
         html.Div(className="detail-row", children=[
@@ -2340,7 +2340,7 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
         for label, value in rows
     ]
     return html.Div(className="scorecard", children=[
-        html.Div("Graham Number & Buffett IV", className="card-header"),
+        html.Div("Intrinsic Value Estimate", className="card-header"),
         *detail_rows
     ])
 
@@ -2371,7 +2371,7 @@ def _buffett_details_card(data: dict) -> html.Div:
         for label, value in rows
     ]
     return html.Div(className="scorecard", children=[
-        html.Div("Buffett DCF Details", className="card-header"),
+        html.Div("Economic Moat Rating Details", className="card-header"),
         html.Div(detail_rows)
     ])
 

@@ -48,8 +48,8 @@ body {
   background: linear-gradient(90deg, #448aff, transparent);
 }
 .app-header-icon {
-  max-width: 28px;
-  max-height: 28px;
+  max-width: 40px;
+  max-height: 40px;
 }
 .app-header-content h1 {
   font-family: "Syne", sans-serif;
@@ -684,6 +684,7 @@ body {
 .pillar-scores {
   display: flex;
   gap: 0;
+  flex-wrap: wrap;
   border: 1px solid #1e2a3a;
   border-radius: 4px;
   overflow-x: auto;
@@ -691,11 +692,11 @@ body {
   flex-shrink: 0;
 }
 .pillar-scores > div {
-  padding: 10px 18px;
+  padding: 4px;
   text-align: center;
   border-right: 1px solid #1e2a3a;
   min-width: 80px;
-  flex: 0 0 auto;
+  flex: 0 0 13%;
 }
 .pillar-scores > div:last-child {
   border-right: none;
