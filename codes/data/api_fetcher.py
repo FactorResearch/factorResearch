@@ -20,7 +20,15 @@ import pandas as pd
 from .cache import read, write
 
 STOOQ_CSV_URL = "https://stooq.com/q/d/l/"
-_HEADERS = {"User-Agent": "Mozilla/5.0 (graham-app price client)"}
+# Stooq blocks generic/bot-looking User-Agents with an HTML page instead of
+# CSV (which previously failed silently, surfacing as "Price N/A" downstream).
+# A realistic browser UA avoids that block.
+_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    )
+}
 _TIMEOUT = 15
 
 
@@ -106,18 +114,26 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp) -> pd.DataFrame:
         print(f"  [Stooq] error fetching {symbol}: {e}")
         return pd.DataFrame()
 
-    if not text or "No data" in text or text.startswith("<"):
-        print(f"  [Stooq] no data returned for {symbol}")
+    # Failure modes: empty body, Polish "no data" message, anti-bot HTML page,
+    # or a CSV with header row only (no price rows).
+    stripped = text.strip()
+    if (not stripped
+            or "Brak danych" in stripped
+            or "Exceeded" in stripped
+            or stripped.startswith("<")):
+        print(f"  [Stooq] no data / blocked response for {symbol} "
+              f"(status={resp.status_code}, len={len(stripped)}, "
+              f"preview={stripped[:80]!r})")
         return pd.DataFrame()
 
     try:
         raw = pd.read_csv(StringIO(text))
     except Exception as e:
-        print(f"  [Stooq] CSV parse error for {symbol}: {e}")
+        print(f"  [Stooq] CSV parse error for {symbol}: {e} (preview={stripped[:80]!r})")
         return pd.DataFrame()
 
     if raw.empty or "Date" not in raw.columns or "Close" not in raw.columns:
-        print(f"  [Stooq] unexpected CSV shape for {symbol}")
+        print(f"  [Stooq] unexpected CSV shape for {symbol}: columns={list(raw.columns)}")
         return pd.DataFrame()
 
     df = raw.sort_values("Date").reset_index(drop=True)
@@ -135,7 +151,7 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp) -> pd.DataFrame:
 def get_price(symbol: str) -> float | None:
     """Most recent EOD close from stooq."""
     symbol = symbol.upper().strip()
-    df = _fetch_stooq_daily(symbol, start=pd.Timestamp.now() - pd.Timedelta(days=10))
+    df = _fetch_stooq_daily(symbol, start=pd.Timestamp.now() - pd.Timedelta(days=21))
     if df.empty:
         return None
     price = float(df["Close"].iloc[-1])
