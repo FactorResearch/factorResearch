@@ -147,7 +147,7 @@ _fh_client = None
 
 _throttle_lock = threading.Lock()
 _last_call = 0.0
-_MIN_GAP = 1.0  # seconds between stooq requests
+_MIN_GAP = 2.5  # seconds between stooq requests (raised — IP-level quota is tighter than expected)
 
 
 def _throttle() -> None:
@@ -194,6 +194,7 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp, _retry: bool = True) ->
     if (not stripped
             or "Brak danych" in stripped
             or "Exceeded" in stripped
+            or "Access denied" in stripped
             or stripped.startswith("<")):
         # The HTML page is usually stooq's PoW verification challenge —
         # solve it inline (cheap, pure hashing) and retry the same request
@@ -211,13 +212,19 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp, _retry: bool = True) ->
         if (not stripped
                 or "Brak danych" in stripped
                 or "Exceeded" in stripped
+                or "Access denied" in stripped
                 or stripped.startswith("<")):
+            quota_blocked = "Access denied" in stripped
             print(f"  [Stooq] no data / blocked response for {symbol} "
                   f"(status={resp.status_code}, len={len(stripped)}, "
                   f"preview={stripped[:80]!r})")
             if _retry:
-                # Session may have gone stale (expired cookie) — drop it and
-                # warm up a brand-new one, then try exactly once more.
+                # "Access denied" is an IP-level quota block, not a stale
+                # session — a fresh session won't help immediately, so back
+                # off briefly before the single retry. PoW-page blocks
+                # retry immediately via a rotated session as before.
+                if quota_blocked:
+                    time.sleep(5.0)
                 with _session_lock:
                     _session = None
                 return _fetch_stooq_daily(symbol, start, _retry=False)
