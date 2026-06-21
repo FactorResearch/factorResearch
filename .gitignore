@@ -5,6 +5,6 @@ __pycache__/
 .vscode
 yes
 yes.pub
-.cache/
+/.cache
 /assets/*.min.css
 /assets/*.css.map
