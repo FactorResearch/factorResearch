@@ -10,7 +10,9 @@ stooq and derives current price and monthly history from it. Cached via
 codes.data.cache after first fetch.
 """
 
+import re
 import time
+import hashlib
 import threading
 from io import StringIO
 
@@ -47,11 +49,59 @@ def _get_session() -> requests.Session:
             s = requests.Session()
             s.headers.update(_HEADERS)
             try:
-                s.get(STOOQ_HOME_URL, timeout=_TIMEOUT)
+                resp = s.get(STOOQ_HOME_URL, timeout=_TIMEOUT)
+                _solve_challenge_if_present(s, resp.text)
             except Exception as e:
                 print(f"  [Stooq] session warm-up failed: {e}")
             _session = s
         return _session
+
+
+# ── Anti-bot proof-of-work challenge solver ────────────────────────────────
+# Stooq gates access behind a JS challenge: find an integer n such that
+# sha256(c + n) starts with d hex zeros, then POST {c, n} to /__verify.
+# This is pure hashing — fully reproducible in Python, no JS engine needed.
+_CHALLENGE_RE = re.compile(r'c="([^"]+)"\s*,\s*d=(\d+)')
+_MAX_POW_ITERS = 2_000_000  # d=4 typically resolves in <100k iterations
+
+
+def _solve_challenge_if_present(session: requests.Session, html: str) -> bool:
+    """
+    If `html` contains stooq's PoW verification challenge, solve it and
+    POST the answer to /__verify (cookies stored in `session`).
+    Returns True if a challenge was found and solved+verified successfully.
+    """
+    m = _CHALLENGE_RE.search(html or "")
+    if not m:
+        return False
+
+    c, d = m.group(1), int(m.group(2))
+    target = "0" * d
+    n = 0
+    while n < _MAX_POW_ITERS:
+        digest = hashlib.sha256(f"{c}{n}".encode()).hexdigest()
+        if digest.startswith(target):
+            break
+        n += 1
+    else:
+        print(f"  [Stooq] PoW challenge not solved within {_MAX_POW_ITERS} iterations")
+        return False
+
+    try:
+        r = session.post(
+            "https://stooq.com/__verify",
+            data={"c": c, "n": n},
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            timeout=_TIMEOUT,
+        )
+        if r.ok:
+            print(f"  [Stooq] PoW challenge solved (n={n}) and verified")
+            return True
+        print(f"  [Stooq] PoW verify POST failed: status={r.status_code}")
+        return False
+    except Exception as e:
+        print(f"  [Stooq] PoW verify POST error: {e}")
+        return False
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -145,16 +195,33 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp, _retry: bool = True) ->
             or "Brak danych" in stripped
             or "Exceeded" in stripped
             or stripped.startswith("<")):
-        print(f"  [Stooq] no data / blocked response for {symbol} "
-              f"(status={resp.status_code}, len={len(stripped)}, "
-              f"preview={stripped[:80]!r})")
-        if _retry:
-            # Session may have gone stale (expired cookie) — drop it and
-            # warm up a brand-new one, then try exactly once more.
-            with _session_lock:
-                _session = None
-            return _fetch_stooq_daily(symbol, start, _retry=False)
-        return pd.DataFrame()
+        # The HTML page is usually stooq's PoW verification challenge —
+        # solve it inline (cheap, pure hashing) and retry the same request
+        # on the same session before giving up / rotating sessions.
+        if stripped.startswith("<") and _solve_challenge_if_present(session, stripped):
+            try:
+                resp = session.get(STOOQ_CSV_URL, params=params, timeout=_TIMEOUT)
+                resp.raise_for_status()
+                text = resp.text
+                stripped = text.strip()
+            except Exception as e:
+                print(f"  [Stooq] error re-fetching {symbol} after PoW solve: {e}")
+                stripped = ""
+
+        if (not stripped
+                or "Brak danych" in stripped
+                or "Exceeded" in stripped
+                or stripped.startswith("<")):
+            print(f"  [Stooq] no data / blocked response for {symbol} "
+                  f"(status={resp.status_code}, len={len(stripped)}, "
+                  f"preview={stripped[:80]!r})")
+            if _retry:
+                # Session may have gone stale (expired cookie) — drop it and
+                # warm up a brand-new one, then try exactly once more.
+                with _session_lock:
+                    _session = None
+                return _fetch_stooq_daily(symbol, start, _retry=False)
+            return pd.DataFrame()
 
     try:
         raw = pd.read_csv(StringIO(text))
