@@ -19,17 +19,39 @@ import pandas as pd
 
 from .cache import read, write
 
-STOOQ_CSV_URL = "https://stooq.com/q/d/l/"
-# Stooq blocks generic/bot-looking User-Agents with an HTML page instead of
-# CSV (which previously failed silently, surfacing as "Price N/A" downstream).
-# A realistic browser UA avoids that block.
+STOOQ_CSV_URL  = "https://stooq.com/q/d/l/"
+STOOQ_HOME_URL = "https://stooq.com/"
 _HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    )
+    ),
+    "Accept": "text/csv,text/plain,*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": STOOQ_HOME_URL,
 }
 _TIMEOUT = 15
+
+# Stooq serves an anti-bot interstitial HTML page (not the CSV) to requests
+# without a valid session cookie. A single persistent Session, warmed up by
+# visiting the homepage once, gets the cookies needed for the CSV endpoint
+# to behave — a one-shot GET to /q/d/l/ does not.
+_session_lock = threading.Lock()
+_session: requests.Session | None = None
+
+
+def _get_session() -> requests.Session:
+    global _session
+    with _session_lock:
+        if _session is None:
+            s = requests.Session()
+            s.headers.update(_HEADERS)
+            try:
+                s.get(STOOQ_HOME_URL, timeout=_TIMEOUT)
+            except Exception as e:
+                print(f"  [Stooq] session warm-up failed: {e}")
+            _session = s
+        return _session
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -96,8 +118,9 @@ def _stooq_symbol(symbol: str) -> str:
 # Core fetch
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _fetch_stooq_daily(symbol: str, start: pd.Timestamp) -> pd.DataFrame:
+def _fetch_stooq_daily(symbol: str, start: pd.Timestamp, _retry: bool = True) -> pd.DataFrame:
     """Daily Close history from stooq CSV export, oldest-first. Empty DataFrame on failure."""
+    global _session
     sym = _stooq_symbol(symbol)
     _throttle()
     params = {
@@ -106,8 +129,9 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp) -> pd.DataFrame:
         "d2": pd.Timestamp.now().strftime("%Y%m%d"),
         "i": "d",
     }
+    session = _get_session()
     try:
-        resp = requests.get(STOOQ_CSV_URL, params=params, headers=_HEADERS, timeout=_TIMEOUT)
+        resp = session.get(STOOQ_CSV_URL, params=params, timeout=_TIMEOUT)
         resp.raise_for_status()
         text = resp.text
     except Exception as e:
@@ -124,6 +148,12 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp) -> pd.DataFrame:
         print(f"  [Stooq] no data / blocked response for {symbol} "
               f"(status={resp.status_code}, len={len(stripped)}, "
               f"preview={stripped[:80]!r})")
+        if _retry:
+            # Session may have gone stale (expired cookie) — drop it and
+            # warm up a brand-new one, then try exactly once more.
+            with _session_lock:
+                _session = None
+            return _fetch_stooq_daily(symbol, start, _retry=False)
         return pd.DataFrame()
 
     try:
@@ -141,6 +171,7 @@ def _fetch_stooq_daily(symbol: str, start: pd.Timestamp) -> pd.DataFrame:
     df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
     df = df.dropna(subset=["Date", "Close"])
     df = df[df["Close"] > 0]
+
     return df[["Date", "Close"]].reset_index(drop=True)
 
 
