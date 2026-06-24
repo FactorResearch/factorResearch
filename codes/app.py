@@ -25,6 +25,7 @@ import functools
 from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model
 from codes.engine import scorer, screener, universe
+from codes.engine import factor_backtest as fb_engine
 import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
 app = dash.Dash(
@@ -436,6 +437,7 @@ app.layout = html.Div(className="app-container", children=[
         html.Button("📊 Screener",  id="tab-screener-btn",  className="tab-btn active"),
         html.Button("🔍 Analyze",   id="tab-analyze-btn",   className="tab-btn"),
         html.Button("💼 Portfolios", id="tab-portfolio-btn", className="tab-btn"),
+        html.Button("🧪 Factor Lab", id="tab-factorlab-btn", className="tab-btn"),
     ]),
     # ── Tab: Screener ────────────────────────────────────────────────────────
     html.Div(id="tab-screener", className="screener-content block", children=[
@@ -595,6 +597,85 @@ app.layout = html.Div(className="app-container", children=[
         # Simulation results (charts)
         html.Div(id="portfolio-sim-results", children=[]),
     ]),
+    # ── Tab: Factor Lab ─────────────────────────────────────────────────────
+    html.Div(id="tab-factorlab", className="main-content", style={"display": "none"}, children=[
+        html.Div(className="app-header", style={"marginBottom": "24px"}, children=[
+            html.Div("🧪", className="app-header-icon"),
+            html.Div(className="app-header-content", children=[
+                html.H1("Factor Weight Lab"),
+                html.P(
+                    "Adjust factor weights and backtest your custom scoring model "
+                    "against your analysed stocks. Compares custom weights vs default "
+                    "ENHANCED_WEIGHTS vs SPY buy-and-hold."
+                ),
+            ])
+        ]),
+
+        html.Div(className="screener-toolbar", children=[
+            html.Div(className="screener-controls", style={"flexWrap": "wrap", "gap": "20px"}, children=[
+                html.Div([
+                    html.Label("Top N stocks", style={"fontSize": "12px", "color": "#9e9e9e"}),
+                    dcc.Slider(id="fb-top-n", min=3, max=20, step=1, value=10,
+                               marks={3: "3", 5: "5", 10: "10", 15: "15", 20: "20"},
+                               tooltip={"placement": "bottom", "always_visible": False}),
+                ], style={"width": "200px"}),
+                html.Div([
+                    html.Label("Backtest years", style={"fontSize": "12px", "color": "#9e9e9e"}),
+                    dcc.Slider(id="fb-years", min=1, max=10, step=1, value=5,
+                               marks={1: "1", 3: "3", 5: "5", 7: "7", 10: "10"},
+                               tooltip={"placement": "bottom", "always_visible": False}),
+                ], style={"width": "200px"}),
+                html.Button("▶ Run Backtest", id="fb-run-btn", className="analyze-btn",
+                            n_clicks=0, style={"alignSelf": "flex-end"}),
+                html.Div(id="fb-status", style={"alignSelf": "flex-end", "fontSize": "13px",
+                                                 "color": "#9e9e9e"}),
+            ]),
+        ]),
+
+        html.Div(className="scorecard", style={"marginTop": "16px"}, children=[
+            html.Div("Factor Weights — drag sliders to reshape the model", className="scorecard-header"),
+            html.Div(style={"display": "grid",
+                            "gridTemplateColumns": "repeat(auto-fill, minmax(280px, 1fr))",
+                            "gap": "20px", "padding": "16px 18px"}, children=[
+                *[
+                    html.Div([
+                        html.Div(style={"display": "flex", "justifyContent": "space-between",
+                                        "marginBottom": "4px"}, children=[
+                            html.Label(lbl, style={"fontSize": "13px", "fontWeight": "600"}),
+                        ]),
+                        dcc.Slider(
+                            id=f"fb-w-{key}",
+                            min=0, max=40, step=1,
+                            value=round(scorer.ENHANCED_WEIGHTS.get(key, 0) * 100),
+                            marks={0: "0", 10: "10", 20: "20", 30: "30", 40: "40"},
+                            tooltip={"placement": "bottom", "always_visible": True},
+                        ),
+                    ])
+                    for key, lbl in [
+                        ("graham",            "Graham / Value"),
+                        ("quality",           "Quality"),
+                        ("momentum",          "Momentum"),
+                        ("profitability",     "Profitability"),
+                        ("fcf_quality",       "FCF Quality"),
+                        ("earnings_revision", "Earnings Revision"),
+                        ("capital_allocation","Capital Allocation"),
+                        ("growth_quality",    "Growth Quality"),
+                        ("risk",              "Risk"),
+                        ("altman",            "Altman Safety"),
+                    ]
+                ],
+            ]),
+            html.Div(id="fb-weight-sum-display",
+                     style={"padding": "8px 18px 14px", "fontSize": "12px",
+                            "color": "#9e9e9e", "fontStyle": "italic"},
+                     children="Weight sum: 100% ✓"),
+        ]),
+
+        dcc.Loading(type="default", color="#448aff", children=[
+            html.Div(id="fb-results", children=[])
+        ]),
+    ]),
+
     # Stores
     dcc.Store(id="screener-cache"),
     dcc.Store(id="analysis-store"),
@@ -622,27 +703,32 @@ app.layout = html.Div(className="app-container", children=[
     Output("tab-screener",     "style"),
     Output("tab-analyze",      "style"),
     Output("tab-portfolio",    "style"),
+    Output("tab-factorlab",    "style"),
     Output("tab-screener-btn", "className"),
     Output("tab-analyze-btn",  "className"),
     Output("tab-portfolio-btn","className"),
+    Output("tab-factorlab-btn","className"),
     Input("tab-screener-btn",     "n_clicks"),
     Input("tab-analyze-btn",      "n_clicks"),
     Input("tab-portfolio-btn",    "n_clicks"),
+    Input("tab-factorlab-btn",    "n_clicks"),
     Input("screener-click-ticker","data"),
     prevent_initial_call=False
 )
-def switch_tabs(n_screener, n_analyze, n_portfolio, clicked_ticker):
+def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, clicked_ticker):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "tab-btn active", "tab-btn"
     if triggered == "screener-click-ticker" and clicked_ticker:
-        return HIDE, SHOW, HIDE, IDLE, ACTIVE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE
     if triggered == "tab-analyze-btn":
-        return HIDE, SHOW, HIDE, IDLE, ACTIVE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE
     if triggered == "tab-portfolio-btn":
-        return HIDE, HIDE, SHOW, IDLE, IDLE, ACTIVE
+        return HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, ACTIVE, IDLE
+    if triggered == "tab-factorlab-btn":
+        return HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, ACTIVE
     # Default: screener
-    return SHOW, HIDE, HIDE, ACTIVE, IDLE, IDLE
+    return SHOW, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE
 
 # ── Screener ticker-click → store ─────────────────────────────────────────────
 @callback(
@@ -3362,6 +3448,213 @@ app.clientside_callback(
     Input("tab-portfolio", "style"),
     State("screener-scroll-pos", "data"),
 )
+
+# ── Factor Lab callbacks ─────────────────────────────────────────────────────
+
+_FB_WEIGHT_KEYS = [
+    "graham", "quality", "momentum", "profitability", "fcf_quality",
+    "earnings_revision", "capital_allocation", "growth_quality", "risk", "altman"
+]
+
+
+@callback(
+    Output("fb-weight-sum-display", "children"),
+    Output("fb-weight-sum-display", "style"),
+    *[Input(f"fb-w-{k}", "value") for k in _FB_WEIGHT_KEYS],
+    prevent_initial_call=False,
+)
+def update_weight_sum(*values):
+    total = sum(v or 0 for v in values)
+    if 95 <= total <= 105:
+        color, msg = GREEN, f"Weight sum: {total}% ✓ (will normalise to 100%)"
+    elif 80 <= total <= 120:
+        color, msg = AMBER, f"Weight sum: {total}% — will normalise to 100%"
+    else:
+        color, msg = RED, f"Weight sum: {total}% — very uneven; will normalise to 100%"
+    return msg, {"padding": "8px 18px 14px", "fontSize": "12px",
+                 "color": color, "fontStyle": "italic"}
+
+
+@callback(
+    Output("fb-results", "children"),
+    Output("fb-status",  "children"),
+    Input("fb-run-btn",  "n_clicks"),
+    State("fb-top-n",    "value"),
+    State("fb-years",    "value"),
+    *[State(f"fb-w-{k}", "value") for k in _FB_WEIGHT_KEYS],
+    prevent_initial_call=True,
+)
+def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
+    if not n_clicks:
+        return [], ""
+
+    custom_weights = dict(zip(_FB_WEIGHT_KEYS, (v or 0 for v in weight_vals)))
+
+    result = fb_engine.run_factor_backtest(
+        custom_weights=custom_weights,
+        top_n=top_n or 10,
+        years=years or 5,
+    )
+
+    if result.get("error"):
+        return [html.Div(f"❌ {result['error']}", className="text-danger",
+                         style={"padding": "20px"})], "❌ Error"
+
+    return _render_fb_results(result), (
+        f"✅ {result['n_analysed']} stocks scored · "
+        f"top {result['top_n']} selected · "
+        f"{result['years']}yr backtest"
+    )
+
+
+def _render_fb_results(r: dict) -> list:
+    import plotly.graph_objects as go
+
+    bt_c = r["custom"]
+    bt_d = r["default"]
+    bt_s = r["spy"]
+
+    def _fmt(v, fmt=".1f", suffix="%"):
+        return f"{v:{fmt}}{suffix}" if v is not None else "N/A"
+
+    def _cell_color(v, ref):
+        if v is None or ref is None:
+            return TEXT
+        return GREEN if v > ref else RED if v < ref else TEXT
+
+    rows = []
+    for label, ck, fmt, sfx in [
+        ("CAGR",         "cagr",         ".1f", "%"),
+        ("Sharpe Ratio", "sharpe",       ".2f", ""),
+        ("Max Drawdown", "max_drawdown", ".1f", "%"),
+    ]:
+        cv, dv, sv = bt_c.get(ck), bt_d.get(ck), bt_s.get(ck)
+        rows.append(html.Tr([
+            html.Td(label, style={"color": MUTED, "fontSize": "12px"}),
+            html.Td(_fmt(cv, fmt, sfx),
+                    style={"color": _cell_color(cv, dv), "fontWeight": "700", "fontSize": "13px"}),
+            html.Td(_fmt(dv, fmt, sfx), style={"fontSize": "13px"}),
+            html.Td(_fmt(sv, fmt, sfx), style={"fontSize": "13px", "color": MUTED}),
+        ]))
+
+    summary = html.Div(className="scorecard", style={"marginTop": "20px"}, children=[
+        html.Div("📊 Performance Comparison", className="scorecard-header"),
+        html.Div(
+            "Green = custom beats default. Equal-weight buy-and-hold on stocks in your analysis cache.",
+            style={"fontSize": "12px", "color": MUTED, "padding": "0 18px 10px", "fontStyle": "italic"},
+        ),
+        html.Table(className="screener-table", children=[
+            html.Thead(html.Tr([
+                html.Th("Metric"),
+                html.Th("Custom Weights", style={"color": BLUE}),
+                html.Th("Default Weights"),
+                html.Th("SPY", style={"color": MUTED}),
+            ])),
+            html.Tbody(rows),
+        ]),
+    ])
+
+    chart = html.Div()
+    if not bt_c.get("error") and not bt_d.get("error") and not bt_s.get("error"):
+        def _norm(vals):
+            if not vals or vals[0] == 0:
+                return vals
+            base = vals[0]
+            return [round(v / base * 100, 2) for v in vals]
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=bt_c["dates"], y=_norm(bt_c["values"]),
+            name="Custom Weights", line=dict(color=BLUE, width=2.5)
+        ))
+        fig.add_trace(go.Scatter(
+            x=bt_d["dates"], y=_norm(bt_d["values"]),
+            name="Default Weights", line=dict(color=GREEN, width=2, dash="dash")
+        ))
+        fig.add_trace(go.Scatter(
+            x=bt_s["dates"], y=_norm(bt_s["values"]),
+            name="SPY", line=dict(color=MUTED, width=1.5, dash="dot")
+        ))
+        fig.update_layout(**_chart_layout(
+            f"Custom vs Default vs SPY — {r['years']}yr equal-weight backtest (indexed to 100)",
+            many_traces=True,
+        ))
+        fig.update_yaxes(title_text="Indexed Value (100 = start)")
+        chart = dcc.Graph(figure=fig, config={"displayModeBar": False})
+
+    wc_rows = []
+    for wc in r.get("weight_changes", []):
+        delta = wc["delta"]
+        d_color = GREEN if delta > 1 else RED if delta < -1 else MUTED
+        wc_rows.append(html.Tr([
+            html.Td(wc["factor"].replace("_", " ").title(), style={"fontSize": "12px"}),
+            html.Td(f"{wc['custom']:.1f}%",
+                    style={"fontWeight": "700", "color": BLUE, "fontSize": "13px"}),
+            html.Td(f"{wc['default']:.1f}%", style={"fontSize": "12px", "color": MUTED}),
+            html.Td(f"{delta:+.1f}pp",
+                    style={"fontWeight": "600", "color": d_color, "fontSize": "12px"}),
+        ]))
+
+    weight_table = html.Div(className="scorecard", style={"marginTop": "16px"}, children=[
+        html.Div("⚖️ Weight Changes vs Default", className="scorecard-header"),
+        html.Table(className="screener-table", children=[
+            html.Thead(html.Tr([html.Th("Factor"), html.Th("Custom"), html.Th("Default"), html.Th("Δ pp")])),
+            html.Tbody(wc_rows),
+        ]),
+    ])
+
+    custom_set  = set(r.get("custom_top",  []))
+    default_set = set(r.get("default_top", []))
+
+    stock_rows = []
+    for s in r.get("ranked_stocks", []):
+        sym   = s["symbol"]
+        delta = s.get("delta", 0)
+        d_color = GREEN if delta > 2 else RED if delta < -2 else MUTED
+        stock_rows.append(html.Tr([
+            html.Td(sym, className="font-semibold text-info"),
+            html.Td(s["name"][:22], style={"fontSize": "11px", "color": MUTED}),
+            html.Td(f"{s['custom_score']:.1f}",
+                    style={"fontWeight": "700", "color": BLUE}),
+            html.Td(f"{s['default_score']:.1f}"),
+            html.Td(f"{delta:+.1f}", style={"color": d_color, "fontWeight": "600"}),
+            html.Td("✅" if sym in custom_set  else "—", style={"textAlign": "center"}),
+            html.Td("✅" if sym in default_set else "—", style={"textAlign": "center"}),
+        ]))
+
+    overlap = r.get("overlap", [])
+    stocks_table = html.Div(className="scorecard", style={"marginTop": "16px"}, children=[
+        html.Div(
+            f"🏆 Stock Rankings — Custom top-{r['top_n']}: "
+            f"{', '.join(r['custom_top'][:6])}{'...' if len(r['custom_top']) > 6 else ''}",
+            className="scorecard-header",
+        ),
+        html.Div(
+            f"Portfolio overlap: {len(overlap)}/{r['top_n']} stocks in both — "
+            f"{', '.join(overlap) if overlap else 'none in common'}",
+            style={"fontSize": "12px", "color": MUTED, "padding": "4px 18px 10px", "fontStyle": "italic"},
+        ),
+        html.Table(className="screener-table", children=[
+            html.Thead(html.Tr([
+                html.Th("Ticker"), html.Th("Name"),
+                html.Th("Custom Score", style={"color": BLUE}),
+                html.Th("Default Score"),
+                html.Th("Δ Score"),
+                html.Th("In Custom"),
+                html.Th("In Default"),
+            ])),
+            html.Tbody(stock_rows),
+        ]),
+    ])
+
+    warns = []
+    for label, bt in [("Custom", bt_c), ("Default", bt_d), ("SPY", bt_s)]:
+        if bt.get("error"):
+            warns.append(html.Div(f"⚠️ {label}: {bt['error']}",
+                                  style={"color": AMBER, "fontSize": "12px", "padding": "4px 0"}))
+
+    return [summary, chart, weight_table, stocks_table] + warns
+
 
 # ── Startup ───────────────────────────────────────────────────────────────────
 def startup():

@@ -1323,4 +1323,13 @@ canvas {
 
 .js-plotly-plot {
   touch-action: pan-y !important;
+}
+
+.dash-slider-tooltip,
+input.dash-input-container.dash-range-slider-input.dash-range-slider-max-input {
+  background: #080b10 !important;
+}
+
+.dash-slider-mark {
+  color: #fff !important;
 }/*# sourceMappingURL=style.css.map */
