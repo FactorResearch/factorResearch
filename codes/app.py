@@ -6,6 +6,7 @@ Enhanced score uses the orthogonal factor weights defined in codes.engine.scorer
 import traceback
 import sys
 import os
+import math
 from data import api_fetcher
 from data.api_fetcher import RateLimitError
 # Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
@@ -101,6 +102,7 @@ DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED ,WHITE= (
     "#0f1117", "#1a1d27", "#2a2d3e", "#00c853", "#ff1744",
     "#ffc107", "#448aff", "#e0e0e0", "#9e9e9e", "#ffffff"
 )
+PAGE_SIZE = 20  # rows per page in screener table
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None
 _spy_history_lock = threading.Lock()
@@ -680,7 +682,7 @@ app.layout = html.Div(className="app-container", children=[
     dcc.Store(id="screener-cache"),
     dcc.Store(id="analysis-store"),
     dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
-    dcc.Store(id="screener-visible-count", data=50, storage_type="session"),  # infinite scroll — rows rendered so far, session-persisted
+    dcc.Store(id="screener-page-store", data=1, storage_type="session"),  # current page in screener table
     dcc.Store(id="search-history-store"),
     dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table
     dcc.Store(id="portfolio-refresh-store", data=0),  # increment to trigger refresh
@@ -856,19 +858,17 @@ def update_progress_bar(n):
 @callback(
     Output("screener-table-container", "children"),
     Output("sector-filter", "options"),
-    Output("screener-visible-count", "data", allow_duplicate=True),
+    Output("screener-page-store", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
     Input("page-load-interval",    "n_intervals"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
-    Input("screener-visible-count","data"),
+    Input("screener-page-store",   "data"),
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, n_load, sector_filter, sort_state, visible_count, viewed_data):
+def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, viewed_data):
     global _last_screener_state
-    # Always allow a fresh render on page-load trigger so a browser refresh
-    # never gets stuck behind a stale dedup-cache value.
     if dash.ctx.triggered_id == "page-load-interval":
         _last_screener_state = None
     results    = screener.get_screener_results()
@@ -876,13 +876,12 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
     viewed_set = frozenset(viewed_data or [])
     sort_col   = (sort_state or {}).get("col", "composite_score")
     sort_asc   = (sort_state or {}).get("asc", False)
-    visible_count = visible_count or 50
-    # Reset visible row count to initial page size when filters/sorts change
+    page = page_num or 1
+    # Reset to page 1 when filters/sorts change
+    page_reset = dash.no_update
     if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
-        visible_count = 50
-        visible_count_reset = 50
-    else:
-        visible_count_reset = dash.no_update
+        page = 1
+        page_reset = 1
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
     state_tuple = (
         json.dumps([r["symbol"] for r in results], sort_keys=True),
@@ -890,12 +889,12 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
         sort_col,
         sort_asc,
         sorted(viewed_set),
-        visible_count
+        page
     )
     state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
-    
+
     if state_hash == _last_screener_state:
-        return dash.no_update, dash.no_update, visible_count_reset
+        return dash.no_update, dash.no_update, page_reset
     _last_screener_state = state_hash
     sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
@@ -954,13 +953,14 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
         else:
             header_cells.append(html.Th(label, title=tooltip or "", style=th_style))
     rows = []
-    # Infinite scroll — render only the first `visible_count` rows; more are
-    # appended as the user scrolls near the bottom of the table container.
+    # Pagination — show PAGE_SIZE rows for the current page
     total_rows = len(filtered)
-    visible_count = max(50, min(visible_count, total_rows)) if total_rows else 50
-    page_filtered = filtered[:visible_count]
+    total_pages = max(1, math.ceil(total_rows / PAGE_SIZE))
+    page = min(max(1, page), total_pages)
+    start_idx = (page - 1) * PAGE_SIZE
+    page_filtered = filtered[start_idx:start_idx + PAGE_SIZE]
 
-    for i, r in enumerate(page_filtered, 1):
+    for i, r in enumerate(page_filtered, start_idx + 1):
         sym     = r["symbol"]
         viewed  = sym in viewed_set
         in_port = bool(portfolio_symbols.get(sym))
@@ -1052,43 +1052,52 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, visible_coun
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
     ])
-    # Infinite scroll — sentinel div observed by clientside callback; loading
-    # text shown only while more rows remain to be appended.
-    has_more = visible_count < total_rows
-    scroll_sentinel = html.Div(
-        f"Loading more… ({len(page_filtered):,} of {total_rows:,})" if has_more
-        else f"Showing all {total_rows:,} rows",
-        id="screener-scroll-sentinel",
-        style={
-            "textAlign": "center", "padding": "12px", "fontSize": "12px",
-            "color": MUTED,
-        }
-    )
-    return html.Div([table, note, scroll_sentinel]), sector_options, visible_count_reset
+    # Pagination controls
+    pagination = html.Div(className="pagination-controls", children=[
+        html.Button(
+            "◀ Prev",
+            id={"type": "screener-page-btn", "index": "prev"},
+            className="pagination-btn",
+            n_clicks=0,
+            disabled=(page <= 1),
+            style={"touchAction": "manipulation"},
+        ),
+        html.Span(
+            f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
+            className="pagination-info",
+        ),
+        html.Button(
+            "Next ▶",
+            id={"type": "screener-page-btn", "index": "next"},
+            className="pagination-btn",
+            n_clicks=0,
+            disabled=(page >= total_pages),
+            style={"touchAction": "manipulation"},
+        ),
+    ])
+    return html.Div([table, note, pagination]), sector_options, page_reset
 
-# ── Infinite scroll: bump visible row count when sentinel nears viewport ─────
-# ── Infinite scroll: bump visible row count when sentinel nears viewport ─────
-app.clientside_callback(
-    """
-    function(n_intervals, scroll_pos, visible_count) {
-        var wrap = document.getElementById('screener-table-container');
-        if (!wrap) { return window.dash_clientside.no_update; }
-        var sentinel = document.getElementById('screener-scroll-sentinel');
-        if (sentinel && sentinel.innerText.indexOf('Showing all') !== -1) {
-            return window.dash_clientside.no_update;
-        }
-        var rect = wrap.getBoundingClientRect();
-        var nearBottom = rect.bottom - window.innerHeight < 400;
-        if (!nearBottom) { return window.dash_clientside.no_update; }
-        return (visible_count || 50) + 50;
-    }
-    """,
-    Output("screener-visible-count", "data"),
-    Input("page-load-interval", "n_intervals"),
-    Input("screener-scroll-pos", "data"),
-    State("screener-visible-count", "data"),
-    prevent_initial_call=True,
+# ── Screener page navigation ──────────────────────────────────────────────────
+@callback(
+    Output("screener-page-store", "data"),
+    Input({"type": "screener-page-btn", "index": dash.ALL}, "n_clicks"),
+    State("screener-page-store", "data"),
+    State("screener-sort-store", "data"),
+    State("sector-filter", "value"),
+    prevent_initial_call=True
 )
+def navigate_screener_page(n_clicks_list, current_page, sort_state, sector_filter):
+    triggered = dash.ctx.triggered_id
+    if not triggered or not any(n for n in n_clicks_list if n):
+        return dash.no_update
+    results = screener.get_screener_results()
+    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    total_pages = max(1, math.ceil(len(filtered) / PAGE_SIZE))
+    cp = current_page or 1
+    direction = triggered.get("index", "next")
+    if direction == "prev":
+        return max(1, cp - 1)
+    return min(total_pages, cp + 1)
 
 # ── Screener column sort ──────────────────────────────────────────────────────
 @callback(
