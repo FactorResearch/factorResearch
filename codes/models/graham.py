@@ -6,7 +6,7 @@ Scoring breakdown (100 points total):
   P/E Ratio              ≤ 15×          15 pts
   P/B Ratio              ≤ 1.5×         10 pts
   P/E × P/B              ≤ 22.5          5 pts
-  Graham Number          price ≤ 67%    20 pts
+  Intrinsic Value          price ≤ 67%    20 pts
   Current Ratio          ≥ 2.0×         10 pts
   Debt / Equity          ≤ 1.0×         10 pts
   EPS Stability          ≥33% / no loss 15 pts
@@ -118,11 +118,11 @@ def score(price: float | None, sec: dict) -> dict:
     elif pe <= 0:
         pe_score, pe_note = 0, "Negative earnings"
     elif pe <= 15:
-        pe_score, pe_note = 15, f"P/E {pe:.1f}× — within Graham's ceiling"
+        pe_score, pe_note = 15, f"P/E {pe:.1f}× — within Intrinsic's ceiling"
     elif pe <= 20:
         pe_score, pe_note = 8, f"P/E {pe:.1f}× — slightly above ideal"
     else:
-        pe_score, pe_note = 0, f"P/E {pe:.1f}× — well beyond Graham's ceiling"
+        pe_score, pe_note = 0, f"P/E {pe:.1f}× — well beyond Intrinsic's ceiling"
 
     criteria.append({
         "label": "Price-to-Earnings",
@@ -159,7 +159,7 @@ def score(price: float | None, sec: dict) -> dict:
     if pepb is None:
         pepb_score, pepb_note = 0, "Cannot calculate"
     elif pepb <= 22.5:
-        pepb_score, pepb_note = 5, f"P/E × P/B = {pepb:.1f} — passes Graham's combined test"
+        pepb_score, pepb_note = 5, f"P/E × P/B = {pepb:.1f} — passes Intrinsic's combined test"
     else:
         pepb_score, pepb_note = 0, f"P/E × P/B = {pepb:.1f} — fails combined test (max 22.5)"
 
@@ -172,24 +172,24 @@ def score(price: float | None, sec: dict) -> dict:
         "note": pepb_note
     })
 
-    # 4. Graham Number & Margin of Safety (20 pts)
+    # 4. Intrinsic Value & Margin of Safety (20 pts)
     if graham_number is None:
-        gn_score, gn_note = 0, "Insufficient data to calculate Graham Number"
+        gn_score, gn_note = 0, "Insufficient data to calculate Intrinsic Value"
     elif not price:
-        gn_score, gn_note = 0, f"Graham Number ${graham_number:.2f} — no live price to compare"
+        gn_score, gn_note = 0, f"Intrinsic Value ${graham_number:.2f} — no live price to compare"
     elif price <= graham_number * 0.67:
         gn_score = 20
-        gn_note  = f"${price:.2f} ≤ 67% of Graham Number ${graham_number:.2f} — excellent margin"
+        gn_note  = f"${price:.2f} ≤ 67% of Intrinsic Value ${graham_number:.2f} — excellent margin"
     elif price <= graham_number:
         gn_score = 10
-        gn_note  = f"${price:.2f} below Graham Number ${graham_number:.2f} — some margin"
+        gn_note  = f"${price:.2f} below Intrinsic Value ${graham_number:.2f} — some margin"
     else:
         gn_score = 0
-        gn_note  = f"${price:.2f} above Graham Number ${graham_number:.2f} — no margin of safety"
+        gn_note  = f"${price:.2f} above Intrinsic Value ${graham_number:.2f} — no margin of safety"
 
     criteria.append({
-        "label": "Graham Number & Margin of Safety",
-        "requirement": "Price ≤ 67% of Graham Number",
+        "label": "Intrinsic Value & Margin of Safety",
+        "requirement": "Price ≤ 67% of Intrinsic Value",
         "actual": f"${graham_number:.2f}" if graham_number else "N/A",
         "score": gn_score,
         "max": 20,
@@ -205,7 +205,7 @@ def score(price: float | None, sec: dict) -> dict:
     elif cr >= 1.5:
         cr_score, cr_note = 5, f"Current ratio {cr:.2f}× — acceptable"
     else:
-        cr_score, cr_note = 0, f"Current ratio {cr:.2f}× — below Graham's minimum"
+        cr_score, cr_note = 0, f"Current ratio {cr:.2f}× — below Intrinsic's minimum"
 
     criteria.append({
         "label": "Current Ratio",
@@ -271,7 +271,7 @@ def score(price: float | None, sec: dict) -> dict:
     elif div_years > 0:
         dv_score, dv_note = 2, f"Only {div_years} year(s) of dividends on record"
     else:
-        dv_score, dv_note = 0, "No dividend history — Graham's defensive investor required 20+ yrs"
+        dv_score, dv_note = 0, "No dividend history — Intrinsic's defensive investor required 20+ yrs"
 
     criteria.append({
         "label": "Dividend Track Record",

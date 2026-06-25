@@ -211,7 +211,7 @@ def score(price: float | None, sec: dict) -> dict:
         if de_years <= 0:
             de_score = 10
             de_note  = (f"Net cash position (${abs(net_debt)/1e9:.1f}B) — "
-                        "financial fortress, Buffett's ideal")
+                        "financial fortress")
         elif de_years <= 2:
             de_score = 10
             de_note  = (f"Net debt repayable in {de_years:.1f}yr — "

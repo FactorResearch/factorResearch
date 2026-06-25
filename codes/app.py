@@ -112,30 +112,31 @@ _last_screener_state = None
 # ── Moat grade tooltips (shown on hover in Buffett badge) ────────────────────
 _MOAT_TOOLTIPS = {
     "A": (
-        "Wide Moat (A) — The company has a durable, hard-to-replicate competitive advantage "
-        "that protects its profits for 10–20+ years. Examples: strong brand (Coca-Cola), "
-        "network effects (Visa), switching costs (Oracle), low-cost producer (GEICO), "
-        "or regulatory monopoly. ROE ≥15% consistently, high margins, strong FCF growth, "
-        "and the stock is trading at or below DCF intrinsic value."
+        "Wide Moat (A) — The company has a durable, difficult-to-replicate competitive "
+        "advantage that can protect earnings and returns for 10–20+ years. Examples include "
+        "strong brands, network effects, high switching costs, cost leadership, or regulatory "
+        "advantages. Consistently earns ROE ≥15%, maintains high margins, generates strong "
+        "free cash flow, and is trading at or below its estimated intrinsic value."
     ),
     "B": (
-        "Narrow Moat (B) — The company has a real but limited competitive advantage that "
-        "may erode within 5–10 years without reinvestment. It earns above-average returns "
-        "but faces meaningful competitive pressure. Solid ROE and margins, but not the "
-        "Worth owning at the right price."
+        "Narrow Moat (B) — The company has a meaningful competitive advantage, but one that "
+        "requires continued execution and reinvestment to sustain. It produces above-average "
+        "returns and healthy profitability but faces stronger competitive pressure than the "
+        "highest-quality businesses. A solid long-term holding when purchased at a reasonable valuation."
     ),
     "C": (
-        "No Clear Moat (C) — The company competes in a commoditised or highly competitive "
-        "market with no evident structural advantage. Returns on capital are average or "
-        "inconsistent. Buffett would typically avoid these unless the price is exceptionally "
-        "cheap — and even then, he prefers 'a wonderful company at a fair price' over "
-        "'a fair company at a wonderful price'."
+        "No Clear Moat (C) — The company operates in a highly competitive or commoditized "
+        "industry without a durable structural advantage. Returns on capital and profitability "
+        "tend to be average or inconsistent. While a sufficiently low price can improve future "
+        "returns, long-term investors generally prefer outstanding businesses purchased at fair "
+        "valuations over average businesses bought simply because they appear cheap."
     ),
     "D": (
-        "Avoid (D) — Weak fundamentals: poor or declining ROE, thin or negative margins, "
-        "heavy debt load, weak cash generation, or the stock is significantly overvalued "
-        "vs its DCF intrinsic value. Buffett's rule #1: never lose money. Rule #2: "
-        "don't forget rule #1. This stock fails on multiple quality or value criteria."
+        "Avoid (D) — The company shows multiple warning signs, such as weak or declining "
+        "profitability, low returns on equity, excessive debt, poor cash generation, or a "
+        "market price well above estimated intrinsic value. Successful long-term investing "
+        "focuses first on preserving capital by avoiding low-quality businesses and significant "
+        "overpayment."
     ),
 }
 # ── State ──────────────────────────────────────────────────────────────────────
@@ -1982,7 +1983,7 @@ def _build_analysis_content(data: dict) -> list:
         f"{g.get('pe') or 0:.1f}×",
         style={"color": _score_color(g.get("pe"), RULES["pe"])}
     ),
-    "Price-to-Earnings ratio. Graham's ceiling: 15×. Lower = cheaper."
+    "Price-to-Earnings (P/E) Ratio. Compares share price to earnings per share. Lower values generally indicate a lower valuation. Traditional value investing often uses 15× as a reference threshold."
 ),
 _stat(
     "P/B",
@@ -1990,7 +1991,7 @@ _stat(
         f"{g.get('pb') or 0:.2f}×",
         style={"color": _score_color(g.get("pb"), RULES["pb"])}
     ),
-    "Price-to-Book ratio. Graham's ceiling: 1.5×. Lower = better value."
+    "Price-to-Book (P/B) Ratio. Compares market price to book value per share. Lower values generally indicate a lower valuation. Traditional value investing often uses 1.5× as a reference threshold."
 ),
 _stat(
     "ROE",

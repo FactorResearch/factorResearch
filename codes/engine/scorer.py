@@ -135,11 +135,11 @@ ENHANCED_WEIGHTS = {
 }
 
 ENHANCED_VERDICTS = [
-    (75, "STRONG BUY",  "strong-buy",  "Orthogonal factors aligned — highest-conviction signal"),
-    (60, "BUY",         "buy",         "Strong across most factors — good risk/reward"),
-    (45, "WATCH",       "watch",       "Mixed signals — monitor for better entry"),
-    (30, "HOLD/WEAK",   "hold",        "Significant concerns across multiple factors"),
-    (0,  "AVOID",       "avoid",       "Fails on multiple pillars — high risk"),
+    (75, "HIGH CONVICTION",   "strong", "Exceptional alignment across quality, valuation, and financial strength metrics."),
+    (60, "FAVORABLE",         "buy",    "Strong overall fundamentals with relatively few areas of concern."),
+    (45, "BALANCED",          "watch",  "Mixed results across evaluation criteria with no clear overall bias."),
+    (30, "CAUTION",           "hold",   "Several important metrics warrant closer examination."),
+    (0,  "UNFAVORABLE",       "avoid",  "Weak performance across multiple core evaluation pillars."),
 ]
 
 
