@@ -1,0 +1,172 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Screener Accordion — mobile-only replacement for the table view
+   Desktop: table visible, accordion hidden
+   Mobile (≤767px): accordion visible, table hidden
+   ═══════════════════════════════════════════════════════════════════ */
+
+.screener-accordion {
+  display: none;
+}
+
+@media screen and (max-width: 767px) {
+  /* Hide the full table on mobile */
+  .screener-table-wrap .screener-table {
+    display: none !important;
+  }
+  /* Show accordion instead */
+  .screener-accordion {
+    display: block;
+  }
+}
+
+/* ── Accordion item ────────────────────────────────────────────── */
+.accordion-item {
+  background: #111620;
+  border-bottom: 2px solid rgba(0, 109, 255, 0.25);
+  border-left: 3px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.accordion-item.in-portfolio {
+  border-left-color: #ffc107;
+}
+
+.accordion-item.viewed {
+  border-left-color: rgba(0, 230, 118, 0.35);
+}
+
+.accordion-item[open] {
+  border-left-color: #448aff;
+  background: #141b28;
+}
+
+/* ── Summary / Header ──────────────────────────────────────────── */
+.accordion-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(68, 138, 255, 0.12);
+  touch-action: manipulation;
+}
+
+/* Remove default disclosure triangle */
+.accordion-summary::-webkit-details-marker { display: none; }
+.accordion-summary::marker { display: none; }
+
+.accordion-summary:active {
+  background: rgba(68, 138, 255, 0.06);
+}
+
+.accordion-rank {
+  color: #4a5568;
+  font-size: 11px;
+  font-family: "DM Mono", monospace;
+  min-width: 22px;
+  flex-shrink: 0;
+}
+
+/* ticker text inside summary */
+.accordion-summary .ticker-link-btn {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  pointer-events: none; /* summary handles the click */
+}
+
+.accordion-summary-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Chevron indicator */
+.accordion-summary::after {
+  content: "▸";
+  color: #4a5568;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.accordion-item[open] .accordion-summary::after {
+  transform: rotate(90deg);
+  color: #448aff;
+}
+
+/* ── Content ───────────────────────────────────────────────────── */
+.accordion-content {
+  padding: 4px 14px 14px;
+  border-top: 1px solid rgba(30, 42, 58, 0.6);
+  animation: accordion-open 0.15s ease;
+}
+
+@keyframes accordion-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Rows inside content ───────────────────────────────────────── */
+.accordion-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(30, 42, 58, 0.45);
+  font-family: "DM Mono", "Fira Code", monospace;
+}
+
+.accordion-row:last-of-type {
+  border-bottom: none;
+}
+
+.accordion-label {
+  color: #8899aa;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.accordion-value {
+  color: #e8eaf0;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ── Portfolio badges row ──────────────────────────────────────── */
+.accordion-portfolio-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 6px 0 2px;
+}
+
+/* ── Analyze button ────────────────────────────────────────────── */
+.accordion-analyze-btn {
+  display: inline-block;
+  background: #448aff;
+  color: #fff;
+  padding: 9px 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: "DM Mono", monospace;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 10px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.accordion-analyze-btn:active {
+  background: #2962ff;
+}

@@ -954,6 +954,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         else:
             header_cells.append(html.Th(label, title=tooltip or "", style=th_style))
     rows = []
+    accordion_items = []
     # Pagination — show PAGE_SIZE rows for the current page
     total_rows = len(filtered)
     total_pages = max(1, math.ceil(total_rows / PAGE_SIZE))
@@ -1041,6 +1042,47 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
             html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
             html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
         ]))
+        # ── Accordion item (mobile) ─────────────────────────────────────
+        acc_gn_color  = (GREEN if (price and gn  and price <= gn)  else MUTED) if gn  else MUTED
+        acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
+        acc_rows = [
+            html.Div([html.Span("Company",   className="accordion-label"),
+                      html.Span(r["name"],   className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Sector",    className="accordion-label"),
+                      html.Span(r.get("sector","")[:28], className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Mkt Cap",   className="accordion-label"),
+                      html.Span(_fmt_market_cap(r.get("market_cap")), className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Composite", className="accordion-label"),
+                      html.Span(f"{r['composite_score']:.0f}",
+                                className=f"score-pill {get_score_class(r['composite_score'])}")],
+                     className="accordion-row"),
+            html.Div([html.Span("GN Price",  className="accordion-label"),
+                      html.Span(f"${gn:.0f}"  if gn  else "—",
+                                className="accordion-value", style={"color": acc_gn_color})],  className="accordion-row"),
+            html.Div([html.Span("Buffett IV", className="accordion-label"),
+                      html.Span(f"${biv:.0f}" if biv else "—",
+                                className="accordion-value", style={"color": acc_biv_color})], className="accordion-row"),
+            html.Div([html.Span("Updated",   className="accordion-label"),
+                      html.Span(_fmt_updated(r.get("updated_at")), className="accordion-value")], className="accordion-row"),
+        ]
+        if badges:
+            acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
+        acc_rows.append(
+            html.Div("→ Analyze", id={"type": "screener-ticker-acc-btn", "index": sym},
+                     n_clicks=0, className="accordion-analyze-btn")
+        )
+        accordion_items.append(html.Details(
+            className="accordion-item" + (" in-portfolio" if in_port else "") + (" viewed" if viewed else ""),
+            children=[
+                html.Summary(className="accordion-summary", children=[
+                    html.Span(f"#{i}", className="accordion-rank"),
+                    html.Span(sym, className="ticker-link-btn"),
+                    html.Div([html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")],
+                             className="accordion-summary-right"),
+                ]),
+                html.Div(acc_rows, className="accordion-content"),
+            ]
+        ))
     n_analyzed  = sum(1 for r in filtered if r.get("analyzed"))
     n_portfolio = sum(1 for r in filtered if portfolio_symbols.get(r["symbol"]))
     note = html.Div([
@@ -1076,7 +1118,12 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
             style={"touchAction": "manipulation"},
         ),
     ])
-    return html.Div([table, note, pagination]), sector_options, page_reset
+    return html.Div([
+        table,
+        html.Div(accordion_items, className="screener-accordion"),
+        note,
+        pagination,
+    ]), sector_options, page_reset
 
 # ── Screener page navigation ──────────────────────────────────────────────────
 @callback(
