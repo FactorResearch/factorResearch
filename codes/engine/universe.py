@@ -68,6 +68,10 @@ def get_universe() -> list[str]:
     
     return tickers
 
+def get_cached_universe() -> list[str]:
+    """Only stocks with cached SEC data."""
+    universe = get_universe()
+    return [t for t in universe if cache.read("sec_facts", t) is not None]
 
 def get_graham_universe() -> list[str]:
    

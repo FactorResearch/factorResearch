@@ -447,7 +447,7 @@ app.layout = html.Div(className="app-container", children=[
         html.Div(className="screener-toolbar", children=[
             html.Div(className="screener-controls", children=[
                 html.Button(
-                    "Load Universe (Russell 3000 + Microcap)",
+                    "Load Universe (~10,000 U.S security)",
                     id="load-universe-btn",
                     className="load-btn",
                     n_clicks=0,
@@ -970,11 +970,13 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         verdict_label = r["verdict_label"]
         if verdict == "PENDING":
             score = r["composite_score"]
+          
             if score >= 70:   verdict, verdict_label = "STRONG BUY*", "strong-buy"
             elif score >= 55: verdict, verdict_label = "BUY*",        "buy"
             elif score >= 40: verdict, verdict_label = "WATCH*",      "watch"
             elif score >= 25: verdict, verdict_label = "WEAK*",       "hold"
-            else:             verdict, verdict_label = "AVOID*",      "avoid"
+            elif score >=0 :             verdict, verdict_label = "AVOID*",      "avoid"
+            else: verdict, verdict_label = "PENDING", "pending"
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
