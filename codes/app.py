@@ -1068,7 +1068,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         if badges:
             acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
         acc_rows.append(
-            html.Div("→ Analyze", id={"type": "screener-ticker-acc-btn", "index": sym},
+            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym},
                      n_clicks=0, className="accordion-analyze-btn")
         )
         accordion_items.append(html.Details(
