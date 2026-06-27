@@ -72,7 +72,32 @@ def get_screener_results() -> list[dict]:
         return sorted(_progress["results"],
                       key=lambda x: x["composite_score"], reverse=True)
 
-
+def _minimal_row(symbol: str, name: str = "", sector: str = "") -> dict:
+    """Create a placeholder screener row before a stock has been analysed."""
+    return {
+        "symbol":          symbol,
+        "name":            name or symbol,
+        "sector":          sector,
+        "graham_score":    0,
+        "graham_max":      100,
+        "graham_pct":      0,
+        "quality_score":   0,
+        "quality_max":     100,
+        "quality_pct":     0,
+        "composite_score": 0,
+        "verdict":         "NOT_ANALYZED",
+        "verdict_label":   "pending",
+        "roe":             None,
+        "op_margin":       None,
+        "eps_years":       0,
+        "div_years":       0,
+        "graham_number":   None,
+        "buffett_iv":      None,
+        "market_cap":      None,
+        "price":           None,
+        "analyzed":        False,
+        "updated_at":      None,
+    }
 # ── Score one stock ───────────────────────────────────────────────────────────
 
 def _score_one(symbol: str) -> dict | None:
@@ -205,8 +230,9 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
 
 def load_universe_background(tickers: list[str] | None = None):
     """
-    Kick off a background thread to score the full universe.
-    Safe to call multiple times — no-ops if already running.
+    Populate the screener with the full universe — no SEC fetches.
+    Each row is a placeholder until the user runs a full analysis on the stock.
+    Previously-analysed stocks are enriched from the local analysis cache.
     """
     with _lock:
         if _progress["running"]:
@@ -215,71 +241,47 @@ def load_universe_background(tickers: list[str] | None = None):
     def _worker():
         symbols = tickers or universe.get_universe()
 
-        # Split: cached (instant) vs needs-fetch (rate-limited)
-        cached_syms   = [s for s in symbols if cache.read("sec_facts", s) is not None]
-        uncached_syms = [s for s in symbols if cache.read("sec_facts", s) is None]
+        try:
+            ticker_map = sec_data.get_ticker_map()
+        except Exception:
+            ticker_map = {}
 
         with _lock:
             _progress.update({
                 "running": True,
-                "phase":   "cached",
+                "phase":   "loading",
                 "total":   len(symbols),
                 "done":    0,
                 "failed":  0,
-                "current": "",
+                "current": "Building universe…",
+                "results": [],
             })
 
-        print(f"\n⚡ Screener: {len(cached_syms)} cached | {len(uncached_syms)} need fetch")
-
-        def _record(symbol, row):
-            with _lock:
-                _progress["current"] = symbol
-                _progress["done"]   += 1
-                if row:
-                    _progress["results"] = [
-                        r for r in _progress["results"] if r["symbol"] != symbol
-                    ]
-                    _progress["results"].append(row)
-                else:
-                    _progress["failed"] += 1
-
-        # ── Phase 1: fully parallel for cached stocks ─────────────────────────
-        if cached_syms:
-            with _lock:
-                _progress["phase"] = "cached"
-            with ThreadPoolExecutor(max_workers=16) as exe:
-                futures = {exe.submit(_score_one, s): s for s in cached_syms}
-                for future in as_completed(futures):
-                    _record(futures[future], future.result())
-            print(f"  ✅ Phase 1 done: {len(cached_syms)} cached stocks scored")
-            # Restore prior full-analysis data immediately after Phase 1
-            # so users see enriched rows without waiting for Phase 2
-            _enrich_from_analysis_cache()
-            _enrich_from_db()
-
-        # ── Phase 2: rate-limited fetching for uncached stocks ────────────────
-        if uncached_syms:
-            with _lock:
-                _progress["phase"] = "fetching"
-            print(f"  🌐 Phase 2: fetching {len(uncached_syms)} stocks from SEC EDGAR…")
-            with ThreadPoolExecutor(max_workers=3) as exe:
-                futures = {exe.submit(_score_one, s): s for s in uncached_syms}
-                for future in as_completed(futures):
-                    _record(futures[future], future.result())
-            print(f"  ✅ Phase 2 done: {len(uncached_syms)} stocks fetched")
+        # Build minimal placeholder rows — instant, no network calls
+        rows = []
+        for sym in symbols:
+            entry = (ticker_map or {}).get(sym) or {}
+            rows.append(_minimal_row(sym, name=entry.get("name", sym)))
 
         with _lock:
-            _progress["running"] = False
-            _progress["phase"]   = ""
+            _progress["results"] = rows
+            _progress["done"]    = len(symbols)
             _progress["current"] = ""
 
-        total   = _progress["done"]
-        failed  = _progress["failed"]
-        print(f"\n✅ Screener complete: {total} scored, {failed} failed\n")
+        # Enrich with prior full-analysis results from cache
+        _enrich_from_analysis_cache()
+        _enrich_from_db()
+
+        with _lock:
+            _progress["results"].sort(
+                key=lambda x: x.get("composite_score") or 0, reverse=True
+            )
+            _progress["running"] = False
+            _progress["phase"]   = ""
+
+        print(f"\n✅ Universe loaded: {len(symbols):,} tickers\n")
 
     threading.Thread(target=_worker, daemon=True).start()
-
-
 # ── Enrich screener rows from persisted analysis cache ───────────────────────
 
 def _enrich_from_analysis_cache() -> int:
@@ -439,43 +441,35 @@ def _enrich_from_db() -> int:
 
 def load_cached_only() -> list[dict]:
     """
-    Score only already-cached stocks (instant — no network).
-    Returns sorted results list and populates shared state.
-    After building base rows, restores any prior full-analysis enrichment
-    from (1) the persistent analysis JSON cache and (2) the SQLite store.
+    Build screener rows for the full universe instantly (no network).
+    Enriches already-analysed stocks from the analysis cache and SQLite store.
     """
-    symbols = universe.get_cached_universe()
+    symbols = universe.get_universe()
     if not symbols:
         return []
 
-    print(f"  ⚡ load_cached_only: {len(symbols)} symbols in parallel…")
-    results = []
+    try:
+        ticker_map = sec_data.get_ticker_map()
+    except Exception:
+        ticker_map = {}
 
-    with ThreadPoolExecutor(max_workers=16) as exe:
-        futures = {exe.submit(_score_one, s): s for s in symbols}
-        for future in as_completed(futures):
-            row = future.result()
-            if row:
-                results.append(row)
-
-    results.sort(key=lambda x: x["composite_score"], reverse=True)
+    rows = [
+        _minimal_row(s, name=((ticker_map or {}).get(s) or {}).get("name", s))
+        for s in symbols
+    ]
 
     with _lock:
-        _progress["results"] = results
+        _progress["results"] = rows
 
-    # 1. Restore enriched analysis data from JSON analysis cache
     _enrich_from_analysis_cache()
-
-    # 2. Fill any remaining gaps from SQLite value_metrics store
     _enrich_from_db()
 
-    # Re-sort after enrichment so composite scores reflect full analysis
     with _lock:
         _progress["results"].sort(
             key=lambda x: x.get("composite_score") or 0, reverse=True
         )
 
-    n = len(_progress["results"])
+    n    = len(_progress["results"])
     n_db = db.count()
     print(f"  ✅ {n} stocks ready ({n_db} rows in SQLite store)")
     return _progress["results"]

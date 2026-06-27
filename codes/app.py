@@ -968,15 +968,17 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         in_port = bool(portfolio_symbols.get(sym))
         verdict       = r["verdict"]
         verdict_label = r["verdict_label"]
-        if verdict == "PENDING":
+        verdict       = r["verdict"]
+        verdict_label = r["verdict_label"]
+        if not r.get("analyzed"):
+            verdict, verdict_label = "—", "pending"
+        elif verdict == "PENDING":
             score = r["composite_score"]
-          
             if score >= 70:   verdict, verdict_label = "STRONG BUY*", "strong-buy"
             elif score >= 55: verdict, verdict_label = "BUY*",        "buy"
             elif score >= 40: verdict, verdict_label = "WATCH*",      "watch"
             elif score >= 25: verdict, verdict_label = "WEAK*",       "hold"
-            elif score >=0 :             verdict, verdict_label = "AVOID*",      "avoid"
-            else: verdict, verdict_label = "PENDING", "pending"
+            else:             verdict, verdict_label = "AVOID*",      "avoid"
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
@@ -1038,7 +1040,11 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
             html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
             html.Td(r["sector"][:18], className="text-xs text-muted"),
             html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
-            html.Td(html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")),
+            html.Td(
+                html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")
+                if r.get("analyzed")
+                else html.Span("—", className="score-pill")
+            ),
             gn_cell,
             biv_cell,
             html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
