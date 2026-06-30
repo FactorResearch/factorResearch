@@ -143,6 +143,53 @@ Files: `codes/app.py`, `codes/data/api_fetcher.py`
 - "Not financial advice" disclaimer
 - Visible refund/cancellation policy
 
+## A7. API Provider Strategy (Web)
+
+**Use your own paid API keys — do not let users bring their own**
+Files: `codes/data/api_fetcher.py`, `codes/data/cache.py`
+
+- Web routes all requests through one server, so all users share your
+  rate limits — bring-your-own-key (acceptable for mobile) does not work
+  here and adds key-storage liability
+- Pick paid tiers before launch, sized to expected concurrent usage:
+  - Tiingo: upgrade from free (500/day, 50/hr) to a paid volume tier
+  - Finnhub: upgrade from free (60/min) if live-quote volume requires it
+- Budget this as a recurring per-user-scaling cost line, separate from
+  flat hosting cost
+
+**Tighten price-history caching to cut redundant paid calls**
+Files: `codes/data/api_fetcher.py`, `codes/data/cache.py`
+- `get_price_history()` currently caches under `read("hist", symbol)` with
+  no explicit freshness check beyond existence — confirm cache is reused
+  across *all* users requesting the same ticker, not just within session
+- Add explicit daily-freshness invalidation (once per trading day per
+  ticker) so N users analyzing the same stock same-day triggers one
+  Tiingo call, not N
+- Apply the same discipline already used in `cache.py`'s
+  `is_stale_for_company()` filing-date logic to price/quote data
+
+**Turn rate-limit failures into a queue, not a user-facing error**
+Files: `codes/app.py`, `codes/data/api_fetcher.py`
+- `RateLimitError` currently propagates raw to `analyze_stock()`'s error
+  return — replace with either:
+  - a request queue that smooths bursts against your rate limit, or
+  - a friendly "high demand, try again in Xs" message
+- No user should ever see a raw `RateLimitError` string
+
+**Gate live-data features behind paid tier**
+Files: `codes/app.py`
+- Free tier: screener browsing only (`load_cached_only()` path — no live
+  API calls)
+- Paid tier: "Analyze" (live price, momentum, risk metrics) — this caps
+  variable API cost exposure to paying users only
+
+**Acceptance criteria**
+- No end-user-facing UI for entering personal API keys exists on web
+- A single ticker analyzed by multiple users in the same day results in
+  one upstream price-history API call, not one per user
+- Rate-limit exhaustion produces a friendly message, never a raw error
+- Free-tier users cannot trigger live API calls
+
 ---
 
 ## SECTION B — CONTINUOUS (operating practice from day one, never "finished")
