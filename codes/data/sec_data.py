@@ -8,7 +8,7 @@ Cache invalidation strategy
 Rather than evicting on a fixed wall-clock TTL, we:
 
   1. Fetch only the lightweight /submissions/ endpoint (~few KB) for a ticker.
-  2. Scan its recent filings for the latest 10-K or 10-Q date.
+  2. Scan its recent filings for the latest annual filing (10-K / 20-F / 40-F) date.
   3. Compare that date against what was recorded in the local cache.
   4. Re-fetch the heavy /companyfacts/ blob (~1 MB+) only when SEC has
      a newer filing than the one we last cached.
@@ -114,13 +114,37 @@ def _latest_filing_date(subs: dict) -> str | None:
         recent = subs["filings"]["recent"]
         forms  = recent.get("form", [])
         dates  = recent.get("filingDate", [])
-        target = {"10-K", "10-Q", "10-K/A", "10-Q/A"}
+        target = {"10-K","10-Q","20-F","40-F","10-K/A","10-Q/A","20-F/A","40-F/A"}
         matches = [date for form, date in zip(forms, dates) if form in target]
         return max(matches) if matches else None
     except (KeyError, TypeError):
         return None
 
+def _filing_type(subs: dict) -> str:
+    """
+    Classify the SEC filer.
 
+    Returns:
+        us
+        foreign
+        adr_only
+        none
+    """
+    try:
+        forms = set(subs["filings"]["recent"]["form"])
+    except (KeyError, TypeError):
+        return "none"
+
+    if forms & {"10-K", "10-Q"}:
+        return "us"
+
+    if forms & {"20-F", "40-F"}:
+        return "foreign"
+
+    if (forms & {"F-6","F-6EF","F-6 POS"} and not forms & {"10-K","10-Q","20-F","40-F"}):
+        return "adr_only"
+
+    return "none"
 # ── Sector classification via SIC code ───────────────────────────────────────
 
 def _sector_class(sic: int) -> str:
@@ -161,9 +185,13 @@ def _annual_df(facts: dict, concept: str, unit: str = "USD",
     df = pd.DataFrame(entries)
     if df.empty:
         return df
-
+    annual_forms = {
+    "10-K",
+    "20-F",
+    "40-F",
+    }
     df = (
-        df[df["form"] == "10-K"]
+        df[df["form"].isin(annual_forms)]
         .sort_values("filed")
         .drop_duplicates("fy", keep="last")
         .sort_values("fy", ascending=False)
@@ -537,7 +565,9 @@ def _shares_df(facts: dict, years: int = 11) -> pd.DataFrame:
         if df.empty:
             continue
 
-        df_10k = df[df["form"] == "10-K"].copy()
+        annual_forms = {"10-K", "20-F", "40-F"}
+
+        df_10k = df[df["form"].isin(annual_forms)].copy()
         if df_10k.empty:
             df_10k = df.copy()
 
@@ -585,7 +615,10 @@ def _equity_df(facts: dict, years: int = 11) -> pd.DataFrame:
             try:
                 raw = facts["us-gaap"][concept]["units"]["USD"]
                 raw_df = pd.DataFrame(raw)
-                raw_df = raw_df[raw_df["form"] == "10-K"].copy()
+                annual_forms = {"10-K", "20-F", "40-F"}
+                raw_df = raw_df[
+                    raw_df["form"].isin(annual_forms)
+                ].copy()
                 raw_df["year"] = pd.to_datetime(raw_df["end"]).dt.year
                 raw_df = (
                     raw_df.sort_values("filed")
@@ -631,7 +664,8 @@ def _tot_lib_df(facts: dict, equity_df: pd.DataFrame,
         try:
             raw_lse = facts["us-gaap"]["LiabilitiesAndStockholdersEquity"]["units"]["USD"]
             lse = pd.DataFrame(raw_lse)
-            lse = lse[lse["form"] == "10-K"].copy()
+            annual_forms = {"10-K", "20-F", "40-F"} 
+            lse = lse[ lse["form"].isin(annual_forms) ].copy()
             lse["year"] = pd.to_datetime(lse["end"]).dt.year
             lse = (
                 lse.sort_values("filed")
@@ -751,6 +785,18 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
 
     # ── Step 1: cheap submissions fetch ───────────────────────────────────────
     subs      = _fetch_submissions(cik)
+    filer = _filing_type(subs)
+    print(f"  [SEC] Filing type: {filer}")
+
+    if filer == "adr_only":
+        raise ValueError(
+            f"{symbol} is an ADR without SEC financial statements."
+        )
+
+    if filer == "none":
+        raise ValueError(
+            f"{symbol} has no SEC financial filings."
+        )
     sector    = subs.get("sicDescription", "Unknown")
     full_name = subs.get("name", name)
 
@@ -773,9 +819,25 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
 
     # ── Step 3: fetch full companyfacts blob ──────────────────────────────────
     print(f"  [SEC] Fetching full companyfacts for {symbol}...")
-    facts_r = requests.get(FACTS_URL.format(cik=cik), headers=SEC_HEADERS, timeout=30)
+    facts_url = FACTS_URL.format(cik=cik)
+    facts_r = requests.get(
+        facts_url,
+        headers=SEC_HEADERS,
+        timeout=30
+    )
+
+    if facts_r.status_code == 404:
+        raise ValueError(
+            f"{symbol} has SEC filings but no CompanyFacts XBRL data."
+        )
+
     facts_r.raise_for_status()
-    facts = facts_r.json()["facts"]
+    payload = facts_r.json()
+    facts = payload.get("facts")
+    if not facts:
+        raise ValueError(
+            f"{symbol} has no XBRL facts available."
+    )
 
     # ── Core income / book data ───────────────────────────────────────────────
     eps_df    = annual_per_share(facts, "EarningsPerShareBasic")
@@ -880,7 +942,7 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
         # Per-share
         "eps":               eps_df.to_dict("records"),
         "bvps":              bvps_df.to_dict("records"),
-
+        "filer_type": filer,
         # Balance sheet
         "cur_ast":           cur_ast_df.to_dict("records"),
         "cur_lib":           cur_lib_df.to_dict("records"),
