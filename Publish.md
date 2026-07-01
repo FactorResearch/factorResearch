@@ -1,243 +1,259 @@
-# PRE-LAUNCH READINESS — Intrinsic IQ
+pre_launch_readiness: intrinsic_iq
 
-This is the single source of truth for what must be true before this app
-is exposed to the public internet. Security, multi-user correctness, and
-ops hygiene are NOT versioned features (no V1/V2) — they are part of the
-definition of "done" for launch.
+global_definition:
+  purpose: >
+    This document defines launch-blocking and continuous operational requirements.
+  categories:
+    BLOCKING: "Must be 100% complete before production launch"
+    CONTINUOUS: "Must be active from launch onward and never considered complete"
+  rule:
+    - No BLOCKING item can be deferred to V1/V2
+    - CONTINUOUS items must start at launch
 
-Two categories:
-- **BLOCKING** — finite, closeable list. Nothing here ships unfinished.
-- **CONTINUOUS** — ongoing operating practice that starts at launch and
-  never closes. Not a blocker, but must be running from day one.
+execution_format:
+  issue_schema:
+    id: "ISSUE-XXX"
+    title: "string"
+    category: "data-isolation | auth | db | security | infra | billing | api | legal"
+    files:
+      - "path/to/file"
+    problem: "string"
+    root_cause: "string"
+    required_fix: "string"
+    constraints:
+      - "string"
+    acceptance_criteria:
+      - "string"
+    risk_if_not_fixed: "high | medium | low"
 
----
----
+section_a_blocking:
 
-# USAGE FORMAT
+  ISSUE_004:
+    title: Screener state is globally shared across users
+    category: data-isolation
+    files:
+      - codes/engine/screener.py
+    problem: "_progress is module-level global shared across all users"
+    root_cause: "No per-user session isolation for progress tracking"
+    required_fix: >
+      Introduce per-user progress state store.
+      Keep load_universe_background() as shared singleton job.
+      Only UI progress must be per-user.
+    constraints:
+      - Universe fetch must remain global/shared
+    acceptance_criteria:
+      - Two users never see each other's progress
+      - No polling cross-interference
+    risk_if_not_fixed: high
 
-```
-run ISSUE-XXX
-```
+  ISSUE_005:
+    title: Portfolio data has no ownership boundary
+    category: data-isolation
+    files:
+      - codes/portfolio.py
+    problem: "Portfolio CRUD is keyed only by name"
+    root_cause: "Missing user_id scoping in storage layer"
+    required_fix: >
+      Add user_id to all portfolio operations and cache keys.
+      Example: p_{name} → {user_id}_p_{name}
+    constraints:
+      - list_portfolios returns only user-owned data
+    acceptance_criteria:
+      - User cannot access other users' portfolios
+    risk_if_not_fixed: high
 
----
+  ISSUE_006:
+    title: App-level cache leaks cross-user state
+    category: data-isolation
+    files:
+      - codes/app.py
+    problem: "_portfolio_cache may mix user data across sessions"
+    root_cause: "Shared in-memory global cache"
+    required_fix: >
+      Scope all sensitive caches by user_id.
+      Validate whether analysis cache can remain global.
+    constraints:
+      - analysis cache may remain global if deterministic
+    acceptance_criteria:
+      - No incorrect ownership badges
+      - No cross-user cache leakage
+    risk_if_not_fixed: high
 
-## SECTION A — BLOCKING (must be 100% complete before go-live)
+  ISSUE_007:
+    title: SQLite not safe for concurrent multi-user writes
+    category: db
+    files:
+      - codes/data/db.py
+    problem: "SQLite single-writer model breaks under concurrency"
+    root_cause: "No connection pooling or server-grade DB"
+    required_fix: >
+      Migrate to Postgres with connection pooling.
+      Preserve DB API:
+        init_db, upsert, get, get_all, delete, count
+    constraints:
+      - No app-level logic changes allowed
+      - Preserve schema and whitelist safeguards
+    acceptance_criteria:
+      - No lock errors under concurrent usage
+      - Full migration from existing DB
+    risk_if_not_fixed: high
 
-### A1. Multi-User Data Isolation
+auth_and_billing:
+  authentication:
+    requirement: managed_auth_only
+    allowed_providers:
+      - Auth0
+      - Clerk
+      - Supabase Auth
+    requirements:
+      - stable user_id injected into all callbacks
+      - secure cookies:
+          Secure: true
+          HttpOnly: true
+          SameSite: Lax|Strict
 
-**ISSUE-004 — Screener progress state is global across all users**
-Files: `codes/engine/screener.py`
-- `_progress` dict is a single module-level global shared by every visitor
-- Fix: per-user progress/polling state; keep `load_universe_background()`
-  as a single shared job (don't re-run universe fetch per user) since
-  screener *results* are the same for everyone — only progress-viewing
-  and "viewed" state need isolation
-- Acceptance: two simultaneous users loading the screener never see each
-  other's progress messages or interfere with each other's polling state
+  billing:
+    provider: Stripe
+    components:
+      - Checkout
+      - Customer Portal
+    rules:
+      - No custom billing system
+      - Enforce tier gating at callback level
 
-**ISSUE-005 — Portfolios have no per-user ownership boundary**
-Files: `codes/portfolio.py`
-- `list_portfolios()`, `load_portfolio()`, `save_portfolio()`,
-  `delete_portfolio()` are keyed only by name — any user can read/modify/
-  delete any other user's portfolio
-- Fix: add `user_id` to every portfolio storage function; change cache key
-  from `("portfolio", f"p_{name}")` to `("portfolio", f"{user_id}_p_{name}")`;
-  add ownership checks; `list_portfolios()` returns only the caller's own
-- Acceptance: user A cannot load/modify/delete user B's portfolio even
-  with the exact name; `list_portfolios()` never leaks other users' names
+security_requirements:
+  validation:
+    ticker:
+      regex: "^[A-Z]{1,6}$"
+    portfolio_name:
+      max_length: 32
+      allowed_chars: "alphanumeric + underscore"
+    shares:
+      min: 5
+      max: 1000000
 
-**ISSUE-006 — app.py module-level caches leak state across sessions**
-Files: `codes/app.py`
-- `_portfolio_cache` mixes ownership-sensitive data across all sessions
-- `_analysis_cache`: confirm intentionally global (ticker analysis is not
-  user-specific — same ticker = same result for everyone); document this
-- `_last_screener_state` / `_last_progress_state`: scope per-user once
-  ISSUE-004 lands, or confirm safe to remain global
-- Acceptance: no portfolio-membership badge (💼) shown for a portfolio the
-  viewing user doesn't own; `_portfolio_cache` invalidates per-user
+  logging:
+    rule: "No secrets or raw exceptions exposed to users"
 
-### A2. Authentication & Payment
+  rate_limiting:
+    framework: Flask-Limiter
+    applies_to:
+      - analyze_stock
+      - load_universe
+      - simulation_callbacks
 
-**Auth & accounts**
-- Login/signup via a managed provider (Auth0 / Clerk / Supabase Auth) —
-  do not roll your own auth
-- Stable `user_id` available to every Dash callback
-- Session cookies: `Secure`, `HttpOnly`, `SameSite=Lax` or `Strict` —
-  verify explicitly, don't assume the provider sets these correctly
+  api_key_handling:
+    rules:
+      - Never expose API keys in logs or responses
+      - Never return raw exceptions to UI
 
-**Payment / paywall**
-- Stripe Checkout + Customer Portal (subscriptions, cancellation, invoices)
-- Gate callbacks: free tier (screener browse) vs paid tier (Analyze,
-  Portfolio, Factor Lab)
-- Do not build billing logic from scratch
+infrastructure:
+  production:
+    server: gunicorn | waitress
+    debug: false
 
-### A3. Database & Concurrency
+  proxy:
+    required: nginx | platform_proxy
 
-**ISSUE-007 — SQLite will not handle concurrent multi-user writes**
-Files: `codes/data/db.py`
-- Single-writer SQLite with no connection pooling — will lock/serialize
-  under concurrent `upsert()` calls from multiple users analyzing stocks
-  simultaneously
-- Fix: migrate to Postgres, preserve exact public API (`init_db()`,
-  `upsert()`, `get()`, `get_all()`, `delete()`, `count()` — signatures and
-  return shapes unchanged so `screener.py`/`app.py` need zero changes)
-- Use connection pooling (psycopg pool or SQLAlchemy engine)
-- `DATABASE_URL` via environment variable only
-- Migration script to copy existing `.cache/value_metrics.db` rows
-- Preserve the existing column-whitelist injection guard in `get_all()`
-- Acceptance: concurrent writes from multiple simultaneous `analyze_stock()`
-  calls don't error or drop data; existing rows migrated, not lost
+  tls:
+    required: true
+    method: lets_encrypt | managed_ssl
 
-**Encryption at rest**
-- Use a managed Postgres provider with encryption-at-rest enabled by
-  default (RDS, Supabase, Render Postgres) — confirm it's on, don't assume
+  edge_protection:
+    provider: Cloudflare
+    features:
+      - WAF enabled
+      - rate limiting enabled
 
-### A4. Security — Application Layer
+  secrets:
+    storage: environment_variables_only
 
-**Input validation and sanitization**
-Files: `codes/app.py`, `codes/portfolio.py`, `codes/data/sec_data.py`
-- Ticker symbols, portfolio names, share counts go from raw `dcc.Input`
-  values directly into business logic and external API calls with no
-  validation
-- Fix: whitelist ticker format (alpha, ≤6 chars — reuse the pattern
-  already used in `universe.py`'s ticker filtering); validate portfolio
-  name length/charset; add a max bound on shares (currently only
-  `MIN_SHARES=5`, no max)
+api_strategy:
+  model: server_owned_keys_only
+  rules:
+    - no_byok: true
 
-**Secrets and error-message hygiene**
-Files: `codes/data/api_fetcher.py`, `codes/data/sec_data.py`, `codes/app.py`
-- Audit every `except Exception as e: print(...)` / `return {"error": e}`
-  path — raw exception text must never reach the user-facing status
-  message
-- API keys (`FINNHUB_API_KEY`, `TIINGO_API_KEY`, `AV_API_KEY`) must never
-  appear in logs or error responses
-- Replace print-based logging with structured server-side logging
+  caching:
+    price_history:
+      rule: "1 call per ticker per trading day globally"
+      shared_across_users: true
 
-**Application-layer rate limiting**
-Files: `codes/app.py`
-- No limit currently on how often a user/IP can trigger Analyze, Load
-  Universe, or simulation callbacks
-- Fix: add per-user/per-IP rate limiting (Flask-Limiter, since Dash runs
-  on Flask) on expensive callbacks
+  rate_limit_handling:
+    behavior:
+      - never expose RateLimitError
+      - return retry message or queue request
 
-**External API rate-limit protection (user-facing)**
-Files: `codes/app.py`, `codes/data/api_fetcher.py`
-- SEC EDGAR throttle (3/sec) is shared infra — fine as-is
-- Tiingo (500/day) and Finnhub (60/min) free tiers will be exceeded under
-  multi-user Analyze traffic
-- `RateLimitError` currently surfaces raw to users in `analyze_stock()` —
-  fix to show a friendly "try again in Xs" message, or queue requests
-- Decide before launch: accept degraded service under load, or pre-pay
-  for higher API tiers
+  tiering:
+    free:
+      allowed: [screener_only]
+    paid:
+      allowed: [analyze_stock, live_metrics]
 
-### A5. Infrastructure
+legal:
+  required_pages:
+    - Terms of Service
+    - Privacy Policy
+  disclaimers:
+    - Not financial advice
+    - Refund/cancellation policy required
 
-**Production deployment**
-- Replace Dash dev server with gunicorn/waitress behind nginx
-- `debug=False` in production
-- HTTPS (Let's Encrypt or platform-provided — Render/Railway/Fly.io)
-- All API keys via environment variables only — verify none hardcoded or
-  committed to git history
+section_b_continuous:
 
-**DDoS / WAF protection**
-- Put Cloudflare (or provider-native equivalent) in front of the app
-- Enable basic WAF rules
-- Rate-limit at the edge before requests reach gunicorn
-- This is ~30 minutes of setup for very high protective value — no reason
-  to skip or defer
+  dependency_scanning:
+    tool: pip-audit | dependabot
+    frequency: CI
 
-### A6. Legal
+  error_monitoring:
+    tool: Sentry
+    integration: app.py logging callback
 
-- Terms of Service + Privacy Policy
-- "Not financial advice" disclaimer
-- Visible refund/cancellation policy
+  abuse_monitoring:
+    signals:
+      - scraping
+      - credential stuffing
+      - API spikes
 
-## A7. API Provider Strategy (Web)
+  incident_response:
+    required: true
+    includes:
+      - key rotation plan
+      - rollback plan
+      - on_call ownership
 
-**Use your own paid API keys — do not let users bring their own**
-Files: `codes/data/api_fetcher.py`, `codes/data/cache.py`
+  dependency_updates:
+    cadence: regular
 
-- Web routes all requests through one server, so all users share your
-  rate limits — bring-your-own-key (acceptable for mobile) does not work
-  here and adds key-storage liability
-- Pick paid tiers before launch, sized to expected concurrent usage:
-  - Tiingo: upgrade from free (500/day, 50/hr) to a paid volume tier
-  - Finnhub: upgrade from free (60/min) if live-quote volume requires it
-- Budget this as a recurring per-user-scaling cost line, separate from
-  flat hosting cost
+  access_review:
+    cadence: periodic
 
-**Tighten price-history caching to cut redundant paid calls**
-Files: `codes/data/api_fetcher.py`, `codes/data/cache.py`
-- `get_price_history()` currently caches under `read("hist", symbol)` with
-  no explicit freshness check beyond existence — confirm cache is reused
-  across *all* users requesting the same ticker, not just within session
-- Add explicit daily-freshness invalidation (once per trading day per
-  ticker) so N users analyzing the same stock same-day triggers one
-  Tiingo call, not N
-- Apply the same discipline already used in `cache.py`'s
-  `is_stale_for_company()` filing-date logic to price/quote data
+execution_order:
+  1:
+    - ISSUE_004
+    - ISSUE_005
+    - ISSUE_006
+  2:
+    - authentication_and_billing
+  3:
+    - ISSUE_007
+  4:
+    - security_requirements
+  5:
+    - infrastructure
+  6:
+    - edge_protection
+  7:
+    - api_rate_limiting_and_ux_handling
+  8:
+    - billing_enforcement
+  9:
+    - legal
+  10:
+    - section_b_continuous
 
-**Turn rate-limit failures into a queue, not a user-facing error**
-Files: `codes/app.py`, `codes/data/api_fetcher.py`
-- `RateLimitError` currently propagates raw to `analyze_stock()`'s error
-  return — replace with either:
-  - a request queue that smooths bursts against your rate limit, or
-  - a friendly "high demand, try again in Xs" message
-- No user should ever see a raw `RateLimitError` string
-
-**Gate live-data features behind paid tier**
-Files: `codes/app.py`
-- Free tier: screener browsing only (`load_cached_only()` path — no live
-  API calls)
-- Paid tier: "Analyze" (live price, momentum, risk metrics) — this caps
-  variable API cost exposure to paying users only
-
-**Acceptance criteria**
-- No end-user-facing UI for entering personal API keys exists on web
-- A single ticker analyzed by multiple users in the same day results in
-  one upstream price-history API call, not one per user
-- Rate-limit exhaustion produces a friendly message, never a raw error
-- Free-tier users cannot trigger live API calls
-
----
-
-## SECTION B — CONTINUOUS (operating practice from day one, never "finished")
-
-These don't block launch but must be actively running, not deferred
-indefinitely:
-
-- **Dependency vulnerability scanning** — `pip-audit` or GitHub Dependabot
-  in CI, run before every deploy
-- **Error monitoring** — Sentry (or equivalent) wired into the existing
-  `_logging_callback` exception handler in `app.py`, live from day one
-- **Abuse-pattern monitoring** — watch for scraping, credential stuffing,
-  unusual API usage patterns post-launch
-- **Incident response plan** — a basic runbook (who gets paged, how to
-  rotate a leaked key, how to roll back a bad deploy) — doesn't need to be
-  elaborate, needs to exist
-- **Regular dependency/framework updates** — Dash, pandas, requests,
-  finnhub-python, etc. patched on a cadence, not left stale
-- **Periodic access review** — as the user base grows, review who has
-  admin/infra access
-
----
-
-## EXECUTION ORDER
-
-1. ISSUE-004, 005, 006 — multi-user data isolation (sequential: 005 before 006)
-2. Auth & accounts
-3. ISSUE-007 — Postgres migration + encryption at rest
-4. Input validation + secrets hygiene
-5. Production deployment (gunicorn, HTTPS, env vars, debug=False)
-6. Cloudflare / DDoS / WAF
-7. Application-layer rate limiting + external API rate-limit UX
-8. Payment/paywall integration
-9. Legal pages
-10. Stand up Section B continuous practices (monitoring, dependency
-    scanning) — these start running *at* launch, not after
-
-## GLOBAL RULE
-
-No item in Section A is deferred to "after launch" or labeled V1/V2.
-Section B items begin running at launch and continue indefinitely — they
-are not a backlog to clear, they are a standing practice.
+global_rule:
+  blocking:
+    must_be_complete_before_launch: true
+    no_v1_v2_deferral: true
+  continuous:
+    must_start_at_launch: true
+    never_complete: true
