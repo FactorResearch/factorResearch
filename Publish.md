@@ -11,6 +11,15 @@ Two categories:
   never closes. Not a blocker, but must be running from day one.
 
 ---
+---
+
+# USAGE FORMAT
+
+```
+run ISSUE-XXX
+```
+
+---
 
 ## SECTION A — BLOCKING (must be 100% complete before go-live)
 
