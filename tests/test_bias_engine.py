@@ -1,5 +1,10 @@
 """Tests for codes.models.bias_engine — pure classification logic."""
+import sys
+import os
 
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
 import pytest
 
 from codes.models.bias_engine import Bias, RiskLevel, classify
