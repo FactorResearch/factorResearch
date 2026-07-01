@@ -24,7 +24,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 from codes.data   import cache, sec_data
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
 from codes.engine import factor_backtest as fb_engine
 import codes.portfolio as portfolio_engine
@@ -354,6 +354,32 @@ def analyze_stock(symbol: str) -> dict:
         )
     except Exception as e:
         print(f"Options signal calculation failed: {e}")
+    # SPY Benchmark + Bias (Outperform/Neutral/Underperform vs SPY) —
+    # depends on price history + enhanced composite + Altman distress flag.
+    spy_benchmark_result = None
+    bias_result = None
+    if hist is not None and not hist.empty and spy_hist is not None and not spy_hist.empty:
+        try:
+            spy_benchmark_result = spy_benchmark_model.compute_benchmark(hist, spy_hist)
+        except Exception as e:
+            print(f"SPY benchmark calculation failed: {e}")
+    if spy_benchmark_result and not spy_benchmark_result.get("error") \
+            and spy_benchmark_result.get("probability_outperform") is not None:
+        risk_score = risk_result.get("risk_score", 50) or 50
+        risk_level = (
+            bias_engine.RiskLevel.LOW if risk_score >= 65 else
+            bias_engine.RiskLevel.MEDIUM if risk_score >= 35 else
+            bias_engine.RiskLevel.HIGH
+        )
+        try:
+            bias_result = bias_engine.classify(
+                composite_score=enhanced.get("composite_score", 0) or 0,
+                risk_level=risk_level,
+                probability_outperform=spy_benchmark_result["probability_outperform"],
+                distress_flag=bool(enhanced.get("altman_cap_applied")),
+            )
+        except Exception as e:
+            print(f"Bias classification failed: {e}")
     # Market cap for persistence/screener ordering.
     # Prefer graham.score()'s value (price × shares, $M); if unavailable
     # (no live price), fall back to live price (Tiingo/Finnhub via
@@ -395,6 +421,8 @@ def analyze_stock(symbol: str) -> dict:
         "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,
         "options_signal":     options_signal_result,
+        "spy_benchmark":      spy_benchmark_result,
+        "bias":               bias_result,
         # ─────────────────────────────────────────────────
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,

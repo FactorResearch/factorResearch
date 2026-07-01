@@ -17,7 +17,7 @@ from .models  import (                                         # noqa: F401
     piotroski, graham, buffett, altman, greenblatt,
     quality, momentum, risk_metrics, earnings_revision,
     profitability, fcf_quality, capital_allocation, growth_quality, regime,
-    insider_activity, alternative_data,
+    insider_activity, alternative_data, spy_benchmark_model, bias_engine,
 )
 from .engine  import scorer, screener, universe               # noqa: F401
 from .        import portfolio                                 # noqa: F401
@@ -48,6 +48,8 @@ _compat = {
     'regime':               regime,
     'insider_activity':     insider_activity,
     'alternative_data':     alternative_data,
+    'spy_benchmark_model':  spy_benchmark_model,
+    'bias_engine':          bias_engine,
 }
 for _n, _m in _compat.items():
     sys.modules.setdefault(__name__ + '.' + _n, _m)

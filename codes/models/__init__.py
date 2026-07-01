@@ -13,3 +13,5 @@ from . import capital_allocation
 from . import growth_quality
 from . import insider_activity
 from . import alternative_data
+from . import spy_benchmark_model
+from . import bias_engine
