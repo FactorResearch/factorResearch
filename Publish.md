@@ -1,19 +1,25 @@
-# ============================================================
+# ================================
 # PRE-LAUNCH READINESS — Intrinsic IQ (AI-Optimized Spec)
-# ============================================================
+# ================================
 
 pre_launch_readiness:
+
   meta:
+
+    
     purpose: >
+      
       Defines all blocking and continuous requirements for production launch.
+    
     rule:
+      
       - BLOCKING items must be 100% complete before launch
       - CONTINUOUS items must start at launch and never be considered complete
       - No V1/V2 deferrals for BLOCKING items
 
-# ============================================================
+# ================================
 # ISSUE SCHEMA (STANDARD TEMPLATE)
-# ============================================================
+# ================================
 
 issue_schema:
   id: "ISSUE-XXX"
@@ -30,9 +36,9 @@ issue_schema:
     - "string"
   risk_if_not_fixed: "high | medium | low"
 
-# ============================================================
+# ================================
 # SECTION A — BLOCKING (MUST COMPLETE BEFORE LAUNCH)
-# ============================================================
+# ================================
 
 blocking:
 
@@ -114,9 +120,9 @@ blocking:
       - Full migration from existing SQLite DB
     risk_if_not_fixed: HIGH
 
-# ============================================================
+# ================================
 # AUTHENTICATION & BILLING (BLOCKING)
-# ============================================================
+# ================================
 
 auth_and_billing:
 
@@ -144,9 +150,9 @@ auth_and_billing:
       - No custom billing logic allowed
       - Tier enforcement must occur at callback level
 
-# ============================================================
+# ================================
 # SECURITY REQUIREMENTS (BLOCKING)
-# ============================================================
+# ================================
 
 security:
 
@@ -175,9 +181,9 @@ security:
       - Never expose API keys in logs or responses
       - Never return raw exceptions to UI
 
-# ============================================================
+# ================================
 # INFRASTRUCTURE (BLOCKING)
-# ============================================================
+# ================================
 
 infrastructure:
 
@@ -201,9 +207,9 @@ infrastructure:
   secrets:
     storage: environment_variables_only
 
-# ============================================================
+# ================================
 # API STRATEGY (BLOCKING)
-# ============================================================
+# ================================
 
 api_strategy:
 
@@ -229,9 +235,9 @@ api_strategy:
         - analyze_stock
         - live_metrics
 
-# ============================================================
+# ================================
 # LEGAL (BLOCKING)
-# ============================================================
+# ================================
 
 legal:
 
@@ -243,9 +249,9 @@ legal:
     - Not financial advice
     - Refund/cancellation policy required
 
-# ============================================================
+# ================================
 # SECTION B — CONTINUOUS (START AT LAUNCH, NEVER END)
-# ============================================================
+# ================================
 
 continuous_operations:
 
@@ -276,9 +282,9 @@ continuous_operations:
   access_review:
     cadence: periodic
 
-# ============================================================
+# ================================
 # EXECUTION ORDER (DEPENDENCY GRAPH)
-# ============================================================
+# ================================
 
 execution_order:
 
@@ -314,9 +320,9 @@ execution_order:
   10:
     - continuous_operations
 
-# ============================================================
+# ================================
 # GLOBAL RULES (HARD CONSTRAINTS)
-# ============================================================
+# ================================
 
 global_rules:
 
