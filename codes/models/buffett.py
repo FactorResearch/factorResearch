@@ -474,15 +474,81 @@ def score(price: float | None, sec: dict) -> dict:
         "margin_of_safety":   round(iv_margin, 1) if iv_margin is not None else None,
     })
 
+    # ── 8. Balance Sheet Quality — 10 pts ────────────────────────────────────
+    # Buffett has emphasised balance-sheet scrutiny over income-statement reads:
+    # income statements are easier to manage (revenue recognition, non-GAAP
+    # add-backs) while the balance sheet shows harder facts. Two checks:
+    #   (a) Goodwill / Total Assets — high ratio flags acquisition-fueled
+    #       earnings and impairment risk. Missing goodwill tag is treated as
+    #       zero goodwill (most companies without M&A history don't file it).
+    #   (b) Inventory growth vs Revenue growth — inventory materially
+    #       outpacing revenue growth flags possible channel-stuffing / demand
+    #       softening. Absence of an inventory tag (asset-light / service
+    #       businesses) is not penalised.
+    tot_ast_bs = _first(sec.get("total_assets", []))
+    goodwill   = _first(sec.get("goodwill", []))
+    if goodwill is None:
+        goodwill = 0.0
+    goodwill_ratio = (goodwill / tot_ast_bs) if tot_ast_bs and tot_ast_bs > 0 else None
+
+    inv_vals = _values(sec.get("inventory", []), 2)
+    rev_vals_bs = _values(revenue_recs, 2)
+    inv_growth = rev_growth_bs = None
+    if len(inv_vals) >= 2 and inv_vals[1]:
+        inv_growth = (inv_vals[0] - inv_vals[1]) / abs(inv_vals[1]) * 100
+    if len(rev_vals_bs) >= 2 and rev_vals_bs[1]:
+        rev_growth_bs = (rev_vals_bs[0] - rev_vals_bs[1]) / abs(rev_vals_bs[1]) * 100
+
+    if goodwill_ratio is None:
+        gw_score = 0
+        gw_note = "Insufficient asset data to assess goodwill concentration"
+    elif goodwill_ratio <= 0.20:
+        gw_score = 5
+        gw_note = f"Goodwill {goodwill_ratio*100:.1f}% of assets — low acquisition risk"
+    elif goodwill_ratio <= 0.40:
+        gw_score = 2
+        gw_note = f"Goodwill {goodwill_ratio*100:.1f}% of assets — moderate impairment exposure"
+    else:
+        gw_score = 0
+        gw_note = f"Goodwill {goodwill_ratio*100:.1f}% of assets — heavily acquisition-fueled"
+
+    if not inv_vals:
+        inv_score = 5
+        inv_note = "No inventory reported — asset-light business model"
+    elif inv_growth is None or rev_growth_bs is None:
+        inv_score = 3
+        inv_note = "Insufficient history to compare inventory vs revenue growth"
+    elif inv_growth - rev_growth_bs > 20:
+        inv_score = 0
+        inv_note = (f"Inventory grew {inv_growth:.1f}% vs revenue {rev_growth_bs:.1f}% — "
+                    "possible channel-stuffing / demand softening")
+    else:
+        inv_score = 5
+        inv_note = (f"Inventory growth {inv_growth:.1f}% in line with "
+                    f"revenue growth {rev_growth_bs:.1f}%")
+
+    bs_score = gw_score + inv_score
+    bs_note  = f"{gw_note}; {inv_note}"
+
+    criteria.append({
+        "label":       "Balance Sheet Quality",
+        "requirement": "Low goodwill concentration; inventory tracks revenue",
+        "actual":      f"Goodwill {goodwill_ratio*100:.1f}%" if goodwill_ratio is not None else "N/A",
+        "score":       bs_score,
+        "max":         10,
+        "note":        bs_note,
+    })
+
     # ── Summary ───────────────────────────────────────────────────────────────
     total_score = sum(c["score"] for c in criteria)
     total_max   = sum(c["max"]   for c in criteria)
+    total_pct   = (total_score / total_max * 100) if total_max else 0
 
-    if total_score >= 75:
+    if total_pct >= 75:
         grade, grade_label = "A", "Wide Moat"
-    elif total_score >= 55:
+    elif total_pct >= 55:
         grade, grade_label = "B", "Narrow Moat"
-    elif total_score >= 35:
+    elif total_pct >= 35:
         grade, grade_label = "C", "No Clear Moat"
     else:
         grade, grade_label = "D", "Avoid"

@@ -872,6 +872,13 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
 
     cash_df = _try_concepts(facts, _cash_concepts(sector_cls))
 
+    # Balance sheet quality inputs (buffett.py balance-sheet sub-check)
+    goodwill_df = _try_concepts(facts, ["Goodwill"])
+    inventory_df = _try_concepts(facts, [
+        "InventoryNet",
+        "InventoryNetIncludingGoodwill",
+    ])
+
     # ── Income statement ──────────────────────────────────────────────────────
     rev_df          = _try_concepts(facts, _revenue_concepts(sector_cls))
     gross_profit_df = _gross_profit_df(facts, sector_cls)
@@ -953,6 +960,8 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
         "total_assets":      total_assets_df.to_dict("records"),
         "retained_earnings": retained_earnings_df.to_dict("records"),
         "ppe_net":           ppe_net_df.to_dict("records"),
+        "goodwill":          goodwill_df.to_dict("records"),
+        "inventory":         inventory_df.to_dict("records"),
         "cash":              cash_df.to_dict("records"),
 
         # Income statement
