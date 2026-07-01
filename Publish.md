@@ -12,6 +12,7 @@ pre_launch_readiness:
     - BLOCKING items must be 100% complete before launch
     - CONTINUOUS items must start at launch and never be considered complete
     - No V1/V2 deferrals for BLOCKING items
+    - once complete front of each issue id add [x]
 
 
 # ================================
