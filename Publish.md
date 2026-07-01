@@ -1,113 +1,135 @@
-pre_launch_readiness: intrinsic_iq
+# ============================================================
+# PRE-LAUNCH READINESS — Intrinsic IQ (AI-Optimized Spec)
+# ============================================================
 
-global_definition:
-  purpose: >
-    This document defines launch-blocking and continuous operational requirements.
-  categories:
-    BLOCKING: "Must be 100% complete before production launch"
-    CONTINUOUS: "Must be active from launch onward and never considered complete"
-  rule:
-    - No BLOCKING item can be deferred to V1/V2
-    - CONTINUOUS items must start at launch
+pre_launch_readiness:
+  meta:
+    purpose: >
+      Defines all blocking and continuous requirements for production launch.
+    rule:
+      - BLOCKING items must be 100% complete before launch
+      - CONTINUOUS items must start at launch and never be considered complete
+      - No V1/V2 deferrals for BLOCKING items
 
-execution_format:
-  issue_schema:
-    id: "ISSUE-XXX"
-    title: "string"
-    category: "data-isolation | auth | db | security | infra | billing | api | legal"
-    files:
-      - "path/to/file"
-    problem: "string"
-    root_cause: "string"
-    required_fix: "string"
-    constraints:
-      - "string"
-    acceptance_criteria:
-      - "string"
-    risk_if_not_fixed: "high | medium | low"
+# ============================================================
+# ISSUE SCHEMA (STANDARD TEMPLATE)
+# ============================================================
 
-section_a_blocking:
+issue_schema:
+  id: "ISSUE-XXX"
+  title: "string"
+  category: "data-isolation | auth | db | security | infra | billing | api | legal"
+  files:
+    - "path/to/file"
+  problem: "string"
+  root_cause: "string"
+  required_fix: "string"
+  constraints:
+    - "string"
+  acceptance_criteria:
+    - "string"
+  risk_if_not_fixed: "high | medium | low"
+
+# ============================================================
+# SECTION A — BLOCKING (MUST COMPLETE BEFORE LAUNCH)
+# ============================================================
+
+blocking:
+
+  # ----------------------------
+  # DATA ISOLATION
+  # ----------------------------
 
   ISSUE_004:
-    title: Screener state is globally shared across users
+    title: "Screener state is globally shared across users"
     category: data-isolation
     files:
       - codes/engine/screener.py
-    problem: "_progress is module-level global shared across all users"
+    problem: "_progress is a module-level global shared across users"
     root_cause: "No per-user session isolation for progress tracking"
     required_fix: >
       Introduce per-user progress state store.
-      Keep load_universe_background() as shared singleton job.
-      Only UI progress must be per-user.
+      Keep load_universe_background() as a shared singleton job.
+      Only UI progress state must be per-user.
     constraints:
-      - Universe fetch must remain global/shared
+      - Universe fetch remains global/shared (same data for all users)
     acceptance_criteria:
-      - Two users never see each other's progress
-      - No polling cross-interference
-    risk_if_not_fixed: high
+      - Two concurrent users never see each other's progress
+      - No cross-session polling interference
+    risk_if_not_fixed: HIGH
 
   ISSUE_005:
-    title: Portfolio data has no ownership boundary
+    title: "Portfolio data has no ownership boundary"
     category: data-isolation
     files:
       - codes/portfolio.py
-    problem: "Portfolio CRUD is keyed only by name"
+    problem: "Portfolio CRUD is keyed only by portfolio name"
     root_cause: "Missing user_id scoping in storage layer"
     required_fix: >
       Add user_id to all portfolio operations and cache keys.
       Example: p_{name} → {user_id}_p_{name}
     constraints:
-      - list_portfolios returns only user-owned data
+      - list_portfolios() must return only user-owned data
     acceptance_criteria:
-      - User cannot access other users' portfolios
-    risk_if_not_fixed: high
+      - User A cannot access User B portfolios under any condition
+    risk_if_not_fixed: HIGH
 
   ISSUE_006:
-    title: App-level cache leaks cross-user state
+    title: "App-level cache leaks cross-user state"
     category: data-isolation
     files:
       - codes/app.py
-    problem: "_portfolio_cache may mix user data across sessions"
-    root_cause: "Shared in-memory global cache"
+    problem: "_portfolio_cache may mix data across users"
+    root_cause: "Shared global in-memory cache"
     required_fix: >
       Scope all sensitive caches by user_id.
-      Validate whether analysis cache can remain global.
+      Evaluate whether analysis cache can remain global (ticker-based purity).
     constraints:
-      - analysis cache may remain global if deterministic
+      - Analysis cache may remain global if deterministic per ticker
     acceptance_criteria:
-      - No incorrect ownership badges
-      - No cross-user cache leakage
-    risk_if_not_fixed: high
+      - No incorrect ownership indicators in UI
+      - No cross-user cache hits
+    risk_if_not_fixed: HIGH
+
+  # ----------------------------
+  # DATABASE
+  # ----------------------------
 
   ISSUE_007:
-    title: SQLite not safe for concurrent multi-user writes
+    title: "SQLite not safe for concurrent multi-user writes"
     category: db
     files:
       - codes/data/db.py
     problem: "SQLite single-writer model breaks under concurrency"
-    root_cause: "No connection pooling or server-grade DB"
+    root_cause: "No connection pooling or server-grade database layer"
     required_fix: >
       Migrate to Postgres with connection pooling.
-      Preserve DB API:
+      Preserve DB API exactly:
         init_db, upsert, get, get_all, delete, count
     constraints:
-      - No app-level logic changes allowed
-      - Preserve schema and whitelist safeguards
+      - No changes to app-level logic allowed
+      - Must preserve schema and whitelist safeguards
     acceptance_criteria:
-      - No lock errors under concurrent usage
-      - Full migration from existing DB
-    risk_if_not_fixed: high
+      - No locking or write failures under concurrent usage
+      - Full migration from existing SQLite DB
+    risk_if_not_fixed: HIGH
+
+# ============================================================
+# AUTHENTICATION & BILLING (BLOCKING)
+# ============================================================
 
 auth_and_billing:
+
   authentication:
-    requirement: managed_auth_only
+    provider: managed_auth_only
     allowed_providers:
       - Auth0
       - Clerk
       - Supabase Auth
+
     requirements:
       - stable user_id injected into all callbacks
-      - secure cookies:
+      - secure cookie config:
           Secure: true
           HttpOnly: true
           SameSite: Lax|Strict
@@ -117,11 +139,17 @@ auth_and_billing:
     components:
       - Checkout
       - Customer Portal
-    rules:
-      - No custom billing system
-      - Enforce tier gating at callback level
 
-security_requirements:
+    rules:
+      - No custom billing logic allowed
+      - Tier enforcement must occur at callback level
+
+# ============================================================
+# SECURITY REQUIREMENTS (BLOCKING)
+# ============================================================
+
+security:
+
   validation:
     ticker:
       regex: "^[A-Z]{1,6}$"
@@ -133,7 +161,7 @@ security_requirements:
       max: 1000000
 
   logging:
-    rule: "No secrets or raw exceptions exposed to users"
+    rule: "Never expose secrets or raw exceptions to users"
 
   rate_limiting:
     framework: Flask-Limiter
@@ -147,12 +175,17 @@ security_requirements:
       - Never expose API keys in logs or responses
       - Never return raw exceptions to UI
 
+# ============================================================
+# INFRASTRUCTURE (BLOCKING)
+# ============================================================
+
 infrastructure:
+
   production:
     server: gunicorn | waitress
     debug: false
 
-  proxy:
+  reverse_proxy:
     required: nginx | platform_proxy
 
   tls:
@@ -168,36 +201,53 @@ infrastructure:
   secrets:
     storage: environment_variables_only
 
+# ============================================================
+# API STRATEGY (BLOCKING)
+# ============================================================
+
 api_strategy:
+
   model: server_owned_keys_only
-  rules:
-    - no_byok: true
+  no_byok: true
 
   caching:
     price_history:
-      rule: "1 call per ticker per trading day globally"
+      rule: "1 API call per ticker per trading day globally"
       shared_across_users: true
 
   rate_limit_handling:
     behavior:
-      - never expose RateLimitError
-      - return retry message or queue request
+      - Never expose raw RateLimitError
+      - Return retry/backoff message OR queue request
 
   tiering:
     free:
-      allowed: [screener_only]
+      allowed:
+        - screener_only
     paid:
-      allowed: [analyze_stock, live_metrics]
+      allowed:
+        - analyze_stock
+        - live_metrics
+
+# ============================================================
+# LEGAL (BLOCKING)
+# ============================================================
 
 legal:
+
   required_pages:
     - Terms of Service
     - Privacy Policy
+
   disclaimers:
     - Not financial advice
     - Refund/cancellation policy required
 
-section_b_continuous:
+# ============================================================
+# SECTION B — CONTINUOUS (START AT LAUNCH, NEVER END)
+# ============================================================
+
+continuous_operations:
 
   dependency_scanning:
     tool: pip-audit | dependabot
@@ -209,16 +259,16 @@ section_b_continuous:
 
   abuse_monitoring:
     signals:
-      - scraping
+      - scraping patterns
       - credential stuffing
       - API spikes
 
   incident_response:
     required: true
     includes:
-      - key rotation plan
-      - rollback plan
-      - on_call ownership
+      - key rotation procedure
+      - rollback procedure
+      - on-call ownership
 
   dependency_updates:
     cadence: regular
@@ -226,34 +276,54 @@ section_b_continuous:
   access_review:
     cadence: periodic
 
+# ============================================================
+# EXECUTION ORDER (DEPENDENCY GRAPH)
+# ============================================================
+
 execution_order:
+
   1:
     - ISSUE_004
     - ISSUE_005
     - ISSUE_006
+
   2:
-    - authentication_and_billing
+    - auth_and_billing
+
   3:
     - ISSUE_007
+
   4:
-    - security_requirements
+    - security
+
   5:
     - infrastructure
+
   6:
     - edge_protection
+
   7:
-    - api_rate_limiting_and_ux_handling
+    - api_strategy
+
   8:
     - billing_enforcement
+
   9:
     - legal
-  10:
-    - section_b_continuous
 
-global_rule:
+  10:
+    - continuous_operations
+
+# ============================================================
+# GLOBAL RULES (HARD CONSTRAINTS)
+# ============================================================
+
+global_rules:
+
   blocking:
     must_be_complete_before_launch: true
-    no_v1_v2_deferral: true
+    no_v1_v2_deferrals: true
+
   continuous:
     must_start_at_launch: true
     never_complete: true
