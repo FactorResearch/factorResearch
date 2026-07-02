@@ -52,7 +52,7 @@ blocking:
   # DATA ISOLATION
   # ----------------------------
 
-  ISSUE_004:
+  ISSUE_004[x]:
 
     title: "Screener state is globally shared across users"
     category: data-isolation
