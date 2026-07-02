@@ -95,8 +95,8 @@ def get_cumulative_split_factor(symbol: str, since_date: str) -> float:
 # Storage helpers
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _load_index() -> list[str]:
-    return cache.read("portfolio", "index") or []
+def _load_index(user_id: str) -> list[str]:
+    return cache.read("portfolio", f"{user_id}_index") or []
 
 
 def _save_index(names: list[str]) -> None:

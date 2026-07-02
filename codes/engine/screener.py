@@ -42,6 +42,14 @@ _progress: dict = {
 }
 _lock = threading.Lock()
 
+# ── Per-user progress isolation (ISSUE-004) ───────────────────────────────────
+# load_universe_background() and screener results (_progress) remain a shared
+# singleton — universe/composite data is identical for every user. Only the
+# per-session polling *view* is isolated here so concurrent users never read
+# or clobber each other's last-seen progress snapshot.
+_user_progress: dict[str, dict] = {}
+_user_progress_lock = threading.Lock()
+
 # ── Rate limiter for SEC fetches (token-bucket, ≤ 3 calls/sec) ───────────────
 
 _sec_rate_lock = threading.Lock()
@@ -61,9 +69,28 @@ def _sec_rate_wait():
 
 # ── Progress accessors ────────────────────────────────────────────────────────
 
-def get_progress() -> dict:
+def get_progress(session_id: str | None = None) -> dict:
+    """
+    Return the current (shared) background job progress.
+
+    When ``session_id`` is provided, the returned snapshot is also stored in
+    a per-user store (`_user_progress`) so each session polls its own
+    isolated copy — preventing one user's poll from interfering with
+    another's. The underlying job state itself remains a single shared
+    singleton (universe loading is identical for all users).
+    """
     with _lock:
-        return dict(_progress)
+        snapshot = dict(_progress)
+    if session_id:
+        with _user_progress_lock:
+            _user_progress[session_id] = snapshot
+    return snapshot
+
+
+def clear_user_progress(session_id: str) -> None:
+    """Remove a user's isolated progress snapshot (e.g. on disconnect)."""
+    with _user_progress_lock:
+        _user_progress.pop(session_id, None)
 
 
 def get_screener_results() -> list[dict]:

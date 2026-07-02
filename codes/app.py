@@ -23,6 +23,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
+import flask
 from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
@@ -37,6 +38,7 @@ app = dash.Dash(
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
 )
 server = app.server
+server.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(24)
 @server.after_request
 def _log_errors(response):
     return response
@@ -775,18 +777,30 @@ def capture_screener_click(n_clicks_list):
     return triggered["index"]  # the symbol string
 
 # ── Screener ──────────────────────────────────────────────────────────────────
-# In-memory portfolio cache — guards against redundant reads within one render cycle
-_portfolio_cache: dict = {"symbols": {}, "ts": 0.0}
+# Per-session portfolio cache (ISSUE-006) — scoped by Flask session id so one
+# user's portfolio-ownership badges never leak into another user's screener view.
+# _analysis_cache stays global: it's ticker-keyed, deterministic SEC/price data.
+_portfolio_cache_by_session: dict = {}
+
+def _session_id() -> str:
+    """Stable per-browser-session key backed by Flask's signed session cookie."""
+    if "_uid" not in flask.session:
+        import uuid
+        flask.session["_uid"] = uuid.uuid4().hex
+    return flask.session["_uid"]
+
 def _invalidate_portfolio_cache() -> None:
-    global _portfolio_cache
-    _portfolio_cache = {"symbols": {}, "ts": 0.0}
+    """Clear only the current session's cached portfolio-symbol map."""
+    _portfolio_cache_by_session.pop(_session_id(), None)
+
 def _get_portfolio_symbols() -> dict[str, list[str]]:
-    """Return {symbol: [portfolio_name, ...]}, cached for 10 seconds.
-    Always force-cleared by _invalidate_portfolio_cache() on any mutation."""
+    """Return {symbol: [portfolio_name, ...]} for the CURRENT session only,
+    cached for 10 seconds. Never shared across sessions/users."""
     import time as _t
-    global _portfolio_cache
-    if _t.time() - _portfolio_cache["ts"] < 10:
-        return _portfolio_cache["symbols"]
+    sid   = _session_id()
+    entry = _portfolio_cache_by_session.get(sid)
+    if entry and _t.time() - entry["ts"] < 10:
+        return entry["symbols"]
     result: dict[str, list[str]] = {}
     try:
         for pname in (portfolio_engine.list_portfolios() or []):
@@ -800,7 +814,7 @@ def _get_portfolio_symbols() -> dict[str, list[str]]:
                         result[sym].append(pname)
     except Exception:
         pass
-    _portfolio_cache = {"symbols": result, "ts": _t.time()}
+    _portfolio_cache_by_session[sid] = {"symbols": result, "ts": _t.time()}
     return result
 
 @callback(
