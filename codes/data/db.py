@@ -1,5 +1,5 @@
 """
-Persistent value metrics store — SQLite.
+Persistent value metrics store — SQLite or Postgres.
 
 Survives process restarts; complements the JSON file cache with a
 queryable store that supports ordering by market cap.
@@ -14,11 +14,24 @@ Table: value_metrics
   updated_at      TEXT   -- ISO-8601 UTC timestamp of last write
 """
 
+import os
 import sqlite3
 import datetime
 from pathlib import Path
 
+try:
+    import psycopg
+    from psycopg.rows import dict_row
+    from psycopg.pool import ConnectionPool
+except ImportError:  # pragma: no cover
+    psycopg = None
+    dict_row = None
+    ConnectionPool = None
+
+DB_URL = os.environ.get("DATABASE_URL")
 DB_PATH = Path(".cache") / "value_metrics.db"
+_PG_POOL = None
+_initialized = False
 
 _CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS value_metrics (
@@ -32,7 +45,7 @@ CREATE TABLE IF NOT EXISTS value_metrics (
 )
 """
 
-_UPSERT = """
+_UPSERT_SQLITE = """
 INSERT INTO value_metrics
     (ticker, market_cap, graham_number, buffett_iv, composite_score, verdict, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -45,17 +58,89 @@ ON CONFLICT(ticker) DO UPDATE SET
     updated_at      = excluded.updated_at
 """
 
-_initialized = False
+_UPSERT_POSTGRES = """
+INSERT INTO value_metrics
+    (ticker, market_cap, graham_number, buffett_iv, composite_score, verdict, updated_at)
+VALUES (%s, %s, %s, %s, %s, %s, %s)
+ON CONFLICT(ticker) DO UPDATE SET
+    market_cap      = excluded.market_cap,
+    graham_number   = excluded.graham_number,
+    buffett_iv      = excluded.buffett_iv,
+    composite_score = excluded.composite_score,
+    verdict         = excluded.verdict,
+    updated_at      = excluded.updated_at
+"""
+
+_SELECT_SQLITE = "SELECT * FROM value_metrics WHERE ticker = ?"
+_SELECT_POSTGRES = "SELECT * FROM value_metrics WHERE ticker = %s"
+
+_DELETE_SQLITE = "DELETE FROM value_metrics WHERE ticker = ?"
+_DELETE_POSTGRES = "DELETE FROM value_metrics WHERE ticker = %s"
+
+_COUNT_SQLITE = "SELECT COUNT(*) FROM value_metrics"
+_COUNT_POSTGRES = "SELECT COUNT(*) FROM value_metrics"
 
 
-def _conn() -> sqlite3.Connection:
+def _using_postgres() -> bool:
+    return bool(DB_URL)
+
+
+def _sqlite_conn() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(exist_ok=True)
     return sqlite3.connect(str(DB_PATH), check_same_thread=False)
+
+
+def _pg_conn():
+    global _PG_POOL
+    if psycopg is None:
+        raise RuntimeError(
+            "Postgres support requires psycopg[binary]. Install it or unset DATABASE_URL."
+        )
+    if _PG_POOL is None:
+        _PG_POOL = ConnectionPool(DB_URL, min_size=1, max_size=5)
+    return _PG_POOL.connection()
+
+
+def _conn():
+    return _pg_conn() if _using_postgres() else _sqlite_conn()
 
 
 def init_db() -> None:
     with _conn() as con:
         con.execute(_CREATE_TABLE)
+
+    if _using_postgres():
+        _migrate_sqlite_to_postgres()
+
+
+def _migrate_sqlite_to_postgres() -> None:
+    if not DB_PATH.exists():
+        return
+
+    try:
+        with _sqlite_conn() as sqlite_con:
+            sqlite_con.row_factory = sqlite3.Row
+            old_rows = sqlite_con.execute("SELECT * FROM value_metrics").fetchall()
+    except Exception:
+        return
+
+    if not old_rows:
+        return
+
+    with _pg_conn() as pg_con:
+        for row in old_rows:
+            pg_con.execute(
+                _UPSERT_POSTGRES,
+                (
+                    row["ticker"],
+                    row["market_cap"],
+                    row["graham_number"],
+                    row["buffett_iv"],
+                    row["composite_score"],
+                    row["verdict"],
+                    row["updated_at"],
+                ),
+            )
 
 
 def _ensure_init() -> None:
@@ -77,17 +162,21 @@ def upsert(
     """Insert or update a ticker's value metrics row."""
     _ensure_init()
     now = datetime.datetime.utcnow().isoformat()
+    params = (
+        ticker.upper(),
+        market_cap,
+        graham_number,
+        buffett_iv,
+        composite_score,
+        verdict,
+        now,
+    )
     try:
         with _conn() as con:
-            con.execute(_UPSERT, (
-                ticker.upper(),
-                market_cap,
-                graham_number,
-                buffett_iv,
-                composite_score,
-                verdict,
-                now,
-            ))
+            con.execute(
+                _UPSERT_POSTGRES if _using_postgres() else _UPSERT_SQLITE,
+                params,
+            )
     except Exception as e:
         print(f"  [DB] upsert failed for {ticker}: {e}")
 
@@ -96,11 +185,12 @@ def get(ticker: str) -> dict | None:
     """Return a single ticker's row, or None if absent."""
     _ensure_init()
     with _conn() as con:
-        con.row_factory = sqlite3.Row
-        row = con.execute(
-            "SELECT * FROM value_metrics WHERE ticker = ?",
-            (ticker.upper(),),
-        ).fetchone()
+        if _using_postgres():
+            con.row_factory = dict_row
+            row = con.execute(_SELECT_POSTGRES, (ticker.upper(),)).fetchone()
+        else:
+            con.row_factory = sqlite3.Row
+            row = con.execute(_SELECT_SQLITE, (ticker.upper(),)).fetchone()
     return dict(row) if row else None
 
 
@@ -117,8 +207,10 @@ def get_all(order_by: str = "market_cap") -> list[dict]:
     col = order_by if order_by in _safe_cols else "market_cap"
     _ensure_init()
     with _conn() as con:
-        con.row_factory = sqlite3.Row
-        # `col IS NULL` evaluates to 0/1 in SQLite — puts NULLs last
+        if _using_postgres():
+            con.row_factory = dict_row
+        else:
+            con.row_factory = sqlite3.Row
         rows = con.execute(
             f"SELECT * FROM value_metrics ORDER BY {col} IS NULL, {col} DESC"
         ).fetchall()
@@ -129,7 +221,10 @@ def delete(ticker: str) -> None:
     """Remove a ticker's row (e.g. when a portfolio holding is deleted)."""
     _ensure_init()
     with _conn() as con:
-        con.execute("DELETE FROM value_metrics WHERE ticker = ?", (ticker.upper(),))
+        con.execute(
+            _DELETE_POSTGRES if _using_postgres() else _DELETE_SQLITE,
+            (ticker.upper(),),
+        )
 
 
 def count() -> int:

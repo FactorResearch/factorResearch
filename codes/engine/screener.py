@@ -49,6 +49,7 @@ _lock = threading.Lock()
 # or clobber each other's last-seen progress snapshot.
 _user_progress: dict[str, dict] = {}
 _user_progress_lock = threading.Lock()
+_USER_PROGRESS_TTL = 600  # seconds before stale per-session progress snapshots are evicted
 
 # ── Rate limiter for SEC fetches (token-bucket, ≤ 3 calls/sec) ───────────────
 
@@ -69,6 +70,15 @@ def _sec_rate_wait():
 
 # ── Progress accessors ────────────────────────────────────────────────────────
 
+def _evict_stale_user_progress() -> None:
+    import time as _t
+    with _user_progress_lock:
+        stale = [sid for sid, entry in _user_progress.items()
+                 if _t.time() - entry.get("ts", 0) >= _USER_PROGRESS_TTL]
+        for sid in stale:
+            _user_progress.pop(sid, None)
+
+
 def get_progress(session_id: str | None = None) -> dict:
     """
     Return the current (shared) background job progress.
@@ -79,11 +89,12 @@ def get_progress(session_id: str | None = None) -> dict:
     another's. The underlying job state itself remains a single shared
     singleton (universe loading is identical for all users).
     """
+    _evict_stale_user_progress()
     with _lock:
         snapshot = dict(_progress)
     if session_id:
         with _user_progress_lock:
-            _user_progress[session_id] = snapshot
+            _user_progress[session_id] = {"snapshot": snapshot, "ts": time.time()}
     return snapshot
 
 

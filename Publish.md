@@ -130,7 +130,7 @@ blocking:
     risk_if_not_fixed: HIGH
 
 
-  ISSUE_014:
+  ISSUE_014[x]:
 
     title: "Per-session caches grow unbounded (memory leak)"
     category: data-isolation
@@ -167,7 +167,7 @@ blocking:
   # DATABASE
   # ----------------------------
 
-  ISSUE_007:
+  ISSUE_007[x]:
 
     title: "SQLite not safe for concurrent multi-user writes"
     category: db

@@ -8,4 +8,4 @@ gunicorn
 alpha_vantage
 lxml
 finnhub-python
-gunicorn
+psycopg[binary]
