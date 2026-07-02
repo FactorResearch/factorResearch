@@ -48,8 +48,7 @@ def test_rate_limit_error_surfaced_as_result_error():
         result = app.analyze_stock("AAPL")
 
     assert "error" in result
-    assert "Tiingo" in result["error"]
-    assert "Approaching hourly limit" in result["error"]
+    assert "Service temporarily unavailable due to API rate limiting" in result["error"]
 
 
 def test_price_history_rate_limit_aborts_with_error():
@@ -73,8 +72,7 @@ def test_price_history_rate_limit_aborts_with_error():
 
         result = app.analyze_stock("AMGN")
 
-    assert result == {"error": str(err)}
-    assert "Tiingo" in result["error"]
+    assert result == {"error": err.user_message}
 
 
 def test_rate_limit_error_does_not_propagate_as_exception():
@@ -95,4 +93,4 @@ def test_rate_limit_error_does_not_propagate_as_exception():
         except RateLimitError:
             assert False, "RateLimitError must be caught inside analyze_stock"
 
-    assert result == {"error": str(err)}
+    assert result == {"error": err.user_message}

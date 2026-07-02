@@ -218,6 +218,13 @@ def _get_spy_history_lazy():
             print(f"Failed to fetch SPY history: {e}")
             _spy_history = None  # Cache failure so we don't retry every time
         return _spy_history
+def _is_rate_limit_error(exc: Exception) -> bool:
+    """Recognize RateLimitError instances across import aliases."""
+    if isinstance(exc, RateLimitError):
+        return True
+    return type(exc).__name__ == "RateLimitError"
+
+
 def analyze_stock(symbol: str) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
@@ -262,10 +269,11 @@ def analyze_stock(symbol: str) -> dict:
     # Now try to get price
     try:
         price = api_fetcher.get_price(symbol)
-    except RateLimitError as e:
-        # Surface hard rate-limit blocks to the UI via the existing
-        # status-msg error path (run_analysis renders result["error"]).
-        return {"error": str(e)}
+    except Exception as e:
+        if _is_rate_limit_error(e):
+            message = getattr(e, "user_message", str(e))
+            return {"error": message}
+        raise
     # Earnings revision score
     earnings_revision_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price:
@@ -287,12 +295,10 @@ def analyze_stock(symbol: str) -> dict:
             
             try:
                 hist = hist_future.result(timeout=30)
-            except RateLimitError as e:
-                # Hard rate-limit block on the primary price-history source —
-                # abort rather than complete a degraded analysis (no momentum/
-                # risk metrics). Surface via the same error path as above.
-                return {"error": str(e)}
             except Exception as e:
+                if _is_rate_limit_error(e):
+                    message = getattr(e, "user_message", str(e))
+                    return {"error": message}
                 print(f"Price history fetch failed for {symbol}: {e}")
             
             try:
@@ -2431,10 +2437,10 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
         return [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     try:
         result = analyze_stock(symbol)
-    except RateLimitError as e:
-        # Surface upstream API rate limits as a safe message
-        return [], None, f"❌ {str(e)}", False, False, symbol, {"display": "none"}, None, dash.no_update
     except Exception as e:
+        if _is_rate_limit_error(e):
+            message = getattr(e, "user_message", str(e))
+            return [], None, f"❌ {message}", False, False, symbol, {"display": "none"}, None, dash.no_update
         print(f"run_analysis unexpected error: {type(e).__name__}: {e}")
         return [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     if "error" in result:
@@ -3906,5 +3912,22 @@ def startup():
     print(f"✅ {len(results)} cached stocks ready\n")
 
 startup()
+
+def _is_production() -> bool:
+    """Detect production deployment mode from environment settings."""
+    return os.environ.get("FLASK_ENV", "").lower() == "production"
+
+
+def _debug_mode() -> bool:
+    """Enable debug only when explicitly requested and not in production."""
+    if _is_production():
+        return False
+    return os.environ.get("FLASK_DEBUG", "").lower() in {"1", "true", "yes", "on"}
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",debug=True, port=8050)
+    app.run(
+        host="0.0.0.0",
+        debug=_debug_mode(),
+        port=int(os.environ.get("PORT", 8050)),
+    )

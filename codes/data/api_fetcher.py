@@ -63,14 +63,17 @@ BACKWARDS-COMPATIBLE SHIMS
   RateLimiter instances directly when convenient.
 """
 
+import fcntl
 import os
 import time
 import collections
 import requests
 import finnhub
 import pandas as pd
+import threading
+from pathlib import Path
 
-from .cache import read, write
+from .cache import read, read_entry, write
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -104,15 +107,25 @@ class RateLimitError(RuntimeError):
         self.resets_in = resets_in
 
         reset_str = (
-            f"  Resets in ~{int(resets_in)}s."
+            f" Please retry in approximately {int(resets_in)}s."
             if resets_in is not None
-            else "  Resets at midnight (UTC)."
+            else " Please retry after the market close or try again later."
         )
-        super().__init__(
+        self.user_message = (
+            f"Service temporarily unavailable due to API rate limiting.{reset_str}"
+        )
+        self.raw_message = (
             f"⚠️  [{provider}] Approaching {window} limit "
             f"({used}/{limit} calls used — processing paused to protect your quota)."
             f"{reset_str}"
         )
+        super().__init__(self.raw_message)
+
+    def __str__(self) -> str:
+        return self.raw_message
+
+    def debug_message(self) -> str:
+        return self.raw_message
 
 
 class _Window:
@@ -250,6 +263,35 @@ _av_limiter = RateLimiter(
         (86400, 25, "daily"),
     ],
 )
+
+_price_history_lock_path = Path(".cache")
+_price_history_lock_path.mkdir(exist_ok=True)
+
+class _FileLock:
+    def __init__(self, path: Path):
+        self.path = path
+        self._fp = None
+
+    def __enter__(self):
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._fp = self.path.open("a")
+        fcntl.flock(self._fp, fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            if self._fp:
+                fcntl.flock(self._fp, fcntl.LOCK_UN)
+                self._fp.close()
+        finally:
+            self._fp = None
+
+
+def _is_price_history_cache_fresh(entry: dict) -> bool:
+    ts = entry.get("ts")
+    if not isinstance(ts, (int, float)):
+        return False
+    return time.time() - ts < 24 * 60 * 60
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -709,29 +751,31 @@ def get_price_history(symbol: str, years: int = 10) -> pd.DataFrame:
     Raises RateLimitError if the active provider is near its ceiling.
     """
     symbol = symbol.upper().strip()
+    lock_path = Path(".cache") / f"hist-{symbol.lower()}.lock"
 
-    cached = read("hist", symbol)
-    if cached:
-        return pd.DataFrame(cached)
+    with _FileLock(lock_path):
+        entry = read_entry("hist", symbol)
+        if entry is not None and _is_price_history_cache_fresh(entry):
+            return pd.DataFrame(entry["data"])
 
-    df = pd.DataFrame()
+        df = pd.DataFrame()
 
-    if TIINGO_API_KEY:
-        try:
-            df = _tiingo_get_price_history(symbol, years)
-        except RateLimitError:
-            raise
+        if TIINGO_API_KEY:
+            try:
+                df = _tiingo_get_price_history(symbol, years)
+            except RateLimitError:
+                raise
+            if df.empty:
+                print(f"  [Tiingo] no history returned, falling back to Alpha Vantage...")
+
         if df.empty:
-            print(f"  [Tiingo] no history returned, falling back to Alpha Vantage...")
+            print(f"  [AlphaVantage] fetching {years}yr history for {symbol}...")
+            df = _av_get_price_history(symbol, years)
 
-    if df.empty:
-        print(f"  [AlphaVantage] fetching {years}yr history for {symbol}...")
-        df = _av_get_price_history(symbol, years)
+        if not df.empty:
+            write("hist", symbol, df.to_dict("records"))
 
-    if not df.empty:
-        write("hist", symbol, df.to_dict("records"))
-
-    return df
+        return df
 
 
 def get_splits(symbol: str) -> list[dict]:

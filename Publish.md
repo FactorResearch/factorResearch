@@ -319,13 +319,14 @@ blocking:
   # INFRASTRUCTURE
   # ----------------------------
 
-  ISSUE_011:
+  ISSUE_011[x]:
 
     title: "App not configured for production deployment"
     category: infra
 
     files:
       - codes/app.py
+      - Procfile
 
     problem: "App runs via Dash dev server with debug=True; no reverse proxy, TLS, or edge protection configured"
 
@@ -346,6 +347,14 @@ blocking:
       - TLS enforced end-to-end
       - Cloudflare WAF + rate limiting active
 
+    status: "✅ IMPLEMENTED"
+
+    implementation_notes: >
+      - Added `Procfile` for gunicorn deployment: `gunicorn --bind 0.0.0.0:$PORT codes.app:server`
+      - Updated `codes/app.py` startup logic to default to production-safe `debug=False` and respect `FLASK_ENV=production`.
+      - Added explicit `PORT` support for container/platform deployments.
+      - Recommended edge/TLS deployment via Cloudflare or managed platform proxy.
+
     risk_if_not_fixed: HIGH
 
 
@@ -353,7 +362,7 @@ blocking:
   # API STRATEGY
   # ----------------------------
 
-  ISSUE_012:
+  ISSUE_012[x]:
 
     title: "API key and rate-limit handling not production-ready"
     category: api
