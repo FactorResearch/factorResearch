@@ -99,55 +99,49 @@ def _load_index(user_id: str) -> list[str]:
     return cache.read("portfolio", f"{user_id}_index") or []
 
 
-def _save_index(names: list[str]) -> None:
-    cache.write("portfolio", "index", names)
+def _save_index(user_id: str, names: list[str]) -> None:
+    cache.write("portfolio", f"{user_id}_index", names)
 
 
-def list_portfolios() -> list[str]:
-    return _load_index()
+def list_portfolios(user_id: str) -> list[str]:
+    return _load_index(user_id)
 
 
-def load_portfolio(name: str) -> dict | None:
-    return cache.read("portfolio", f"p_{name}")
+def load_portfolio(user_id: str, name: str) -> dict | None:
+    return cache.read("portfolio", f"{user_id}_p_{name}")
 
 
-def save_portfolio(portfolio: dict) -> None:
+def save_portfolio(user_id: str, portfolio: dict) -> None:
     name = portfolio["name"]
-    cache.write("portfolio", f"p_{name}", portfolio)
-    idx = _load_index()
+    cache.write("portfolio", f"{user_id}_p_{name}", portfolio)
+    idx = _load_index(user_id)
     if name not in idx:
         idx.append(name)
-        _save_index(idx)
+        _save_index(user_id, idx)
 
 
-def delete_portfolio(name: str) -> None:
-    cache.clear("portfolio", f"p_{name}")
-    idx = [n for n in _load_index() if n != name]
-    _save_index(idx)
+def delete_portfolio(user_id: str, name: str) -> None:
+    cache.clear("portfolio", f"{user_id}_p_{name}")
+    idx = [n for n in _load_index(user_id) if n != name]
+    _save_index(user_id, idx)
 
 
-def create_portfolio(name: str) -> dict:
+def create_portfolio(user_id: str, name: str) -> dict:
     p = {
         "name":     name,
         "created":  datetime.datetime.now().isoformat(),
         "holdings": {},
     }
-    save_portfolio(p)
+    save_portfolio(user_id, p)
     return p
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Holdings management
 # ══════════════════════════════════════════════════════════════════════════════
 
-def add_holding(name: str, symbol: str, shares: int,
+def add_holding(user_id: str, name: str, symbol: str, shares: int,
                 current_price: float, company_name: str) -> tuple[dict, str]:
-    """
-    Add a holding to a portfolio.
-    Returns (updated_portfolio, error_message).
-    error_message is "" on success.
-    """
-    p = load_portfolio(name)
+    p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
 
@@ -166,24 +160,22 @@ def add_holding(name: str, symbol: str, shares: int,
         "shares":       shares,
         "price_at_add": current_price,
         "name":         company_name,
-        "added_date":   datetime.date.today().isoformat(),  # used to anchor split lookups
+        "added_date":   datetime.date.today().isoformat(),
     }
-    save_portfolio(p)
+    save_portfolio(user_id, p)
     return p, ""
 
 
-def remove_holding(name: str, symbol: str) -> tuple[dict, str]:
-    p = load_portfolio(name)
+def remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:
+    p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
     symbol = symbol.upper().strip()
     if symbol not in p["holdings"]:
         return p, f"{symbol} is not in this portfolio"
     del p["holdings"][symbol]
-    save_portfolio(p)
+    save_portfolio(user_id, p)
     return p, ""
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 # Simulation helpers
 # ══════════════════════════════════════════════════════════════════════════════
@@ -721,16 +713,13 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     }
 
 
-def run_simulation(portfolio_name: str) -> dict:
-    """
-    Load a portfolio by name, run backtest + Monte Carlo.
-    Results are cached for 24h (price data doesn't change intraday).
-    """
-    p = load_portfolio(portfolio_name)
+def run_simulation(user_id: str, portfolio_name: str) -> dict:
+    p = load_portfolio(user_id, portfolio_name)
     if p is None:
         return {"error": f'Portfolio "{portfolio_name}" not found'}
 
-    cached = cache.read("port_sim", portfolio_name)
+    cache_key = f"{user_id}_{portfolio_name}"
+    cached = cache.read("port_sim", cache_key)
     if cached:
         return cached
 
@@ -744,15 +733,12 @@ def run_simulation(portfolio_name: str) -> dict:
         "holdings":       p["holdings"],
     }
 
-    # Cache for 6h — price history doesn't change that fast
-    cache.write("port_sim", portfolio_name, result)
+    cache.write("port_sim", cache_key, result)
     return result
 
 
-def invalidate_simulation_cache(portfolio_name: str) -> None:
-    """Call whenever holdings change so next run fetches fresh data."""
-    cache.clear("port_sim", portfolio_name)
-
+def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
+    cache.clear("port_sim", f"{user_id}_{portfolio_name}")
 # ══════════════════════════════════════════════════════════════════════════════
 # Multi-Portfolio Comparison (PROJECT_MAP.md — Portfolio Page Refactor)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -772,7 +758,7 @@ def _weak_link_score(portfolio: dict, backtest: dict) -> float:
     return round((1 - n_weak / len(holdings)) * 100, 2)
 
 
-def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
+def compare_portfolios(user_id: str, portfolio_a_name: str, portfolio_b_name: str) -> dict:
     """
     Compare two portfolios for the Portfolio Page comparison view.
 
@@ -795,8 +781,8 @@ def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
         "error": str | None,
       }
     """
-    sim_a = run_simulation(portfolio_a_name)
-    sim_b = run_simulation(portfolio_b_name)
+    sim_a = run_simulation(user_id, portfolio_a_name)
+    sim_b = run_simulation(user_id, portfolio_b_name)
 
     if sim_a.get("error"):
         return {"error": sim_a["error"]}
@@ -827,8 +813,8 @@ def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
     else:
         norm_p50_a = norm_p50_b = 50.0
 
-    p_a = load_portfolio(portfolio_a_name)
-    p_b = load_portfolio(portfolio_b_name)
+    p_a = load_portfolio(user_id, portfolio_a_name)
+    p_b = load_portfolio(user_id, portfolio_b_name)
     wl_score_a = _weak_link_score(p_a, bt_a) if p_a else 50.0
     wl_score_b = _weak_link_score(p_b, bt_b) if p_b else 50.0
 
@@ -844,8 +830,6 @@ def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
     score_a = _composite(cagr_a, alpha_a, norm_final_a, norm_p50_a, wl_score_a)
     score_b = _composite(cagr_b, alpha_b, norm_final_b, norm_p50_b, wl_score_b)
 
-    # ── Winner determination ──────────────────────────────────────────────
-    # "Nearly identical" threshold: scores within 1.0 point of each other.
     SCORE_TIE_THRESHOLD = 1.0
     score_diff = score_a - score_b
 
@@ -856,7 +840,6 @@ def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
     else:
         winner = portfolio_b_name
 
-    # ── Reasons (only populated when there's a winner) ─────────────────────
     reasons: list[str] = []
     if winner is not None:
         winner_is_a = winner == portfolio_a_name
@@ -891,4 +874,3 @@ def compare_portfolios(portfolio_a_name: str, portfolio_b_name: str) -> dict:
         "portfolio_b": sim_b,
         "error":       None,
     }
-

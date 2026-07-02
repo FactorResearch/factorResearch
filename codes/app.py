@@ -794,8 +794,7 @@ def _invalidate_portfolio_cache() -> None:
     _portfolio_cache_by_session.pop(_session_id(), None)
 
 def _get_portfolio_symbols() -> dict[str, list[str]]:
-    """Return {symbol: [portfolio_name, ...]} for the CURRENT session only,
-    cached for 10 seconds. Never shared across sessions/users."""
+
     import time as _t
     sid   = _session_id()
     entry = _portfolio_cache_by_session.get(sid)
@@ -803,8 +802,8 @@ def _get_portfolio_symbols() -> dict[str, list[str]]:
         return entry["symbols"]
     result: dict[str, list[str]] = {}
     try:
-        for pname in (portfolio_engine.list_portfolios() or []):
-            port = portfolio_engine.load_portfolio(pname)
+        for pname in (portfolio_engine.list_portfolios(sid) or []):
+            port = portfolio_engine.load_portfolio(sid, pname)
             if not port:
                 continue
             for sym in (port.get("holdings") or {}).keys():
@@ -2621,7 +2620,7 @@ def _chart_layout(title: str, many_traces: bool = False) -> dict:
     prevent_initial_call=False
 )
 def refresh_portfolio_dropdowns(refresh):
-    names = portfolio_engine.list_portfolios()
+    names = portfolio_engine.list_portfolios(_session_id())
     opts  = [{"label": n, "value": n} for n in names]
     return opts, opts, opts
 
@@ -2656,10 +2655,11 @@ def create_portfolio(n, name, refresh):
     name = (name or "").strip()
     if not name:
         return dash.no_update, dash.no_update, "❌ Please enter a name.", dash.no_update
-    existing = portfolio_engine.list_portfolios()
+    uid = _session_id()
+    existing = portfolio_engine.list_portfolios(uid)
     if name in existing:
         return dash.no_update, dash.no_update, f"❌ '{name}' already exists.", dash.no_update
-    portfolio_engine.create_portfolio(name)
+    portfolio_engine.create_portfolio(uid, name)
     return (refresh or 0) + 1, name, "", ""
 
 # ── Delete portfolio ──────────────────────────────────────────────────────────
@@ -2675,7 +2675,7 @@ def create_portfolio(n, name, refresh):
 def delete_portfolio(n, active, refresh):
     if not n or not active:
         return dash.no_update, dash.no_update, dash.no_update
-    portfolio_engine.delete_portfolio(active)
+    portfolio_engine.delete_portfolio(_session_id(), active)
     _invalidate_portfolio_cache()
     return (refresh or 0) + 1, None, f"🗑 Portfolio '{active}' deleted."
 
@@ -2711,16 +2711,17 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     if not symbol:
         return "❌ Analyze a stock first.", {"color": RED}, dash.no_update, dash.no_update
     # Create portfolio if it doesn't exist
-    if port_name not in portfolio_engine.list_portfolios():
-        portfolio_engine.create_portfolio(port_name)
+    uid = _session_id()
+    if port_name not in portfolio_engine.list_portfolios(uid):
+        portfolio_engine.create_portfolio(uid,port_name)
     price       = (analysis or {}).get("price") or 0
     company     = (analysis or {}).get("name", symbol)
-    _, err = portfolio_engine.add_holding(port_name, symbol, shares, price, company)
+    _, err = portfolio_engine.add_holding(uid,port_name, symbol, shares, price, company)
     if err:
         return f"❌ {err}", {"color": RED}, dash.no_update, dash.no_update
-    portfolio_engine.invalidate_simulation_cache(port_name)
+    portfolio_engine.invalidate_simulation_cache(uid, port_name)
     _invalidate_portfolio_cache()
-    p = portfolio_engine.load_portfolio(port_name)
+    p = portfolio_engine.load_portfolio(uid, port_name)
     count = len(p["holdings"])
     msg = f"✅ Added {shares}× {symbol} to '{port_name}' ({count}/{portfolio_engine.MAX_HOLDINGS} stocks)"
     return msg, {"color": GREEN}, (refresh or 0) + 1, None
@@ -2736,7 +2737,7 @@ def render_portfolio_holdings(active, refresh):
     if not active:
         return html.Div("Select or create a portfolio to get started.",
                         className="text-center p-5xl text-muted")
-    p = portfolio_engine.load_portfolio(active)
+    p = portfolio_engine.load_portfolio(_session_id(), active)
     if p is None:
         return html.Div("Portfolio not found.", className="text-danger")
     holdings = p.get("holdings", {})
@@ -2851,8 +2852,9 @@ def remove_holding(n_clicks_list, refresh):
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
     port_name, symbol = triggered["index"].split("|", 1)
-    portfolio_engine.remove_holding(port_name, symbol)
-    portfolio_engine.invalidate_simulation_cache(port_name)
+    uid = _session_id()
+    portfolio_engine.remove_holding(uid, port_name, symbol)
+    portfolio_engine.invalidate_simulation_cache(uid, port_name)
     _invalidate_portfolio_cache()
     return (refresh or 0) + 1
 
@@ -2870,7 +2872,6 @@ def update_shares(n_clicks_list, values, ids, refresh):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update, dash.no_update
-    # Find the matching input value by aligning triggered index with ids list
     triggered_index = triggered["index"]
     new_shares = None
     for id_dict, val in zip(ids, values):
@@ -2886,7 +2887,8 @@ def update_shares(n_clicks_list, values, ids, refresh):
     if new_shares < portfolio_engine.MIN_SHARES:
         return dash.no_update, f"❌ Minimum {portfolio_engine.MIN_SHARES} shares."
     port_name, symbol = triggered_index.split("|", 1)
-    p = portfolio_engine.load_portfolio(port_name)
+    uid = _session_id()
+    p = portfolio_engine.load_portfolio(uid, port_name)
     if p is None:
         return dash.no_update, f"❌ Portfolio '{port_name}' not found."
     if symbol not in p["holdings"]:
@@ -2895,8 +2897,8 @@ def update_shares(n_clicks_list, values, ids, refresh):
     if new_shares == old_shares:
         return dash.no_update, f"ℹ️ {symbol} shares unchanged ({old_shares})."
     p["holdings"][symbol]["shares"] = new_shares
-    portfolio_engine.save_portfolio(p)
-    portfolio_engine.invalidate_simulation_cache(port_name)
+    portfolio_engine.save_portfolio(uid, p)
+    portfolio_engine.invalidate_simulation_cache(uid, port_name)
     return (refresh or 0) + 1, f"✅ {symbol} updated to {new_shares} shares."
 
 # ── Side-by-side portfolio comparison helpers ─────────────────────────────────
@@ -3001,11 +3003,11 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
     ])
 
 
-def _comparison_weak_link_card(port_name: str, bt: dict) -> html.Div:
+def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.Div:
     """Weak-link analysis card (reused for side-by-side display)."""
     if bt.get("error"):
         return html.Div()
-    p_obj = portfolio_engine.load_portfolio(port_name)
+    p_obj = portfolio_engine.load_portfolio(user_id, port_name)
     if not p_obj:
         return html.Div()
     wl = portfolio_engine.analyze_weak_links(p_obj, bt)
@@ -3103,7 +3105,7 @@ def _comparison_weak_link_card(port_name: str, bt: dict) -> html.Div:
     ])
 
 
-def _build_comparison_view(active: str, compare: str, cmp_result: dict, palette: list) -> list:
+def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: dict, palette: list) -> list:
     """
     Side-by-side comparison view: winner banner + 2-column layout for
     stats, combined backtest/Monte Carlo charts, holdings, and weak-link
@@ -3225,8 +3227,8 @@ def _build_comparison_view(active: str, compare: str, cmp_result: dict, palette:
 
     # ── Side-by-side weak-link analysis ──────────────────────────────────
     sections.append(_two_col(
-        _comparison_weak_link_card(active, bt_a),
-        _comparison_weak_link_card(compare, bt_b),
+        _comparison_weak_link_card(user_id, active, bt_a),
+        _comparison_weak_link_card(user_id, compare, bt_b),
     ))
 
     return sections
@@ -3243,8 +3245,9 @@ def _build_comparison_view(active: str, compare: str, cmp_result: dict, palette:
 def run_simulation(n, active, compare):
     if not n or not active:
         return []
+    uid = _session_id()
     def _build_sim_charts(port_name: str, color: str) -> list:
-        sim = portfolio_engine.run_simulation(port_name)
+        sim = portfolio_engine.run_simulation(uid, port_name)
         if sim.get("error"):
             return [html.Div(f"❌ {sim['error']}", className="text-danger")]
         bt = sim["backtest"]
@@ -3386,7 +3389,7 @@ def run_simulation(n, active, compare):
             ]))
         # ── Weak-link analysis ─────────────────────────────────────────────
         if not bt.get("error"):
-            p_obj = portfolio_engine.load_portfolio(port_name)
+            p_obj = portfolio_engine.load_portfolio(uid,port_name)
             if p_obj:
                 wl = portfolio_engine.analyze_weak_links(p_obj, bt)
                 if wl.get("error"):
@@ -3495,7 +3498,7 @@ def run_simulation(n, active, compare):
         return components
     PALETTE = [BLUE, GREEN, AMBER, "#e040fb", "#00bcd4"]
     if compare and compare != active:
-        cmp_result = portfolio_engine.compare_portfolios(active, compare)
+        cmp_result = portfolio_engine.compare_portfolios(uid,active, compare)
         if cmp_result.get("error"):
             return [
                 html.Div(f"📊 {active}", className="scorecard-header",
@@ -3507,7 +3510,7 @@ def run_simulation(n, active, compare):
                            "padding": "8px 4px", "marginTop": "16px"}
                 ),
             ]
-        return _build_comparison_view(active, compare, cmp_result, PALETTE)
+        return _build_comparison_view(uid,active, compare, cmp_result, PALETTE)
     return [
         html.Div(f"📊 {active}", className="scorecard-header",
                  style={"marginTop": "24px", "fontSize": "16px"}),
