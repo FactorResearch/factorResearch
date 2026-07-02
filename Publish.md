@@ -130,6 +130,39 @@ blocking:
     risk_if_not_fixed: HIGH
 
 
+  ISSUE_014:
+
+    title: "Per-session caches grow unbounded (memory leak)"
+    category: data-isolation
+
+    files:
+      - codes/app.py
+      - codes/engine/screener.py
+
+    problem: >
+      _portfolio_cache_by_session (app.py) and _user_progress (screener.py)
+      are plain dicts keyed by session id with no eviction. Entries persist
+      for the life of the process even after a session/browser tab ends.
+
+    root_cause: "No TTL or cleanup hook tied to session expiry for these per-session stores"
+
+    required_fix: >
+      Add periodic eviction (e.g. TTL-based sweep or LRU cap) for
+      _portfolio_cache_by_session and _user_progress. Trigger cleanup on
+      known disconnect points where available (clear_user_progress already
+      exists for screener.py but is not called anywhere).
+
+    constraints:
+      - Does not change per-user isolation behavior (ISSUE-004/006 remain intact)
+      - No change to storage keys or public function signatures
+
+    acceptance_criteria:
+      - Long-running server with many short-lived sessions shows bounded memory growth
+      - Stale session entries are removed after a defined TTL
+
+    risk_if_not_fixed: LOW
+
+
   # ----------------------------
   # DATABASE
   # ----------------------------
@@ -162,170 +195,199 @@ blocking:
     risk_if_not_fixed: HIGH
 
 
-# ================================
-# AUTHENTICATION & BILLING (BLOCKING)
-# ================================
+  # ----------------------------
+  # AUTHENTICATION & BILLING
+  # ----------------------------
 
-auth_and_billing:
+  ISSUE_008:
 
-  authentication:
+    title: "No managed authentication in place"
+    category: auth
 
-    provider: managed_auth_only
+    files:
+      - codes/app.py
 
-    allowed_providers:
-      - Auth0
-      - Clerk
-      - Supabase Auth
+    problem: "App has no authentication layer; user identity is only a session cookie UUID"
 
-    requirements:
-      - stable user_id injected into all callbacks
+    root_cause: "Auth was never integrated — user_id is a random per-browser-session value, not a real account"
 
-      - secure_cookie_config:
-          Secure: true
-          HttpOnly: true
-          SameSite: Lax|Strict
+    required_fix: >
+      Integrate a managed auth provider (Auth0, Clerk, or Supabase Auth).
+      Inject a stable authenticated user_id into all callbacks.
+      Configure secure cookies: Secure=true, HttpOnly=true, SameSite=Lax|Strict.
 
+    constraints:
+      - allowed_providers: Auth0 | Clerk | Supabase Auth only
 
-  billing:
+    acceptance_criteria:
+      - Every callback receives a stable, authenticated user_id
+      - Session cookies meet the secure_cookie_config requirements
 
-    provider: Stripe
+    risk_if_not_fixed: HIGH
 
-    components:
-      - Checkout
-      - Customer Portal
 
-    rules:
-      - No custom billing logic allowed
-      - Tier enforcement must occur at callback level
+  ISSUE_009:
 
+    title: "No billing/subscription enforcement"
+    category: billing
 
-# ================================
-# SECURITY REQUIREMENTS (BLOCKING)
-# ================================
+    files:
+      - codes/app.py
 
-security:
+    problem: "No payment or tier enforcement exists"
 
-  validation:
+    root_cause: "Billing integration not yet built"
 
-    ticker:
-      regex: "^[A-Z]{1,6}$"
+    required_fix: >
+      Integrate Stripe Checkout + Customer Portal.
+      Enforce tier gating (free: screener_only; paid: analyze_stock, live_metrics)
+      at the callback level.
 
-    portfolio_name:
-      max_length: 32
-      allowed_chars: "alphanumeric + underscore"
+    constraints:
+      - No custom billing logic allowed — Stripe only
 
-    shares:
-      min: 5
-      max: 1000000
+    acceptance_criteria:
+      - Free-tier users cannot invoke paid-tier callbacks
+      - Checkout and Customer Portal flows work end-to-end
 
+    risk_if_not_fixed: HIGH
 
-  logging:
-    rule: "Never expose secrets or raw exceptions to users"
 
+  # ----------------------------
+  # SECURITY
+  # ----------------------------
 
-  rate_limiting:
-    framework: Flask-Limiter
+  ISSUE_010:
 
-    applies_to:
-      - analyze_stock
-      - load_universe
-      - simulation_callbacks
+    title: "Missing input validation, rate limiting, and safe error handling"
+    category: security
 
+    files:
+      - codes/app.py
 
-  api_key_handling:
-    rules:
-      - Never expose API keys in logs or responses
-      - Never return raw exceptions to UI
+    problem: >
+      No validation on ticker/portfolio_name/shares inputs; no rate limiting
+      on expensive callbacks; raw exceptions/secrets may reach the UI or logs.
 
+    root_cause: "Security hardening was deferred during single-user local development"
 
-# ================================
-# INFRASTRUCTURE (BLOCKING)
-# ================================
+    required_fix: >
+      - Validate ticker against ^[A-Z]{1,6}$
+      - Validate portfolio_name (max 32 chars, alphanumeric + underscore)
+      - Validate shares (min 5, max 1,000,000)
+      - Add Flask-Limiter rate limiting to analyze_stock, load_universe,
+        and simulation callbacks
+      - Ensure logs and UI responses never expose secrets or raw exceptions
 
-infrastructure:
+    constraints:
+      - No behavior change for valid inputs
 
-  production:
+    acceptance_criteria:
+      - Invalid ticker/portfolio_name/shares inputs are rejected with a safe message
+      - Rate-limited endpoints return backoff/retry messaging, not raw errors
+      - No API keys or stack traces appear in logs or UI
 
-    server: gunicorn | waitress
-    debug: false
+    risk_if_not_fixed: HIGH
 
 
-  reverse_proxy:
+  # ----------------------------
+  # INFRASTRUCTURE
+  # ----------------------------
 
-    required: nginx | platform_proxy
+  ISSUE_011:
 
+    title: "App not configured for production deployment"
+    category: infra
 
-  tls:
+    files:
+      - codes/app.py
 
-    required: true
-    method: lets_encrypt | managed_ssl
+    problem: "App runs via Dash dev server with debug=True; no reverse proxy, TLS, or edge protection configured"
 
+    root_cause: "Infra setup was never done — local dev config only"
 
-  edge_protection:
+    required_fix: >
+      - Serve via gunicorn or waitress with debug=false
+      - Put nginx or platform proxy in front
+      - Enforce TLS via Let's Encrypt or managed SSL
+      - Put Cloudflare in front with WAF and rate limiting enabled
+      - Store all secrets as environment variables only
 
-    provider: Cloudflare
+    constraints:
+      - No app logic changes required
 
-    features:
-      - WAF enabled
-      - rate limiting enabled
+    acceptance_criteria:
+      - Production runs under gunicorn/waitress with debug disabled
+      - TLS enforced end-to-end
+      - Cloudflare WAF + rate limiting active
 
+    risk_if_not_fixed: HIGH
 
-  secrets:
 
-    storage: environment_variables_only
+  # ----------------------------
+  # API STRATEGY
+  # ----------------------------
 
+  ISSUE_012:
 
-# ================================
-# API STRATEGY (BLOCKING)
-# ================================
+    title: "API key and rate-limit handling not production-ready"
+    category: api
 
-api_strategy:
+    files:
+      - codes/data/api_fetcher.py
 
-  model: server_owned_keys_only
+    problem: >
+      Rate-limit errors currently propagate as raw RateLimitError messages;
+      no enforced caching guarantee of 1 call/ticker/day; no BYOK policy defined.
 
-  no_byok: true
+    root_cause: "Built for single-user local use; not yet hardened for shared multi-user API budgets"
 
+    required_fix: >
+      - Enforce server-owned keys only (no BYOK)
+      - Guarantee price history caching at 1 API call per ticker per trading
+        day, shared across all users
+      - Replace raw RateLimitError surfacing with a retry/backoff message or
+        queued request
+      - Enforce tiering: free = screener_only, paid = analyze_stock + live_metrics
 
-  caching:
+    constraints:
+      - No behavior change to existing public function signatures
 
-    price_history:
+    acceptance_criteria:
+      - No raw RateLimitError text reaches the UI
+      - Verified shared cache prevents duplicate same-day fetches across users
 
-      rule: "1 API call per ticker per trading day globally"
-      shared_across_users: true
+    risk_if_not_fixed: HIGH
 
 
-  rate_limit_handling:
+  # ----------------------------
+  # LEGAL
+  # ----------------------------
 
-    behavior:
-      - Never expose raw RateLimitError
-      - Return retry/backoff message OR queue request
+  ISSUE_013:
 
+    title: "Missing required legal pages and disclaimers"
+    category: legal
 
-  tiering:
+    files:
+      - codes/app.py
 
-    free:
-      allowed:
-        - screener_only
+    problem: "No Terms of Service, Privacy Policy, or required disclaimers exist"
 
-    paid:
-      allowed:
-        - analyze_stock
-        - live_metrics
+    root_cause: "Legal pages were never drafted/added"
 
+    required_fix: >
+      Add Terms of Service and Privacy Policy pages.
+      Add "Not financial advice" and refund/cancellation policy disclaimers.
 
-# ================================
-# LEGAL (BLOCKING)
-# ================================
+    constraints:
+      - Must be accessible pre-signup
 
-legal:
+    acceptance_criteria:
+      - ToS and Privacy Policy pages are live and linked
+      - Disclaimers are visible in the app
 
-  required_pages:
-    - Terms of Service
-    - Privacy Policy
-
-  disclaimers:
-    - Not financial advice
-    - Refund/cancellation policy required
+    risk_if_not_fixed: HIGH
 
 
 # ================================
@@ -372,24 +434,26 @@ execution_order:
     - ISSUE_004
     - ISSUE_005
     - ISSUE_006
+    - ISSUE_014
 
   2:
-    - auth_and_billing
+    - ISSUE_008
+    - ISSUE_009
 
   3:
     - ISSUE_007
 
   4:
-    - security
+    - ISSUE_010
 
   5:
-    - infrastructure
+    - ISSUE_011
 
   6:
-    - api_strategy
+    - ISSUE_012
 
   7:
-    - legal
+    - ISSUE_013
 
   8:
     - continuous_operations
