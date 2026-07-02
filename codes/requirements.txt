@@ -11,3 +11,4 @@ finnhub-python
 psycopg[binary]
 python-jose[cryptography]
 flask-session
+Flask-Limiter

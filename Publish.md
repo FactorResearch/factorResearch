@@ -282,7 +282,7 @@ blocking:
   # SECURITY
   # ----------------------------
 
-  ISSUE_010:
+  ISSUE_010:[x]
 
     title: "Missing input validation, rate limiting, and safe error handling"
     category: security

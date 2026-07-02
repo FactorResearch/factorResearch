@@ -7,6 +7,8 @@ import traceback
 import sys
 import os
 import math
+import re
+import time as _time
 from codes.data import api_fetcher
 from codes.data.api_fetcher import RateLimitError
 # Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
@@ -24,6 +26,12 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 import flask
+try:
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+except Exception:
+    Limiter = None
+    get_remote_address = None
 from codes import auth
 from codes import billing
 from codes.data   import cache, sec_data
@@ -46,10 +54,17 @@ server.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(24)
 auth.init_auth(server)
 billing.init_billing(server)
 
+# Initialize Flask-Limiter if available (best-effort; dev may omit package)
+if Limiter is not None:
+    limiter = Limiter(server, key_func=(get_remote_address or (lambda: flask.request.remote_addr)), default_limits=[])
+else:
+    limiter = None
+
 @server.after_request
 def _log_errors(response):
     return response
-# Patch Dash's internal callback handler to log exceptions
+
+# Patch Dash's internal callback handler to log exceptions minimally (no stack traces)
 _orig_dispatch = app.server.dispatch_request if hasattr(app.server, 'dispatch_request') else None
 _orig_cb = dash.Dash.callback
 def _logging_callback(self, *args, **kwargs):
@@ -59,13 +74,48 @@ def _logging_callback(self, *args, **kwargs):
         def inner(*a, **kw):
             try:
                 return func(*a, **kw)
-            except Exception:
-                print(f"\n[CALLBACK ERROR] in {func.__name__}", flush=True)
-                traceback.print_exc()
-                raise
+            except Exception as e:
+                # Log only exception type and short message to avoid leaking secrets
+                print(f"[CALLBACK ERROR] in {func.__name__}: {type(e).__name__}: {str(e)}", flush=True)
+                # Raise a generic error to avoid exposing internal details to UI
+                raise Exception("Internal server error")
         return decorator(inner)
     return wrap
 dash.Dash.callback = _logging_callback
+
+# Simple in-memory rate limiter used for Dash callbacks. We keep a per-(user|ip)
+# timestamp list for each named action. This is a best-effort lightweight
+# protection and complements Flask-Limiter when available.
+_RATE_LIMIT_STORE: dict = {}
+_RATE_LIMIT_LOCK = threading.Lock()
+
+class RateLimited(Exception):
+    def __init__(self, retry_after: int = 0):
+        super().__init__("Rate limit exceeded")
+        self.retry_after = int(retry_after)
+
+def _check_rate_limit(action: str, calls: int, period_seconds: int, key: str | None = None):
+    """Raise RateLimited if the caller exceeded `calls` in `period_seconds`.
+
+    Key defaults to authenticated user id (if available) or remote IP.
+    """
+    if key is None:
+        try:
+            key = _get_user_id()
+        except Exception:
+            key = flask.request.remote_addr if flask.request else "anon"
+    store_key = f"rl:{action}:{key}"
+    now = int(_time.time())
+    with _RATE_LIMIT_LOCK:
+        entries = _RATE_LIMIT_STORE.get(store_key, [])
+        # prune old
+        entries = [ts for ts in entries if now - ts < period_seconds]
+        if len(entries) >= calls:
+            retry_after = period_seconds - (now - entries[0]) if entries else period_seconds
+            _RATE_LIMIT_STORE[store_key] = entries
+            raise RateLimited(retry_after=retry_after)
+        entries.append(now)
+        _RATE_LIMIT_STORE[store_key] = entries
 # ── Mobile touch fix: eliminate 300ms tap delay on all buttons ───────────────
 app.index_string = app.index_string.replace(
     '</head>',
@@ -1266,7 +1316,15 @@ def load_universe(n_clicks, n_load):
             return dash.no_update, False
         return dash.no_update, True
     if n_clicks and n_clicks > 0:
-        screener.load_universe_background()
+        try:
+            _check_rate_limit("load_universe", calls=1, period_seconds=300)
+        except RateLimited as rl:
+            return html.Div(f"⏳ Load universe rate limited — try again in {rl.retry_after}s."), True
+        try:
+            screener.load_universe_background()
+        except Exception as e:
+            print(f"load_universe failed: {type(e).__name__}: {e}")
+            return html.Div("❌ Failed to start universe load — try again later."), True
         return "", False   # enable the interval so progress callbacks fire
     return "", True
 
@@ -2353,6 +2411,14 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
     if not ticker or not ticker.strip():
         return [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     symbol = ticker.strip().upper()
+    # Input validation: ticker must be 1-6 uppercase letters
+    if not re.fullmatch(r"^[A-Z]{1,6}$", symbol):
+        return [], None, "❌ Invalid ticker format. Use 1–6 uppercase letters (A–Z).", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+    # Rate limit (per-user) — max 10 analyze calls per minute
+    try:
+        _check_rate_limit("analyze", calls=10, period_seconds=60)
+    except RateLimited as rl:
+        return [], None, f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     # Billing enforcement: analyze_stock is a paid-tier feature.
     user_id = _get_user_id()
     try:
@@ -2363,7 +2429,14 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
     except Exception:
         # On any billing check failure, default to safe denial.
         return [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
-    result = analyze_stock(symbol)
+    try:
+        result = analyze_stock(symbol)
+    except RateLimitError as e:
+        # Surface upstream API rate limits as a safe message
+        return [], None, f"❌ {str(e)}", False, False, symbol, {"display": "none"}, None, dash.no_update
+    except Exception as e:
+        print(f"run_analysis unexpected error: {type(e).__name__}: {e}")
+        return [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     if "error" in result:
         return [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update
     viewed_updated = list(set((viewed_list or []) + [symbol]))
@@ -2700,6 +2773,9 @@ def create_portfolio(n, name, refresh):
     name = (name or "").strip()
     if not name:
         return dash.no_update, dash.no_update, "❌ Please enter a name.", dash.no_update
+    # Validate portfolio name: alphanumeric + underscore, max 32 chars
+    if not re.fullmatch(r"^[A-Za-z0-9_]{1,32}$", name):
+        return dash.no_update, dash.no_update, "❌ Invalid portfolio name. Use up to 32 letters, numbers, or underscores.", dash.no_update
     uid = _get_user_id()
     existing = portfolio_engine.list_portfolios(uid)
     if name in existing:
@@ -2746,6 +2822,9 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     port_name = (new_name or "").strip() or selected
     if not port_name:
         return "❌ Select or name a portfolio first.", {"color": RED}, dash.no_update, dash.no_update
+    # Validate portfolio name when provided/created
+    if not re.fullmatch(r"^[A-Za-z0-9_]{1,32}$", port_name):
+        return "❌ Invalid portfolio name. Use up to 32 letters, numbers, or underscores.", {"color": RED}, dash.no_update, dash.no_update
     # Shares validation
     try:
         shares = int(shares or 0)
@@ -2753,6 +2832,8 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
         shares = 0
     if shares < 5:
         return "❌ Minimum 5 shares.", {"color": RED}, dash.no_update, dash.no_update
+    if shares > 1000000:
+        return "❌ Maximum 1,000,000 shares allowed.", {"color": RED}, dash.no_update, dash.no_update
     if not symbol:
         return "❌ Analyze a stock first.", {"color": RED}, dash.no_update, dash.no_update
     # Create portfolio if it doesn't exist
@@ -3642,6 +3723,10 @@ def update_weight_sum(*values):
 def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     if not n_clicks:
         return [], ""
+    try:
+        _check_rate_limit("backtest", calls=3, period_seconds=60)
+    except RateLimited as rl:
+        return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger", style={"padding": "20px"})], "⏳ Rate limited"
 
     custom_weights = dict(zip(_FB_WEIGHT_KEYS, (v or 0 for v in weight_vals)))
 
