@@ -79,7 +79,7 @@ blocking:
     risk_if_not_fixed: HIGH
 
 
-  ISSUE_005:
+  ISSUE_005[x]:
 
     title: "Portfolio data has no ownership boundary"
     category: data-isolation
@@ -104,7 +104,7 @@ blocking:
     risk_if_not_fixed: HIGH
 
 
-  ISSUE_006:
+  ISSUE_006[x]:
 
     title: "App-level cache leaks cross-user state"
     category: data-isolation
