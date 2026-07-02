@@ -24,6 +24,7 @@ from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import functools
 import flask
+from codes import auth
 from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
@@ -39,6 +40,10 @@ app = dash.Dash(
 )
 server = app.server
 server.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(24)
+
+# ── Initialize Authentication (ISSUE_008) ────────────────────────────────────
+auth.init_auth(server)
+
 @server.after_request
 def _log_errors(response):
     return response
@@ -784,12 +789,25 @@ _portfolio_cache_by_session: dict = {}
 _portfolio_cache_lock = threading.Lock()
 _PORTFOLIO_CACHE_TTL = 600  # seconds before stale per-session portfolio caches are evicted
 
-def _session_id() -> str:
-    """Stable per-browser-session key backed by Flask's signed session cookie."""
+def _get_user_id() -> str:
+    """
+    Get authenticated user_id (ISSUE_008).
+    
+    Returns the authenticated user_id from the auth system if available,
+    otherwise falls back to a stable session UUID for local development.
+    In production, authentication is required.
+    """
+    # Try to get authenticated user_id first
+    user_id = auth.get_authenticated_user_id()
+    if user_id:
+        return user_id
+    
+    # Fallback to session UUID (for local dev without auth provider)
     if "_uid" not in flask.session:
         import uuid
         flask.session["_uid"] = uuid.uuid4().hex
     return flask.session["_uid"]
+
 
 def _evict_stale_portfolio_cache() -> None:
     import time as _t
@@ -801,15 +819,15 @@ def _evict_stale_portfolio_cache() -> None:
 
 
 def _invalidate_portfolio_cache() -> None:
-    """Clear only the current session's cached portfolio-symbol map."""
+    """Clear only the current user's cached portfolio-symbol map."""
     with _portfolio_cache_lock:
-        _portfolio_cache_by_session.pop(_session_id(), None)
+        _portfolio_cache_by_session.pop(_get_user_id(), None)
 
 def _get_portfolio_symbols() -> dict[str, list[str]]:
 
     import time as _t
     _evict_stale_portfolio_cache()
-    sid   = _session_id()
+    sid   = _get_user_id()
     with _portfolio_cache_lock:
         entry = _portfolio_cache_by_session.get(sid)
     if entry and _t.time() - entry["ts"] < 10:
@@ -2635,7 +2653,7 @@ def _chart_layout(title: str, many_traces: bool = False) -> dict:
     prevent_initial_call=False
 )
 def refresh_portfolio_dropdowns(refresh):
-    names = portfolio_engine.list_portfolios(_session_id())
+    names = portfolio_engine.list_portfolios(_get_user_id())
     opts  = [{"label": n, "value": n} for n in names]
     return opts, opts, opts
 
@@ -2670,7 +2688,7 @@ def create_portfolio(n, name, refresh):
     name = (name or "").strip()
     if not name:
         return dash.no_update, dash.no_update, "❌ Please enter a name.", dash.no_update
-    uid = _session_id()
+    uid = _get_user_id()
     existing = portfolio_engine.list_portfolios(uid)
     if name in existing:
         return dash.no_update, dash.no_update, f"❌ '{name}' already exists.", dash.no_update
@@ -2690,7 +2708,7 @@ def create_portfolio(n, name, refresh):
 def delete_portfolio(n, active, refresh):
     if not n or not active:
         return dash.no_update, dash.no_update, dash.no_update
-    portfolio_engine.delete_portfolio(_session_id(), active)
+    portfolio_engine.delete_portfolio(_get_user_id(), active)
     _invalidate_portfolio_cache()
     return (refresh or 0) + 1, None, f"🗑 Portfolio '{active}' deleted."
 
@@ -2726,7 +2744,7 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     if not symbol:
         return "❌ Analyze a stock first.", {"color": RED}, dash.no_update, dash.no_update
     # Create portfolio if it doesn't exist
-    uid = _session_id()
+    uid = _get_user_id()
     if port_name not in portfolio_engine.list_portfolios(uid):
         portfolio_engine.create_portfolio(uid,port_name)
     price       = (analysis or {}).get("price") or 0
@@ -2752,7 +2770,7 @@ def render_portfolio_holdings(active, refresh):
     if not active:
         return html.Div("Select or create a portfolio to get started.",
                         className="text-center p-5xl text-muted")
-    p = portfolio_engine.load_portfolio(_session_id(), active)
+    p = portfolio_engine.load_portfolio(_get_user_id(), active)
     if p is None:
         return html.Div("Portfolio not found.", className="text-danger")
     holdings = p.get("holdings", {})
@@ -2867,7 +2885,7 @@ def remove_holding(n_clicks_list, refresh):
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
     port_name, symbol = triggered["index"].split("|", 1)
-    uid = _session_id()
+    uid = _get_user_id()
     portfolio_engine.remove_holding(uid, port_name, symbol)
     portfolio_engine.invalidate_simulation_cache(uid, port_name)
     _invalidate_portfolio_cache()
@@ -2902,7 +2920,7 @@ def update_shares(n_clicks_list, values, ids, refresh):
     if new_shares < portfolio_engine.MIN_SHARES:
         return dash.no_update, f"❌ Minimum {portfolio_engine.MIN_SHARES} shares."
     port_name, symbol = triggered_index.split("|", 1)
-    uid = _session_id()
+    uid = _get_user_id()
     p = portfolio_engine.load_portfolio(uid, port_name)
     if p is None:
         return dash.no_update, f"❌ Portfolio '{port_name}' not found."
@@ -3260,7 +3278,7 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
 def run_simulation(n, active, compare):
     if not n or not active:
         return []
-    uid = _session_id()
+    uid = _get_user_id()
     def _build_sim_charts(port_name: str, color: str) -> list:
         sim = portfolio_engine.run_simulation(uid, port_name)
         if sim.get("error"):

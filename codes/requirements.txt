@@ -9,3 +9,5 @@ alpha_vantage
 lxml
 finnhub-python
 psycopg[binary]
+python-jose[cryptography]
+flask-session
