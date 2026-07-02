@@ -238,13 +238,14 @@ blocking:
     risk_if_not_fixed: HIGH
 
 
-  ISSUE_009:
+  ISSUE_009[x]:
 
     title: "No billing/subscription enforcement"
     category: billing
 
     files:
       - codes/app.py
+      - codes/billing.py
 
     problem: "No payment or tier enforcement exists"
 
@@ -257,6 +258,18 @@ blocking:
 
     constraints:
       - No custom billing logic allowed — Stripe only
+
+    status: "✅ IMPLEMENTED"
+
+    implementation_notes: >
+      - Added `codes/billing.py` with Stripe + dev-fallback helpers and a
+        lightweight `/billing/mark_paid` dev endpoint.
+      - Initialized billing in `codes/app.py` and gated `run_analysis()`
+        to require a paid subscription before running `analyze_stock()`.
+      - Returns an upgrade URL (Stripe Checkout when configured, otherwise
+        the dev `/billing/mark_paid` flow) when unpaid.
+
+    risk_if_not_fixed: HIGH
 
     acceptance_criteria:
       - Free-tier users cannot invoke paid-tier callbacks

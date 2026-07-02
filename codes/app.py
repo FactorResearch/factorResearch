@@ -7,8 +7,8 @@ import traceback
 import sys
 import os
 import math
-from data import api_fetcher
-from data.api_fetcher import RateLimitError
+from codes.data import api_fetcher
+from codes.data.api_fetcher import RateLimitError
 # Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
 # Inserts the project root so that `codes.*` package imports resolve in both cases.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,6 +25,7 @@ import hashlib
 import functools
 import flask
 from codes import auth
+from codes import billing
 from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
@@ -43,6 +44,7 @@ server.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(24)
 
 # ── Initialize Authentication (ISSUE_008) ────────────────────────────────────
 auth.init_auth(server)
+billing.init_billing(server)
 
 @server.after_request
 def _log_errors(response):
@@ -2351,6 +2353,16 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
     if not ticker or not ticker.strip():
         return [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     symbol = ticker.strip().upper()
+    # Billing enforcement: analyze_stock is a paid-tier feature.
+    user_id = _get_user_id()
+    try:
+        if not billing.user_has_paid(user_id):
+            checkout = billing.get_checkout_url(user_id)
+            msg = f"🔒 This feature requires a paid subscription. Upgrade: {checkout}"
+            return [], None, msg, False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+    except Exception:
+        # On any billing check failure, default to safe denial.
+        return [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     result = analyze_stock(symbol)
     if "error" in result:
         return [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update
