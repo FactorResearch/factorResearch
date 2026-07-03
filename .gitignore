@@ -8,3 +8,4 @@ yes.pub
 /.cache
 /assets/*.min.css
 /assets/*.css.map
+/agency-agents/*

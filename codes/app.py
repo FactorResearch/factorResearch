@@ -48,7 +48,10 @@ app = dash.Dash(
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
 )
 server = app.server
-server.secret_key = os.environ.get("FLASK_SECRET_KEY") or os.urandom(24)
+secret_key = os.environ.get("FLASK_SECRET_KEY")
+if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
+    raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
+server.secret_key = secret_key or os.urandom(24)
 
 # ── Initialize Authentication (ISSUE_008) ────────────────────────────────────
 auth.init_auth(server)
@@ -62,6 +65,14 @@ else:
 
 @server.after_request
 def _log_errors(response):
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    if os.environ.get("FLASK_ENV", "").lower() == "production":
+        response.headers.setdefault(
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains; preload",
+        )
     return response
 
 # Patch Dash's internal callback handler to log exceptions minimally (no stack traces)
@@ -860,7 +871,13 @@ def _get_user_id() -> str:
     if user_id:
         return user_id
     
-    # Fallback to session UUID (for local dev without auth provider)
+    # Fallback to session UUID only in non-production environments.
+    if os.environ.get("FLASK_ENV", "").lower() == "production":
+        raise RuntimeError(
+            "Authenticated user required in production. "
+            "Set AUTH_PROVIDER and ensure auth is configured."
+        )
+
     if "_uid" not in flask.session:
         import uuid
         flask.session["_uid"] = uuid.uuid4().hex

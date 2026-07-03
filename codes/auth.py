@@ -21,6 +21,10 @@ import requests
 from functools import wraps
 from typing import Optional, Tuple
 from datetime import datetime, timedelta
+from urllib.parse import urlencode
+
+from jose import jwt
+from jose.exceptions import JWTError
 
 # Import Flask and related libraries
 import flask
@@ -31,7 +35,7 @@ from flask import redirect, request, session, url_for
 # Configuration
 # ──────────────────────────────────────────────────────────────────────────────
 
-AUTH_PROVIDER = os.environ.get("AUTH_PROVIDER", "auth0").lower()
+AUTH_PROVIDER = os.environ.get("AUTH_PROVIDER", "").strip().lower() or None
 CALLBACK_URL = os.environ.get("CALLBACK_URL", "http://localhost:8050/callback")
 
 # Auth0 Configuration
@@ -49,6 +53,10 @@ SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
 # Cache for verified tokens (to reduce external API calls)
 _token_cache: dict[str, Tuple[str, datetime]] = {}
 TOKEN_CACHE_TTL = 3600  # 1 hour
+
+# Cache for remote JWKS documents
+_jwks_cache: dict[str, tuple[dict, datetime]] = {}
+_JWKS_CACHE_TTL = 3600  # 1 hour
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -71,6 +79,49 @@ def _cache_user_id(token: str, user_id: str) -> None:
     _token_cache[token] = (user_id, datetime.utcnow() + timedelta(seconds=TOKEN_CACHE_TTL))
 
 
+def _fetch_jwks(jwks_url: str) -> Optional[dict]:
+    cached = _jwks_cache.get(jwks_url)
+    if cached:
+        jwks, expiry = cached
+        if datetime.utcnow() < expiry:
+            return jwks
+
+    try:
+        resp = requests.get(jwks_url, timeout=5)
+        resp.raise_for_status()
+        jwks = resp.json()
+        _jwks_cache[jwks_url] = (jwks, datetime.utcnow() + timedelta(seconds=_JWKS_CACHE_TTL))
+        return jwks
+    except Exception as e:
+        print(f"[AUTH] Failed to fetch JWKS from {jwks_url}: {e}")
+        return None
+
+
+def _decode_jwt(token: str, jwks_url: str, audience: Optional[str] = None, issuer: Optional[str] = None) -> Optional[dict]:
+    unverified_header = jwt.get_unverified_header(token)
+    jwks = _fetch_jwks(jwks_url)
+    if not jwks or "keys" not in jwks:
+        return None
+
+    key = next((k for k in jwks["keys"] if k.get("kid") == unverified_header.get("kid")), None)
+    if key is None:
+        return None
+
+    try:
+        options = {"verify_aud": audience is not None}
+        return jwt.decode(
+            token,
+            key,
+            algorithms=["RS256"],
+            audience=audience,
+            issuer=issuer,
+            options=options,
+        )
+    except JWTError as e:
+        print(f"[AUTH] JWT verification failed: {e}")
+        return None
+
+
 def verify_token(token: str) -> Optional[str]:
     """
     Verify JWT token and return authenticated user_id.
@@ -78,20 +129,27 @@ def verify_token(token: str) -> Optional[str]:
     Returns:
         Authenticated user_id if token is valid, None otherwise.
     """
+    if not token:
+        return None
+
     # Check cache first
     cached_user_id = _get_cached_user_id(token)
     if cached_user_id:
         return cached_user_id
     
     if AUTH_PROVIDER == "auth0":
-        return _verify_auth0_token(token)
+        user_id = _verify_auth0_token(token)
     elif AUTH_PROVIDER == "clerk":
-        return _verify_clerk_token(token)
+        user_id = _verify_clerk_token(token)
     elif AUTH_PROVIDER == "supabase":
-        return _verify_supabase_token(token)
+        user_id = _verify_supabase_token(token)
     else:
-        print(f"[AUTH] Unknown provider: {AUTH_PROVIDER}")
+        print("[AUTH] No authentication provider configured")
         return None
+
+    if user_id:
+        _cache_user_id(token, user_id)
+    return user_id
 
 
 def _verify_auth0_token(token: str) -> Optional[str]:
@@ -99,22 +157,27 @@ def _verify_auth0_token(token: str) -> Optional[str]:
     if not AUTH0_DOMAIN or not AUTH0_CLIENT_ID or not AUTH0_CLIENT_SECRET:
         print("[AUTH] Auth0 credentials not configured")
         return None
-    
+
+    token = token.strip()
+    if token.count(".") == 2:
+        issuer = f"https://{AUTH0_DOMAIN}/"
+        jwks_url = f"{issuer}.well-known/jwks.json"
+        payload = _decode_jwt(token, jwks_url, audience=AUTH0_CLIENT_ID, issuer=issuer)
+        if payload:
+            user_id = payload.get("sub") or payload.get("user_id")
+            if user_id:
+                return user_id
+
     try:
-        # Auth0 tokens are verified via the userinfo endpoint
-        # For production, use a JWT library like python-jose
         headers = {"Authorization": f"Bearer {token}"}
         resp = requests.get(f"https://{AUTH0_DOMAIN}/userinfo", headers=headers, timeout=5)
-        
         if resp.status_code == 200:
             user_info = resp.json()
             user_id = user_info.get("sub") or user_info.get("user_id")
-            if user_id:
-                _cache_user_id(token, user_id)
-                return user_id
+            return user_id
     except Exception as e:
         print(f"[AUTH] Auth0 token verification failed: {e}")
-    
+
     return None
 
 
@@ -123,61 +186,55 @@ def _verify_clerk_token(token: str) -> Optional[str]:
     if not CLERK_PUBLIC_KEY:
         print("[AUTH] Clerk public key not configured")
         return None
-    
+
     try:
-        # For production, use python-jose to verify JWT
-        # This is a simplified example
-        import json
-        import base64
-        
-        # Parse JWT (simplified - no signature verification in this stub)
-        parts = token.split(".")
-        if len(parts) != 3:
-            return None
-        
-        # Decode payload (add padding if needed)
-        payload_b64 = parts[1]
-        payload_b64 += "=" * (4 - len(payload_b64) % 4)
-        
-        payload = json.loads(base64.b64decode(payload_b64))
+        payload = jwt.decode(
+            token,
+            CLERK_PUBLIC_KEY,
+            algorithms=["RS256"],
+            options={"verify_aud": False},
+        )
         user_id = payload.get("sub") or payload.get("user_id")
-        
-        if user_id:
-            _cache_user_id(token, user_id)
-            return user_id
-    except Exception as e:
+        return user_id
+    except JWTError as e:
         print(f"[AUTH] Clerk token verification failed: {e}")
-    
     return None
 
 
 def _verify_supabase_token(token: str) -> Optional[str]:
     """Verify Supabase JWT token."""
-    if not SUPABASE_URL or not SUPABASE_API_KEY:
-        print("[AUTH] Supabase credentials not configured")
+    if not SUPABASE_URL:
+        print("[AUTH] Supabase URL not configured")
         return None
-    
+
+    token = token.strip()
+    if token.count(".") == 2:
+        jwks_url = SUPABASE_URL.rstrip("/") + "/auth/v1/.well-known/jwks.json"
+        payload = _decode_jwt(token, jwks_url, audience=None, issuer=None)
+        if payload:
+            user_id = payload.get("sub") or payload.get("user_id") or payload.get("id")
+            if user_id:
+                return user_id
+
+    if not SUPABASE_API_KEY:
+        print("[AUTH] Supabase API key not configured for fallback verification")
+        return None
+
     try:
-        # Verify token via Supabase API
         headers = {
             "Authorization": f"Bearer {token}",
             "apikey": SUPABASE_API_KEY,
         }
         resp = requests.get(
-            f"{SUPABASE_URL}/auth/v1/user",
+            f"{SUPABASE_URL.rstrip('/')}/auth/v1/user",
             headers=headers,
-            timeout=5
+            timeout=5,
         )
-        
         if resp.status_code == 200:
             user_info = resp.json()
-            user_id = user_info.get("id")
-            if user_id:
-                _cache_user_id(token, user_id)
-                return user_id
+            return user_info.get("id")
     except Exception as e:
         print(f"[AUTH] Supabase token verification failed: {e}")
-    
     return None
 
 
@@ -194,8 +251,7 @@ def get_authenticated_user_id() -> Optional[str]:
     """
     if "_authenticated_user_id" in session:
         return session.get("_authenticated_user_id")
-    
-    # Try to extract from Authorization header
+
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
         token = auth_header[7:]
@@ -204,7 +260,6 @@ def get_authenticated_user_id() -> Optional[str]:
             session["_authenticated_user_id"] = user_id
             session["_auth_token"] = token
             return user_id
-    
     return None
 
 
@@ -239,11 +294,11 @@ def require_auth(f):
     def decorated_function(*args, **kwargs):
         user_id = get_authenticated_user_id()
         if not user_id:
-            # For API routes, return 401 Unauthorized
-            if request.is_json or "application/json" in request.headers.get("Accept", ""):
-                return {"error": "Unauthorized"}, 401
-            # For browser routes, redirect to login
-            return redirect(url_for("auth_login"))
+            if AUTH_PROVIDER == "auth0":
+                if request.is_json or "application/json" in request.headers.get("Accept", ""):
+                    return {"error": "Unauthorized"}, 401
+                return redirect(url_for("auth_login"))
+            return {"error": "Unauthorized"}, 401
         return f(*args, **kwargs)
     return decorated_function
 
@@ -279,7 +334,7 @@ def setup_auth0_routes(app_server):
             "scope": "openid profile email",
         }
         query_string = "&".join(f"{k}={v}" for k, v in params.items())
-        return redirect(f"{auth0_authorize_url}?{query_string}")
+        return redirect(f"{auth0_authorize_url}?{urlencode(params)}")
     
     @app_server.route("/callback")
     def auth_callback():
@@ -332,7 +387,7 @@ def setup_auth0_routes(app_server):
             "returnTo": "http://localhost:8050/",
         }
         query_string = "&".join(f"{k}={v}" for k, v in params.items())
-        return redirect(f"{auth0_logout_url}?{query_string}")
+        return redirect(f"{auth0_logout_url}?{urlencode(params)}")
     
     print(f"[AUTH] Auth0 routes registered (domain={AUTH0_DOMAIN})")
 
@@ -395,11 +450,13 @@ def init_auth(app_server):
         user_id = get_authenticated_user_id()
     """
     print(f"\n[AUTH] Initializing authentication (provider={AUTH_PROVIDER})")
-    
-    # Configure secure cookies
+
+    if os.environ.get("FLASK_ENV", "").lower() == "production" and not AUTH_PROVIDER:
+        raise RuntimeError("AUTH_PROVIDER must be configured in production.")
+
     configure_secure_cookies(app_server)
-    
-    # Setup provider-specific routes
-    setup_auth0_routes(app_server)
-    
+
+    if AUTH_PROVIDER == "auth0":
+        setup_auth0_routes(app_server)
+
     print("[AUTH] Authentication initialized\n")

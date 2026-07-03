@@ -16,14 +16,21 @@ STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID")
 _paid_users: dict[str, bool] = {}
 
 
+def _is_production() -> bool:
+    return os.environ.get("FLASK_ENV", "").lower() == "production"
+
+
 def init_billing(server: Optional[flask.Flask] = None):
     """Initialize billing endpoints on the Flask `server` when available.
 
     Adds a lightweight dev helper at `/billing/mark_paid` to mark the
-    current session as paid for local testing. In production you should
-    create real Checkout/Portal sessions using Stripe's SDK.
+    current session as paid for local testing. In production this route is
+    intentionally disabled to prevent abuse.
     """
     if server is None:
+        return
+
+    if _is_production():
         return
 
     @server.route("/billing/mark_paid", methods=["GET"])
@@ -62,13 +69,10 @@ def user_has_paid(user_id: str) -> bool:
 def get_checkout_url(user_id: str) -> str:
     """Return a checkout/upgrade URL for the user.
 
-    If Stripe isn't configured, return a lightweight dev URL that marks
-    the session as paid when visited (`/billing/mark_paid`).
+    In production Stripe must be configured. In development, a fallback
+    URL is available for quick local testing.
     """
     if STRIPE_KEY and STRIPE_PRICE_ID:
-        # Production: you'd create a Stripe Checkout Session here and return its URL.
-        # Keep this non-failing if stripe isn't installed; leave the implementation
-        # to the deployer.
         try:
             import stripe
             stripe.api_key = STRIPE_KEY
@@ -81,9 +85,11 @@ def get_checkout_url(user_id: str) -> str:
             )
             return session.url
         except Exception:
-            # Fall through to dev URL on any failure
             pass
-    # Dev fallback: provide a URL that will mark the session paid
+
+    if _is_production():
+        raise RuntimeError("Stripe checkout is not configured in production.")
+
     return f"/billing/mark_paid?user_id={user_id}"
 
 
@@ -98,6 +104,11 @@ def get_portal_url(user_id: str) -> str:
             import stripe
             stripe.api_key = STRIPE_KEY
             # Real portal creation omitted for brevity.
+            # TODO: implement release-ready Stripe billing portal support.
         except Exception:
             pass
+
+    if _is_production():
+        raise RuntimeError("Stripe portal is not configured in production.")
+
     return f"/billing/mark_paid?user_id={user_id}"
