@@ -41,6 +41,7 @@ from codes.models import graham, quality, momentum, piotroski, altman, risk_metr
 from codes.engine import scorer, screener, universe
 from codes.engine import factor_backtest as fb_engine
 import codes.portfolio as portfolio_engine
+from codes.core.redis_client import get_redis, json_get, json_set
 # ── App Init ──────────────────────────────────────────────────────────────────
 app = dash.Dash(
     __name__,
@@ -927,19 +928,33 @@ def _evict_stale_portfolio_cache() -> None:
 
 
 def _invalidate_portfolio_cache() -> None:
-    """Clear only the current user's cached portfolio-symbol map."""
+    sid = _get_user_id()
+    r = get_redis()
+    if r:
+        try:
+            r.delete(f"portfolio_symbols:{sid}")
+        except Exception:
+            pass
     with _portfolio_cache_lock:
-        _portfolio_cache_by_session.pop(_get_user_id(), None)
+        _portfolio_cache_by_session.pop(sid, None)
 
 def _get_portfolio_symbols() -> dict[str, list[str]]:
-
     import time as _t
     _evict_stale_portfolio_cache()
-    sid   = _get_user_id()
-    with _portfolio_cache_lock:
-        entry = _portfolio_cache_by_session.get(sid)
-    if entry and _t.time() - entry["ts"] < 10:
-        return entry["symbols"]
+    sid = _get_user_id()
+    r = get_redis()
+    redis_key = f"portfolio_symbols:{sid}"
+
+    if r:
+        cached = json_get(r, redis_key)
+        if cached is not None:
+            return cached
+    else:
+        with _portfolio_cache_lock:
+            entry = _portfolio_cache_by_session.get(sid)
+        if entry and _t.time() - entry["ts"] < 10:
+            return entry["symbols"]
+
     result: dict[str, list[str]] = {}
     try:
         for pname in (portfolio_engine.list_portfolios(sid) or []):
@@ -953,13 +968,16 @@ def _get_portfolio_symbols() -> dict[str, list[str]]:
                         result[sym].append(pname)
     except Exception:
         pass
-    with _portfolio_cache_lock:
-        _portfolio_cache_by_session[sid] = {"symbols": result, "ts": _t.time()}
-    # ISSUE_014: bound unbounded growth of this per-session cache.
-    stale_cutoff = _t.time() - 3600
-    for stale_sid in [s for s, e in _portfolio_cache_by_session.items()
-                      if e["ts"] < stale_cutoff]:
-        _portfolio_cache_by_session.pop(stale_sid, None)
+
+    if r:
+        json_set(r, redis_key, result, ex=10)
+    else:
+        with _portfolio_cache_lock:
+            _portfolio_cache_by_session[sid] = {"symbols": result, "ts": _t.time()}
+        stale_cutoff = _t.time() - 3600
+        for stale_sid in [s for s, e in _portfolio_cache_by_session.items()
+                          if e["ts"] < stale_cutoff]:
+            _portfolio_cache_by_session.pop(stale_sid, None)
     return result
 
 @callback(

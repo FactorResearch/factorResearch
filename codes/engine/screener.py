@@ -17,7 +17,7 @@ import time
 import threading
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+from ..core.redis_client import get_redis, json_get, json_set
 from ..data import cache
 from ..data import sec_data
 from ..data import db
@@ -27,6 +27,7 @@ from . import scorer
 from . import universe
 from datetime import datetime, timezone
 
+_PROGRESS_REDIS_KEY = "screener:progress"
 
 
 # ── Shared state ──────────────────────────────────────────────────────────────
@@ -79,18 +80,21 @@ def _evict_stale_user_progress() -> None:
         for sid in stale:
             _user_progress.pop(sid, None)
 
-
+def _sync_progress_to_redis() -> None:
+    r = get_redis()
+    if not r:
+        return
+    with _lock:
+        snapshot = dict(_progress)
+    json_set(r, _PROGRESS_REDIS_KEY, snapshot)
 def get_progress(session_id: str | None = None) -> dict:
-    """
-    Return the current (shared) background job progress.
-
-    When ``session_id`` is provided, the returned snapshot is also stored in
-    a per-user store (`_user_progress`) so each session polls its own
-    isolated copy — preventing one user's poll from interfering with
-    another's. The underlying job state itself remains a single shared
-    singleton (universe loading is identical for all users).
-    """
     _evict_stale_user_progress()
+    r = get_redis()
+    if r:
+        remote = json_get(r, _PROGRESS_REDIS_KEY)
+        if remote is not None:
+            with _lock:
+                _progress.update(remote)
     with _lock:
         snapshot = dict(_progress)
     if session_id:
@@ -253,6 +257,7 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
 
     # ── Persist to SQLite (non-blocking; failures are logged, not raised) ─────
     try:
+        _sync_progress_to_redis()
         db.upsert(
             symbol,
             market_cap=mkt_cap,
@@ -316,6 +321,7 @@ def load_universe_background(tickers: list[str] | None = None):
                 key=lambda x: x.get("composite_score") or 0, reverse=True
             )
             _progress["running"] = False
+            _sync_progress_to_redis()
             _progress["phase"]   = ""
 
         print(f"\n✅ Universe loaded: {len(symbols):,} tickers\n")
@@ -511,4 +517,5 @@ def load_cached_only() -> list[dict]:
     n    = len(_progress["results"])
     n_db = db.count()
     print(f"  ✅ {n} stocks ready ({n_db} rows in SQLite store)")
+    _sync_progress_to_redis()
     return _progress["results"]

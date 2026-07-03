@@ -101,18 +101,18 @@ All of these are real and still needed; re-prioritized in §5.
 
 ## 5. Prioritized Action Plan
 
-### Phase 0 — Stop-the-bleeding (before *any* public exposure, days not weeks)
+### Phase 0 — Stop-the-bleeding (before *any* public exposure, days not weeks)[x]
 1. **NEW-1**: Add strict allow-list validation for ticker, portfolio name, and any other string used as a cache key; sanitize inside `cache._path()` itself as a hard backstop.
 2. **NEW-2**: Set `debug=False`; if local debugging is still needed, gate it behind `FLASK_ENV`/an explicit local-only flag, never bound to `0.0.0.0`.
 3. **NEW-6 / ISSUE_012**: Replace all `{e}`-in-message returns to the UI with generic messages; log full detail server-side only.
 4. **NEW-7**: Require `FLASK_SECRET_KEY` (fail startup if missing outside local dev); set `SESSION_COOKIE_SECURE`, `SESSION_COOKIE_SAMESITE`.
 
-### Phase 1 — Data isolation & hygiene (already mostly scoped in Publish.md)
+### Phase 1 — Data isolation & hygiene (already mostly scoped in Publish.md)[x]
 5. ISSUE_010: Full input validation layer (ticker regex, portfolio name regex, shares bounds) — this also structurally closes NEW-5.
 6. ISSUE_014: Add TTL sweep for `_portfolio_cache_by_session` / `_user_progress`; wire `clear_user_progress()` to an actual disconnect/logout hook.
 7. NEW-3: Add security headers (Talisman or manual) + confirm CSP doesn't break Plotly/Dash inline scripts (will need a nonce or relaxed `script-src` for Dash's own bundles).
 
-### Phase 2 — Real authentication & authorization (this is the big structural change)
+### Phase 2 — Real authentication & authorization (this is the big structural change)[x]
 8. ISSUE_008: Integrate Auth0/Clerk/Supabase Auth. Replace the anonymous `flask.session["_uid"]` UUID with a real authenticated `user_id` claim, but **keep the same `user_id`-scoped storage pattern** already built in `portfolio.py` — this was designed well, it just needs a trustworthy identity behind it.
 9. Add authorization checks at the callback layer: every portfolio read/write must confirm the authenticated user owns that `user_id` prefix (currently implicit via session cookie; needs to become explicit once real accounts exist, especially for account recovery/merge flows).
 10. NEW-4: Move `_progress`, session-scoped caches to Redis so auth/tier state and screener progress are consistent across workers — do this *before* enabling >1 gunicorn worker.
