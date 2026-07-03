@@ -28,7 +28,7 @@ from urllib.parse import quote, unquote
 import threading
 
 import flask
-from flask import request, session, abort, jsonify
+from flask import request, session, abort, jsonify,has_request_context, request
 
 try:
     from cryptography.fernet import Fernet
@@ -299,7 +299,8 @@ def get_client_identifier() -> str:
             return f"user:{session['_authenticated_user_id']}"
     except Exception:
         pass
-    
+    if not has_request_context():
+        return "system"   # or "startup"
     # Fall back to IP address
     if request.headers.get("X-Forwarded-For"):
         return f"ip:{request.headers.get('X-Forwarded-For').split(',')[0]}"

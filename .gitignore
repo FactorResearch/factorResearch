@@ -5,8 +5,9 @@ __pycache__/
 .vscode
 yes
 yes.pub
-/.cache
-/assets/*.min.css
-/assets/*.css.map
-/agency-agents/*
+.cache
+assets/*.min.css
+assets/*.css.map
+assets/*.css
+agency-agents/*
 .ev.example

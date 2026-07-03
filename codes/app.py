@@ -44,7 +44,7 @@ import codes.portfolio as portfolio_engine
 # ── App Init ──────────────────────────────────────────────────────────────────
 app = dash.Dash(
     __name__,
-    title="Graham Score — Quant",
+    title="FactorResearch",
     suppress_callback_exceptions=True,
     assets_folder='../assets',
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
@@ -64,7 +64,7 @@ security.init_security(server)
 
 # Initialize Flask-Limiter if available (best-effort; dev may omit package)
 if Limiter is not None:
-    limiter = Limiter(server, key_func=(get_remote_address or (lambda: flask.request.remote_addr)), default_limits=[])
+    limiter = Limiter(app=server, key_func=get_remote_address, default_limits=[])
 else:
     limiter = None
 
@@ -548,12 +548,10 @@ def get_verdict_class(label: str) -> str:
 app.layout = html.Div(className="app-container", children=[
     # Header
     html.Div(className="app-header", children=[
-        html.Img(src="./assets/sm-logo.svg", className="app-header-icon"),
+        html.Img(src="./assets/logo.png", className="app-header-icon"),
         html.Div(className="app-header-content", children=[
            
-            html.H1(children=[
-                "Intrinsic ",html.Span("IQ", style={"color": GREEN})
-            ]),
+            html.H1("FactorResearch"),
             
             html.P("Orthogonal factor score: Value, Quality, Momentum, Profitability, FCF Quality, Earnings Revisions, Capital Allocation, Growth Quality, Risk, and Altman."),
             html.P(
@@ -3970,21 +3968,9 @@ def startup():
 
 startup()
 
-def _is_production() -> bool:
-    """Detect production deployment mode from environment settings."""
-    return os.environ.get("FLASK_ENV", "").lower() == "production"
-
-
-def _debug_mode() -> bool:
-    """Enable debug only when explicitly requested and not in production."""
-    if _is_production():
-        return False
-    return os.environ.get("FLASK_DEBUG", "").lower() in {"1", "true", "yes", "on"}
-
-
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        debug=_debug_mode(),
+        debug=True,   # dev only
         port=int(os.environ.get("PORT", 8050)),
     )

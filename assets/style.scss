@@ -148,8 +148,9 @@ body {
     }
 
     &-icon {
-      max-width: 40px;
-      max-height: 40px;
+          max-width: 100px;
+    max-height: 100px;
+        border-radius: 100%;
      
     }
 
