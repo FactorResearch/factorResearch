@@ -809,7 +809,7 @@ app.layout = html.Div(className="app-container", children=[
     html.Div(className="app-footer", style={
         "textAlign": "center", "padding": "16px", "fontSize": "11px", "color": "#9e9e9e"
     }, children=[
-        html.Span("© Intrinsic IQ · "),
+        html.Span("© Factor Research · "),
         html.A("Terms of Service", href="/terms", style={"color": "#9e9e9e"}),
         html.Span(" · "),
         html.A("Privacy Policy", href="/privacy", style={"color": "#9e9e9e"}),
