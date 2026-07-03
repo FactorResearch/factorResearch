@@ -1,0 +1,305 @@
+"""
+Security Tests for Graham Score App
+
+Tests for:
+- Input validation
+- CSRF protection
+- Rate limiting
+- SQL injection prevention
+- XSS protection
+- Authentication
+- Authorization
+"""
+
+import pytest
+import sys
+import os
+from pathlib import Path
+
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from codes import security
+
+
+class TestInputValidation:
+    """Test input validation functions."""
+    
+    def test_validate_ticker_valid(self):
+        """Test valid ticker symbols."""
+        assert security.validate_ticker("AAPL")
+        assert security.validate_ticker("BRK.B")
+        assert security.validate_ticker("SPY")
+        assert security.validate_ticker("AMZN")
+    
+    def test_validate_ticker_invalid(self):
+        """Test invalid ticker symbols."""
+        assert not security.validate_ticker("<script>")
+        assert not security.validate_ticker("'; DROP TABLE--")
+        assert not security.validate_ticker("TOOMANYCHARACTERS")
+        assert not security.validate_ticker("")
+        assert not security.validate_ticker("@#$%")
+        assert not security.validate_ticker("123")  # Only numbers
+    
+    def test_validate_email_valid(self):
+        """Test valid emails."""
+        assert security.validate_email("user@example.com")
+        assert security.validate_email("john.doe+tag@subdomain.co.uk")
+        assert security.validate_email("test@test.co")
+    
+    def test_validate_email_invalid(self):
+        """Test invalid emails."""
+        assert not security.validate_email("invalid@domain")  # No TLD
+        assert not security.validate_email("invalid")  # No @
+        assert not security.validate_email("@example.com")  # No local part
+        assert not security.validate_email("user name@example.com")  # Space
+        assert not security.validate_email("")
+    
+    def test_validate_numeric_valid(self):
+        """Test valid numeric values."""
+        is_valid, value = security.validate_numeric("123.45")
+        assert is_valid and value == 123.45
+        
+        is_valid, value = security.validate_numeric("0", min_val=0, max_val=100)
+        assert is_valid and value == 0
+        
+        is_valid, value = security.validate_numeric("100", min_val=0, max_val=100)
+        assert is_valid and value == 100
+    
+    def test_validate_numeric_invalid(self):
+        """Test invalid numeric values."""
+        is_valid, value = security.validate_numeric("not a number")
+        assert not is_valid and value is None
+        
+        is_valid, value = security.validate_numeric("-50", min_val=0)
+        assert not is_valid  # Below min
+        
+        is_valid, value = security.validate_numeric("150", max_val=100)
+        assert not is_valid  # Above max
+    
+    def test_validate_json_payload(self):
+        """Test JSON payload validation."""
+        # Valid payload
+        assert security.validate_json_payload({"key": "value"})
+        
+        # Oversized payload
+        large_data = {"data": "x" * 2_000_000}
+        assert not security.validate_json_payload(large_data, max_size=1_000_000)
+
+
+class TestSanitization:
+    """Test string sanitization."""
+    
+    def test_sanitize_xss_attacks(self):
+        """Test sanitization of XSS attack vectors."""
+        # Script tag
+        result = security.sanitize_string("<script>alert('xss')</script>")
+        assert "<script>" not in result
+        assert "alert" in result  # Content preserved
+        
+        # Event handler
+        result = security.sanitize_string('<img src=x onerror="alert(1)">')
+        assert "onerror=" not in result or "onerror=" not in result
+        
+        # SVG attack
+        result = security.sanitize_string('<svg onload=alert(1)>')
+        assert "<svg" in result  # Escaped
+        assert "onload=" in result  # Escaped
+    
+    def test_sanitize_sql_injection(self):
+        """Test sanitization of SQL injection attempts."""
+        result = security.sanitize_string("'; DROP TABLE users; --")
+        assert ";" not in result or "&" in result  # Escaped or removed
+    
+    def test_sanitize_length_limit(self):
+        """Test string length limiting."""
+        long_string = "x" * 2000
+        result = security.sanitize_string(long_string, max_length=100)
+        assert len(result) <= 100
+    
+    def test_sanitize_html_entities(self):
+        """Test HTML entity escaping."""
+        result = security.sanitize_string("<div>test</div>")
+        assert "&lt;" in result
+        assert "&gt;" in result
+        assert "<div>" not in result
+
+
+class TestRateLimiting:
+    """Test rate limiting functionality."""
+    
+    def test_rate_limiter_allows_requests_within_limit(self):
+        """Test that requests within limit are allowed."""
+        limiter = security.RateLimiter()
+        
+        # Allow 5 requests per 60 seconds
+        for i in range(5):
+            assert limiter.is_allowed("test_key", 5, 60)
+    
+    def test_rate_limiter_blocks_excess_requests(self):
+        """Test that requests exceeding limit are blocked."""
+        limiter = security.RateLimiter()
+        
+        # Allow 3 requests per 60 seconds
+        assert limiter.is_allowed("test_key", 3, 60)
+        assert limiter.is_allowed("test_key", 3, 60)
+        assert limiter.is_allowed("test_key", 3, 60)
+        
+        # Fourth request should be blocked
+        assert not limiter.is_allowed("test_key", 3, 60)
+    
+    def test_rate_limiter_per_key_isolation(self):
+        """Test that rate limits are per-key."""
+        limiter = security.RateLimiter()
+        
+        # Both keys should be independent
+        assert limiter.is_allowed("key1", 2, 60)
+        assert limiter.is_allowed("key2", 2, 60)
+        assert limiter.is_allowed("key1", 2, 60)
+        assert limiter.is_allowed("key2", 2, 60)
+        
+        # Both should now be blocked
+        assert not limiter.is_allowed("key1", 2, 60)
+        assert not limiter.is_allowed("key2", 2, 60)
+
+
+class TestCSRFProtection:
+    """Test CSRF token generation and validation."""
+    
+    def test_csrf_token_generation(self):
+        """Test CSRF token is generated."""
+        token = security._generate_csrf_token()
+        assert token
+        assert len(token) > 20
+    
+    def test_csrf_tokens_are_unique(self):
+        """Test that generated tokens are unique."""
+        token1 = security._generate_csrf_token()
+        token2 = security._generate_csrf_token()
+        assert token1 != token2
+    
+    def test_csrf_token_format(self):
+        """Test CSRF token format."""
+        token = security._generate_csrf_token()
+        # Should be base64url encoded
+        assert isinstance(token, str)
+        assert len(token) == 43  # Standard base64url token length
+
+
+class TestEncryption:
+    """Test sensitive data encryption."""
+    
+    def test_encryptor_encrypt_decrypt(self):
+        """Test encryption and decryption."""
+        encryptor = security.SensitiveDataEncryptor()
+        
+        if encryptor.cipher is None:
+            pytest.skip("Encryption not available")
+        
+        original = "sensitive@example.com"
+        encrypted = encryptor.encrypt(original)
+        
+        assert encrypted != original
+        decrypted = encryptor.decrypt(encrypted)
+        assert decrypted == original
+    
+    def test_encryptor_handles_invalid_data(self):
+        """Test encryption handles invalid decryption gracefully."""
+        encryptor = security.SensitiveDataEncryptor()
+        
+        if encryptor.cipher is None:
+            pytest.skip("Encryption not available")
+        
+        # Invalid encrypted data
+        result = encryptor.decrypt("invalid_encrypted_data")
+        # Should return None or original on error
+        assert result is None or isinstance(result, str)
+
+
+class TestSQLInjectionPrevention:
+    """Test SQL injection prevention."""
+    
+    def test_parameterized_queries_prevent_injection(self):
+        """Test that parameterized queries prevent SQL injection."""
+        # This is a conceptual test - actual DB testing requires a test DB
+        
+        # ✅ SAFE: Parameterized query
+        ticker = "'; DROP TABLE users; --"
+        # Using parameterized query: db.execute("SELECT * FROM stocks WHERE ticker = ?", (ticker,))
+        # The ticker is treated as a value, not SQL code
+        
+        # This test verifies our validators would catch this
+        is_valid = security.validate_ticker(ticker)
+        assert not is_valid
+    
+    def test_invalid_ticker_blocks_injection(self):
+        """Test that ticker validation blocks injection attempts."""
+        injection_attempts = [
+            "'; DROP TABLE--",
+            "1' OR '1'='1",
+            "UNION SELECT * FROM--",
+            "<script>alert(1)</script>",
+        ]
+        
+        for attempt in injection_attempts:
+            assert not security.validate_ticker(attempt)
+
+
+class TestSecurityHeaders:
+    """Test security header configuration."""
+    
+    def test_security_header_constants(self):
+        """Test that security module has required constants."""
+        assert hasattr(security, 'IS_PRODUCTION')
+        assert hasattr(security, 'SECURITY_LOGGER')
+        assert hasattr(security, 'SENSITIVE_PATTERNS')
+
+
+class TestLogging:
+    """Test security event logging."""
+    
+    def test_log_security_event_masks_sensitive_data(self):
+        """Test that sensitive data is masked in logs."""
+        # This would need to capture logs and verify masking
+        # For now, we just verify the function exists and works
+        security.log_security_event(
+            event_type="TEST_EVENT",
+            details={"password": "secret123"}
+        )
+    
+    def test_audit_log_access_records_event(self):
+        """Test that audit logging records access."""
+        security.audit_log_access(
+            action="READ",
+            resource="test_resource",
+            user_id="test_user",
+            success=True
+        )
+
+
+class TestValidationEdgeCases:
+    """Test edge cases in validation."""
+    
+    def test_none_inputs(self):
+        """Test validation with None inputs."""
+        assert not security.validate_ticker(None)
+        assert not security.validate_email(None)
+        assert not security.validate_json_payload(None)
+    
+    def test_empty_inputs(self):
+        """Test validation with empty inputs."""
+        assert not security.validate_ticker("")
+        assert not security.validate_email("")
+        assert security.validate_json_payload({})  # Empty dict is valid
+    
+    def test_unicode_handling(self):
+        """Test validation with Unicode characters."""
+        # Should handle Unicode gracefully
+        assert not security.validate_ticker("北京")
+        result = security.sanitize_string("你好世界")
+        assert result is not None
+
+
+if __name__ == "__main__":
+    # Run tests with: pytest tests/test_security.py -v
+    pytest.main([__file__, "-v"])

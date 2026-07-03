@@ -9,3 +9,4 @@ yes.pub
 /assets/*.min.css
 /assets/*.css.map
 /agency-agents/*
+.ev.example

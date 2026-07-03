@@ -34,6 +34,7 @@ except Exception:
     get_remote_address = None
 from codes import auth
 from codes import billing
+from codes import security
 from codes.data   import cache, sec_data
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
@@ -57,6 +58,9 @@ server.secret_key = secret_key or os.urandom(24)
 auth.init_auth(server)
 billing.init_billing(server)
 
+# ── Initialize Comprehensive Security ──────────────────────────────────────────
+security.init_security(server)
+
 # Initialize Flask-Limiter if available (best-effort; dev may omit package)
 if Limiter is not None:
     limiter = Limiter(server, key_func=(get_remote_address or (lambda: flask.request.remote_addr)), default_limits=[])
@@ -65,14 +69,8 @@ else:
 
 @server.after_request
 def _log_errors(response):
-    response.headers.setdefault("X-Content-Type-Options", "nosniff")
-    response.headers.setdefault("X-Frame-Options", "DENY")
-    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-    if os.environ.get("FLASK_ENV", "").lower() == "production":
-        response.headers.setdefault(
-            "Strict-Transport-Security",
-            "max-age=31536000; includeSubDomains; preload",
-        )
+    # Security headers are now handled by security.init_security()
+    # This function is kept for backward compatibility and additional logging
     return response
 
 # Patch Dash's internal callback handler to log exceptions minimally (no stack traces)

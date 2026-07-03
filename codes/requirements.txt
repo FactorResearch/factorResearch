@@ -12,3 +12,7 @@ psycopg[binary]
 python-jose[cryptography]
 flask-session
 Flask-Limiter
+cryptography>=41.0.0
+bleach>=6.0.0
+markupsafe>=2.1.1
+werkzeug>=2.3.0
