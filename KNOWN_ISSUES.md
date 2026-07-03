@@ -195,7 +195,7 @@ No vague instructions allowed.
 
 ## ISSUE-003
 
-Status: []
+Status: [x]
 
 Title: when filter is selected page constantly refresh 
 

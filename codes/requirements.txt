@@ -12,6 +12,7 @@ psycopg[binary]
 python-jose[cryptography]
 flask-session
 Flask-Limiter
+redis>=5.0.0
 cryptography>=41.0.0
 bleach>=6.0.0
 markupsafe>=2.1.1

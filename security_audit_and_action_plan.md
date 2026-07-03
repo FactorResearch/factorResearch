@@ -88,7 +88,7 @@ All of these are real and still needed; re-prioritized in §5.
 | ISSUE_004 | [x] closed | Confirmed: per-session progress snapshot correctly separated from shared job state. |
 | ISSUE_005 | [x] closed | Confirmed: `portfolio.py` keys are `user_id`-scoped. Still vulnerable to NEW-1 (path traversal) at the storage layer regardless. |
 | ISSUE_006 | [x] closed | Confirmed: `_portfolio_cache_by_session` is session-scoped; `_analysis_cache` intentionally shared (correct — it's ticker-deterministic public data). |
-| ISSUE_007 | Open | SQLite `check_same_thread=False` + no pooling — will fail under real concurrent write load. Confirmed still single-writer risk. |
+| ISSUE_007 | [x] closed | SQLite `check_same_thread=False` + no pooling — will fail under real concurrent write load. Confirmed still single-writer risk. |
 | ISSUE_008 | Open | No auth exists at all today — confirmed. This is the biggest structural gap for "user registration and data storage." |
 | ISSUE_009 | Open | No billing/tier enforcement — confirmed, not built. |
 | ISSUE_010 | Open | Confirmed — no input validation anywhere (tickers, portfolio names, shares are only range-checked, not type/format-checked at the edge). |
