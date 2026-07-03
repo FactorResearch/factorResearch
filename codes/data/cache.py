@@ -1,6 +1,7 @@
 import json
 import math
 import os
+import re
 import time
 from pathlib import Path
 
@@ -12,9 +13,16 @@ TICKER_MAP_TTL = 7 * 24 * 60 * 60   # 7 days in seconds
 
 CACHE_DIR.mkdir(exist_ok=True)
 
+# SECURITY (NEW-1): cache keys become filenames — enforce an allow-list
+# as a hard backstop against path traversal.
+_SAFE_KEY_RE = re.compile(r"^[a-z0-9_.-]{1,200}$")
+
 
 def _path(kind: str, key: str) -> Path:
-    return CACHE_DIR / f"{kind}-{key.lower()}.json"
+    key = key.lower()
+    if ".." in key or "/" in key or "\\" in key or not _SAFE_KEY_RE.match(key):
+        raise ValueError(f"Unsafe cache key rejected: {key!r}")
+    return CACHE_DIR / f"{kind}-{key}.json"
 
 
 # ── JSON encoder that handles numpy / pandas scalar types ─────────────────────

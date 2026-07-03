@@ -6,6 +6,7 @@ Enhanced score uses the orthogonal factor weights defined in codes.engine.scorer
 import traceback
 import sys
 import os
+import re
 import math
 import re
 import time as _time
@@ -170,6 +171,23 @@ DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED ,WHITE= (
     "#0f1117", "#1a1d27", "#2a2d3e", "#00c853", "#ff1744",
     "#ffc107", "#448aff", "#e0e0e0", "#9e9e9e", "#ffffff"
 )
+
+# SECURITY (ISSUE_010 / NEW-1 / NEW-5): allow-list validation at every
+# input boundary that reaches a cache key or an outbound API URL.
+TICKER_RE = re.compile(r"^[A-Z]{1,6}(\.[A-Z])?$")
+PORTFOLIO_NAME_RE = re.compile(r"^[A-Za-z0-9 _-]{1,32}$")
+
+
+def validate_ticker(raw: str) -> str | None:
+    t = (raw or "").strip().upper()
+    return t if TICKER_RE.match(t) else None
+
+
+def validate_portfolio_name(raw: str) -> str | None:
+    n = (raw or "").strip()
+    return n if PORTFOLIO_NAME_RE.match(n) else None
+
+
 PAGE_SIZE = 20  # rows per page in screener table
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None
@@ -244,8 +262,10 @@ def analyze_stock(symbol: str) -> dict:
     - 1C: Lazy-load SPY history once, reuse across all stocks
     """
     global _analysis_cache, _analysis_cache_lock
-    
-    symbol = symbol.upper().strip()
+
+    symbol = validate_ticker(symbol)
+    if not symbol:
+        return {"error": "Invalid ticker format."}
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
@@ -272,7 +292,8 @@ def analyze_stock(symbol: str) -> dict:
             )
         return {"error": err_msg}
     except Exception as e:
-        return {"error": f"SEC EDGAR error: {e}"}
+        print(f"[SEC EDGAR error] {symbol}: {e}")  # full detail server-side only
+        return {"error": "Could not retrieve data for this ticker. Please try again shortly."}
     # Quality score (no price) — early calculation
     q = quality.score(sec_facts)
     # Now try to get price
@@ -534,7 +555,12 @@ app.layout = html.Div(className="app-container", children=[
                 "Intrinsic ",html.Span("IQ", style={"color": GREEN})
             ]),
             
-            html.P("Orthogonal factor score: Value, Quality, Momentum, Profitability, FCF Quality, Earnings Revisions, Capital Allocation, Growth Quality, Risk, and Altman.")
+            html.P("Orthogonal factor score: Value, Quality, Momentum, Profitability, FCF Quality, Earnings Revisions, Capital Allocation, Growth Quality, Risk, and Altman."),
+            html.P(
+                "Not financial advice. For informational purposes only. "
+                "See Terms of Service and Privacy Policy.",
+                style={"fontSize": "11px", "color": "#9e9e9e", "marginTop": "4px"}
+            ),
         ])
     ]),
     # Tabs
@@ -781,6 +807,17 @@ app.layout = html.Div(className="app-container", children=[
         ]),
     ]),
 
+    # Legal footer (ISSUE_013) — routes are placeholders until ToS/Privacy pages exist.
+    html.Div(className="app-footer", style={
+        "textAlign": "center", "padding": "16px", "fontSize": "11px", "color": "#9e9e9e"
+    }, children=[
+        html.Span("© Intrinsic IQ · "),
+        html.A("Terms of Service", href="/terms", style={"color": "#9e9e9e"}),
+        html.Span(" · "),
+        html.A("Privacy Policy", href="/privacy", style={"color": "#9e9e9e"}),
+        html.Span(" · Not financial advice."),
+    ]),
+
     # Stores
     dcc.Store(id="screener-cache"),
     dcc.Store(id="analysis-store"),
@@ -920,6 +957,11 @@ def _get_portfolio_symbols() -> dict[str, list[str]]:
         pass
     with _portfolio_cache_lock:
         _portfolio_cache_by_session[sid] = {"symbols": result, "ts": _t.time()}
+    # ISSUE_014: bound unbounded growth of this per-session cache.
+    stale_cutoff = _t.time() - 3600
+    for stale_sid in [s for s, e in _portfolio_cache_by_session.items()
+                      if e["ts"] < stale_cutoff]:
+        _portfolio_cache_by_session.pop(stale_sid, None)
     return result
 
 @callback(
@@ -2791,9 +2833,9 @@ def toggle_create_panel(new, confirm, cancel):
 def create_portfolio(n, name, refresh):
     if not n:
         return dash.no_update, dash.no_update, "", ""
-    name = (name or "").strip()
+    name = validate_portfolio_name(name)
     if not name:
-        return dash.no_update, dash.no_update, "❌ Please enter a name.", dash.no_update
+        return dash.no_update, dash.no_update, "❌ Invalid name (letters, numbers, spaces, - or _, max 32 chars).", dash.no_update
     # Validate portfolio name: alphanumeric + underscore, max 32 chars
     if not re.fullmatch(r"^[A-Za-z0-9_]{1,32}$", name):
         return dash.no_update, dash.no_update, "❌ Invalid portfolio name. Use up to 32 letters, numbers, or underscores.", dash.no_update
@@ -2840,7 +2882,7 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     if not n:
         return "", {}, dash.no_update, dash.no_update
     # Resolve portfolio name
-    port_name = (new_name or "").strip() or selected
+    port_name = validate_portfolio_name(new_name) or selected
     if not port_name:
         return "❌ Select or name a portfolio first.", {"color": RED}, dash.no_update, dash.no_update
     # Validate portfolio name when provided/created

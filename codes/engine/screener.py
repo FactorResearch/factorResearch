@@ -49,6 +49,7 @@ _lock = threading.Lock()
 # or clobber each other's last-seen progress snapshot.
 _user_progress: dict[str, dict] = {}
 _user_progress_lock = threading.Lock()
+_USER_PROGRESS_TTL = 30 * 60  # seconds (ISSUE_014)
 _USER_PROGRESS_TTL = 600  # seconds before stale per-session progress snapshots are evicted
 
 # ── Rate limiter for SEC fetches (token-bucket, ≤ 3 calls/sec) ───────────────
