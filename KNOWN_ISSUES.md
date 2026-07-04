@@ -193,68 +193,64 @@ No vague instructions allowed.
 
 ---
 
-## ISSUE-003
+## ISSUE_001:
+   
+ Status:[]
+  title: "Sector dropdown is empty due to missing metadata layer (SEC facts not available at startup)"
+  category: data-architecture
 
-Status: [x]
+  files:
+    - codes/engine/screener.py
+    - codes/engine/universe.py
+    - codes/api/filters.py
+    - codes/frontend/static/js/*
 
-Title: when filter is selected page constantly refresh 
+  problem: >
+    Sector (and other filter metadata) is derived from SEC facts that are only downloaded lazily
+    during user-triggered analysis. As a result, at application startup the universe has no sector
+    information, causing the sector dropdown to render empty and screener filters to be incomplete.
 
-Priority: High
+  root_cause: >
+    Tight coupling between UI filter metadata (sector/industry) and lazy-loaded SEC facts.
+    The frontend expects filter-ready metadata at startup, but backend only populates it during
+    per-stock analysis, leaving initial dataset incomplete.
 
-Files: app.py
+  current_behavior:
+    - Universe loads at startup without sector/industry enrichment
+    - SEC facts are fetched only when user clicks "analyze"
+    - Dropdown population happens only once at initial load
+    - No reactive refresh of filter state after SEC enrichment occurs
 
-*
+  required_fix: >
+    Decouple UI filter metadata from SEC fact ingestion.
 
-Problem:
- * page constantly refreshes when sector filter is applied
+    Introduce a dedicated lightweight "company metadata layer" (sector, industry, exchange, country)
+    that is loaded at startup independently of SEC analysis.
 
+    Update screener initialization to:
+      1. Load universe (symbols)
+      2. Load metadata cache (precomputed or lightweight API)
+      3. Build filter dropdowns from metadata layer only
+      4. Keep SEC facts strictly for analysis/scoring only
 
-Required Fix:
+    Optional enhancement:
+      - Add periodic metadata refresh job (daily/weekly)
+      - Persist metadata cache locally (Redis or JSON)
 
-Acceptance Criteria:
-* sector filter should not refresh the page constantly 
+  constraints:
+    - SEC facts remain lazy-loaded per user action (no full prefetch)
+    - No full SEC dataset download at startup (performance constraint: must stay fast)
+    - Universe loading remains global singleton
+    - Metadata must be lightweight (< few MB total)
 
+  acceptance_criteria:
+    - Sector dropdown is populated immediately on page load
+    - Industry filter also populated without requiring any analysis
+    - Screener filters work for all stocks, not only analyzed ones
+    - SEC analysis remains unchanged and still lazy-loaded
+    - No increase in startup time (target: < 2–5 seconds total init)
 
----
-
-## ISSUE-002
-
-Status: [closed]
-
-Title: scrolling in tabs needs to be independent 
-
-Priority: Low
-
-Files: app.py
-
-* 
-
-Problem:
-* when i am scrolling in one tab and switch to other tab it picks up where i was scrolling in the other tab, each tab needs to be independent 
-
-Acceptance Criteria:
-* scrolling becomes independent 
-
-
----
-
-## ISSUE-001
-
-Status: [closed]
-
-Title: constant refresh
-
-Priority: high
-
-Files: 
-
-* app.py
-
-Problem:
-*  the app in very slow, it is constantly refreshing itself , issue seems to be from never ending table
-
-Acceptance Criteria:
-* keep never ending table but stop refreshing all the time
+  risk_if_not_fixed: HIGH
 
 ---
 

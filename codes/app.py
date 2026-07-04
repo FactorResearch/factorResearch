@@ -254,7 +254,9 @@ def _is_rate_limit_error(exc: Exception) -> bool:
         return True
     return type(exc).__name__ == "RateLimitError"
 
-
+def is_production() -> bool:
+    
+    return os.environ.get("FLASK_ENV", "").lower() == "production"
 def analyze_stock(symbol: str) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
@@ -1080,6 +1082,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
     if dash.ctx.triggered_id == "page-load-interval":
         _last_screener_state = None
     results    = screener.get_screener_results()
+   
     prog       = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
     sort_col   = (sort_state or {}).get("col", "composite_score")
@@ -1087,6 +1090,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
     page = page_num or 1
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
+    
     if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
         page = 1
         page_reset = 1
@@ -1128,6 +1132,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         )
     portfolio_symbols = _get_portfolio_symbols()
     filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    
     text_cols = {"symbol", "name", "sector", "updated_at"}
     if sort_col in text_cols:
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
@@ -1241,11 +1246,12 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         row_style = {}
         if in_port:  row_style = {"borderLeft": f"3px solid {AMBER}"}
         elif viewed: row_style = {"borderLeft": f"3px solid {GREEN}44"}
+        
         rows.append(html.Tr(style=row_style, children=[
             html.Td(str(i), className="rank-num"),
             ticker_cell,
             html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
-            html.Td(r["sector"][:18], className="text-xs text-muted"),
+            html.Td(r["sector"][:18], className="text-xs text-muted",title=r["sector"]),
             html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
             html.Td(
                 html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")
@@ -2502,14 +2508,15 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
         return [], None, f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     # Billing enforcement: analyze_stock is a paid-tier feature.
     user_id = _get_user_id()
-    try:
-        if not billing.user_has_paid(user_id):
-            checkout = billing.get_checkout_url(user_id)
-            msg = f"🔒 This feature requires a paid subscription. Upgrade: {checkout}"
-            return [], None, msg, False, False, dash.no_update, {"display": "none"}, None, dash.no_update
-    except Exception:
-        # On any billing check failure, default to safe denial.
-        return [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+    if is_production():
+        try:
+            if not billing.user_has_paid(user_id):
+                checkout = billing.get_checkout_url(user_id)
+                msg = f"🔒 This feature requires a paid subscription. Upgrade: {checkout}"
+                return [], None, msg, False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+        except Exception:
+            # On any billing check failure, default to safe denial.
+            return [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     try:
         result = analyze_stock(symbol)
     except Exception as e:
@@ -3991,9 +3998,9 @@ startup()
 if __name__ == "__main__":
     # ISSUE_011: never bind debug=True to a public interface. Local dev
     # only gets the interactive debugger when FLASK_ENV isn't "production".
-    _is_prod = os.environ.get("FLASK_ENV", "").lower() == "production"
+    
     app.run(
-        host="127.0.0.1" if not _is_prod else "0.0.0.0",
-        debug=not _is_prod,
+        host="0.0.0.0" if is_production() else "127.0.0.1",
+        debug=not is_production(),
         port=int(os.environ.get("PORT", 8050)),
     )

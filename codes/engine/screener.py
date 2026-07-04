@@ -27,6 +27,7 @@ from . import scorer
 from . import universe
 from datetime import datetime, timezone
 
+
 _PROGRESS_REDIS_KEY = "screener:progress"
 
 
@@ -111,8 +112,11 @@ def clear_user_progress(session_id: str) -> None:
 
 def get_screener_results() -> list[dict]:
     """Return current results sorted by composite_score descending."""
+   
+   
     with _lock:
         return sorted(_progress["results"],
+                      
                       key=lambda x: x["composite_score"], reverse=True)
 
 def _minimal_row(symbol: str, name: str = "", sector: str = "") -> dict:
