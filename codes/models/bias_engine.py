@@ -1,9 +1,6 @@
 """
 Bias Engine — pure classification layer.
-
-Python port of BiasEngine.swift (see BiasEngine_Python_Rewrite.md).
-
-IntrinsicIQ never outputs Buy/Sell/Avoid. All verdicts are expressed as
+Factor Research never outputs Buy/Sell/Avoid. All verdicts are expressed as
 Outperform Bias / Neutral / Underperform Bias. This is the ONLY place in
 the codebase permitted to produce that verdict-like label.
 
