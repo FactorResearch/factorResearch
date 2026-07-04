@@ -3,9 +3,11 @@ Graham Score App — Full Quant Version
 Pure Python / Dash with SEC EDGAR + Alpha Vantage
 Enhanced score uses the orthogonal factor weights defined in codes.engine.scorer.
 """
+
 import traceback
 import sys
 import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import re
 import math
 import re
@@ -14,7 +16,7 @@ from codes.data import api_fetcher
 from codes.data.api_fetcher import RateLimitError
 # Allow both `python app.py` (direct) and `python -m codes.app` (module) execution.
 # Inserts the project root so that `codes.*` package imports resolve in both cases.
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import dash
 from dash import dcc, html, Input, Output, State, callback
 import plotly.graph_objects as go
