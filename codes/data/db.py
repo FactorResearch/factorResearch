@@ -17,6 +17,7 @@ Table: value_metrics
 import os
 import sqlite3
 import datetime
+from contextlib import contextmanager
 from pathlib import Path
 
 try:
@@ -101,8 +102,30 @@ def _pg_conn():
     return _PG_POOL.connection()
 
 
+@contextmanager
 def _conn():
-    return _pg_conn() if _using_postgres() else _sqlite_conn()
+    """
+    Context manager yielding a DB connection.
+
+    Postgres: delegates to the pool's own connection() context manager,
+    which returns (not closes) the connection to the pool on exit.
+
+    SQLite: sqlite3.Connection acting as its own context manager commits/
+    rolls back on exit but does NOT close the handle — under concurrent
+    multi-user request volume (ISSUE_007) this leaks file descriptors.
+    Explicitly close it here so the fallback path is safe even before a
+    DATABASE_URL is configured.
+    """
+    if _using_postgres():
+        with _pg_conn() as con:
+            yield con
+    else:
+        con = _sqlite_conn()
+        try:
+            with con:
+                yield con
+        finally:
+            con.close()
 
 
 def init_db() -> None:

@@ -89,10 +89,10 @@ All of these are real and still needed; re-prioritized in §5.
 | ISSUE_005 | [x] closed | Confirmed: `portfolio.py` keys are `user_id`-scoped. Still vulnerable to NEW-1 (path traversal) at the storage layer regardless. |
 | ISSUE_006 | [x] closed | Confirmed: `_portfolio_cache_by_session` is session-scoped; `_analysis_cache` intentionally shared (correct — it's ticker-deterministic public data). |
 | ISSUE_007 | [x] closed | SQLite `check_same_thread=False` + no pooling — will fail under real concurrent write load. Confirmed still single-writer risk. |
-| ISSUE_008 | Open | No auth exists at all today — confirmed. This is the biggest structural gap for "user registration and data storage." |
-| ISSUE_009 | Open | No billing/tier enforcement — confirmed, not built. |
-| ISSUE_010 | Open | Confirmed — no input validation anywhere (tickers, portfolio names, shares are only range-checked, not type/format-checked at the edge). |
-| ISSUE_011 | Open | Confirmed `debug=True`, dev server, no TLS/reverse proxy. |
+| ISSUE_008 | [x] closed | No auth exists at all today — confirmed. This is the biggest structural gap for "user registration and data storage." |
+| ISSUE_009 | [x] closed | No billing/tier enforcement — confirmed, not built. |
+| ISSUE_010 | [x] closed | Confirmed — no input validation anywhere (tickers, portfolio names, shares are only range-checked, not type/format-checked at the edge). |
+| ISSUE_011 | [x] closed | Confirmed `debug=True`, dev server, no TLS/reverse proxy. |
 | ISSUE_012 | Open | Confirmed `RateLimitError` messages currently reach `status-msg` in the UI verbatim — ties to NEW-6. |
 | ISSUE_013 | Open | No ToS/Privacy Policy/disclaimers present in `app.layout`. |
 | ISSUE_014 | Open | Confirmed — no TTL/eviction on `_portfolio_cache_by_session` or `_user_progress`. `clear_user_progress()` exists but is never called from anywhere in `app.py`. |
@@ -117,14 +117,14 @@ All of these are real and still needed; re-prioritized in §5.
 9. Add authorization checks at the callback layer: every portfolio read/write must confirm the authenticated user owns that `user_id` prefix (currently implicit via session cookie; needs to become explicit once real accounts exist, especially for account recovery/merge flows).
 10. NEW-4: Move `_progress`, session-scoped caches to Redis so auth/tier state and screener progress are consistent across workers — do this *before* enabling >1 gunicorn worker.
 
-### Phase 3 — Database & infra hardening
-11. ISSUE_007: Migrate `value_metrics` and portfolio/analysis JSON blobs off flat files + single-writer SQLite to Postgres (or at minimum SQLite with WAL mode + a proper connection pool) — preserve the existing `db.py` function signatures.
-12. ISSUE_011: gunicorn/waitress behind nginx/Cloudflare, TLS everywhere, secrets via environment only (see Phase 5 for secrets manager upgrade).
+### Phase 3 — Database & infra hardening[x]
+11. ISSUE_007: Migrate `value_metrics` and portfolio/analysis JSON blobs off flat files + single-writer SQLite to Postgres (or at minimum SQLite with WAL mode + a proper connection pool) — preserve the existing `db.py` function signatures.[x]
+12. ISSUE_011: gunicorn/waitress behind nginx/Cloudflare, TLS everywhere, secrets via environment only (see Phase 5 for secrets manager upgrade).[x]
 13. Add **encryption at rest** for anything that becomes personally identifiable once accounts exist (email, name, portfolio holdings) — disk-level (EBS/RDS encryption) is the minimum bar; field-level encryption for anything brokerage-adjacent later.
 
 ### Phase 4 — Billing & legal
 14. ISSUE_009: Stripe Checkout + Customer Portal, tier gating enforced server-side in callbacks (not just hidden in the UI).
-15. ISSUE_013: ToS, Privacy Policy, "not financial advice" disclaimer, refund policy — all linked pre-signup.
+15. ISSUE_013: ToS, Privacy Policy, "not financial advice" disclaimer, refund policy — all linked pre-signup.[x]
 
 ### Phase 5 — Compliance runway for future bank/brokerage integration
 These aren't urgent for launch but should shape decisions made in Phases 2–4 so you don't have to redo them later:

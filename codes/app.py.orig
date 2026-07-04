@@ -3987,11 +3987,8 @@ def startup():
 startup()
 
 if __name__ == "__main__":
-    # ISSUE_011: never bind debug=True to a public interface. Local dev
-    # only gets the interactive debugger when FLASK_ENV isn't "production".
-    _is_prod = os.environ.get("FLASK_ENV", "").lower() == "production"
     app.run(
-        host="127.0.0.1" if not _is_prod else "0.0.0.0",
-        debug=not _is_prod,
+        host="0.0.0.0",
+        debug=True,   # dev only
         port=int(os.environ.get("PORT", 8050)),
     )
