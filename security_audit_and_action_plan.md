@@ -28,7 +28,7 @@ Everything already in Publish.md (ISSUE_004–014) remains valid and is folded i
 
 ## 2. Critical Findings (New)
 
-### NEW-1 — Path traversal via cache keys (CRITICAL)
+### NEW-1 — Path traversal via cache keys (CRITICAL)[x]
 **File:** `codes/data/cache.py` (`_path()`), consumed by `codes/app.py`, `codes/portfolio.py`, `codes/engine/screener.py`
 
 ```python

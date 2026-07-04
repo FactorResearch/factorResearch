@@ -1,0 +1,100 @@
+--- codes/data/cache.py	2026-07-03 23:52:38.012427495 +0000
++++ codes/data/cache.py	2026-07-03 23:54:04.941750905 +0000
+@@ -5,6 +5,8 @@
+ import time
+ from pathlib import Path
+ 
++from codes import security
++
+ CACHE_DIR = Path(".cache")
+ 
+ # Fallback TTL used only for the ticker map (not for company facts).
+@@ -75,7 +77,22 @@
+         return obj
+ 
+ 
+-def _dumps(data, *, latest_filing: str | None = None) -> str:
++# ── Encryption at rest (security_audit_and_action_plan.md Phase 3 #13) ───────
++# Cache kinds whose payload contains user-identifiable data (portfolio names,
++# holdings, shares) are encrypted at rest. Market/reference data (sec_facts,
++# hist, analysis, etc.) is public and left plaintext.
++_ENCRYPTED_KINDS = {"portfolio"}
++_encryptor: "security.SensitiveDataEncryptor | None" = None
++
++
++def _get_encryptor() -> "security.SensitiveDataEncryptor":
++    global _encryptor
++    if _encryptor is None:
++        _encryptor = security.SensitiveDataEncryptor()
++    return _encryptor
++
++
++def _dumps(data, *, latest_filing: str | None = None, kind: str | None = None) -> str:
+     """
+     Serialise a cache entry.
+ 
+@@ -84,13 +101,34 @@
+     ``is_stale_for_company()`` can compare it against whatever SEC
+     reports as the most-recent filing without re-downloading the full
+     facts blob.
+-    """
+-    payload: dict = {"ts": time.time(), "data": data}
++
++    ``kind`` in ``_ENCRYPTED_KINDS`` encrypts ``data`` at rest (see
++    _ENCRYPTED_KINDS above); ``ts``/``latest_filing`` stay plaintext so
++    staleness checks don't require decryption.
++    """
++    stored_data = data
++    encrypted = False
++    if kind in _ENCRYPTED_KINDS:
++        plaintext = json.dumps(data, cls=_SafeEncoder)
++        cipher = _get_encryptor().encrypt(plaintext)
++        if cipher is not None:
++            stored_data = cipher
++            encrypted = True
++
++    payload: dict = {"ts": time.time(), "data": stored_data, "encrypted": encrypted}
+     if latest_filing is not None:
+         payload["latest_filing"] = latest_filing
+     return json.dumps(payload, indent=2, cls=_SafeEncoder)
+ 
+ 
++def _maybe_decrypt(entry: dict):
++    """Decrypt entry['data'] in place-equivalent if it was written encrypted."""
++    if entry and entry.get("encrypted"):
++        plaintext = _get_encryptor().decrypt(entry["data"])
++        entry["data"] = json.loads(plaintext) if plaintext is not None else None
++    return entry
++
++
+ # ── Public API ────────────────────────────────────────────────────────────────
+ 
+ def read(kind: str, key: str):
+@@ -102,6 +140,7 @@
+     try:
+         if p.exists():
+             entry = json.loads(p.read_text())
++            _maybe_decrypt(entry)
+             return entry["data"]
+     except Exception:
+         pass
+@@ -113,7 +152,9 @@
+     p = _path(kind, key)
+     try:
+         if p.exists():
+-            return json.loads(p.read_text())
++            entry = json.loads(p.read_text())
++            _maybe_decrypt(entry)
++            return entry
+     except Exception:
+         pass
+     return None
+@@ -163,7 +204,7 @@
+ 
+ def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> None:
+     try:
+-        _path(kind, key).write_text(_dumps(data, latest_filing=latest_filing))
++        _path(kind, key).write_text(_dumps(data, latest_filing=latest_filing, kind=kind))
+         suffix = f" (filing {latest_filing})" if latest_filing else ""
+         print(f"[CACHE SAVED] {kind}:{key}{suffix}")
+     except Exception as e:
