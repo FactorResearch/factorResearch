@@ -1,5 +1,5 @@
 """
-Comprehensive Security Module for Graham Score App
+Comprehensive Security Module
 """
 
 import os

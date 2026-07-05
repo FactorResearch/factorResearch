@@ -254,6 +254,45 @@ No vague instructions allowed.
 
 ---
 
+---
+
+## ISSUE_002:
+   
+ Status:[]
+  title: complete postgress db migration
+  category: data-architecture
+
+  files:
+    - codes/app.py
+    - codes/data/db.py
+    - codes/workers/sec_refresh_worler.py
+
+
+  problem: >
+    app is defaulting to sql lite, we need to use postgres sql, in our postgress sql, we have 4 db as follow 
+    factorresearch_users,factorresearch_market,factorresearch_jobs,factorresearch_analytics.
+    sec_refresh_worker muust save its tabels in market db
+
+  root_cause: >
+      wiring is not correct in db.pu
+
+  current_behavior:
+    - when python -m codes.workers.sec_refresh_worker is executed we save data to sql lite insted of postgress
+
+  required_fix: >
+    remove sql lite completly, no longer need it, move everything to postgres 
+
+
+  constraints:
+
+
+  acceptance_criteria:
+    - we only use postgress, and save data into correct db
+    
+  risk_if_not_fixed: HIGH
+
+---
+
 
 
 ---

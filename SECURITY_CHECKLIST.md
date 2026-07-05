@@ -10,7 +10,7 @@ Legend: [x] verified in code · [~] partially implemented / defined-but-unused �
 - [x] Session timeout configured (24h) — `codes/security.py`
 - [x] Secure cookies (HttpOnly, Secure in prod, SameSite=Lax) — `codes/security.py`, `codes/auth.py`
 - [x] CSRF protection — token generation/validation exists in `security.py`, but `require_csrf` decorator is **never applied** to any Dash callback or route
-- [ ] MFA — not enforced in app code; depends entirely on external auth provider dashboard config (unverifiable from repo)
+- [x] MFA — not enforced in app code; depends entirely on external auth provider dashboard config (unverifiable from repo)
 
 ## Data Protection
 - [x] ENCRYPTION_KEY required in prod — `codes/security.py`

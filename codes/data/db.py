@@ -30,7 +30,9 @@ except ImportError:  # pragma: no cover
     dict_row = None
     ConnectionPool = None
 
-DB_URL = os.environ.get("DATABASE_URL")
+def _db_url():
+    return os.environ.get("DATABASE_MARKET_URL")
+
 DB_PATH = Path(".cache") / "value_metrics.db"
 _PG_POOL = None
 _initialized = False
@@ -113,7 +115,7 @@ _COUNT_POSTGRES = "SELECT COUNT(*) FROM value_metrics"
 
 
 def _using_postgres() -> bool:
-    return bool(DB_URL)
+    return bool(_db_url())
 
 
 def _sqlite_conn() -> sqlite3.Connection:
@@ -123,6 +125,7 @@ def _sqlite_conn() -> sqlite3.Connection:
 
 def _pg_conn():
     global _PG_POOL
+    DB_URL = _db_url()
     if psycopg is None:
         raise RuntimeError(
             "Postgres support requires psycopg[binary]. Install it or unset DATABASE_URL."
@@ -146,6 +149,7 @@ def _conn():
     Explicitly close it here so the fallback path is safe even before a
     DATABASE_URL is configured.
     """
+    
     if _using_postgres():
         with _pg_conn() as con:
             yield con
