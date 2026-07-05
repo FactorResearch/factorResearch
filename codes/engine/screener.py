@@ -26,6 +26,7 @@ from ..models import quality
 from . import scorer
 from . import universe
 from datetime import datetime, timezone
+from ..data import company_metadata
 
 
 _PROGRESS_REDIS_KEY = "screener:progress"
@@ -211,6 +212,9 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
     enhanced = analysis_result.get("enhanced", {})
     comp     = analysis_result.get("composite",{})
     b        = analysis_result.get("buffett",  {})
+    sector_val = analysis_result.get("sector")
+    if sector_val:
+        company_metadata.record_sector(symbol, sector_val)
 
     g_pct      = enhanced.get("graham_pct")    or comp.get("graham_pct",    0)
     q_pct      = enhanced.get("quality_pct")   or comp.get("quality_pct",   0)
@@ -319,6 +323,7 @@ def load_universe_background(tickers: list[str] | None = None):
         # Enrich with prior full-analysis results from cache
         _enrich_from_analysis_cache()
         _enrich_from_db()
+        company_metadata.start_background_refresh(symbols)
 
         with _lock:
             _progress["results"].sort(
@@ -327,9 +332,12 @@ def load_universe_background(tickers: list[str] | None = None):
             _progress["running"] = False
             _sync_progress_to_redis()
             _progress["phase"]   = ""
+        # ISSUE_001: instant, network-free sector fill from metadata cache
+        with _lock:
+            company_metadata.enrich_rows(_progress["results"])
 
         print(f"\n✅ Universe loaded: {len(symbols):,} tickers\n")
-
+    
     threading.Thread(target=_worker, daemon=True).start()
 # ── Enrich screener rows from persisted analysis cache ───────────────────────
 
@@ -518,6 +526,7 @@ def load_cached_only() -> list[dict]:
             key=lambda x: x.get("composite_score") or 0, reverse=True
         )
 
+    company_metadata.enrich_rows(_progress["results"])
     n    = len(_progress["results"])
     n_db = db.count()
     print(f"  ✅ {n} stocks ready ({n_db} rows in SQLite store)")

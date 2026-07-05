@@ -96,6 +96,31 @@ def get_cik(symbol: str) -> tuple[str, str]:
         raise ValueError(f'Ticker "{symbol}" not found in SEC database')
     return entry["cik"], entry["name"]
 
+def get_company_sector_light(symbol: str) -> dict:
+    """
+    Lightweight sector/industry lookup for screener filter metadata.
+    Uses only /submissions/ (cheap) — never /companyfacts/.
+    """
+    try:
+        cik, _ = get_cik(symbol)
+    except ValueError:
+        return {"sector": "", "sic": 0, "exchange": None}
+
+    try:
+        subs = _fetch_submissions(cik)
+    except Exception as e:
+        print(f"  [SEC] ⚠️  get_company_sector_light failed for {symbol}: {e}")
+        return {"sector": "", "sic": 0, "exchange": None}
+
+    sector = subs.get("sicDescription", "") or ""
+    try:
+        sic = int(subs.get("sic", 0) or 0)
+    except (TypeError, ValueError):
+        sic = 0
+    exchanges = subs.get("exchanges") or []
+    exchange = exchanges[0] if exchanges else None
+
+    return {"sector": sector, "sic": sic, "exchange": exchange}
 
 # ── Submissions / latest-filing check ────────────────────────────────────────
 

@@ -38,7 +38,7 @@ except Exception:
 from codes import auth
 from codes import billing
 from codes import security
-from codes.data   import cache, sec_data
+from codes.data   import cache, sec_data,company_metadata
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
 from codes.engine import factor_backtest as fb_engine
@@ -3991,6 +3991,8 @@ def startup():
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener.load_cached_only()
+    # ISSUE_001: kick off sector metadata backfill in background
+    company_metadata.start_background_refresh(universe.get_universe())
     print(f"✅ {len(results)} cached stocks ready\n")
 
 startup()
