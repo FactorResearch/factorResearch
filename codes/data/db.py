@@ -19,6 +19,7 @@ import sqlite3
 import datetime
 from contextlib import contextmanager
 from pathlib import Path
+import json 
 
 try:
     import psycopg
@@ -45,6 +46,35 @@ CREATE TABLE IF NOT EXISTS value_metrics (
     updated_at      TEXT NOT NULL
 )
 """
+_CREATE_SEC_FACTS_TABLE = """
+CREATE TABLE IF NOT EXISTS sec_facts (
+    ticker          TEXT PRIMARY KEY,
+    facts_json      TEXT NOT NULL,
+    latest_filing   TEXT,
+    updated_at      TEXT NOT NULL
+)
+"""
+
+_UPSERT_SEC_FACTS_SQLITE = """
+INSERT INTO sec_facts (ticker, facts_json, latest_filing, updated_at)
+VALUES (?, ?, ?, ?)
+ON CONFLICT(ticker) DO UPDATE SET
+    facts_json    = excluded.facts_json,
+    latest_filing = excluded.latest_filing,
+    updated_at    = excluded.updated_at
+"""
+
+_UPSERT_SEC_FACTS_POSTGRES = """
+INSERT INTO sec_facts (ticker, facts_json, latest_filing, updated_at)
+VALUES (%s, %s, %s, %s)
+ON CONFLICT(ticker) DO UPDATE SET
+    facts_json    = excluded.facts_json,
+    latest_filing = excluded.latest_filing,
+    updated_at    = excluded.updated_at
+"""
+
+_SELECT_SEC_FACTS_SQLITE = "SELECT * FROM sec_facts WHERE ticker = ?"
+_SELECT_SEC_FACTS_POSTGRES = "SELECT * FROM sec_facts WHERE ticker = %s"
 
 _UPSERT_SQLITE = """
 INSERT INTO value_metrics
@@ -131,6 +161,7 @@ def _conn():
 def init_db() -> None:
     with _conn() as con:
         con.execute(_CREATE_TABLE)
+        con.execute(_CREATE_SEC_FACTS_TABLE)
 
     if _using_postgres():
         _migrate_sqlite_to_postgres()
@@ -255,3 +286,55 @@ def count() -> int:
     _ensure_init()
     with _conn() as con:
         return con.execute("SELECT COUNT(*) FROM value_metrics").fetchone()[0]
+def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> None:
+    """Store the full sec_facts blob for a ticker (worker-only write path)."""
+    _ensure_init()
+    now = datetime.datetime.utcnow().isoformat()
+    facts_json = json.dumps(facts)
+    params = (ticker.upper(), facts_json, latest_filing, now)
+    try:
+        with _conn() as con:
+            con.execute(
+                _UPSERT_SEC_FACTS_POSTGRES if _using_postgres() else _UPSERT_SEC_FACTS_SQLITE,
+                params,
+            )
+    except Exception as e:
+        print(f"  [DB] upsert_sec_facts failed for {ticker}: {e}")
+
+
+def get_sec_facts(ticker: str) -> dict | None:
+    """Return the parsed sec_facts blob for a ticker, or None if absent."""
+    _ensure_init()
+    with _conn() as con:
+        if _using_postgres():
+            con.row_factory = dict_row
+            row = con.execute(_SELECT_SEC_FACTS_POSTGRES, (ticker.upper(),)).fetchone()
+        else:
+            con.row_factory = sqlite3.Row
+            row = con.execute(_SELECT_SEC_FACTS_SQLITE, (ticker.upper(),)).fetchone()
+    if not row:
+        return None
+    row = dict(row)
+    try:
+        return json.loads(row["facts_json"])
+    except (TypeError, ValueError):
+        return None
+
+
+def get_sec_facts_meta(ticker: str) -> dict | None:
+    """Return only {ticker, latest_filing, updated_at} — cheap staleness check, no blob parse."""
+    _ensure_init()
+    with _conn() as con:
+        if _using_postgres():
+            con.row_factory = dict_row
+            row = con.execute(
+                "SELECT ticker, latest_filing, updated_at FROM sec_facts WHERE ticker = %s",
+                (ticker.upper(),),
+            ).fetchone()
+        else:
+            con.row_factory = sqlite3.Row
+            row = con.execute(
+                "SELECT ticker, latest_filing, updated_at FROM sec_facts WHERE ticker = ?",
+                (ticker.upper(),),
+            ).fetchone()
+    return dict(row) if row else None

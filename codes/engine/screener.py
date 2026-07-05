@@ -151,16 +151,9 @@ def _minimal_row(symbol: str, name: str = "", sector: str = "") -> dict:
 def _score_one(symbol: str) -> dict | None:
     """Score a single stock from cache or fresh fetch. Returns row dict or None."""
     try:
-        cached_sec = cache.read("sec_facts", symbol)
+        cached_sec = db.get_sec_facts(symbol)
         if not cached_sec:
-            _sec_rate_wait()
-            cached_sec = sec_data.fetch_company_facts(symbol)
-            # Defer cache write to background thread (non-blocking)
-            threading.Thread(
-                target=cache.write, 
-                args=("sec_facts", symbol, cached_sec),
-                daemon=True
-            ).start()
+            return None   # not yet populated by the worker — skip for now
 
         g    = graham.score(None, cached_sec)
         q    = quality.score(cached_sec)

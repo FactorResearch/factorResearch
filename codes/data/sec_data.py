@@ -48,7 +48,8 @@ Mitigation in this module:
 
 import requests
 import pandas as pd
-from . import cache
+from . import cache,db
+from datetime import datetime
 
 SEC_HEADERS = {"User-Agent": "GrahamScoreApp/1.0 contact@example.com"}
 FACTS_URL   = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
@@ -1003,7 +1004,7 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
         "dividends":         div_df.to_dict("records"),
     }
 
-    cache.write("sec_facts", symbol.lower(), result, latest_filing=latest_filing)
+    db.upsert_sec_facts(symbol.upper(), result, latest_filing)
     return result
 
 
@@ -1015,63 +1016,49 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
 # This guards against the submissions check itself being stale.
 _ANNUAL_TTL_SECONDS = 7 * 24 * 60 * 60   # 7 days
 
-
 def is_cache_stale(symbol: str) -> bool:
     """
-    Return True when the cached sec_facts entry needs a refresh.
-
-    Two-tier check:
-      1. If the cache entry is absent or has no ``latest_filing`` → stale.
-      2. Fetch only the cheap /submissions/ endpoint and compare the
-         most-recent 10-K/10-Q date against what was cached.
-         Falls back to wall-clock TTL (_ANNUAL_TTL_SECONDS) when the
-         submissions fetch fails (network unavailable).
+    True when the sec_facts row in Postgres needs a refresh.
+    Same two-tier logic as before, now checking DB metadata instead of
+    the JSON file cache entry.
     """
     import time as _time
 
-    entry = cache.read_entry("sec_facts", symbol.lower())
-    if entry is None:
+    meta = db.get_sec_facts_meta(symbol.upper())
+    if meta is None:
         return True
 
-    # Wall-clock TTL guard — avoid pinging SEC more than once per TTL window
-    age = _time.time() - entry.get("ts", 0)
-    if age < _ANNUAL_TTL_SECONDS:
-        # Within TTL: trust the cached filing date comparison
-        cached_filing = entry.get("latest_filing")
-        if cached_filing is None:
-            return True   # legacy entry; force refresh
-        return False
+    updated_at = meta.get("updated_at")
+    try:
+        age = _time.time() - datetime.fromisoformat(updated_at).timestamp() if updated_at else _ANNUAL_TTL_SECONDS + 1
+    except ValueError:
+        age = _ANNUAL_TTL_SECONDS + 1
 
-    # Beyond TTL: do a cheap submissions check
+    if age < _ANNUAL_TTL_SECONDS:
+        return meta.get("latest_filing") is None
+
     try:
         cik, _ = get_cik(symbol)
         subs   = _fetch_submissions(cik)
         latest = _latest_filing_date(subs)
         if latest is None:
-            return False  # can't determine → assume fresh
-        cached_filing = entry.get("latest_filing")
+            return False
+        cached_filing = meta.get("latest_filing")
         if cached_filing is None:
             return True
         return latest > cached_filing
     except Exception as e:
         print(f"  [SEC] is_cache_stale check failed for {symbol}: {e}")
-        return False   # network issue → use existing cache rather than fail
-
-
+        return False
 def refresh_if_needed(symbol: str) -> dict:
     """
-    Return up-to-date sec_facts for ``symbol``.
-
-    * Cache hit  → returns cached data immediately (zero network calls).
-    * Stale      → calls fetch_company_facts() to pull the latest filing,
-                   writes to cache, and returns fresh data.
-
-    Use this in portfolio simulation and background scoring instead of
-    calling fetch_company_facts() directly so the heavy XBRL blob is only
-    downloaded when SEC actually has new data.
+    Read-only for app servers: return DB-cached facts if fresh.
+    Only fetches from SEC when explicitly stale AND called by the worker
+    process (app servers should never hit this fetch branch in production —
+    see get_financials()).
     """
     if not is_cache_stale(symbol):
-        cached = cache.read("sec_facts", symbol.lower())
+        cached = db.get_sec_facts(symbol.upper())
         if cached:
             return cached
     return fetch_company_facts(symbol, include_delisted_warning=False)
@@ -1079,27 +1066,14 @@ def refresh_if_needed(symbol: str) -> dict:
 
 def get_financials(symbol: str, force_refresh: bool = False) -> dict:
     """
-    Primary lazy-fetch entry point for all scoring modules.
-
-    Args:
-        symbol:        Stock ticker (case-insensitive).
-        force_refresh: When True, bypass the cache and always re-fetch from SEC.
-
-    Returns:
-        sec_facts dict identical to fetch_company_facts() output.
-
-    Behaviour
-    ─────────
-    * force_refresh=False (default):
-        - Return cached data if present and not stale  (instant, no network).
-        - Fetch from SEC only when the cache is absent or a newer filing exists.
-    * force_refresh=True:
-        - Always fetch from SEC and overwrite the cache.
-
-    This is the recommended call site for all new code.  Existing callers
-    of fetch_company_facts() continue to work unchanged.
+    App-server entry point. Pure DB read — never calls SEC directly.
+    force_refresh is ignored here; refreshing is the worker's job now.
     """
     symbol = symbol.upper().strip()
-    if force_refresh:
-        return fetch_company_facts(symbol, include_delisted_warning=False)
-    return refresh_if_needed(symbol)
+    cached = db.get_sec_facts(symbol)
+    if cached:
+        return cached
+    raise ValueError(
+        f'No SEC data available yet for "{symbol}". '
+        "It will appear after the next background refresh run."
+    )
