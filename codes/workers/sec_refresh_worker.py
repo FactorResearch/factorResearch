@@ -28,32 +28,36 @@ def _rate_wait(last_call: list[float]) -> None:
 
 
 def run_sweep(max_symbols: int | None = None) -> None:
-    db.init_db()
-    symbols = universe.get_universe()
-    if max_symbols:
-        symbols = symbols[:max_symbols]
+    try:
+        db.init_db()
+        symbols = universe.get_universe()
+        if max_symbols:
+            symbols = symbols[:max_symbols]
 
-    print(f"[SECWorker] sweeping {len(symbols)} symbols...")
-    last_call = [0.0]
-    refreshed = skipped = failed = 0
+        print(f"[SECWorker] sweeping {len(symbols)} symbols...")
+        last_call = [0.0]
+        refreshed = skipped = failed = 0
 
-    for i, sym in enumerate(symbols, 1):
-        try:
-            if sec_data.is_cache_stale(sym):
-                _rate_wait(last_call)
-                sec_data.fetch_company_facts(sym, include_delisted_warning=False)
-                refreshed += 1
-            else:
-                skipped += 1
-        except Exception as e:
-            failed += 1
-            print(f"  [SECWorker] ⚠️  {sym} failed: {e}")
+        for i, sym in enumerate(symbols, 1):
+            try:
+                if sec_data.is_cache_stale(sym):
+                    _rate_wait(last_call)
+                    sec_data.fetch_company_facts(sym, include_delisted_warning=False)
+                    refreshed += 1
+                else:
+                    skipped += 1
+            except Exception as e:
+                failed += 1
+                print(f"  [SECWorker] ⚠️  {sym} failed: {e}")
 
-        if i % 200 == 0:
-            print(f"  [SECWorker] progress {i}/{len(symbols)} "
-                  f"(refreshed={refreshed}, skipped={skipped}, failed={failed})")
+            if i % 200 == 0:
+                print(f"  [SECWorker] progress {i}/{len(symbols)} "
+                    f"(refreshed={refreshed}, skipped={skipped}, failed={failed})")
 
-    print(f"[SECWorker] done. refreshed={refreshed}, skipped={skipped}, failed={failed}")
+        print(f"[SECWorker] done. refreshed={refreshed}, skipped={skipped}, failed={failed}")
+    except Exception as e:
+        print(f"[SECWorker] fatal error: {e}")
+        return
 
 
 if __name__ == "__main__":

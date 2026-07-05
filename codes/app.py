@@ -3987,7 +3987,8 @@ def _render_fb_results(r: dict) -> list:
 # ── Startup ───────────────────────────────────────────────────────────────────
 def startup():
     print("\n🚀 Graham Score — Quant Edition")
-   
+    from codes.data import db
+    db.init_db()
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener.load_cached_only()
@@ -3998,8 +3999,7 @@ def startup():
 startup()
 
 if __name__ == "__main__":
-    # ISSUE_011: never bind debug=True to a public interface. Local dev
-    # only gets the interactive debugger when FLASK_ENV isn't "production".
+   
     
     app.run(
         host="0.0.0.0" if is_production() else "127.0.0.1",
