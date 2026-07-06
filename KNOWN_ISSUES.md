@@ -195,7 +195,7 @@ No vague instructions allowed.
 
 ## ISSUE_001:
    
- Status:[]
+ Status:[x]
   title: "Sector dropdown is empty due to missing metadata layer (SEC facts not available at startup)"
   category: data-architecture
 
@@ -258,7 +258,7 @@ No vague instructions allowed.
 
 ## ISSUE_002:
    
- Status:[]
+ Status:[x]
   title: complete postgress db migration
   category: data-architecture
 
@@ -293,7 +293,66 @@ No vague instructions allowed.
 
 ---
 
+---
 
+## ISSUE_003:
+
+  Status: [ ]
+
+  title: Build a validated Graham universe to eliminate unnecessary SEC downloads
+
+  category: data-pipeline
+
+  files:
+    - codes/data/universe.py
+    - codes/workers/sec_refresh_worker.py
+    - codes/data/sec_data.py
+
+  problem: >
+    The current universe is generated directly from the SEC
+    company_tickers.json file. This includes ETFs, mutual funds,
+    trusts, SPACs, shell companies, and other non-operating entities.
+    As a result, the SEC refresh worker downloads SEC Company Facts
+    for many securities that will never qualify for Graham analysis,
+    wasting time, bandwidth, storage, and processing.
+
+  root_cause: >
+    The universe builder has no concept of security type or eligibility.
+    It treats every SEC reporting entity as a candidate for Graham
+    analysis because filtering occurs only after financial data has
+    already been downloaded.
+
+  current_behavior:
+    - Load every SEC ticker.
+    - Download SEC Company Facts for every ticker.
+    - Later reject funds and other non-operating entities during screening.
+
+  required_fix: >
+    Investigate building an "eligible Graham universe" before SEC data
+    collection. Determine the most reliable source for identifying
+    operating companies (e.g. FMP company profile metadata such as
+    isEtf, isFund, security type, exchange, etc.). Cache the validated
+    universe and have the SEC refresh worker process only eligible
+    companies. Avoid heuristic filtering based on company names.
+
+  constraints:
+    - Do not rely on company name keywords such as "Fund", "Trust",
+      or "ETF".
+    - Minimize additional API usage.
+    - The universe should be reproducible and refreshable on demand.
+    - Preserve support for legitimate operating companies such as
+      Berkshire Hathaway (BRK.B).
+
+  acceptance_criteria:
+    - SEC Company Facts are downloaded only for eligible operating companies.
+    - ETFs, mutual funds, and other unsupported security types are
+      excluded before SEC downloads begin.
+    - The eligibility rules are centralized and easily extensible.
+    - The universe can be refreshed independently of the SEC data cache.
+
+  risk_if_not_fixed: MEDIUM
+
+---
 
 ---
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
