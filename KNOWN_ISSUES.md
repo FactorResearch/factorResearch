@@ -353,7 +353,128 @@ No vague instructions allowed.
   risk_if_not_fixed: MEDIUM
 
 ---
+ISSUE_012:
 
+Status: [ ]
+
+title: “Implement shared factor engine with user-customizable weighting and strategy cache”
+
+category: architecture
+
+files:
+
+* codes/engine/factor_engine.py
+* codes/engine/scoring.py
+* codes/engine/backtest.py
+* codes/data/db.py
+* codes/models.py
+* codes/routes/analysis.py
+* codes/routes/backtest.py
+
+problem: >
+The current analysis architecture assumes a single scoring model. The
+platform roadmap allows every user to customize the weighting of
+Graham, Buffett, Quality, Financial Health, Growth, Momentum, and
+future factors, while keeping the underlying company analysis shared.
+Recomputing complete analysis for every user would not scale and would
+duplicate identical computations.
+
+root_cause: >
+Company analysis, factor computation, weighted scoring, and backtesting
+are currently treated as a single pipeline rather than independent
+layers.
+
+required_fix: >
+Refactor the scoring architecture into independent layers:
+
+Layer 1:
+Shared factor engine.
+
+Compute atomic factor scores (Graham, Buffett, Quality, Financial
+Health, Growth, Momentum, etc.) once per company whenever market data
+or financial statements change.
+
+Layer 2:
+Shared company analysis.
+
+Narrative analysis should reference the shared factor scores instead
+of embedding user-specific weighting.
+
+Layer 3:
+User weighting.
+
+Store only user weight configurations. Never duplicate company
+analysis or factor scores for each user.
+Overall score should be computed dynamically from:
+  weighted_score =
+    Σ(factor_score × user_weight)
+This calculation should occur at request time and should not require
+regenerating analysis.
+
+Layer 4:
+Strategy cache.
+
+Normalize every user weighting configuration and generate a stable
+strategy hash.
+Example:
+  Graham=50
+  Buffett=0
+  Quality=30
+  Health=20
+  ↓
+  strategy_hash
+Identical weighting configurations from different users should reuse
+the same cached backtest results.
+
+Layer 5:
+Historical factor snapshots.
+
+Store factor scores by company and historical rebalance date so
+backtests only recompute weighted rankings rather than recalculating
+every financial metric.
+
+requirements:
+
+* Separate factor calculation from weighted scoring.
+* Company factor scores must be shared globally.
+* User profiles store only weighting preferences.
+* Company analysis must remain identical for all users unless explicitly
+    personalized.
+* Weighted scores must update instantly when weights change.
+* Backtests must use historical factor snapshots instead of rebuilding
+    all factor metrics.
+* Introduce strategy hashing to maximize cache reuse across users.
+* Cache keys should include:
+    * strategy_hash
+    * data_version
+    * rebalance_frequency
+    * investment_universe
+    * start_date
+    * end_date
+* Automatically invalidate cached strategies when historical factor
+    data changes.
+
+acceptance_criteria:
+
+* Changing user weights updates rankings without regenerating company
+    analysis.
+* Two users with identical weights produce identical scores and share
+    the same cached backtest.
+* Company factor scores exist only once in storage.
+* Historical backtests reuse stored factor snapshots.
+* Strategy hashing eliminates duplicate backtest computation.
+* Architecture supports adding new factors without redesigning the
+    scoring engine.
+
+priority: High
+
+notes: >
+This refactor establishes the long-term scoring architecture for
+IntrinsicIQ. Company fundamentals become the shared source of truth,
+while personalization is achieved by applying lightweight user-defined
+weightings over shared factor scores. This minimizes storage,
+maximizes cache efficiency, and enables scalable customization as the
+platform grows.
 ---
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
 
