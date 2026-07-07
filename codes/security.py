@@ -14,7 +14,7 @@ from functools import wraps
 from datetime import datetime, timedelta
 from urllib.parse import quote, unquote
 import threading
-
+import markupsafe
 import flask
 from flask import request, session, abort, jsonify, has_request_context, request
 
@@ -50,6 +50,13 @@ def _generate_csrf_token() -> str:
     import secrets
     return secrets.token_urlsafe(32)
 
+def sanitize_string(value: str, max_length: int = 500) -> str:
+    """Escape HTML entities; hard length cap. Dash already auto-escapes text
+    children, so this is defense-in-depth for anything passed to `title=`,
+    `dangerously_allow_html`, or logged/exported raw."""
+    if not value:
+        return ""
+    return str(markupsafe.escape(value))[:max_length]
 
 def _same_origin(origin_or_referer: str, host: str) -> bool:
     """Compare the scheme+host of an Origin/Referer header against the request Host."""
@@ -144,6 +151,36 @@ def verify_csrf_token(token: Optional[str] = None) -> bool:
 
     return hmac.compare_digest(token, session_token)
 
+def init_security(app: flask.Flask) -> None:
+    """
+    Single entrypoint called from app.py at startup.
+    Wires up CSRF protection and baseline security headers.
+    """
+    init_csrf_protection(app)
+
+    @app.after_request
+    def _set_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault(
+            "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
+        )
+        if IS_PRODUCTION:
+            response.headers.setdefault(
+                "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+            )
+        return response
+
+    @app.after_request
+    def _cors_headers(response):
+        # No cross-origin API surface today (Dash serves its own frontend).
+        # Deny by default; add allow-list here if a JS client on another
+        # origin needs to call this API later.
+        response.headers.setdefault("Access-Control-Allow-Origin", "none")
+        return response
+    
+    SECURITY_LOGGER.info("Security module initialized (CSRF + headers)")
 
 def require_csrf(f):
     """Decorator to enforce CSRF protection on routes.
@@ -162,3 +199,9 @@ def require_csrf(f):
                 abort(403)
         return f(*args, **kwargs)
     return decorated_function
+
+def audit_log_access(action: str, resource: str, user_id: str, success: bool = True) -> None:
+    """Minimal audit trail: who did what, to which resource, outcome."""
+    SECURITY_LOGGER.info(
+        f"AUDIT action={action} resource={resource} user={user_id} success={success}"
+    )

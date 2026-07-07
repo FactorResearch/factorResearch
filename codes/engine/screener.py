@@ -27,7 +27,7 @@ from . import scorer
 from . import universe
 from datetime import datetime, timezone
 from ..data import company_metadata
-
+from codes import security
 
 _PROGRESS_REDIS_KEY = "screener:progress"
 
@@ -161,7 +161,7 @@ def _score_one(symbol: str) -> dict | None:
 
         return {
             "symbol":          symbol,
-            "name":            cached_sec.get("name", symbol),
+            "name":            security.sanitize_string(cached_sec.get("name", symbol), max_length=200) if cached_sec.get("name") else symbol,
             "sector":          cached_sec.get("sector", "Unknown"),
             "graham_score":    g["total_score"],
             "graham_max":      g["total_max"],

@@ -66,9 +66,17 @@ def delete_account():
     user_id = _get_user_id()
 
     summary = portfolio_engine.delete_all_user_data(user_id)
+    security.audit_log_access("DELETE_ACCOUNT", "user_data", user_id)
 
     # Purge in-memory/session-scoped state tied to this user
     _invalidate_portfolio_cache()
+    r = get_redis()
+    if r:
+        try:
+            for k in r.scan_iter(match=f"rl:*:{user_id}"):
+                r.delete(k)
+        except Exception:
+            pass
     with _RATE_LIMIT_LOCK:
         for k in [k for k in _RATE_LIMIT_STORE if k.endswith(f":{user_id}")]:
             del _RATE_LIMIT_STORE[k]
@@ -79,6 +87,48 @@ def delete_account():
     security.SECURITY_LOGGER.info(f"Right-to-erasure completed for user {user_id}")
     return flask.jsonify(summary)
 
+_LEGAL_PLACEHOLDER_NOTICE = (
+    "<p style='color:#b00;font-weight:700;'>⚠️ PLACEHOLDER TEXT — NOT REVIEWED BY LEGAL COUNSEL. "
+    "Do not rely on this page for compliance. Replace before public launch.</p>"
+)
+
+@server.route("/terms")
+def terms_page():
+    return f"""
+    <html><head><title>Terms of Service</title></head>
+    <body style="font-family:sans-serif;max-width:700px;margin:40px auto;line-height:1.6;">
+    <h1>Terms of Service</h1>
+    {_LEGAL_PLACEHOLDER_NOTICE}
+    <p>IntrinsicIQ ("the Service") provides equity scoring and portfolio analytics
+    for informational purposes only. The Service is not a registered investment
+    adviser and does not provide personalized investment advice.</p>
+    <p>By using the Service you agree that all analysis, scores, and projections
+    are estimates derived from public SEC filings and third-party market data,
+    may contain errors, and should not be the sole basis for any investment
+    decision.</p>
+    <p>Refunds/cancellations: [placeholder — insert actual policy].</p>
+    <p><a href="/">← Back</a></p>
+    </body></html>
+    """
+
+@server.route("/privacy")
+def privacy_page():
+    return f"""
+    <html><head><title>Privacy Policy</title></head>
+    <body style="font-family:sans-serif;max-width:700px;margin:40px auto;line-height:1.6;">
+    <h1>Privacy Policy</h1>
+    {_LEGAL_PLACEHOLDER_NOTICE}
+    <p>We store the portfolios and holdings you create, tied to your account
+    (or an anonymous session ID if unauthenticated). Market/company data (SEC
+    filings, prices) is public and not tied to your identity.</p>
+    <p>You can delete all your data at any time via account deletion, which
+    removes your portfolios and session data. See our right-to-erasure
+    endpoint (<code>/account/delete</code>).</p>
+    <p>[placeholder — insert data retention period, third-party processors
+    (Auth0/Stripe/hosting), and GDPR/CCPA contact info].</p>
+    <p><a href="/">← Back</a></p>
+    </body></html>
+    """
 
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)
@@ -114,11 +164,11 @@ def _logging_callback(self, *args, **kwargs):
     return wrap
 dash.Dash.callback = _logging_callback
 
-# Simple in-memory rate limiter used for Dash callbacks. We keep a per-(user|ip)
-# timestamp list for each named action. This is a best-effort lightweight
-# protection and complements Flask-Limiter when available.
+# In-memory fallback only — used when Redis is unavailable (local dev).
+# Under multi-worker gunicorn, Redis is authoritative so limits hold across workers.
 _RATE_LIMIT_STORE: dict = {}
 _RATE_LIMIT_LOCK = threading.Lock()
+_RATE_LIMIT_TTL_PAD = 5  # extra seconds so Redis key outlives the window
 
 class RateLimited(Exception):
     def __init__(self, retry_after: int = 0):
@@ -129,6 +179,8 @@ def _check_rate_limit(action: str, calls: int, period_seconds: int, key: str | N
     """Raise RateLimited if the caller exceeded `calls` in `period_seconds`.
 
     Key defaults to authenticated user id (if available) or remote IP.
+    Backed by Redis (shared across workers/instances) when available,
+    falling back to in-process memory for local dev without Redis.
     """
     if key is None:
         try:
@@ -137,9 +189,20 @@ def _check_rate_limit(action: str, calls: int, period_seconds: int, key: str | N
             key = flask.request.remote_addr if flask.request else "anon"
     store_key = f"rl:{action}:{key}"
     now = int(_time.time())
+
+    r = get_redis()
+    if r:
+        entries = json_get(r, store_key) or []
+        entries = [ts for ts in entries if now - ts < period_seconds]
+        if len(entries) >= calls:
+            retry_after = period_seconds - (now - entries[0]) if entries else period_seconds
+            raise RateLimited(retry_after=retry_after)
+        entries.append(now)
+        json_set(r, store_key, entries, ex=period_seconds + _RATE_LIMIT_TTL_PAD)
+        return
+
     with _RATE_LIMIT_LOCK:
         entries = _RATE_LIMIT_STORE.get(store_key, [])
-        # prune old
         entries = [ts for ts in entries if now - ts < period_seconds]
         if len(entries) >= calls:
             retry_after = period_seconds - (now - entries[0]) if entries else period_seconds
@@ -147,6 +210,7 @@ def _check_rate_limit(action: str, calls: int, period_seconds: int, key: str | N
             raise RateLimited(retry_after=retry_after)
         entries.append(now)
         _RATE_LIMIT_STORE[store_key] = entries
+
 # ── Mobile touch fix: eliminate 300ms tap delay on all buttons ───────────────
 app.index_string = app.index_string.replace(
     '</head>',
@@ -513,7 +577,7 @@ def analyze_stock(symbol: str) -> dict:
             pass
     result = {
         "symbol":    symbol,
-        "name":      sec_facts["name"],
+        "name":      security.sanitize_string(sec_facts["name"], max_length=200),
         "sector":    sec_facts["sector"],
         "price":     price,
         "market_cap": market_cap,
@@ -2887,6 +2951,7 @@ def create_portfolio(n, name, refresh):
     if name in existing:
         return dash.no_update, dash.no_update, f"❌ '{name}' already exists.", dash.no_update
     portfolio_engine.create_portfolio(uid, name)
+    security.audit_log_access("CREATE", f"portfolio:{name}", uid)
     return (refresh or 0) + 1, name, "", ""
 
 # ── Delete portfolio ──────────────────────────────────────────────────────────
@@ -2904,6 +2969,7 @@ def delete_portfolio(n, active, refresh):
         return dash.no_update, dash.no_update, dash.no_update
     portfolio_engine.delete_portfolio(_get_user_id(), active)
     _invalidate_portfolio_cache()
+    security.audit_log_access("DELETE", f"portfolio:{active}", _get_user_id())
     return (refresh or 0) + 1, None, f"🗑 Portfolio '{active}' deleted."
 
 # ── Add holding from Analyze tab ──────────────────────────────────────────────
