@@ -61,6 +61,24 @@ server.secret_key = secret_key or os.urandom(24)
 # ── Initialize Authentication (ISSUE_008) ────────────────────────────────────
 auth.init_auth(server)
 billing.init_billing(server)
+@server.route("/account/delete", methods=["POST"])
+def delete_account():
+    user_id = _get_user_id()
+
+    summary = portfolio_engine.delete_all_user_data(user_id)
+
+    # Purge in-memory/session-scoped state tied to this user
+    _invalidate_portfolio_cache()
+    with _RATE_LIMIT_LOCK:
+        for k in [k for k in _RATE_LIMIT_STORE if k.endswith(f":{user_id}")]:
+            del _RATE_LIMIT_STORE[k]
+
+    auth.clear_authenticated_user()
+    flask.session.clear()
+
+    security.SECURITY_LOGGER.info(f"Right-to-erasure completed for user {user_id}")
+    return flask.jsonify(summary)
+
 
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)

@@ -739,6 +739,22 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
 
 def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
     cache.clear("port_sim", f"{user_id}_{portfolio_name}")
+
+def delete_all_user_data(user_id: str) -> dict:
+    """
+    Right-to-erasure (GDPR/CCPA): cascading delete of every piece of data
+    this app stores under `user_id` — all portfolios, their simulation
+    caches, and the portfolio index.
+
+    sec_facts/hist/analysis caches are ticker-keyed, deterministic public
+    market data (not user-owned) and are intentionally NOT deleted.
+    """
+    names = list_portfolios(user_id)
+    for name in names:
+        invalidate_simulation_cache(user_id, name)
+        delete_portfolio(user_id, name)
+    cache.clear("portfolio", f"{user_id}_index")
+    return {"user_id": user_id, "portfolios_deleted": names, "deleted": True}
 # ══════════════════════════════════════════════════════════════════════════════
 # Multi-Portfolio Comparison (PROJECT_MAP.md — Portfolio Page Refactor)
 # ══════════════════════════════════════════════════════════════════════════════

@@ -17,7 +17,7 @@ Legend: [x] verified in code · [~] partially implemented / defined-but-unused �
 - [x] Sensitive cache data (portfolio holdings/names) encrypted at rest — `codes/data/cache.py` (`_ENCRYPTED_KINDS`)
 - [x] SQL injection prevention — parameterized queries throughout `codes/data/db.py`
 - [ ] Database backups encrypted/tested — infra-level, no code present
-- [ ] Data retention / deletion (right to erasure) — not implemented
+- [x] Data retention / deletion (right to erasure) — not implemented
 - [ ] GDPR/CCPA compliance — not implemented
 
 ## Network & Transport
