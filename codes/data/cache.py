@@ -206,7 +206,8 @@ def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> Non
     try:
         _path(kind, key).write_text(_dumps(data, latest_filing=latest_filing, kind=kind))
         suffix = f" (filing {latest_filing})" if latest_filing else ""
-        print(f"[CACHE SAVED] {kind}:{key}{suffix}")
+        if kind!="company_meta":
+            print(f"[CACHE SAVED] {kind}:{key}{suffix}")
     except Exception as e:
         print(f"[CACHE ERROR] {e}")
 

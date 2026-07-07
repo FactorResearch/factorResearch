@@ -38,6 +38,7 @@ except Exception:
 from codes import auth
 from codes import billing
 from codes import security
+from flask import render_template
 from codes.data   import cache, sec_data,company_metadata
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
@@ -58,7 +59,7 @@ if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
 
-# ── Initialize Authentication (ISSUE_008) ────────────────────────────────────
+
 auth.init_auth(server)
 billing.init_billing(server)
 @server.route("/account/delete", methods=["POST"])
@@ -94,41 +95,17 @@ _LEGAL_PLACEHOLDER_NOTICE = (
 
 @server.route("/terms")
 def terms_page():
-    return f"""
-    <html><head><title>Terms of Service</title></head>
-    <body style="font-family:sans-serif;max-width:700px;margin:40px auto;line-height:1.6;">
-    <h1>Terms of Service</h1>
-    {_LEGAL_PLACEHOLDER_NOTICE}
-    <p>IntrinsicIQ ("the Service") provides equity scoring and portfolio analytics
-    for informational purposes only. The Service is not a registered investment
-    adviser and does not provide personalized investment advice.</p>
-    <p>By using the Service you agree that all analysis, scores, and projections
-    are estimates derived from public SEC filings and third-party market data,
-    may contain errors, and should not be the sole basis for any investment
-    decision.</p>
-    <p>Refunds/cancellations: [placeholder — insert actual policy].</p>
-    <p><a href="/">← Back</a></p>
-    </body></html>
-    """
+    return render_template(
+        "terms.html",
+        legal_notice=_LEGAL_PLACEHOLDER_NOTICE
+    )
 
 @server.route("/privacy")
 def privacy_page():
-    return f"""
-    <html><head><title>Privacy Policy</title></head>
-    <body style="font-family:sans-serif;max-width:700px;margin:40px auto;line-height:1.6;">
-    <h1>Privacy Policy</h1>
-    {_LEGAL_PLACEHOLDER_NOTICE}
-    <p>We store the portfolios and holdings you create, tied to your account
-    (or an anonymous session ID if unauthenticated). Market/company data (SEC
-    filings, prices) is public and not tied to your identity.</p>
-    <p>You can delete all your data at any time via account deletion, which
-    removes your portfolios and session data. See our right-to-erasure
-    endpoint (<code>/account/delete</code>).</p>
-    <p>[placeholder — insert data retention period, third-party processors
-    (Auth0/Stripe/hosting), and GDPR/CCPA contact info].</p>
-    <p><a href="/">← Back</a></p>
-    </body></html>
-    """
+    return render_template(
+        "privacy.html",
+        legal_notice=_LEGAL_PLACEHOLDER_NOTICE
+    )
 
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)
@@ -4076,7 +4053,6 @@ def startup():
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener.load_cached_only()
-    # ISSUE_001: kick off sector metadata backfill in background
     company_metadata.start_background_refresh(universe.get_universe())
     print(f"✅ {len(results)} cached stocks ready\n")
 
