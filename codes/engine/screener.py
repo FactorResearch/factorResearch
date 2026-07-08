@@ -335,28 +335,19 @@ def load_universe_background(tickers: list[str] | None = None):
 # ── Enrich screener rows from persisted analysis cache ───────────────────────
 
 def _enrich_from_analysis_cache() -> int:
-    """
-    After building base screener rows from SEC facts, scan the .cache directory
-    for any previously-saved full analysis results (cache kind 'analysis') and
-    apply the enriched fields (price, graham_number, buffett_iv, composite_score,
-    verdict, etc.) to the matching rows in _progress["results"].
-
-    This restores the post-analysis state of the screener table after a reboot
-    so users don't lose the context of stocks they've already analysed.
-
-    Returns the number of rows enriched.
-    """
-    analysis_symbols = cache.list_cached_kind("analysis")
+    analysis_symbols = db.list_analysis_tickers()
     if not analysis_symbols:
         return 0
 
-    # Build a fast lookup: symbol → row index
     with _lock:
         idx_map = {row["symbol"]: i for i, row in enumerate(_progress["results"])}
 
     enriched = 0
     for sym in analysis_symbols:
-        data = cache.read("analysis", sym)
+        entry = db.get_analysis_entry(sym)
+        if not entry:
+            continue
+        data = entry["data"]
         if not data or "error" in data:
             continue
 
@@ -366,17 +357,12 @@ def _enrich_from_analysis_cache() -> int:
         comp     = data.get("composite",{}) or {}
         b        = data.get("buffett",  {}) or {}
 
-        # Mirror the same logic as update_stock_after_analysis()
         g_pct     = enhanced.get("graham_pct")    or comp.get("graham_pct",    0)
         q_pct     = enhanced.get("quality_pct")   or comp.get("quality_pct",   0)
         composite = enhanced.get("composite_score") or comp.get("composite_score", 0)
         verdict   = enhanced.get("verdict")       or comp.get("verdict",       "PENDING")
         vl        = enhanced.get("verdict_label") or comp.get("verdict_label", "pending")
-        entry = cache.read_entry("analysis", sym)
-        updated_at = (
-            datetime.fromtimestamp(entry["ts"], tz=timezone.utc).isoformat()
-            if entry and entry.get("ts") else None
-        )
+        updated_at = entry.get("updated_at")
 
         patch = {
             "graham_pct":      round(g_pct, 1),
@@ -397,7 +383,6 @@ def _enrich_from_analysis_cache() -> int:
             if i is not None:
                 _progress["results"][i] = {**_progress["results"][i], **patch}
             else:
-                # Stock wasn't in universe cache — add a minimal row
                 _progress["results"].append({
                     "symbol":          sym,
                     "name":            data.get("name",   sym),
@@ -426,10 +411,8 @@ def _enrich_from_analysis_cache() -> int:
         enriched += 1
 
     if enriched:
-        print(f"  ✅ Enriched {enriched} screener rows from analysis cache")
+        print(f"  ✅ Enriched {enriched} screener rows from analysis DB")
     return enriched
-
-
 # ── Enrich screener rows from SQLite value_metrics store ─────────────────────
 
 def _enrich_from_db() -> int:

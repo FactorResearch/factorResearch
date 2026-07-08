@@ -2,12 +2,13 @@
 Factor Weight Backtesting Engine
 
 Lets users test custom factor weightings against historical data.
-Pulls cached analysis results, re-scores each stock with the user's
+Pulls persisted analysis results, re-scores each stock with the user's
 custom weights, selects the top-N portfolio, and compares it against:
   - The default ENHANCED_WEIGHTS portfolio
   - SPY buy-and-hold
 
-Works entirely from the local .cache directory — no new network calls.
+Works from Postgres (analysis_cache table) + cached price history — no new
+network calls beyond price history fetches.
 
 Entry point:
     run_factor_backtest(custom_weights, top_n=10, years=5)
@@ -35,7 +36,7 @@ import numpy as np
 import pandas as pd
 
 from .scorer import ENHANCED_WEIGHTS
-from ..data import cache, api_fetcher
+from ..data import  api_fetcher, db
 
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ def _safe_pct(result: dict, score_key: str = "total_score",
 
 
 def _score_with_weights(analysis: dict, weights: dict[str, float]) -> float:
-    """Re-score a cached analysis dict with custom factor weights."""
+    """Re-score a persisted analysis dict with custom factor weights."""
     g  = analysis.get("graham",   {}) or {}
     q  = analysis.get("quality",  {}) or {}
     m  = analysis.get("momentum", {}) or {}
@@ -197,7 +198,7 @@ def run_factor_backtest(
     min_price: float | None = None,
 ) -> dict[str, Any]:
     """
-    Re-score every cached analysis with custom_weights, pick the top-N stocks,
+    Re-score every persisted analysis with custom_weights, pick the top-N stocks,
     run an equal-weight backtest, and compare against:
       - Default ENHANCED_WEIGHTS portfolio (top-N by default scoring)
       - SPY buy-and-hold
@@ -218,15 +219,15 @@ def run_factor_backtest(
     w_custom  = _normalise_weights(custom_weights)
     w_default = _normalise_weights(dict(ENHANCED_WEIGHTS))
 
-    # ── Load all cached analyses ─────────────────────────────────────────────
-    cached_symbols = cache.list_cached_kind("analysis")
+    # ── Load all persisted analyses (Postgres, shared cache) ─────────────────
+    cached_symbols = db.list_analysis_tickers()
     if len(cached_symbols) < MIN_STOCKS:
-        return {"error": f"Need at least {MIN_STOCKS} analysed stocks in cache. "
+        return {"error": f"Need at least {MIN_STOCKS} analysed stocks in the database. "
                          "Use the Analyze tab to analyse some stocks first."}
 
     ranked: list[dict[str, Any]] = []
     for sym in cached_symbols:
-        data = cache.read("analysis", sym)
+        data = db.get_analysis(sym)
         if not data or "error" in data:
             continue
         price = data.get("price")
@@ -247,7 +248,7 @@ def run_factor_backtest(
         })
 
     if len(ranked) < MIN_STOCKS:
-        return {"error": "Not enough analysed stocks with valid data in cache."}
+        return {"error": "Not enough analysed stocks with valid data in the database."}
 
     # ── Select top-N for each weighting ──────────────────────────────────────
     ranked.sort(key=lambda x: x["custom_score"],  reverse=True)

@@ -72,26 +72,13 @@ CREATE TABLE IF NOT EXISTS value_metrics (
     verdict         TEXT,
     updated_at      TEXT NOT NULL
 );
-"""
-# _CREATE_SEC_FACTS_TABLE = """
-# CREATE TABLE IF NOT EXISTS sec_facts (
-#     ticker          TEXT PRIMARY KEY,
-#     facts_json      TEXT NOT NULL,
-#     latest_filing   TEXT,
-#     updated_at      TEXT NOT NULL
-# )
-# """
-_UPSERT_SEC_FACTS = """
-INSERT INTO sec_facts (ticker, facts_json, latest_filing, updated_at)
-VALUES (%(ticker)s, %(facts_json)s, %(latest_filing)s, %(updated_at)s)
-ON CONFLICT (ticker) DO UPDATE SET
-    facts_json    = excluded.facts_json,
-    latest_filing = excluded.latest_filing,
-    updated_at    = excluded.updated_at
-"""
+CREATE TABLE IF NOT EXISTS analysis_cache (
+    ticker     TEXT PRIMARY KEY,
+    data_json  TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
 
-_SELECT_SEC_FACTS = "SELECT * FROM sec_facts WHERE ticker = %(ticker)s"
-
+"""
 _UPSERT_VALUE_METRICS = """
 INSERT INTO value_metrics
     (ticker, market_cap, graham_number, buffett_iv, composite_score, verdict, updated_at)
@@ -125,11 +112,60 @@ INSERT INTO sec_facts_items (ticker, concept, year, value, end_date)
 VALUES (%(ticker)s, %(concept)s, %(year)s, %(value)s, %(end_date)s)
 ON CONFLICT (ticker, concept, year) DO UPDATE SET
     value = excluded.value, end_date = excluded.end_date
-"""
 
+"""
+_UPSERT_ANALYSIS = """
+INSERT INTO analysis_cache (ticker, data_json, updated_at)
+VALUES (%(ticker)s, %(data_json)s, %(updated_at)s)
+ON CONFLICT (ticker) DO UPDATE SET
+    data_json  = excluded.data_json,
+    updated_at = excluded.updated_at
+"""
+_SELECT_ANALYSIS = "SELECT data_json, updated_at FROM analysis_cache WHERE ticker = %(ticker)s"
+_SELECT_ANALYSIS_TICKERS = "SELECT ticker FROM analysis_cache"
 _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
 _SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
 
+
+def upsert_analysis(ticker: str, data: dict) -> None:
+    """Persist a full analyze_stock() result. Replaces cache.write('analysis', ...)."""
+    _ensure_init()
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        con.execute(_UPSERT_ANALYSIS, {
+            "ticker": ticker.upper(),
+            "data_json": json.dumps(data, default=str),
+            "updated_at": now,
+        })
+
+
+def get_analysis_entry(ticker: str) -> dict | None:
+    """Return {'data': dict, 'updated_at': iso_str} or None."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_ANALYSIS, {"ticker": ticker.upper()}).fetchone()
+    if not row:
+        return None
+    try:
+        data = json.loads(row["data_json"])
+    except (TypeError, ValueError):
+        return None
+    return {"data": data, "updated_at": row["updated_at"]}
+
+
+def get_analysis(ticker: str) -> dict | None:
+    """Replaces cache.read('analysis', ticker)."""
+    entry = get_analysis_entry(ticker)
+    return entry["data"] if entry else None
+
+
+def list_analysis_tickers() -> list[str]:
+    """Replaces cache.list_cached_kind('analysis')."""
+    _ensure_init()
+    with _conn() as con:
+        rows = con.execute(_SELECT_ANALYSIS_TICKERS).fetchall()
+    return sorted(r[0] for r in rows)
 
 def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> None:
     """

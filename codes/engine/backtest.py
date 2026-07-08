@@ -1,0 +1,441 @@
+"""
+Full Backtest Engine — strategies beyond the equal-weight buy-and-hold
+backtest already implemented in codes/engine/factor_backtest.py.
+
+Strategies:
+  1. momentum_rotation   — monthly rebalance, top-decile by trailing 12mo price momentum
+  2. score_filtered      — hold composite_score >= threshold, rebalance quarterly
+  3. factor_combo        — Graham pass + Piotroski F >= 7 + positive FCF screen
+  4. walk_forward         — re-run any of the above over rolling 3Y/5Y/10Y windows
+
+[BACKTEST BIAS WARNING] — READ BEFORE USING RESULTS
+────────────────────────────────────────────────────────────────────────────
+codes/data/db.py stores exactly ONE `analysis_cache` row per ticker — the
+most recent full analysis, shared across all users so we don't re-run SEC
+fetches and scoring for a stock that's already been analysed. There is no
+dated history of past scores.
+
+Consequences for this module:
+  - score_filtered() and factor_combo() screen the universe using TODAY's
+    persisted composite_score / Piotroski F-Score / FCF sign. That same
+    (current) score is then applied across the ENTIRE historical backtest
+    window — i.e. a stock is treated as if it always had its current score,
+    which it did not. This is unavoidable look-ahead bias with the current
+    shared-cache architecture (fixing it would require snapshotting scores
+    by date, which is out of scope here).
+  - momentum_rotation() is NOT affected: it is computed purely from monthly
+    price history, which is genuinely point-in-time (a stock's June 2019
+    price is what it was in June 2019, regardless of when we look it up).
+  - walk_forward() inherits the bias of whichever strategy function it wraps.
+
+Every result dict from a biased strategy sets `"look_ahead_bias": True`.
+UI callers MUST surface this as a "[BACKTEST BIAS WARNING]" badge whenever
+the flag is true, and must not present these as historically realistic
+walk-forward returns.
+"""
+
+from __future__ import annotations
+
+import math
+from typing import Any, Callable
+
+import numpy as np
+import pandas as pd
+
+from ..data import api_fetcher, db
+
+MIN_STOCKS     = 3
+MAX_TOP_N      = 30
+RISK_FREE_RATE = 0.045   # annual; matches risk_metrics.py / factor_backtest.py
+MONTHS_PER_YEAR = 12
+
+
+# ── Shared helpers ────────────────────────────────────────────────────────────
+
+def _load_price_history(symbol: str, years: int) -> pd.DataFrame:
+    df = api_fetcher.get_price_history(symbol, years=years)
+    if df is None or df.empty:
+        return pd.DataFrame()
+    df = df.copy()
+    df["Date"]  = pd.to_datetime(df["Date"])
+    df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
+    return df.dropna().sort_values("Date").reset_index(drop=True)
+
+
+def _build_price_matrix(symbols: list[str], years: int) -> pd.DataFrame:
+    """Wide Date-indexed DataFrame of monthly closes, one column per symbol."""
+    cols = {}
+    for sym in symbols:
+        h = _load_price_history(sym, years)
+        if not h.empty:
+            cols[sym] = h.set_index("Date")["Close"]
+    if not cols:
+        return pd.DataFrame()
+    wide = pd.concat(cols, axis=1).sort_index()
+    wide = wide.ffill(limit=2)   # tolerate 1-2 missing months (holidays/gaps)
+    return wide
+
+
+def _load_cached_universe() -> dict[str, dict]:
+    """All symbols with a persisted full `analysis` result (Postgres, shared cache)."""
+    out = {}
+    for sym in db.list_analysis_tickers():
+        data = db.get_analysis(sym)
+        if data and "error" not in data:
+            out[sym] = data
+    return out
+
+
+def _compute_risk_metrics(values: list[float], spy_values: list[float] | None = None) -> dict[str, Any]:
+    """Sharpe, Sortino, Calmar, Beta, Alpha, Win Rate, CAGR, Max Drawdown from a monthly value series."""
+    empty = {
+        "cagr": None, "sharpe": None, "sortino": None, "calmar": None,
+        "max_drawdown": None, "win_rate": None, "beta": None, "alpha": None,
+    }
+    arr = np.array(values, dtype=float)
+    if len(arr) < 3 or arr[0] <= 0:
+        return empty
+
+    rets = np.diff(arr) / arr[:-1]
+    n_months = len(rets)
+    n_years = n_months / MONTHS_PER_YEAR
+    total_return = arr[-1] / arr[0] - 1
+    cagr = (math.pow(1 + total_return, 1 / n_years) - 1) if n_years > 0 else 0.0
+
+    rf_monthly = RISK_FREE_RATE / MONTHS_PER_YEAR
+    excess = rets - rf_monthly
+    vol = float(np.std(excess, ddof=1)) if n_months > 1 else 0.0
+    sharpe = (float(np.mean(excess)) / vol * math.sqrt(MONTHS_PER_YEAR)) if vol > 0 else None
+
+    downside_sq = np.minimum(rets - rf_monthly, 0.0) ** 2
+    down_var = float(np.sum(downside_sq) / n_months) if n_months > 0 else 0.0
+    if down_var > 0:
+        down_std = math.sqrt(down_var) * math.sqrt(MONTHS_PER_YEAR)
+        sortino = (cagr - RISK_FREE_RATE) / down_std
+    else:
+        sortino = None
+
+    peak = np.maximum.accumulate(arr)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        dd = np.where(peak != 0, (arr - peak) / peak, 0.0)
+    max_dd = float(np.min(dd))
+    calmar = (cagr / abs(max_dd)) if max_dd < -0.001 else None
+
+    win_rate = float(np.mean(rets > 0)) if n_months > 0 else None
+
+    beta = alpha = None
+    if spy_values is not None and len(spy_values) == len(values):
+        spy_arr = np.array(spy_values, dtype=float)
+        if spy_arr[0] > 0:
+            spy_rets = np.diff(spy_arr) / spy_arr[:-1]
+            if len(spy_rets) == n_months and n_months > 1:
+                var_spy = float(np.var(spy_rets, ddof=1))
+                if var_spy > 0:
+                    cov = float(np.cov(rets, spy_rets)[0, 1])
+                    beta = cov / var_spy
+                    spy_total = spy_arr[-1] / spy_arr[0] - 1
+                    spy_cagr = (math.pow(1 + spy_total, 1 / n_years) - 1) if n_years > 0 else 0.0
+                    alpha = cagr - (RISK_FREE_RATE + beta * (spy_cagr - RISK_FREE_RATE))
+
+    return {
+        "cagr":         round(cagr * 100, 2),
+        "sharpe":       round(sharpe, 3) if sharpe is not None else None,
+        "sortino":      round(sortino, 3) if sortino is not None else None,
+        "calmar":       round(calmar, 3) if calmar is not None else None,
+        "max_drawdown": round(max_dd * 100, 2),
+        "win_rate":     round(win_rate * 100, 1) if win_rate is not None else None,
+        "beta":         round(beta, 3) if beta is not None else None,
+        "alpha":        round(alpha * 100, 2) if alpha is not None else None,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Strategy 1 — Momentum Rotation (point-in-time correct; price data only)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def momentum_rotation(top_n: int = 10, years: int = 5, rebalance_months: int = 1) -> dict[str, Any]:
+    """
+    Monthly (or `rebalance_months`-interval) rebalance into the top-decile
+    (or top_n) stocks by trailing 12-month price return. Equal-weighted.
+
+    Uses only monthly price history — genuinely point-in-time correct,
+    no look-ahead bias.
+    """
+    top_n = max(MIN_STOCKS, min(MAX_TOP_N, int(top_n)))
+    universe = _load_cached_universe()
+    symbols = list(universe.keys())
+    if len(symbols) < MIN_STOCKS:
+        return {"error": f"Need at least {MIN_STOCKS} analysed stocks in the database.", "look_ahead_bias": False}
+
+    wide = _build_price_matrix(symbols + ["SPY"], years)
+    if wide.empty or "SPY" not in wide.columns or len(wide) < 14:
+        return {"error": "Insufficient price history for momentum rotation.", "look_ahead_bias": False}
+
+    lookback = 12  # months, for trailing momentum
+    if len(wide) <= lookback:
+        return {"error": "Insufficient history for a 12-month momentum lookback.", "look_ahead_bias": False}
+
+    rebalance_idx = list(range(lookback, len(wide), rebalance_months))
+    if not rebalance_idx or rebalance_idx[-1] != len(wide) - 1:
+        rebalance_idx.append(len(wide) - 1)
+
+    dates = wide.index.tolist()
+    port_values = [10_000.0]
+    spy_values  = [10_000.0]
+    port_dates  = [dates[lookback]]
+
+    current_symbols: list[str] = []
+    current_shares: dict[str, float] = {}
+    spy_shares = spy_values[0] / float(wide["SPY"].iloc[lookback])
+
+    for i in range(1, len(rebalance_idx)):
+        prev_i, this_i = rebalance_idx[i - 1], rebalance_idx[i]
+
+        # Score momentum as of prev_i using trailing `lookback` months
+        scores = {}
+        for sym in symbols:
+            series = wide[sym]
+            past, now = series.iloc[prev_i - lookback], series.iloc[prev_i]
+            if pd.notna(past) and pd.notna(now) and past > 0:
+                scores[sym] = now / past - 1
+
+        ranked = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:top_n]
+        current_symbols = [s for s, _ in ranked]
+        if not current_symbols:
+            continue
+
+        # Re-equal-weight into the selected symbols at prev_i's price
+        segment_value = port_values[-1]
+        alloc = segment_value / len(current_symbols)
+        current_shares = {
+            s: alloc / float(wide[s].iloc[prev_i])
+            for s in current_symbols
+            if pd.notna(wide[s].iloc[prev_i]) and wide[s].iloc[prev_i] > 0
+        }
+
+        # Walk value forward to this_i
+        pv = sum(sh * float(wide[s].iloc[this_i]) for s, sh in current_shares.items()
+                 if pd.notna(wide[s].iloc[this_i]))
+        port_values.append(pv if pv > 0 else port_values[-1])
+        spy_values.append(spy_shares * float(wide["SPY"].iloc[this_i]))
+        port_dates.append(dates[this_i])
+
+    metrics = _compute_risk_metrics(port_values, spy_values)
+
+    return {
+        "strategy":       "momentum_rotation",
+        "dates":          [d.strftime("%Y-%m-%d") for d in port_dates],
+        "values":         [round(v, 2) for v in port_values],
+        "spy_values":     [round(v, 2) for v in spy_values],
+        "final_symbols":  current_symbols,
+        "top_n":          top_n,
+        "rebalance_months": rebalance_months,
+        **metrics,
+        "look_ahead_bias": False,
+        "error":          None,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Strategy 2 — Score-Filtered (uses current persisted composite_score — BIASED)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def score_filtered(min_score: float = 65.0, top_n: int = 20, years: int = 5,
+                    rebalance_months: int = 3) -> dict[str, Any]:
+    """
+    Hold every persisted stock whose CURRENT composite_score >= min_score
+    (capped at top_n by score), equal-weighted, rebalanced back to equal
+    weight every `rebalance_months`.
+
+    [BACKTEST BIAS WARNING]: the qualifying set is fixed using today's
+    composite_score for the entire backtest window — see module docstring.
+    """
+    universe = _load_cached_universe()
+    scored = []
+    for sym, data in universe.items():
+        enhanced = data.get("enhanced") or {}
+        comp     = data.get("composite") or {}
+        score    = enhanced.get("composite_score")
+        if score is None:
+            score = comp.get("composite_score")
+        if score is not None and score >= min_score:
+            scored.append((sym, score))
+
+    scored.sort(key=lambda x: x[1], reverse=True)
+    symbols = [s for s, _ in scored[:max(MIN_STOCKS, min(MAX_TOP_N, top_n))]]
+
+    if len(symbols) < MIN_STOCKS:
+        return {"error": f"Only {len(symbols)} stocks qualify at score >= {min_score} "
+                          f"(need {MIN_STOCKS}+).", "look_ahead_bias": True}
+
+    result = _rebalanced_equal_weight_backtest(symbols, years, rebalance_months)
+    result.update({
+        "strategy":  "score_filtered",
+        "min_score": min_score,
+        "top_n":     top_n,
+        "look_ahead_bias": True,
+    })
+    return result
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Strategy 3 — Factor Combo (Graham pass + Piotroski F>=7 + positive FCF)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def factor_combo(min_piotroski: int = 7, min_graham_pct: float = 50.0,
+                  years: int = 5, rebalance_months: int = 3) -> dict[str, Any]:
+    """
+    Screen: Graham pct >= min_graham_pct AND Piotroski F-Score >= min_piotroski
+    AND positive FCF (fcf_quality.fcf > 0).
+
+    [BACKTEST BIAS WARNING]: screen uses today's persisted scores — see module
+    docstring.
+    """
+    universe = _load_cached_universe()
+    symbols = []
+    for sym, data in universe.items():
+        g   = data.get("graham") or {}
+        p   = data.get("piotroski") or {}
+        fcf = data.get("fcf_quality") or {}
+
+        g_max = g.get("total_max") or 100
+        g_pct = (g.get("total_score", 0) / g_max * 100) if g_max else 0
+        f_score = p.get("f_score", 0) or 0
+        fcf_val = fcf.get("fcf")
+        fcf_positive = (fcf_val is not None and fcf_val > 0)
+
+        if g_pct >= min_graham_pct and f_score >= min_piotroski and fcf_positive:
+            symbols.append(sym)
+
+    if len(symbols) < MIN_STOCKS:
+        return {"error": f"Only {len(symbols)} stocks pass the factor-combo screen "
+                          f"(need {MIN_STOCKS}+).", "look_ahead_bias": True}
+
+    symbols = symbols[:MAX_TOP_N]
+    result = _rebalanced_equal_weight_backtest(symbols, years, rebalance_months)
+    result.update({
+        "strategy":       "factor_combo",
+        "min_piotroski":  min_piotroski,
+        "min_graham_pct": min_graham_pct,
+        "look_ahead_bias": True,
+    })
+    return result
+
+
+# ── Shared rebalanced equal-weight backtest (used by score_filtered / factor_combo) ──
+
+def _rebalanced_equal_weight_backtest(symbols: list[str], years: int,
+                                       rebalance_months: int) -> dict[str, Any]:
+    wide = _build_price_matrix(symbols + ["SPY"], years)
+    if wide.empty or "SPY" not in wide.columns or len(wide) < 6:
+        return {"error": "Insufficient overlapping price history.", "values": [], "dates": []}
+
+    available = [s for s in symbols if s in wide.columns]
+    if len(available) < MIN_STOCKS:
+        return {"error": f"Only {len(available)} symbols have price history.", "values": [], "dates": []}
+
+    dates = wide.index.tolist()
+    rebalance_idx = list(range(0, len(wide), rebalance_months))
+    if rebalance_idx[-1] != len(wide) - 1:
+        rebalance_idx.append(len(wide) - 1)
+
+    port_values = [10_000.0]
+    spy_values  = [10_000.0]
+    port_dates  = [dates[0]]
+    spy_shares  = spy_values[0] / float(wide["SPY"].iloc[0])
+
+    for i in range(1, len(rebalance_idx)):
+        prev_i, this_i = rebalance_idx[i - 1], rebalance_idx[i]
+        valid = [s for s in available if pd.notna(wide[s].iloc[prev_i]) and wide[s].iloc[prev_i] > 0]
+        if not valid:
+            continue
+        alloc = port_values[-1] / len(valid)
+        shares = {s: alloc / float(wide[s].iloc[prev_i]) for s in valid}
+        pv = sum(sh * float(wide[s].iloc[this_i]) for s, sh in shares.items()
+                 if pd.notna(wide[s].iloc[this_i]))
+        port_values.append(pv if pv > 0 else port_values[-1])
+        spy_values.append(spy_shares * float(wide["SPY"].iloc[this_i]))
+        port_dates.append(dates[this_i])
+
+    metrics = _compute_risk_metrics(port_values, spy_values)
+    return {
+        "dates":            [d.strftime("%Y-%m-%d") for d in port_dates],
+        "values":           [round(v, 2) for v in port_values],
+        "spy_values":       [round(v, 2) for v in spy_values],
+        "symbols":          available,
+        "n_stocks":         len(available),
+        "rebalance_months": rebalance_months,
+        **metrics,
+        "error": None,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Strategy 4 — Walk-Forward Rolling Windows
+# ══════════════════════════════════════════════════════════════════════════════
+
+def walk_forward(strategy_fn: Callable[..., dict], windows: list[int] = [3, 5, 10],
+                  **strategy_kwargs) -> dict[str, Any]:
+    """
+    Re-run `strategy_fn` (one of momentum_rotation / score_filtered /
+    factor_combo) over each rolling window length in `windows` (years).
+
+    Inherits look_ahead_bias from the wrapped strategy — see module docstring.
+    """
+    results = {}
+    bias = None
+    for yrs in windows:
+        kwargs = dict(strategy_kwargs)
+        kwargs["years"] = yrs
+        r = strategy_fn(**kwargs)
+        bias = r.get("look_ahead_bias", bias)
+        results[f"{yrs}y"] = r
+
+    return {
+        "strategy":        f"walk_forward[{strategy_fn.__name__}]",
+        "windows":         windows,
+        "results":         results,
+        "look_ahead_bias": bias,
+        "error":           None,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Strategy comparison
+# ══════════════════════════════════════════════════════════════════════════════
+
+def compare_strategies(strategies: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """
+    Build a side-by-side comparison table from a dict of already-computed
+    strategy result dicts (e.g. {"Momentum Rotation": momentum_rotation(...),
+    "Score Filtered": score_filtered(...), ...}).
+
+    Returns a table plus a `has_bias` flag so the UI can render a single
+    [BACKTEST BIAS WARNING] banner if any included strategy is biased.
+    """
+    rows = []
+    has_bias = False
+    for name, r in strategies.items():
+        if r.get("error"):
+            rows.append({"strategy": name, "error": r["error"]})
+            continue
+        if r.get("look_ahead_bias"):
+            has_bias = True
+        rows.append({
+            "strategy":      name,
+            "cagr":          r.get("cagr"),
+            "sharpe":        r.get("sharpe"),
+            "sortino":       r.get("sortino"),
+            "calmar":        r.get("calmar"),
+            "max_drawdown":  r.get("max_drawdown"),
+            "win_rate":      r.get("win_rate"),
+            "beta":          r.get("beta"),
+            "alpha":         r.get("alpha"),
+            "look_ahead_bias": r.get("look_ahead_bias", False),
+        })
+
+    return {
+        "rows":     rows,
+        "has_bias": has_bias,
+        "error":    None,
+    }

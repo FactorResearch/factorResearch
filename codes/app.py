@@ -39,7 +39,7 @@ from codes import auth
 from codes import billing
 from codes import security
 from flask import render_template
-from codes.data   import cache, sec_data,company_metadata
+from codes.data   import cache, sec_data,company_metadata,db
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
 from codes.engine import scorer, screener, universe
 from codes.engine import factor_backtest as fb_engine
@@ -335,7 +335,8 @@ def analyze_stock(symbol: str) -> dict:
         if symbol in _analysis_cache:
             return _analysis_cache[symbol]
     # Then try disk cache
-    cached = cache.read("analysis", symbol)
+    cached = db.get_analysis(symbol)
+
     if cached:
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
@@ -586,8 +587,7 @@ def analyze_stock(symbol: str) -> dict:
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,
     }
-    # 1F: Defer cache writes to daemon thread (already handled in screener.py)
-    cache.write("analysis", symbol, result)
+    db.upsert_analysis(symbol, result)
     
     # 1A: Update in-memory cache
     with _analysis_cache_lock:
@@ -3036,7 +3036,7 @@ def render_portfolio_holdings(active, refresh):
             weight   = invested / total_invested * 100 if total_invested > 0 else 0
             # Pull Sharpe from cached analysis if available
             sharpe_val = None
-            cached_analysis = cache.read("analysis", sym)
+            cached_analysis = db.get_analysis(sym)
             if cached_analysis:
                 sharpe_val = (cached_analysis.get("risk") or {}).get("sharpe")
             sharpe_str = f"{sharpe_val:.2f}" if sharpe_val is not None else "—"
