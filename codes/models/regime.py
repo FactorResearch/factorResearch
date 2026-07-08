@@ -164,13 +164,18 @@ def _classify_regime(trend_score: float, vol_pct: float) -> str:
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def score(price_hist: pd.DataFrame) -> dict:
+def score(price_hist: pd.DataFrame, comomentum_result: dict | None = None) -> dict:
     """
     Classify market regime from monthly price history.
 
     Args:
         price_hist: DataFrame with 'Date' and 'Close' columns (monthly bars).
                     Typically SPY history from api_fetcher.get_price_history().
+        comomentum_result: optional output of comomentum.calc_comomentum().
+                    When the regime is bullish and comomentum percentile > 75
+                    (crowded momentum trade, Lou & Polk 2012), regime_multiplier
+                    is discounted by 0.10. No effect in non-bull regimes or
+                    when omitted — fully backward compatible.
 
     Returns:
         Dict with all regime outputs. See module docstring for schema.
@@ -190,6 +195,7 @@ def score(price_hist: pd.DataFrame) -> dict:
             "current_price":         None,
             "vol_20d":               None,
             "vol_60d":               None,
+            "comomentum_percentile": None,
             "error":                 reason,
         }
 
@@ -254,6 +260,15 @@ def score(price_hist: pd.DataFrame) -> dict:
     max_exposure      = _MAX_EXPOSURE[risk_lv]
     regime_multiplier = _REGIME_MULTIPLIER[regime]
 
+    # ── Co-momentum crowding adjustment (Lou & Polk 2012) ────────────────────
+    # Crowded momentum only matters when the regime itself is bullish — it
+    # discounts a bull signal that's actually a crowded, fragile trade.
+    comomentum_pct = None
+    if comomentum_result and comomentum_result.get("percentile") is not None:
+        comomentum_pct = comomentum_result["percentile"]
+        if regime in (BULL_LOW_VOL, BULL_HIGH_VOL) and comomentum_pct > 75:
+            regime_multiplier = round(max(regime_multiplier - 0.10, 0.0), 4)
+
     # ── Fast deterioration alert ──────────────────────────────────────────────
     risk_alert = False
     # 1. 5D return <= -7% (1 bar proxy)
@@ -290,5 +305,6 @@ def score(price_hist: pd.DataFrame) -> dict:
         "current_price":         round(current_price, 4),
         "vol_20d":               round(vol_20d, 4) if vol_20d is not None else None,
         "vol_60d":               round(vol_60d, 4) if vol_60d is not None else None,
+        "comomentum_percentile": comomentum_pct,
         "error":                 None,
     }
