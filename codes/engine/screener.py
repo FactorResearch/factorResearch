@@ -119,6 +119,19 @@ def get_screener_results() -> list[dict]:
         return sorted(_progress["results"],
                       
                       key=lambda x: x["composite_score"], reverse=True)
+def get_sector_avg_return_12m(sector: str, exclude_symbol: str | None = None) -> float | None:
+    """Mean skip-month 12M return across analyzed peers in the same sector."""
+    with _lock:
+        rows = [
+            r for r in _progress["results"]
+            if r.get("sector") == sector
+            and r.get("analyzed")
+            and r.get("return_12m") is not None
+            and r.get("symbol") != exclude_symbol
+        ]
+    if not rows:
+        return None
+    return sum(r["return_12m"] for r in rows) / len(rows)
 
 def _minimal_row(symbol: str, name: str = "", sector: str = "") -> dict:
     """Create a placeholder screener row before a stock has been analysed."""
@@ -232,7 +245,8 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
         "market_cap":      mkt_cap,
         "price":           analysis_result.get("price"),
         "analyzed":        True,
-         "updated_at":      datetime.now(timezone.utc).isoformat(),
+        "updated_at":      datetime.now(timezone.utc).isoformat(),
+        "return_12m": (analysis_result.get("momentum") or {}).get("return_12m"),
     }
 
     with _lock:

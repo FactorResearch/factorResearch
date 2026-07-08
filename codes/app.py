@@ -406,7 +406,11 @@ def analyze_stock(symbol: str) -> dict:
     m_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price and hist is not None:
         try:
-            m_result = momentum.score(hist, spy_hist, symbol)
+            sector_avg = screener.get_sector_avg_return_12m(
+                sec_facts.get("sector"), exclude_symbol=symbol
+            )
+            m_result = momentum.score(hist, spy_hist, symbol,
+                                    sector_avg_return_12m=sector_avg)
         except Exception as e:
             print(f"Momentum calculation failed: {e}")
     # Original composite (kept for backward-compat with screener)
