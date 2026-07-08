@@ -353,7 +353,8 @@ No vague instructions allowed.
   risk_if_not_fixed: MEDIUM
 
 ---
-ISSUE_012:
+---
+## ISSUE_012:
 
 Status: [ ]
 
@@ -470,7 +471,7 @@ priority: High
 
 notes: >
 This refactor establishes the long-term scoring architecture for
-IntrinsicIQ. Company fundamentals become the shared source of truth,
+Factor Research Company fundamentals become the shared source of truth,
 while personalization is achieved by applying lightweight user-defined
 weightings over shared factor scores. This minimizes storage,
 maximizes cache efficiency, and enables scalable customization as the
