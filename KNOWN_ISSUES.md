@@ -469,13 +469,270 @@ acceptance_criteria:
 
 priority: High
 
-notes: >
-This refactor establishes the long-term scoring architecture for
-Factor Research Company fundamentals become the shared source of truth,
-while personalization is achieved by applying lightweight user-defined
-weightings over shared factor scores. This minimizes storage,
-maximizes cache efficiency, and enables scalable customization as the
-platform grows.
+## ISSUE_013:
+
+Status: [ ]
+
+title: "Add Market Fear Gauge (VIX/VIXEQ Regime Analysis)"
+category: market-intelligence
+
+files:
+
+- codes/engine/market_fear.py
+- codes/engine/analysis.py
+- codes/data/market_data.py
+- codes/ui/analysis_badges.py
+- codes/templates/analysis.html
+
+problem: >
+Every stock analysis is currently performed in isolation from the overall
+market environment. Intrinsic value answers whether a stock is cheap or
+expensive, but it does not communicate whether current market conditions
+suggest investors are complacent, cautious, or fearful.
+
+As a result, users receive a valuation without understanding whether the
+current environment is one where opportunities are likely increasing or
+where market optimism may still be suppressing future returns.
+
+goal: >
+Introduce a Market Fear Gauge that combines VIX and VIXEQ into a simple,
+easy-to-understand macro indicator shown on every stock analysis.
+
+The gauge should NEVER influence valuation calculations or stock scores.
+
+It is purely contextual information that helps users interpret whether the
+current market environment is generally favorable for value investing.
+
+background: >
+VIX measures implied volatility using capitalization-weighted S&P 500
+options.
+
+VIXEQ measures implied volatility using equal-weight S&P 500 options.
+
+Because VIXEQ gives equal importance to every company, it is often a better
+measure of stress across the average stock.
+
+When VIXEQ rises significantly above VIX, market fear is broadening beyond
+mega-cap companies, which historically tends to coincide with improving
+opportunities for long-term value investors.
+
+important_principle: >
+Market fear is NOT a prediction of a crash.
+
+The indicator must never claim that a decline is imminent.
+
+Instead it communicates:
+
+"How favorable is the current market environment for finding future value
+opportunities?"
+
+calculation:
+
+fetch:
+- current VIX
+- current VIXEQ
+
+compute:
+
+```
+spread =
+  VIXEQ - VIX
+
+ratio =
+  VIXEQ / VIX
+
+optional:
+  rolling_252_day_mean(spread)
+
+optional:
+  rolling_252_day_std(spread)
+
+optional:
+  z_score =
+  (spread - mean) / std
+```
+
+preferred_signal: >
+Use the standardized spread (Z-score) whenever historical data is available.
+
+If insufficient history exists, fall back to the raw spread and ratio.
+
+market_regimes:
+
+VERY_LOW_FEAR:
+
+```
+conditions:
+  - VIX low
+  - spread near zero
+
+badge:
+  "Low Market Fear"
+
+color:
+  Green
+
+interpretation:
+  Market participants are generally optimistic.
+
+  High-quality businesses may continue performing well, but broad
+  undervaluation is less common.
+
+  Continue demanding a strong margin of safety.
+```
+
+NORMAL:
+
+```
+badge:
+  "Normal Market Conditions"
+
+color:
+  Blue
+
+interpretation:
+  Market sentiment is balanced.
+
+  Continue evaluating businesses solely on intrinsic value.
+```
+
+ELEVATED:
+
+```
+badge:
+  "Elevated Market Fear"
+
+color:
+  Amber
+
+interpretation:
+  Investors are becoming increasingly defensive.
+
+  Volatility may create additional buying opportunities if prices fall
+  faster than intrinsic value.
+
+  Consider monitoring watchlists closely.
+```
+
+HIGH:
+
+```
+badge:
+  "High Market Fear"
+
+color:
+  Orange
+
+interpretation:
+  Fear is spreading across the broader market.
+
+  Many businesses may begin trading closer to or below intrinsic value.
+
+  This environment deserves increased research activity.
+```
+
+EXTREME:
+
+```
+badge:
+  "Extreme Market Fear"
+
+color:
+  Red
+
+interpretation:
+  Market stress is unusually high.
+
+  Historically these periods have often produced exceptional long-term
+  buying opportunities for financially strong businesses.
+
+  Increased caution is still required because some companies may be facing
+  genuine deterioration rather than temporary price declines.
+```
+
+analysis_integration:
+
+Every stock analysis should include a small Market Fear section.
+
+Example:
+
+---
+
+Market Fear Gauge
+
+Badge:
+🟠 Elevated Market Fear
+
+Current Reading
+
+VIX:
+22.4
+
+VIXEQ:
+27.1
+
+Spread:
++4.7
+
+Interpretation
+
+Market volatility is expanding beyond large-cap companies.
+
+Historically this type of environment tends to increase the number of
+potential value opportunities.
+
+IntrinsicIQ still evaluates this company independently of market sentiment,
+but continued market weakness could improve future entry prices.
+
+---
+
+important_rules:
+
+- Never modify intrinsic value calculations.
+- Never alter Graham Score.
+- Never alter Buffett Score.
+- Never alter Quality Score.
+- Never alter ranking engine.
+- Never alter portfolio optimizer.
+
+This feature is informational only.
+
+future_extensions:
+
+- Historical Market Fear chart.
+- Fear regime timeline.
+- Fear indicator on screener.
+- Watchlist notifications when fear enters High or Extreme.
+- Portfolio dashboard showing current market regime.
+- Backtest performance by fear regime.
+- Overlay Market Fear on historical buy recommendations.
+- Optional macro score combining:
+    - VIX
+    - VIXEQ
+    - Credit spreads
+    - Yield curve
+    - Market breadth
+    - High Yield OAS
+    - Advance/Decline line
+
+  expected_benefit: >
+  This feature gives users valuable macro context without compromising the
+  philosophy of IntrinsicIQ.
+
+  It reinforces that intrinsic value remains the primary investment decision,
+  while market fear simply helps explain whether the current environment is
+  likely producing more or fewer valuation opportunities.
+
+  The feature aligns naturally with Benjamin Graham's and Warren Buffett's
+  philosophy of taking advantage of market pessimism rather than reacting to
+  it emotionally.
+  notes: >
+  This refactor establishes the long-term scoring architecture for
+  Factor Research Company fundamentals become the shared source of truth,
+  while personalization is achieved by applying lightweight user-defined
+  weightings over shared factor scores. This minimizes storage,
+  maximizes cache efficiency, and enables scalable customization as the
+  platform grows.
 ---
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
 
