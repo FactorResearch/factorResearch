@@ -38,7 +38,7 @@ from __future__ import annotations
 
 import math
 from typing import Any, Callable
-
+from . import factor_snapshot
 import numpy as np
 import pandas as pd
 
@@ -243,41 +243,53 @@ def momentum_rotation(top_n: int = 10, years: int = 5, rebalance_months: int = 1
 def score_filtered(min_score: float = 65.0, top_n: int = 20, years: int = 5,
                     rebalance_months: int = 3) -> dict[str, Any]:
     """
-    Hold every persisted stock whose CURRENT composite_score >= min_score
-    (capped at top_n by score), equal-weighted, rebalanced back to equal
-    weight every `rebalance_months`.
-
-    [BACKTEST BIAS WARNING]: the qualifying set is fixed using today's
-    composite_score for the entire backtest window — see module docstring.
+    Hold stocks whose composite score >= min_score at each rebalance date.
+    Uses factor_snapshot.get_factor_scores_asof() (Layer 5) for symbols with
+    sufficient dated history; falls back to today's persisted composite_score
+    for symbols without it. look_ahead_bias reflects whether ANY fallback
+    was used across the whole run.
     """
+    from .scorer import ENHANCED_WEIGHTS
+
     universe = _load_cached_universe()
-    scored = []
-    for sym, data in universe.items():
+    candidates = list(universe.keys())
+    if len(candidates) < MIN_STOCKS:
+        return {"error": f"Need at least {MIN_STOCKS} analysed stocks in the database.",
+                "look_ahead_bias": True}
+
+    fallback_used = {"flag": False}
+
+    def _today_composite(sym: str) -> float | None:
+        data = universe[sym]
         enhanced = data.get("enhanced") or {}
-        comp     = data.get("composite") or {}
-        score    = enhanced.get("composite_score")
-        if score is None:
-            score = comp.get("composite_score")
-        if score is not None and score >= min_score:
-            scored.append((sym, score))
+        comp = data.get("composite") or {}
+        return enhanced.get("composite_score") or comp.get("composite_score")
 
-    scored.sort(key=lambda x: x[1], reverse=True)
-    symbols = [s for s, _ in scored[:max(MIN_STOCKS, min(MAX_TOP_N, top_n))]]
+    def qualify(sym: str, as_of: str) -> bool | None:
+        if factor_snapshot.has_sufficient_history(sym):
+            scores = factor_snapshot.get_factor_scores_asof(sym, as_of)
+            usable = {k: v for k, v in scores.items() if v.get("max_score")}
+            if usable:
+                total_w = sum(ENHANCED_WEIGHTS.get(k, 0) for k in usable)
+                if total_w > 0:
+                    raw = sum(
+                        (v["score"] / v["max_score"] * 100) * ENHANCED_WEIGHTS.get(k, 0)
+                        for k, v in usable.items()
+                    )
+                    return (raw / total_w) >= min_score
+        # Fallback: today's score, applied retroactively (biased)
+        fallback_used["flag"] = True
+        today_score = _today_composite(sym)
+        return today_score is not None and today_score >= min_score
 
-    if len(symbols) < MIN_STOCKS:
-        return {"error": f"Only {len(symbols)} stocks qualify at score >= {min_score} "
-                          f"(need {MIN_STOCKS}+).", "look_ahead_bias": True}
-
-    result = _rebalanced_equal_weight_backtest(symbols, years, rebalance_months)
+    result = _rebalanced_dynamic_qualify_backtest(candidates, years, rebalance_months, qualify)
     result.update({
-        "strategy":  "score_filtered",
-        "min_score": min_score,
-        "top_n":     top_n,
-        "look_ahead_bias": True,
+        "strategy":         "score_filtered",
+        "min_score":        min_score,
+        "top_n":            top_n,
+        "look_ahead_bias":  fallback_used["flag"],
     })
     return result
-
-
 # ══════════════════════════════════════════════════════════════════════════════
 # Strategy 3 — Factor Combo (Graham pass + Piotroski F>=7 + positive FCF)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -286,42 +298,60 @@ def factor_combo(min_piotroski: int = 7, min_graham_pct: float = 50.0,
                   years: int = 5, rebalance_months: int = 3) -> dict[str, Any]:
     """
     Screen: Graham pct >= min_graham_pct AND Piotroski F-Score >= min_piotroski
-    AND positive FCF (fcf_quality.fcf > 0).
-
-    [BACKTEST BIAS WARNING]: screen uses today's persisted scores — see module
-    docstring.
+    AND positive FCF. Graham/Piotroski use factor_snapshot as-of data when a
+    symbol has sufficient history (Layer 5); FCF sign still uses today's
+    value (raw dollar FCF isn't captured in factor_score snapshots, only the
+    0-100 fcf_quality score) — this one check remains retroactively applied
+    and is the reason look_ahead_bias may still be True even when
+    Graham/Piotroski are point-in-time correct.
     """
     universe = _load_cached_universe()
-    symbols = []
-    for sym, data in universe.items():
-        g   = data.get("graham") or {}
-        p   = data.get("piotroski") or {}
-        fcf = data.get("fcf_quality") or {}
+    candidates = list(universe.keys())
+    if len(candidates) < MIN_STOCKS:
+        return {"error": f"Need at least {MIN_STOCKS} analysed stocks in the database.",
+                "look_ahead_bias": True}
 
-        g_max = g.get("total_max") or 100
-        g_pct = (g.get("total_score", 0) / g_max * 100) if g_max else 0
-        f_score = p.get("f_score", 0) or 0
-        fcf_val = fcf.get("fcf")
-        fcf_positive = (fcf_val is not None and fcf_val > 0)
+    fallback_used = {"flag": False}
 
-        if g_pct >= min_graham_pct and f_score >= min_piotroski and fcf_positive:
-            symbols.append(sym)
+    def _today_fcf_positive(sym: str) -> bool:
+        fcf = universe[sym].get("fcf_quality") or {}
+        val = fcf.get("fcf")
+        return val is not None and val > 0
 
-    if len(symbols) < MIN_STOCKS:
-        return {"error": f"Only {len(symbols)} stocks pass the factor-combo screen "
-                          f"(need {MIN_STOCKS}+).", "look_ahead_bias": True}
+    def qualify(sym: str, as_of: str) -> bool | None:
+        graham_ok = piotroski_ok = None
+        if factor_snapshot.has_sufficient_history(sym):
+            scores = factor_snapshot.get_factor_scores_asof(sym, as_of)
+            g = scores.get("graham")
+            p = scores.get("piotroski")
+            if g and g.get("max_score"):
+                graham_ok = (g["score"] / g["max_score"] * 100) >= min_graham_pct
+            if p and p.get("max_score"):
+                piotroski_ok = p["score"] >= min_piotroski
 
-    symbols = symbols[:MAX_TOP_N]
-    result = _rebalanced_equal_weight_backtest(symbols, years, rebalance_months)
+        if graham_ok is None or piotroski_ok is None:
+            fallback_used["flag"] = True
+            data = universe[sym]
+            g_data = data.get("graham") or {}
+            p_data = data.get("piotroski") or {}
+            g_max = g_data.get("total_max") or 100
+            graham_ok = (g_data.get("total_score", 0) / g_max * 100) >= min_graham_pct if g_max else False
+            piotroski_ok = (p_data.get("f_score", 0) or 0) >= min_piotroski
+
+        # FCF sign always retroactive today's-value (documented above)
+        fallback_used["flag"] = True
+        fcf_ok = _today_fcf_positive(sym)
+
+        return bool(graham_ok and piotroski_ok and fcf_ok)
+
+    result = _rebalanced_dynamic_qualify_backtest(candidates, years, rebalance_months, qualify)
     result.update({
-        "strategy":       "factor_combo",
-        "min_piotroski":  min_piotroski,
-        "min_graham_pct": min_graham_pct,
-        "look_ahead_bias": True,
+        "strategy":         "factor_combo",
+        "min_piotroski":    min_piotroski,
+        "min_graham_pct":   min_graham_pct,
+        "look_ahead_bias":  fallback_used["flag"],
     })
     return result
-
-
 # ── Shared rebalanced equal-weight backtest (used by score_filtered / factor_combo) ──
 
 def _rebalanced_equal_weight_backtest(symbols: list[str], years: int,
@@ -369,6 +399,83 @@ def _rebalanced_equal_weight_backtest(symbols: list[str], years: int,
         "error": None,
     }
 
+def _rebalanced_dynamic_qualify_backtest(
+    candidate_symbols: list[str],
+    years: int,
+    rebalance_months: int,
+    qualify_fn,  # (symbol: str, as_of: str) -> bool | None  (None = "no data, skip")
+) -> dict[str, Any]:
+    """
+    Like _rebalanced_equal_weight_backtest, but re-evaluates which symbols
+    qualify AT EACH REBALANCE DATE via qualify_fn, instead of using a
+    single fixed symbol list for the whole window (ISSUE_012 Layer 5).
+
+    qualify_fn returns True/False using factor_snapshot data when available
+    for that symbol/date, or None to indicate no snapshot exists yet (the
+    caller decides whether to fall back to today's score before calling in,
+    and reports that via used_fallback in the return dict).
+    """
+    wide = _build_price_matrix(candidate_symbols + ["SPY"], years)
+    if wide.empty or "SPY" not in wide.columns or len(wide) < 6:
+        return {"error": "Insufficient overlapping price history.", "values": [], "dates": []}
+
+    available = [s for s in candidate_symbols if s in wide.columns]
+    if len(available) < MIN_STOCKS:
+        return {"error": f"Only {len(available)} symbols have price history.", "values": [], "dates": []}
+
+    dates = wide.index.tolist()
+    rebalance_idx = list(range(0, len(wide), rebalance_months))
+    if rebalance_idx[-1] != len(wide) - 1:
+        rebalance_idx.append(len(wide) - 1)
+
+    port_values = [10_000.0]
+    spy_values  = [10_000.0]
+    port_dates  = [dates[0]]
+    spy_shares  = spy_values[0] / float(wide["SPY"].iloc[0])
+    any_fallback_used = False
+    last_qualifying: list[str] = []
+
+    for i in range(1, len(rebalance_idx)):
+        prev_i, this_i = rebalance_idx[i - 1], rebalance_idx[i]
+        as_of = dates[prev_i].strftime("%Y-%m-%d")
+
+        qualifying = []
+        for s in available:
+            if pd.isna(wide[s].iloc[prev_i]) or wide[s].iloc[prev_i] <= 0:
+                continue
+            result = qualify_fn(s, as_of)
+            if result is None:
+                continue  # no data at all — exclude rather than guess
+            if result:
+                qualifying.append(s)
+
+        if not qualifying:
+            qualifying = last_qualifying  # hold previous allocation if nothing qualifies this period
+        else:
+            last_qualifying = qualifying
+
+        if not qualifying:
+            continue
+
+        alloc = port_values[-1] / len(qualifying)
+        shares = {s: alloc / float(wide[s].iloc[prev_i]) for s in qualifying}
+        pv = sum(sh * float(wide[s].iloc[this_i]) for s, sh in shares.items()
+                 if pd.notna(wide[s].iloc[this_i]))
+        port_values.append(pv if pv > 0 else port_values[-1])
+        spy_values.append(spy_shares * float(wide["SPY"].iloc[this_i]))
+        port_dates.append(dates[this_i])
+
+    metrics = _compute_risk_metrics(port_values, spy_values)
+    return {
+        "dates":            [d.strftime("%Y-%m-%d") for d in port_dates],
+        "values":           [round(v, 2) for v in port_values],
+        "spy_values":       [round(v, 2) for v in spy_values],
+        "symbols":          available,
+        "n_stocks":         len(available),
+        "rebalance_months": rebalance_months,
+        **metrics,
+        "error": None,
+    }
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Strategy 4 — Walk-Forward Rolling Windows

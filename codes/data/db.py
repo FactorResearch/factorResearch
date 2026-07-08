@@ -77,6 +77,38 @@ CREATE TABLE IF NOT EXISTS analysis_cache (
     data_json  TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS factor_scores (
+    ticker       TEXT NOT NULL,
+    factor_name  TEXT NOT NULL,
+    score        REAL,
+    max_score    REAL,
+    computed_at  TEXT NOT NULL,
+    PRIMARY KEY (ticker, factor_name)
+);
+CREATE TABLE IF NOT EXISTS user_weights (
+    user_id      TEXT NOT NULL,
+    factor_name  TEXT NOT NULL,
+    weight       REAL NOT NULL,
+    updated_at   TEXT NOT NULL,
+    PRIMARY KEY (user_id, factor_name)
+);
+CREATE TABLE IF NOT EXISTS strategy_backtest_cache (
+    cache_key   TEXT PRIMARY KEY,
+    result_json TEXT NOT NULL,
+    computed_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS factor_score_snapshots (
+    ticker         TEXT NOT NULL,
+    factor_name    TEXT NOT NULL,
+    snapshot_date  TEXT NOT NULL,   -- YYYY-MM-DD, the rebalance date this reflects
+    score          REAL,
+    max_score      REAL,
+    recorded_at    TEXT NOT NULL,
+    PRIMARY KEY (ticker, factor_name, snapshot_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_factor_snapshots_ticker_date
+    ON factor_score_snapshots(ticker, snapshot_date);
 
 """
 _UPSERT_VALUE_METRICS = """
@@ -228,6 +260,161 @@ def get_sec_facts_meta(ticker: str) -> dict | None:
         ).fetchone()
     return dict(row) if row else None
 
+_UPSERT_FACTOR_SCORE = """
+INSERT INTO factor_scores (ticker, factor_name, score, max_score, computed_at)
+VALUES (%(ticker)s, %(factor_name)s, %(score)s, %(max_score)s, %(computed_at)s)
+ON CONFLICT (ticker, factor_name) DO UPDATE SET
+    score = excluded.score, max_score = excluded.max_score, computed_at = excluded.computed_at
+"""
+_SELECT_FACTOR_SCORES = "SELECT factor_name, score, max_score, computed_at FROM factor_scores WHERE ticker = %(ticker)s"
+
+
+def upsert_factor_scores(ticker: str, scores: dict[str, tuple[float | None, float | None]]) -> None:
+    """
+    Persist atomic factor scores for one company (ISSUE_012 Layer 1).
+    `scores` maps factor_name -> (score, max_score). Shared across all
+    users — this is company-level data, never duplicated per user.
+    """
+    _ensure_init()
+    t = ticker.upper()
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        for factor_name, (score, max_score) in scores.items():
+            con.execute(_UPSERT_FACTOR_SCORE, {
+                "ticker": t, "factor_name": factor_name,
+                "score": score, "max_score": max_score, "computed_at": now,
+            })
+
+_UPSERT_USER_WEIGHT = """
+INSERT INTO user_weights (user_id, factor_name, weight, updated_at)
+VALUES (%(user_id)s, %(factor_name)s, %(weight)s, %(updated_at)s)
+ON CONFLICT (user_id, factor_name) DO UPDATE SET
+    weight = excluded.weight, updated_at = excluded.updated_at
+"""
+_SELECT_USER_WEIGHTS = "SELECT factor_name, weight FROM user_weights WHERE user_id = %(user_id)s"
+_DELETE_USER_WEIGHTS = "DELETE FROM user_weights WHERE user_id = %(user_id)s"
+
+
+def set_user_weights(user_id: str, weights: dict[str, float]) -> None:
+    """Persist a user's factor weight config. Only the weights — never
+    company data — are duplicated per user (ISSUE_012 Layer 3)."""
+    _ensure_init()
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        con.execute(_DELETE_USER_WEIGHTS, {"user_id": user_id})
+        for factor_name, weight in weights.items():
+            con.execute(_UPSERT_USER_WEIGHT, {
+                "user_id": user_id, "factor_name": factor_name,
+                "weight": weight, "updated_at": now,
+            })
+
+
+def get_user_weights(user_id: str) -> dict[str, float]:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_USER_WEIGHTS, {"user_id": user_id}).fetchall()
+    return {r["factor_name"]: r["weight"] for r in rows}
+def get_factor_scores(ticker: str) -> dict[str, dict]:
+    """Return {factor_name: {score, max_score, computed_at}} for a ticker."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_FACTOR_SCORES, {"ticker": ticker.upper()}).fetchall()
+    return {r["factor_name"]: {"score": r["score"], "max_score": r["max_score"],
+                                "computed_at": r["computed_at"]} for r in rows}
+
+_UPSERT_STRATEGY_CACHE = """
+INSERT INTO strategy_backtest_cache (cache_key, result_json, computed_at)
+VALUES (%(cache_key)s, %(result_json)s, %(computed_at)s)
+ON CONFLICT (cache_key) DO UPDATE SET
+    result_json = excluded.result_json, computed_at = excluded.computed_at
+"""
+_SELECT_STRATEGY_CACHE = "SELECT result_json, computed_at FROM strategy_backtest_cache WHERE cache_key = %(cache_key)s"
+_DELETE_STRATEGY_CACHE_PREFIX = "DELETE FROM strategy_backtest_cache WHERE cache_key LIKE %(prefix)s"
+
+
+def get_strategy_backtest(cache_key: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_STRATEGY_CACHE, {"cache_key": cache_key}).fetchone()
+    if not row:
+        return None
+    try:
+        return json.loads(row["result_json"])
+    except (TypeError, ValueError):
+        return None
+
+
+def set_strategy_backtest(cache_key: str, result: dict) -> None:
+    _ensure_init()
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        con.execute(_UPSERT_STRATEGY_CACHE, {
+            "cache_key": cache_key,
+            "result_json": json.dumps(result, default=str),
+            "computed_at": now,
+        })
+
+
+def invalidate_strategy_cache(data_version_prefix: str) -> None:
+    """Bulk-invalidate all cached strategies for a stale data_version."""
+    _ensure_init()
+    with _conn() as con:
+        con.execute(_DELETE_STRATEGY_CACHE_PREFIX, {"prefix": f"{data_version_prefix}%"})
+
+_UPSERT_FACTOR_SNAPSHOT = """
+INSERT INTO factor_score_snapshots (ticker, factor_name, snapshot_date, score, max_score, recorded_at)
+VALUES (%(ticker)s, %(factor_name)s, %(snapshot_date)s, %(score)s, %(max_score)s, %(recorded_at)s)
+ON CONFLICT (ticker, factor_name, snapshot_date) DO UPDATE SET
+    score = excluded.score, max_score = excluded.max_score, recorded_at = excluded.recorded_at
+"""
+_SELECT_SNAPSHOTS_ASOF = """
+SELECT factor_name, score, max_score, snapshot_date
+FROM factor_score_snapshots
+WHERE ticker = %(ticker)s AND factor_name = %(factor_name)s AND snapshot_date <= %(as_of)s
+ORDER BY snapshot_date DESC
+LIMIT 1
+"""
+_SELECT_SNAPSHOT_DATES = "SELECT DISTINCT snapshot_date FROM factor_score_snapshots WHERE ticker = %(ticker)s ORDER BY snapshot_date"
+
+
+def record_factor_snapshot(ticker: str, snapshot_date: str,
+                           scores: dict[str, tuple[float | None, float | None]]) -> None:
+    """
+    Append-only dated snapshot of factor scores (ISSUE_012 Layer 5).
+    Unlike factor_scores (Layer 1, latest-only), this never overwrites
+    prior dates — each (ticker, factor_name, snapshot_date) is immutable
+    once written for that date.
+    """
+    _ensure_init()
+    t = ticker.upper()
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        for factor_name, (score, max_score) in scores.items():
+            con.execute(_UPSERT_FACTOR_SNAPSHOT, {
+                "ticker": t, "factor_name": factor_name, "snapshot_date": snapshot_date,
+                "score": score, "max_score": max_score, "recorded_at": now,
+            })
+
+
+def get_factor_score_asof(ticker: str, factor_name: str, as_of: str) -> dict | None:
+    """Most recent snapshot on or before `as_of` (YYYY-MM-DD), or None."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_SNAPSHOTS_ASOF, {
+            "ticker": ticker.upper(), "factor_name": factor_name, "as_of": as_of,
+        }).fetchone()
+    return dict(row) if row else None
+
+
+def list_snapshot_dates(ticker: str) -> list[str]:
+    _ensure_init()
+    with _conn() as con:
+        rows = con.execute(_SELECT_SNAPSHOT_DATES, {"ticker": ticker.upper()}).fetchall()
+    return [r[0] for r in rows]
 
 def _db_url() -> str:
     url = os.environ.get("DATABASE_MARKET_URL")

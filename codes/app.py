@@ -41,7 +41,7 @@ from codes import security
 from flask import render_template
 from codes.data   import cache, sec_data,company_metadata,db
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
-from codes.engine import scorer, screener, universe
+from codes.engine import scorer, screener, universe,factor_engine
 from codes.engine import factor_backtest as fb_engine
 import codes.portfolio as portfolio_engine
 from codes.core.redis_client import get_redis, json_get, json_set
@@ -494,6 +494,7 @@ def analyze_stock(symbol: str) -> dict:
         growth_quality_result=growth_quality_result,
         factor_momentum_result=factor_momentum_result,
     )
+    
 
     # Regime overlay — uses SPY history already loaded above (portfolio risk layer)
     regime_result = None
@@ -587,6 +588,13 @@ def analyze_stock(symbol: str) -> dict:
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,
     }
+    factor_engine.persist_factor_scores(symbol, {
+        "graham": g, "quality": q, "momentum": m_result,
+        "piotroski": piotroski_result, "risk": risk_result, "buffett": buffett_result,
+        "earnings_revision": earnings_revision_result, "profitability": profitability_result,
+        "fcf_quality": fcf_quality_result, "capital_allocation": capital_allocation_result,
+        "growth_quality": growth_quality_result,
+    })
     db.upsert_analysis(symbol, result)
     
     # 1A: Update in-memory cache
@@ -3877,10 +3885,17 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     except RateLimited as rl:
         return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger", style={"padding": "20px"})], "⏳ Rate limited"
 
+    from codes.engine import strategy_cache, user_strategy
+
     custom_weights = dict(zip(_FB_WEIGHT_KEYS, (v or 0 for v in weight_vals)))
 
-    result = fb_engine.run_factor_backtest(
-        custom_weights=custom_weights,
+    # Layer 3: persist this user's weight config
+    uid = _get_user_id()
+    user_strategy.set_user_weights(uid, custom_weights)
+
+    # Layer 4: cache-aware backtest, reused across identical configs
+    result = strategy_cache.get_or_run_backtest(
+        weights=custom_weights,
         top_n=top_n or 10,
         years=years or 5,
     )
@@ -3889,10 +3904,11 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         return [html.Div(f"❌ {result['error']}", className="text-danger",
                          style={"padding": "20px"})], "❌ Error"
 
+    cache_note = " (cached)" if result.get("cache_hit") else ""
     return _render_fb_results(result), (
         f"✅ {result['n_analysed']} stocks scored · "
         f"top {result['top_n']} selected · "
-        f"{result['years']}yr backtest"
+        f"{result['years']}yr backtest{cache_note}"
     )
 
 

@@ -356,7 +356,7 @@ No vague instructions allowed.
 ---
 ## ISSUE_012:
 
-Status: [ ]
+Status: [x]
 
 title: “Implement shared factor engine with user-customizable weighting and strategy cache”
 
