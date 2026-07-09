@@ -79,6 +79,14 @@ def initialize_schema() -> None:
             cur.execute(SNAPSHOT_DDL)
 
 
+def ensure_schema_if_configured() -> bool:
+    if not _database_url():
+        print("Analysis snapshot schema skipped: no analytics database URL configured.")
+        return False
+    initialize_schema()
+    return True
+
+
 def save_standard_snapshot(
     analysis_result: dict,
     *,
@@ -233,4 +241,3 @@ def list_public_snapshots(limit: int = 500) -> list[AnalysisSnapshot]:
         )
         for row in rows
     ]
-
