@@ -42,6 +42,10 @@ from flask import render_template
 from codes.data   import cache, sec_data,company_metadata,db
 from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine,comomentum as comomentum_model
 from codes.engine import scorer, screener, universe,factor_engine,factor_backtest as fb_engine
+from codes.models.analysis_snapshot import AnalysisType
+from codes.routes.analyze import analyze_pages
+from codes.services.analysis_snapshot_service import save_standard_snapshot
+from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
 from codes.core.redis_client import get_redis, json_get, json_set
@@ -58,6 +62,7 @@ secret_key = os.environ.get("FLASK_SECRET_KEY")
 if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
+server.register_blueprint(analyze_pages)
 
 
 auth.init_auth(server)
@@ -106,6 +111,11 @@ def privacy_page():
         "privacy.html",
         legal_notice=_LEGAL_PLACEHOLDER_NOTICE
     )
+
+@server.route("/sitemap-analysis.xml")
+def analysis_sitemap():
+    base_url = flask.request.url_root.rstrip("/")
+    return flask.Response(generate_analysis_sitemap(base_url), mimetype="application/xml")
 
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)
@@ -380,6 +390,10 @@ def analyze_stock(symbol: str) -> dict:
     cached = db.get_analysis(symbol)
 
     if cached:
+        try:
+            save_standard_snapshot(cached, analysis_type=AnalysisType.STANDARD)
+        except Exception as e:
+            print(f"Analysis snapshot save failed for {symbol}: {type(e).__name__}: {e}")
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
         return cached
@@ -643,6 +657,10 @@ def analyze_stock(symbol: str) -> dict:
         "growth_quality": growth_quality_result,
     })
     db.upsert_analysis(symbol, result)
+    try:
+        save_standard_snapshot(result, analysis_type=AnalysisType.STANDARD)
+    except Exception as e:
+        print(f"Analysis snapshot save failed for {symbol}: {type(e).__name__}: {e}")
     
     # 1A: Update in-memory cache
     with _analysis_cache_lock:
