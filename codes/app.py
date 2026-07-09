@@ -40,9 +40,9 @@ from codes import billing
 from codes import security
 from flask import render_template
 from codes.data   import cache, sec_data,company_metadata,db
-from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine
-from codes.engine import scorer, screener, universe,factor_engine
-from codes.engine import factor_backtest as fb_engine
+from codes.models import graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt, buffett, earnings_revision, profitability as profitability_model, fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model, growth_quality as growth_quality_model, regime as regime_model, insider_activity as insider_activity_model, factor_momentum as factor_momentum_model, alternative_data as alternative_data_model,options_signal_engine as options_signal_model, spy_benchmark_model, bias_engine,comomentum as comomentum_model
+from codes.engine import scorer, screener, universe,factor_engine,factor_backtest as fb_engine
+
 import codes.portfolio as portfolio_engine
 from codes.core.redis_client import get_redis, json_get, json_set
 # ── App Init ──────────────────────────────────────────────────────────────────
@@ -257,6 +257,10 @@ _spy_history_lock = threading.Lock()
 _analysis_cache = {}
 _analysis_cache_lock = threading.Lock()
 _last_screener_state = None
+_comomentum_cache = {"ts": 0.0, "result": None}
+_comomentum_lock = threading.Lock()
+_COMOMENTUM_TTL = 3600  # seconds
+_COMOMENTUM_TOP_N = 20
 # ── Moat grade tooltips (shown on hover in Buffett badge) ────────────────────
 _MOAT_TOOLTIPS = {
     "A": (
@@ -312,7 +316,45 @@ def _is_rate_limit_error(exc: Exception) -> bool:
     if isinstance(exc, RateLimitError):
         return True
     return type(exc).__name__ == "RateLimitError"
+def _get_comomentum_result() -> dict | None:
+    """Top-momentum basket co-movement, recomputed at most once per hour."""
+    global _comomentum_cache
+    now = _time.time()
+    with _comomentum_lock:
+        if _comomentum_cache["result"] is not None and now - _comomentum_cache["ts"] < _COMOMENTUM_TTL:
+            return _comomentum_cache["result"]
 
+    try:
+        results = screener.get_screener_results()
+        candidates = [
+            r["symbol"] for r in results
+            if r.get("analyzed") and r.get("return_12m") is not None
+        ]
+        candidates.sort(
+            key=lambda s: next(r["return_12m"] for r in results if r["symbol"] == s),
+            reverse=True,
+        )
+        top_symbols = candidates[:_COMOMENTUM_TOP_N]
+        if len(top_symbols) < 2:
+            return None
+
+        price_histories = {}
+        for sym in top_symbols:
+            try:
+                h = api_fetcher.get_price_history(sym, years=3)
+                if h is not None and not h.empty:
+                    price_histories[sym] = h
+            except Exception as e:
+                print(f"Comomentum: history fetch failed for {sym}: {e}")
+
+        result = comomentum_model.calc_comomentum(top_symbols, price_histories)
+    except Exception as e:
+        print(f"Comomentum calculation failed: {e}")
+        result = None
+
+    with _comomentum_lock:
+        _comomentum_cache = {"ts": now, "result": result}
+    return result
 def is_production() -> bool:
     
     return os.environ.get("FLASK_ENV", "").lower() == "production"
@@ -504,7 +546,8 @@ def analyze_stock(symbol: str) -> dict:
     regime_result = None
     if spy_hist is not None and not spy_hist.empty:
         try:
-            regime_result = regime_model.score(spy_hist)
+            comomentum_result = _get_comomentum_result()
+            regime_result = regime_model.score(spy_hist, comomentum_result=comomentum_result)
         except Exception as e:
             print(f"Regime calculation failed: {e}")
     regime_overlay = scorer.apply_regime_overlay(
