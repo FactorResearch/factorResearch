@@ -6,6 +6,8 @@ from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.config import AMBER, BLUE, GREEN, MUTED, RED, TEXT
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
+from codes import billing
+from codes.services import permissions
 
 # ── Factor Lab callbacks ─────────────────────────────────────────────────────
 
@@ -57,6 +59,20 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     # Layer 3: persist this user's weight config
     uid = get_user_id()
     user_strategy.set_user_weights(uid, custom_weights)
+    try:
+        access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
+        if not access.allowed:
+            checkout = billing.get_checkout_url(uid)
+            return [
+                html.Div([
+                    html.Div(f"🔒 {access.message}", className="text-danger"),
+                    html.A("Unlock strategy validation", href=checkout, className="analyze-btn",
+                           style={"display": "inline-block", "marginTop": "12px", "textDecoration": "none"}),
+                ], style={"padding": "20px"})
+            ], "🔒 Premium required"
+    except Exception:
+        return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger",
+                         style={"padding": "20px"})], "🔒 Billing unavailable"
 
     # Layer 4: cache-aware backtest, reused across identical configs
     result = strategy_cache.get_or_run_backtest(
@@ -69,6 +85,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         return [html.Div(f"❌ {result['error']}", className="text-danger",
                          style={"padding": "20px"})], "❌ Error"
 
+    permissions.record_feature_usage(uid, permissions.Feature.BACKTEST)
     cache_note = " (cached)" if result.get("cache_hit") else ""
     return _render_fb_results(result), (
         f"✅ {result['n_analysed']} stocks scored · "

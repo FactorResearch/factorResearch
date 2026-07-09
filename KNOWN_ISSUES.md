@@ -1152,6 +1152,7 @@ important_rules:
 ---
 
 # ISSUE_015
+
 **Objective:**
 
 Implement a subscription-based pricing model where users receive limited access to experience IntrinsicIQ analysis, then require payment to unlock unlimited research capabilities and advanced quantitative features.

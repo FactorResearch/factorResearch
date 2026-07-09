@@ -6,12 +6,13 @@ import time as _time
 import dash
 from dash import Input, Output, State, callback
 
-from codes import billing
 from codes.engine import screener
 from codes.app_modules.analysis import analyze_stock, _is_rate_limit_error, is_production
 from codes.app_modules.analysis_ui import _build_analysis_content
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
+from codes import billing
+from codes.services import permissions
 
 # ── Analyze ───────────────────────────────────────────────────────────────────
 # ── New quant UI helpers ──────────────────────────────────────────────────────
@@ -54,17 +55,17 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
         check_rate_limit("analyze", calls=10, period_seconds=60)
     except RateLimited as rl:
         return dash.no_update, [], None, f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
-    # Billing enforcement: analyze_stock is a paid-tier feature.
     user_id = get_user_id()
-    if is_production():
-        try:
-            if not billing.user_has_paid(user_id):
-                checkout = billing.get_checkout_url(user_id)
-                msg = f"🔒 This feature requires a paid subscription. Upgrade: {checkout}"
-                return dash.no_update, [], None, msg, False, False, dash.no_update, {"display": "none"}, None, dash.no_update
-        except Exception:
-            # On any billing check failure, default to safe denial.
+    try:
+        access = permissions.can_access_feature(user_id, permissions.Feature.ANALYSIS)
+        if not access.allowed:
+            checkout = billing.get_checkout_url(user_id)
+            msg = f"🔒 {access.message} Upgrade: {checkout}"
+            return dash.no_update, [], None, msg, False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+    except Exception:
+        if is_production():
             return dash.no_update, [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+        access = None
     try:
         result = analyze_stock(symbol)
     except Exception as e:
@@ -79,14 +80,17 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
     content = _build_analysis_content(result)
     # Update screener row with full analysis data (Graham Number, live price, enhanced score)
     screener.update_stock_after_analysis(symbol, result)
+    usage_msg = ""
+    if access and access.remaining is not None:
+        consumed = permissions.consume_analysis_if_allowed(user_id, ticker=symbol)
+        usage_msg = f" · {consumed.remaining} free analyses remaining"
     return (
         f"/analyze/{symbol}/{_time.strftime('%Y%m%d')}",
         content,
         result,
-        f"✅ {result['name']} ({symbol}) — Analysis complete",
+        f"✅ {result['name']} ({symbol}) — Analysis complete{usage_msg}",
         False, False, symbol,
         {"display": "block"},
         symbol,
         viewed_updated,
     )
-

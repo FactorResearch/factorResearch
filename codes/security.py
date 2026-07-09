@@ -44,6 +44,7 @@ SENSITIVE_PATTERNS = [
 # through this single POST endpoint, so this is the one place a
 # same-origin / CSRF check actually needs to be enforced for a Dash app.
 _DASH_CALLBACK_PATH = "/_dash-update-component"
+_STRIPE_WEBHOOK_PATH = "/billing/webhook"
 
 
 def _generate_csrf_token() -> str:
@@ -102,6 +103,9 @@ def init_csrf_protection(app: flask.Flask) -> None:
         available and should still be applied to any new plain Flask route.
         """
         if request.method not in ("POST", "PUT", "DELETE", "PATCH"):
+            return None
+
+        if request.path == _STRIPE_WEBHOOK_PATH:
             return None
 
         if not IS_PRODUCTION and os.environ.get("DISABLE_CSRF_DEV") == "1":

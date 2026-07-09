@@ -112,6 +112,33 @@ CREATE TABLE IF NOT EXISTS strategy_backtest_cache (
     result_json TEXT NOT NULL,
     computed_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS subscriptions (
+    id                     BIGSERIAL PRIMARY KEY,
+    user_id                TEXT NOT NULL UNIQUE,
+    plan                   TEXT NOT NULL DEFAULT 'trial',
+    status                 TEXT NOT NULL DEFAULT 'trialing',
+    start_date             TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    end_date               TIMESTAMPTZ,
+    stripe_customer_id     TEXT,
+    stripe_subscription_id TEXT,
+    updated_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer
+    ON subscriptions(stripe_customer_id)
+    WHERE stripe_customer_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_stripe_subscription
+    ON subscriptions(stripe_subscription_id)
+    WHERE stripe_subscription_id IS NOT NULL;
+CREATE TABLE IF NOT EXISTS user_usage (
+    user_id       TEXT NOT NULL,
+    period_start  TIMESTAMPTZ NOT NULL,
+    period_end    TIMESTAMPTZ NOT NULL,
+    feature_name  TEXT NOT NULL,
+    usage_count   INTEGER NOT NULL DEFAULT 0,
+    feature_usage JSONB NOT NULL DEFAULT '{}'::jsonb,
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (user_id, period_start, feature_name)
+);
 CREATE TABLE IF NOT EXISTS factor_score_snapshots (
     ticker         TEXT NOT NULL,
     factor_name    TEXT NOT NULL,
@@ -448,6 +475,64 @@ ON CONFLICT (cache_key) DO UPDATE SET
 _SELECT_STRATEGY_CACHE = "SELECT result_json, computed_at FROM strategy_backtest_cache WHERE cache_key = %(cache_key)s"
 _DELETE_STRATEGY_CACHE_PREFIX = "DELETE FROM strategy_backtest_cache WHERE cache_key LIKE %(prefix)s"
 
+_SELECT_SUBSCRIPTION = "SELECT * FROM subscriptions WHERE user_id = %(user_id)s"
+_SELECT_SUBSCRIPTION_BY_CUSTOMER = "SELECT * FROM subscriptions WHERE stripe_customer_id = %(stripe_customer_id)s"
+_SELECT_SUBSCRIPTION_BY_STRIPE_ID = "SELECT * FROM subscriptions WHERE stripe_subscription_id = %(stripe_subscription_id)s"
+_UPSERT_SUBSCRIPTION = """
+INSERT INTO subscriptions (
+    user_id, plan, status, start_date, end_date,
+    stripe_customer_id, stripe_subscription_id, updated_at
+)
+VALUES (
+    %(user_id)s, %(plan)s, %(status)s,
+    COALESCE(%(start_date)s, NOW()), %(end_date)s,
+    %(stripe_customer_id)s, %(stripe_subscription_id)s, NOW()
+)
+ON CONFLICT (user_id) DO UPDATE SET
+    plan = excluded.plan,
+    status = excluded.status,
+    start_date = COALESCE(excluded.start_date, subscriptions.start_date),
+    end_date = excluded.end_date,
+    stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
+    stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
+    updated_at = NOW()
+"""
+_SELECT_USAGE = """
+SELECT usage_count, feature_usage, period_start, period_end
+FROM user_usage
+WHERE user_id = %(user_id)s
+  AND feature_name = %(feature_name)s
+  AND NOW() >= period_start
+  AND NOW() < period_end
+ORDER BY period_start DESC
+LIMIT 1
+"""
+_SELECT_TOTAL_USAGE = """
+SELECT COALESCE(SUM(usage_count), 0) AS usage_count
+FROM user_usage
+WHERE user_id = %(user_id)s
+  AND feature_name = %(feature_name)s
+"""
+_INCREMENT_USAGE = """
+INSERT INTO user_usage (
+    user_id, period_start, period_end, feature_name, usage_count, feature_usage, updated_at
+)
+VALUES (
+    %(user_id)s, %(period_start)s, %(period_end)s, %(feature_name)s, 1,
+    jsonb_build_object(%(usage_key)s::text, 1), NOW()
+)
+ON CONFLICT (user_id, period_start, feature_name) DO UPDATE SET
+    usage_count = user_usage.usage_count + 1,
+    feature_usage = jsonb_set(
+        user_usage.feature_usage,
+        ARRAY[%(usage_key)s::text],
+        to_jsonb(COALESCE((user_usage.feature_usage ->> %(usage_key)s::text)::int, 0) + 1),
+        true
+    ),
+    updated_at = NOW()
+RETURNING usage_count, feature_usage, period_start, period_end
+"""
+
 
 def get_strategy_backtest(cache_key: str) -> dict | None:
     _ensure_init()
@@ -478,6 +563,109 @@ def invalidate_strategy_cache(data_version_prefix: str) -> None:
     _ensure_init()
     with _conn() as con:
         con.execute(_DELETE_STRATEGY_CACHE_PREFIX, {"prefix": f"{data_version_prefix}%"})
+
+
+def get_subscription(user_id: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_SUBSCRIPTION, {"user_id": user_id}).fetchone()
+    return dict(row) if row else None
+
+
+def get_subscription_by_customer(stripe_customer_id: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(
+            _SELECT_SUBSCRIPTION_BY_CUSTOMER,
+            {"stripe_customer_id": stripe_customer_id},
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def get_subscription_by_stripe_id(stripe_subscription_id: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(
+            _SELECT_SUBSCRIPTION_BY_STRIPE_ID,
+            {"stripe_subscription_id": stripe_subscription_id},
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def upsert_subscription(
+    user_id: str,
+    *,
+    plan: str = "trial",
+    status: str = "trialing",
+    start_date=None,
+    end_date=None,
+    stripe_customer_id: str | None = None,
+    stripe_subscription_id: str | None = None,
+) -> dict:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        con.execute(_UPSERT_SUBSCRIPTION, {
+            "user_id": user_id,
+            "plan": plan,
+            "status": status,
+            "start_date": start_date,
+            "end_date": end_date,
+            "stripe_customer_id": stripe_customer_id,
+            "stripe_subscription_id": stripe_subscription_id,
+        })
+        row = con.execute(_SELECT_SUBSCRIPTION, {"user_id": user_id}).fetchone()
+    return dict(row)
+
+
+def get_usage(user_id: str, feature_name: str) -> dict:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_USAGE, {
+            "user_id": user_id,
+            "feature_name": feature_name,
+        }).fetchone()
+    if not row:
+        return {"usage_count": 0, "feature_usage": {}}
+    result = dict(row)
+    result["feature_usage"] = result.get("feature_usage") or {}
+    return result
+
+
+def get_total_usage(user_id: str, feature_name: str) -> int:
+    _ensure_init()
+    with _conn() as con:
+        row = con.execute(_SELECT_TOTAL_USAGE, {
+            "user_id": user_id,
+            "feature_name": feature_name,
+        }).fetchone()
+    return int(row[0] or 0) if row else 0
+
+
+def increment_usage(user_id: str, feature_name: str, usage_key: str | None = None) -> dict:
+    _ensure_init()
+    now = datetime.datetime.utcnow()
+    period_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    if period_start.month == 12:
+        period_end = period_start.replace(year=period_start.year + 1, month=1)
+    else:
+        period_end = period_start.replace(month=period_start.month + 1)
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_INCREMENT_USAGE, {
+            "user_id": user_id,
+            "period_start": period_start,
+            "period_end": period_end,
+            "feature_name": feature_name,
+            "usage_key": usage_key or feature_name,
+        }).fetchone()
+    result = dict(row)
+    result["feature_usage"] = result.get("feature_usage") or {}
+    return result
 
 _UPSERT_FACTOR_SNAPSHOT = """
 INSERT INTO factor_score_snapshots (ticker, factor_name, snapshot_date, score, max_score, recorded_at)

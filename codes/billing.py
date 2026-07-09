@@ -1,19 +1,14 @@
-"""Billing integration (Stripe + dev fallback).
+"""Billing routes and compatibility helpers."""
 
-Provides a minimal interface for checkout/portal URL generation and
-simple per-user tier checks. In production set `STRIPE_SECRET_KEY` and
-`STRIPE_PRICE_ID` env vars to enable real Stripe flows. For local
-development the module exposes a small demo route to mark the current
-session as paid.
-"""
+from __future__ import annotations
+
 from typing import Optional
 import os
+
 import flask
 
-STRIPE_KEY = os.environ.get("STRIPE_SECRET_KEY")
-STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID")
-
-_paid_users: dict[str, bool] = {}
+from codes.payments import stripe_client, subscriptions, webhooks
+from codes.services import permissions
 
 
 def _is_production() -> bool:
@@ -21,94 +16,82 @@ def _is_production() -> bool:
 
 
 def init_billing(server: Optional[flask.Flask] = None):
-    """Initialize billing endpoints on the Flask `server` when available.
-
-    Adds a lightweight dev helper at `/billing/mark_paid` to mark the
-    current session as paid for local testing. In production this route is
-    intentionally disabled to prevent abuse.
-    """
     if server is None:
         return
 
-    if _is_production():
-        return
-
-    @server.route("/billing/mark_paid", methods=["GET"])
-    def _mark_paid():
-        # For local/dev testing only: marks the session as paid and redirects back.
-        uid = flask.request.args.get("user_id") or flask.session.get("_uid")
-        if not uid:
+    @server.route("/billing/checkout", methods=["GET"])
+    def _checkout():
+        user_id = flask.request.args.get("user_id") or flask.session.get("_uid")
+        plan = flask.request.args.get("plan", "premium")
+        if not user_id:
             return "missing user_id", 400
-        _paid_users[uid] = True
-        # Also set session flag for immediate effect in local dev.
-        flask.session["is_paid"] = True
-        return flask.redirect(flask.request.referrer or "/")
+        try:
+            return flask.redirect(get_checkout_url(user_id, plan=plan))
+        except Exception as exc:
+            if _is_production():
+                return "Billing is unavailable. Please try again later.", 503
+            return f"Billing unavailable: {type(exc).__name__}: {exc}", 503
+
+    @server.route("/billing/portal", methods=["GET"])
+    def _portal():
+        user_id = flask.request.args.get("user_id") or flask.session.get("_uid")
+        if not user_id:
+            return "missing user_id", 400
+        try:
+            return flask.redirect(get_portal_url(user_id))
+        except Exception as exc:
+            if _is_production():
+                return "Billing portal is unavailable. Please try again later.", 503
+            return f"Billing portal unavailable: {type(exc).__name__}: {exc}", 503
+
+    @server.route("/billing/success", methods=["GET"])
+    def _success():
+        return flask.redirect("/")
+
+    @server.route("/billing/webhook", methods=["POST"])
+    def _stripe_webhook():
+        payload = flask.request.get_data()
+        signature = flask.request.headers.get("Stripe-Signature")
+        try:
+            event = stripe_client.construct_webhook_event(payload, signature)
+        except Exception:
+            return flask.jsonify({"error": "invalid webhook"}), 400
+        handled = webhooks.handle_event(event)
+        return flask.jsonify({"received": True, "handled": handled})
+
+    if not _is_production():
+        @server.route("/billing/mark_paid", methods=["GET"])
+        def _mark_paid():
+            uid = flask.request.args.get("user_id") or flask.session.get("_uid")
+            if not uid:
+                return "missing user_id", 400
+            subscriptions.mark_paid_for_dev(uid)
+            flask.session["is_paid"] = True
+            return flask.redirect(flask.request.referrer or "/")
 
 
 def user_has_paid(user_id: str) -> bool:
-    """Return True if `user_id` is in the paid set or session indicates paid.
-
-    This function intentionally keeps logic simple: in production you
-    should map application user IDs to Stripe Customer + Subscription
-    records and check subscription status server-side.
-    """
+    if not user_id:
+        return False
     try:
-        if not user_id:
-            return False
-        # Check explicit in-memory mapping first
-        if _paid_users.get(user_id):
-            return True
-        # Check Flask session (useful for local dev flow)
-        if flask.session.get("is_paid"):
+        if flask.session.get("is_paid") and not _is_production():
             return True
     except Exception:
         pass
-    return False
+    return permissions.is_paid_subscription(permissions.get_or_create_subscription(user_id))
 
 
-def get_checkout_url(user_id: str) -> str:
-    """Return a checkout/upgrade URL for the user.
-
-    In production Stripe must be configured. In development, a fallback
-    URL is available for quick local testing.
-    """
-    if STRIPE_KEY and STRIPE_PRICE_ID:
-        try:
-            import stripe
-            stripe.api_key = STRIPE_KEY
-            session = stripe.checkout.Session.create(
-                payment_method_types=["card"],
-                line_items=[{"price": STRIPE_PRICE_ID, "quantity": 1}],
-                mode="subscription",
-                success_url="/billing/upgrade_success",
-                cancel_url="/",
-            )
-            return session.url
-        except Exception:
-            pass
-
+def get_checkout_url(user_id: str, plan: str = "premium") -> str:
+    if stripe_client.is_configured():
+        return stripe_client.create_checkout_session(user_id, plan=plan)
     if _is_production():
         raise RuntimeError("Stripe checkout is not configured in production.")
-
     return f"/billing/mark_paid?user_id={user_id}"
 
 
 def get_portal_url(user_id: str) -> str:
-    """Return a customer portal URL (or dev fallback).
-
-    Production should call Stripe's billing portal API. Here we return
-    a simple link for local testing.
-    """
-    if STRIPE_KEY:
-        try:
-            import stripe
-            stripe.api_key = STRIPE_KEY
-            # Real portal creation omitted for brevity.
-            # TODO: implement release-ready Stripe billing portal support.
-        except Exception:
-            pass
-
+    if stripe_client.is_configured():
+        return stripe_client.create_billing_portal_session(user_id)
     if _is_production():
         raise RuntimeError("Stripe portal is not configured in production.")
-
     return f"/billing/mark_paid?user_id={user_id}"
