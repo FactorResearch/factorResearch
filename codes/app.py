@@ -1546,6 +1546,11 @@ def _composite_banner(data: dict) -> html.Div:
                                style={"background": "#3a0000", "color": RED,
                                       "borderRadius": "6px", "padding": "3px 10px",
                                       "fontSize": "12px", "fontWeight": "600"}))
+    if (data.get("growth_quality") or {}).get("acquisition_driven_growth"):
+        flags.append(html.Span("🟠 Acquisition-Driven Growth",
+                               style={"background": "#3a2000", "color": AMBER,
+                                      "borderRadius": "6px", "padding": "3px 10px",
+                                      "fontSize": "12px", "fontWeight": "600"}))
     return html.Div(className="composite-banner", children=[
         html.Div([
             html.Div(verdict, className="composite-banner-verdict",
@@ -1792,7 +1797,9 @@ def _growth_quality_card(data: dict) -> html.Div:
         ("FCF CAGR 10Y", _fmt(gq.get("fcf_cagr_10y"))),
         ("Margin Stability", _fmt(gq.get("margin_stability"), 2, " pp")),
         ("Incremental ROIC", _fmt(gq.get("incremental_roic"))),
-    ]
+        ("Reinvestment Efficiency", _fmt(gq.get("reinvestment_efficiency"), 2, "")),
+        ("Organic Rev CAGR 10Y", _fmt(gq.get("organic_revenue_cagr_10y"))),
+    ]   
 
     metric_rows = [
         html.Div(style={

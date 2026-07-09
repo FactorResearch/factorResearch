@@ -140,6 +140,19 @@ def _norm_incremental_roic(iroic_pct: float | None) -> float:
         return 0.0
     return _clamp(capped / 25.0 * 100.0, 0.0, 100.0)
 
+def _norm_reinvestment_efficiency(v: float | None) -> float:
+    """
+    Reinvestment efficiency = incremental ROIC (%) × reinvestment rate (fraction).
+    High ROIC combined with high reinvestment = compounding machine.
+    >= 15 -> 100; <= 0 -> 0. Neutral (50) when unavailable.
+    """
+    if v is None:
+        return 50.0
+    if v >= 15.0:
+        return 100.0
+    if v <= 0.0:
+        return 0.0
+    return _clamp(v / 15.0 * 100.0, 0.0, 100.0)
 
 # ── Class ─────────────────────────────────────────────────────────────────────
 
@@ -167,11 +180,12 @@ class GrowthQualityAnalyzer:
     """
 
     _WEIGHTS = {
-        "rev_cagr":          0.25,
-        "eps_cagr":          0.25,
-        "fcf_cagr":          0.20,
-        "margin_stability":  0.15,
-        "incremental_roic":  0.15,
+        "rev_cagr":                  0.225,
+        "eps_cagr":                  0.225,
+        "fcf_cagr":                  0.18,
+        "margin_stability":          0.135,
+        "incremental_roic":          0.135,
+        "reinvestment_efficiency":   0.10,
     }
 
     def __init__(self, ticker: str, financials: dict) -> None:
@@ -283,31 +297,88 @@ class GrowthQualityAnalyzer:
         raw = delta_nopat / delta_ic * 100.0
         return _clamp(raw, -100.0, 100.0)
 
+    def calc_reinvestment_rate_10y(self) -> float | None:
+        """
+        Average reinvestment rate = |CapEx| / Operating Income across available
+        years (up to 10). Requires at least 3 years of usable data.
+        """
+        op_inc_vals = _values(self._f.get("op_income", []), n=11)
+        capex_vals  = _values(self._f.get("capex",     []), n=11)
+        n = min(len(op_inc_vals), len(capex_vals))
+        if n < 3:
+            return None
+        rates = [
+            abs(capex_vals[i]) / op_inc_vals[i]
+            for i in range(n) if op_inc_vals[i] and op_inc_vals[i] > 0
+        ]
+        if len(rates) < 3:
+            return None
+        return sum(rates) / len(rates)
+
+    def calc_reinvestment_efficiency(self) -> float | None:
+        """
+        Reinvestment efficiency = Incremental ROIC (%) × Reinvestment Rate.
+        Rewards businesses that both earn high returns on NEW capital and
+        actually reinvest at scale (vs. high-ROIC but low-reinvestment
+        harvesters, or high-reinvestment but low-ROIC capital destroyers).
+        """
+        iroic    = self.calc_incremental_roic()
+        reinvest = self.calc_reinvestment_rate_10y()
+        if iroic is None or reinvest is None:
+            return None
+        return iroic * reinvest
+
+    def calc_organic_revenue_cagr_10y(self) -> float | None:
+        """
+        CAGR of revenue net of M&A cash outflow (organic revenue proxy):
+        organic_revenue = revenue - |acquisitions|.
+        Requires the full 10-year revenue window; missing acquisition data
+        for a given year is treated as 0 (no M&A that year).
+        """
+        rev_vals = _values(self._f.get("revenue",      []), n=11)
+        acq_vals = _values(self._f.get("acquisitions", []), n=11)
+        if len(rev_vals) < 11:
+            return None
+        acq = [acq_vals[i] if i < len(acq_vals) else 0.0 for i in range(11)]
+        organic = [rev_vals[i] - abs(acq[i]) for i in range(11)]
+        start, end = organic[10], organic[0]
+        if start <= 0 or end <= 0:
+            return None
+        return _cagr(start, end, YEARS_REQUIRED)
+
+    def calc_acquisition_driven_growth_flag(self) -> bool | None:
+        """
+        True when reported revenue CAGR materially outpaces organic revenue
+        CAGR (>= 5pp gap), signalling growth is largely acquisition-fuelled
+        rather than organic. None when either CAGR is unavailable.
+        """
+        rev_cagr     = self.calc_rev_cagr_10y()
+        organic_cagr = self.calc_organic_revenue_cagr_10y()
+        if rev_cagr is None or organic_cagr is None:
+            return None
+        return (rev_cagr - organic_cagr) >= 5.0
     # ── Composite score ───────────────────────────────────────────────────────
 
     def get_growth_quality_score(self) -> dict:
-        """
-        Compute and return a strict JSON-compatible dict.
-
-        Missing metrics are reweighted proportionally so no penalty arises
-        purely from data absence.
-        """
         rev_cagr   = self.calc_rev_cagr_10y()
         eps_cagr   = self.calc_eps_cagr_10y()
         fcf_cagr   = self.calc_fcf_cagr_10y()
         margin_std = self.calc_margin_stability()
         iroic      = self.calc_incremental_roic()
+        reinvest_eff = self.calc_reinvestment_efficiency()
 
-        # Normalised sub-scores (None metric → weight excluded)
+        acquisition_driven_flag = self.calc_acquisition_driven_growth_flag()
+        organic_rev_cagr        = self.calc_organic_revenue_cagr_10y()
+
         components = {
-            "rev_cagr":         (rev_cagr,   _norm_cagr(rev_cagr)),
-            "eps_cagr":         (eps_cagr,   _norm_cagr(eps_cagr)),
-            "fcf_cagr":         (fcf_cagr,   _norm_cagr(fcf_cagr)),
-            "margin_stability": (margin_std, _norm_margin_stability(margin_std)),
-            "incremental_roic": (iroic,      _norm_incremental_roic(iroic)),
+            "rev_cagr":                (rev_cagr,     _norm_cagr(rev_cagr)),
+            "eps_cagr":                (eps_cagr,     _norm_cagr(eps_cagr)),
+            "fcf_cagr":                (fcf_cagr,     _norm_cagr(fcf_cagr)),
+            "margin_stability":        (margin_std,   _norm_margin_stability(margin_std)),
+            "incremental_roic":        (iroic,        _norm_incremental_roic(iroic)),
+            "reinvestment_efficiency": (reinvest_eff, _norm_reinvestment_efficiency(reinvest_eff)),
         }
 
-        # Proportional reweighting for missing metrics
         available_weight = sum(
             self._WEIGHTS[k]
             for k, (raw, _) in components.items()
@@ -315,7 +386,6 @@ class GrowthQualityAnalyzer:
         )
 
         if available_weight <= 0:
-            # All metrics unavailable — return neutral
             score = 50.0
         else:
             raw_sum = sum(
@@ -331,14 +401,17 @@ class GrowthQualityAnalyzer:
             return round(v, decimals) if v is not None else None
 
         return {
-            "ticker":               self.ticker,
-            "rev_cagr_10y":         _r(rev_cagr,   4),
-            "eps_cagr_10y":         _r(eps_cagr,   4),
-            "fcf_cagr_10y":         _r(fcf_cagr,   4),
-            "margin_stability":     _r(margin_std, 4),
-            "incremental_roic":     _r(iroic,       4),
-            "growth_quality_score": growth_quality_score,
-            "signal":               _signal(growth_quality_score),
+            "ticker":                   self.ticker,
+            "rev_cagr_10y":             _r(rev_cagr,   4),
+            "eps_cagr_10y":             _r(eps_cagr,   4),
+            "fcf_cagr_10y":             _r(fcf_cagr,   4),
+            "margin_stability":         _r(margin_std, 4),
+            "incremental_roic":         _r(iroic,       4),
+            "reinvestment_efficiency":  _r(reinvest_eff, 4),
+            "organic_revenue_cagr_10y": _r(organic_rev_cagr, 4),
+            "acquisition_driven_growth": acquisition_driven_flag,
+            "growth_quality_score":     growth_quality_score,
+            "signal":                   _signal(growth_quality_score),
             # scorer.py compatibility
             "total_score": growth_quality_score,
             "total_max":   100.0,

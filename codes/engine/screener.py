@@ -200,7 +200,25 @@ def _score_one(symbol: str) -> dict | None:
     except Exception:
         return None
 
-
+def get_sector_avg_momentum(sector: str, exclude_symbol: str | None = None) -> float | None:
+    """
+    Live-computed peer-sector average 12M (skip-month) return, from
+    currently cached analyses only (ISSUE 19.2C). No pre-aggregation —
+    recomputed fresh on every call per user's requested behavior.
+    """
+    if not sector:
+        return None
+    rets = []
+    for sym in db.list_analysis_tickers():
+        if sym == exclude_symbol:
+            continue
+        data = db.get_analysis(sym)
+        if not data or data.get("sector") != sector:
+            continue
+        r = (data.get("momentum") or {}).get("return_12m")
+        if r is not None:
+            rets.append(r)
+    return sum(rets) / len(rets) if rets else None
 # ── Update a row after full analysis (from app.analyze_stock) ─────────────────
 
 def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:

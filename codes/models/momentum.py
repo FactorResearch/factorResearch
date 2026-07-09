@@ -3,19 +3,9 @@ Momentum scoring engine — 100 points total.
 
 Criteria:
   200-day Moving Average   price > MA     30 pts
-  12-month Return          > 0%           30 pts
+  12-month Return          > 0%           30 pts   (skip-month: excludes most recent month)
   Relative Strength        vs SPY 12mo    25 pts
   3-month Drawdown         not down >20%  15 pts
-
-19.2A — 12-Month Return uses skip-month construction (12-2 momentum):
-  excludes the most recent month to remove short-term reversal
-  contamination, per standard academic momentum methodology.
-
-19.2B — Volatility-Scaled Momentum (Daniel & Moskowitz 2016,
-  "Momentum Crashes"): the skip-month 12M return divided by trailing
-  realized volatility, exposed as `vol_scaled_momentum` / `vol_annual`
-  in the output dict. Display/diagnostic only — does not change the
-  100-point scoring breakdown above.
 """
 
 import pandas as pd
@@ -27,13 +17,6 @@ def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
     """
     score() accepts price history DataFrames (Date, Close columns).
     Returns momentum score dict compatible with scorer.py.
-
-    19.2C — sector_avg_return_12m (optional): the mean skip-month 12M
-    return across the stock's sector peers (computed by the caller from
-    screener universe results). When provided, `industry_relative_momentum`
-    = this stock's return_12m minus the sector average, isolating stock
-    alpha from sector-wide tailwinds. Display/diagnostic only — does not
-    change the 100-point scoring breakdown.
     """
     criteria = []
 
@@ -71,32 +54,20 @@ def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
         "note":        ma_note,
     })
 
-    # ── 12-Month Return (skip-month: 12-2 momentum, excludes most recent month
-    #    to remove short-term reversal contamination — standard academic
-    #    momentum construction) ────────────────────────────────────────────────
+    # ── 12-Month Return (19.2A: skip-month — excludes most recent month) ────
+    # Standard academic momentum convention (Jegadeesh & Titman): compute the
+    # return from t-12 to t-1, deliberately excluding the most recent month
+    # (t) to strip out short-term reversal contamination. Requires 13+ months
+    # of history (was 12+) since we now need both the t-12 and t-1 anchors.
     return_12m = None
     if len(hist) >= 13:
-        price_1m_ago  = hist["Close"].iloc[-2]
-        price_13m_ago = hist["Close"].iloc[-13]
-        if price_13m_ago > 0:
-            return_12m = (price_1m_ago - price_13m_ago) / price_13m_ago * 100
-
-    # ── Volatility-Scaled Momentum (Daniel & Moskowitz 2016) ──────────────────
-    # Divides the skip-month 12M return by trailing realized volatility so
-    # stocks with the same return but lower vol rank higher.
-    vol_annual = None
-    vol_scaled_momentum = None
-    if len(hist) >= 13:
-        monthly_rets = hist["Close"].tail(13).pct_change().dropna()
-        if len(monthly_rets) >= 2:
-            vol_monthly = monthly_rets.std()
-            if vol_monthly and vol_monthly > 0:
-                vol_annual = float(vol_monthly * (12 ** 0.5) * 100)
-                if return_12m is not None and vol_annual > 0:
-                    vol_scaled_momentum = round(return_12m / vol_annual, 4)
+        price_12m_ago = hist["Close"].iloc[-13]
+        price_1m_ago  = hist["Close"].iloc[-2]   # "t-1" — skips most recent month
+        if price_12m_ago > 0:
+            return_12m = (price_1m_ago - price_12m_ago) / price_12m_ago * 100
 
     if return_12m is None:
-        r12_score, r12_note = 0, "Insufficient history for 12-month return"
+        r12_score, r12_note = 0, "Insufficient history for 12-month (skip-month) return"
     elif return_12m >= 20:
         r12_score, r12_note = 30, f"12-month return +{return_12m:.1f}% — strong momentum"
     elif return_12m >= 10:
@@ -108,12 +79,27 @@ def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
 
     criteria.append({
         "label":       "12-Month Return",
-        "requirement": "> 0% (12-2 skip-month)",
+        "requirement": "> 0% (skip-month)",
         "actual":      f"{return_12m:+.1f}%" if return_12m is not None else "N/A",
         "score":       r12_score,
         "max":         30,
         "note":        r12_note,
     })
+
+    # ── 19.2B: Volatility-Scaled Momentum (Daniel & Moskowitz 2016) ──────────
+    # Divides the skip-month return by trailing 12-month realized vol (annualized).
+    # Two stocks with identical raw momentum but different vol profiles will
+    # rank differently here — lower vol = higher risk-adjusted momentum.
+    # Display/diagnostic only; not wired into the 0-100 scoring above.
+    vol_scaled_momentum = None
+    if return_12m is not None and len(hist) >= 13:
+        window_closes = hist["Close"].tail(13).values
+        log_rets = np.diff(np.log(window_closes))
+        if len(log_rets) >= 2:
+            vol_monthly = np.std(log_rets, ddof=1)
+            vol_annual_pct = vol_monthly * np.sqrt(12) * 100
+            if vol_annual_pct > 0:
+                vol_scaled_momentum = return_12m / vol_annual_pct
 
     # ── Relative Strength vs SPY ──────────────────────────────────────────────
     rs_score, rs_note = 0, "SPY history not available for comparison"
@@ -124,11 +110,11 @@ def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
         spy = spy.sort_values("Date").reset_index(drop=True)
 
         spy_return_12m = None
-        if len(spy) >= 13:
-            spy_1m_ago  = spy["Close"].iloc[-2]
-            spy_13m_ago = spy["Close"].iloc[-13]
-            if spy_13m_ago > 0:
-                spy_return_12m = (spy_1m_ago - spy_13m_ago) / spy_13m_ago * 100
+        if len(spy) >= 12:
+            spy_12m_ago = spy["Close"].iloc[-12]
+            spy_now     = spy["Close"].iloc[-1]
+            if spy_12m_ago > 0:
+                spy_return_12m = (spy_now - spy_12m_ago) / spy_12m_ago * 100
 
         if return_12m is not None and spy_return_12m is not None:
             alpha = return_12m - spy_return_12m
@@ -177,27 +163,22 @@ def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
         "note":        dd_note,
     })
 
-    # ── Industry-Relative Momentum (19.2C) ────────────────────────────────────
-    industry_relative_momentum = None
-    if return_12m is not None and sector_avg_return_12m is not None:
-        industry_relative_momentum = round(return_12m - sector_avg_return_12m, 4)
-
     total_score = sum(c["score"] for c in criteria)
     total_max   = sum(c["max"]   for c in criteria)
-
+    industry_relative_momentum = None
+    if return_12m is not None and sector_avg_return_12m is not None:
+        industry_relative_momentum = return_12m - sector_avg_return_12m
     return {
-        "price":                current_price,
-        "ma200":                ma200,
-        "above_ma":             above_ma,
-        "return_12m":           return_12m,
-        "return_3m":            return_3m,
-        "vol_annual":           round(vol_annual, 2) if vol_annual is not None else None,
-        "vol_scaled_momentum":  vol_scaled_momentum,
-        "sector_avg_return_12m": sector_avg_return_12m,
-        "industry_relative_momentum": industry_relative_momentum,
-        "total_score":          total_score,
-        "total_max":            total_max,
-        "criteria":             criteria,
+        "price":                       current_price,
+        "ma200":                       ma200,
+        "above_ma":                    above_ma,
+        "return_12m":                  return_12m,
+        "vol_scaled_momentum":         round(vol_scaled_momentum, 4) if vol_scaled_momentum is not None else None,
+        "industry_relative_momentum":  round(industry_relative_momentum, 2) if industry_relative_momentum is not None else None,
+        "return_3m":                   return_3m,
+        "total_score":                 total_score,
+        "total_max":                   total_max,
+        "criteria":                    criteria,
     }
 
 
@@ -217,13 +198,11 @@ def _empty_score(reason: str) -> dict:
         "ma200":               None,
         "above_ma":            None,
         "return_12m":          None,
-        "return_3m":           None,
-        "vol_annual":          None,
         "vol_scaled_momentum": None,
-        "sector_avg_return_12m":       None,
-        "industry_relative_momentum": None,
+        "return_3m":           None,
         "total_score":         0,
         "total_max":           100,
         "criteria":            criteria,
         "error":               reason,
+        "industry_relative_momentum": None,
     }
