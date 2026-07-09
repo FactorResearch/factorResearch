@@ -1,0 +1,507 @@
+"""Screener tab callbacks."""
+
+import hashlib
+import json
+import math
+
+import dash
+from dash import Input, Output, State, callback, html
+
+from codes.engine import screener
+from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
+from codes.app_modules.config import (
+    AMBER, BLUE, GREEN, MUTED, PAGE_SIZE,
+    get_score_class, get_verdict_class,
+)
+from codes.app_modules.rate_limit import RateLimited, check_rate_limit
+from codes.app_modules.session import get_portfolio_symbols
+
+last_progress_state = None
+last_progress_bar_state = None
+last_screener_state = None
+
+# ── Screener ticker-click → store ─────────────────────────────────────────────
+@callback(
+    Output("screener-click-ticker", "data"),
+    Input({"type": "screener-ticker-btn", "index": dash.ALL}, "n_clicks"),
+    prevent_initial_call=True
+)
+def capture_screener_click(n_clicks_list):
+    # Find which button was just clicked
+    triggered = dash.ctx.triggered_id
+    if not triggered or not any(n for n in n_clicks_list if n):
+        return dash.no_update
+    return triggered["index"]  # the symbol string
+
+@callback(
+    Output("screener-progress-info", "children"),
+    Output("screener-progress-interval", "disabled", allow_duplicate=True),
+    Output("screener-ready-store", "data"),
+    Input("screener-progress-interval", "n_intervals"),
+    State("screener-ready-store", "data"),
+    prevent_initial_call=True
+)
+def update_progress(n, ready_val):
+    global last_progress_state
+    prog = screener.get_progress()
+    prog_key = (prog["running"], prog["total"], prog["done"], prog["current"])
+    if prog_key == last_progress_state:
+        return dash.no_update, dash.no_update, dash.no_update
+    last_progress_state = prog_key
+    interval_disabled = not prog["running"] and prog["done"] > 0
+    # Bump screener-ready-store whenever loading has finished so the table
+    # rebuilds correctly both after initial load AND after a page refresh.
+    # We encode the last signalled count as a negative number to distinguish
+    # "never signalled" (0) from "signalled for N stocks" (-N).
+    current_done = prog["done"]
+    already_signalled = (ready_val or 0) < 0 and abs(ready_val or 0) == current_done
+    if interval_disabled and current_done > 0 and not already_signalled:
+        new_ready = -current_done
+    else:
+        new_ready = dash.no_update
+    if not prog["running"] and prog["total"] == 0:
+        return html.Div([
+            html.Span("🟢 Ready to load universe", className="text-muted"),
+        ], className="flex align-items-center gap-md"), True, new_ready
+    if prog["running"]:
+        pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
+        phase_label = {
+            "cached": "⚡ Scoring cached stocks",
+        }.get(prog.get("phase", ""), "🔄 Processing")
+        return html.Div([
+            html.Span(f"{phase_label}: {prog['current']}", className="font-semibold text-info"),
+            html.Span(f"({prog['done']}/{prog['total']} — {pct}%)", className="text-xs text-muted"),
+        ], className="flex align-items-center gap-md"), False, dash.no_update
+    else:
+        if prog["done"] > 0:
+            return html.Div([
+                html.Span("✅ Analysis complete", className="font-semibold text-success"),
+                html.Span(f"{prog['done']} stocks analyzed", className="text-xs text-muted"),
+            ], className="flex align-items-center gap-md"), True, new_ready
+        else:
+            return "", True, new_ready
+
+@callback(
+    Output("screener-progress", "children"),
+    Input("screener-progress-interval", "n_intervals"),
+    prevent_initial_call=True
+)
+def update_progress_bar(n):
+    global last_progress_bar_state
+    prog = screener.get_progress()
+    prog_key = (prog["running"], prog["total"], prog["done"])
+    if prog_key == last_progress_bar_state:
+        return dash.no_update
+    last_progress_bar_state = prog_key
+    if prog["total"] == 0:
+        return []
+    pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
+    if not prog["running"] and pct == 0:
+        return []
+    remaining_stocks = prog["total"] - prog["done"]
+    eta_seconds = int(remaining_stocks * 0.35)
+    minutes, seconds = divmod(eta_seconds, 60)
+    eta_text = f"~{minutes}m {seconds:02d}s remaining" if prog["running"] and eta_seconds > 0 else (
+        "Complete" if not prog["running"] else "Almost done..."
+    )
+    return html.Div(className="progress-container mb-3xl", children=[
+        html.Div([
+            html.Span("Processing Universe Data", className="font-semibold"),
+            html.Span(f"({pct}%) {eta_text}", className="text-xs text-muted")
+        ], className="flex justify-between mb-lg"),
+        html.Div(className="progress-bar-wrapper", children=[
+            html.Div(className="progress-bar-fill", style={"width": f"{pct}%"})
+        ])
+    ])
+
+@callback(
+    Output("screener-table-container", "children"),
+    Output("sector-filter", "options"),
+    Output("screener-page-store", "data", allow_duplicate=True),
+    Input("screener-ready-store",  "data"),
+    Input("page-load-interval",    "n_intervals"),
+    Input("sector-filter",         "value"),
+    Input("screener-sort-store",   "data"),
+    Input("screener-page-store",   "data"),
+    State("screener-viewed-store", "data"),
+    prevent_initial_call=True
+)
+def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, viewed_data):
+    global last_screener_state
+    if dash.ctx.triggered_id == "page-load-interval":
+        last_screener_state = None
+    results    = screener.get_screener_results()
+   
+    prog       = screener.get_progress()
+    viewed_set = frozenset(viewed_data or [])
+    sort_col   = (sort_state or {}).get("col", "composite_score")
+    sort_asc   = (sort_state or {}).get("asc", False)
+    page = page_num or 1
+    # Reset to page 1 when filters/sorts change
+    page_reset = dash.no_update
+    
+    if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
+        page = 1
+        page_reset = 1
+    # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
+    state_tuple = (
+        json.dumps([r["symbol"] for r in results], sort_keys=True),
+        sector_filter or "",
+        sort_col,
+        sort_asc,
+        sorted(viewed_set),
+        page
+    )
+    state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
+
+    if state_hash == last_screener_state:
+        return dash.no_update, dash.no_update, page_reset
+    last_screener_state = state_hash
+    sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
+    sector_options = [{"label": "All Sectors", "value": ""}] + [
+        {"label": s, "value": s} for s in sectors
+    ]
+    if not results:
+        if prog["running"]:
+            return (
+                html.Div([
+                    html.Div("⚡ Loading in background…",
+                             style={"color": BLUE, "fontWeight": "600", "marginBottom": "6px"}),
+                    html.Div("Table will appear automatically when loading finishes.",
+                             style={"color": MUTED, "fontSize": "13px"}),
+                ], style={"textAlign": "center", "padding": "40px"}),
+                sector_options,
+                page_reset,
+            )
+        return (
+            html.Div("Click 'Load Universe' to start analysis",
+                     className="text-center p-4xl text-muted"),
+            sector_options,
+            page_reset,
+        )
+    portfolio_symbols = get_portfolio_symbols()
+    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    
+    text_cols = {"symbol", "name", "sector", "updated_at"}
+    if sort_col in text_cols:
+        filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
+    else:
+        filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
+    SORT_COLS = [
+        ("#",           None,               None),
+        ("Ticker",      "symbol",           "Stock ticker symbol. Click to run full analysis."),
+        ("Company",     "name",             "Company name."),
+        ("Sector",      "sector",           "Industry sector from SEC filings."),
+        ("Market Cap ↕","market_cap",       "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock."),
+        ("Composite ↕", "composite_score",  "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals."),
+        ("Fair Value ↕",  "graham_number",    "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock."),
+        ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock."),
+        ("Updated",     "updated_at",       "Date this stock was last fully analyzed."),
+        ("Verdict",     None,               "Investment verdict based on composite score: STRONG BUY ≥75 · BUY ≥60 · WATCH ≥45 · HOLD ≥30 · AVOID <30. * = fundamentals only (momentum not yet loaded)."),
+    ]
+    header_cells = []
+    for label, sort_key, tooltip in SORT_COLS:
+        th_style = {"cursor": "help", "borderBottom": f"1px dashed {MUTED}"} if tooltip else {}
+        if sort_key:
+            header_cells.append(html.Th(
+                html.Button(
+                    label,
+                    id={"type": "screener-sort-btn", "index": sort_key},
+                    className="sort-header-btn", n_clicks=0,
+                    title=tooltip or "",
+                ),
+                title=tooltip or "", style=th_style,
+            ))
+        else:
+            header_cells.append(html.Th(label, title=tooltip or "", style=th_style))
+    rows = []
+    accordion_items = []
+    # Pagination — show PAGE_SIZE rows for the current page
+    total_rows = len(filtered)
+    total_pages = max(1, math.ceil(total_rows / PAGE_SIZE))
+    page = min(max(1, page), total_pages)
+    start_idx = (page - 1) * PAGE_SIZE
+    page_filtered = filtered[start_idx:start_idx + PAGE_SIZE]
+
+    for i, r in enumerate(page_filtered, start_idx + 1):
+        sym     = r["symbol"]
+        viewed  = sym in viewed_set
+        in_port = bool(portfolio_symbols.get(sym))
+        verdict       = r["verdict"]
+        verdict_label = r["verdict_label"]
+        verdict       = r["verdict"]
+        verdict_label = r["verdict_label"]
+        if not r.get("analyzed"):
+            verdict, verdict_label = "—", "pending"
+        elif verdict == "PENDING":
+            score = r["composite_score"]
+            if score >= 70:   verdict, verdict_label = "STRONG BUY*", "strong-buy"
+            elif score >= 55: verdict, verdict_label = "BUY*",        "buy"
+            elif score >= 40: verdict, verdict_label = "WATCH*",      "watch"
+            elif score >= 25: verdict, verdict_label = "WEAK*",       "hold"
+            else:             verdict, verdict_label = "AVOID*",      "avoid"
+        badges = []
+        port_list = portfolio_symbols.get(sym, [])
+        for pname in port_list:
+            badges.append(html.Span(f"💼 {pname}", style={
+                "fontSize": "10px", "color": AMBER,
+                "background": "#2a1e00", "border": f"1px solid {AMBER}55",
+                "borderRadius": "4px", "padding": "1px 5px",
+            }))
+        # n_clicks on <td> not <button> — iOS Safari drops touch on <button> inside <table>
+        ticker_cell = html.Td(
+            html.Div([
+                html.Span(sym, className="ticker-link-btn"),
+                html.Div(badges, style={"display": "flex", "gap": "4px",
+                                        "flexWrap": "wrap", "marginTop": "3px"})
+                if badges else html.Div(),
+            ]),
+            id={"type": "screener-ticker-btn", "index": sym},
+            n_clicks=0,
+            className="ticker-cell",
+            style={
+                "cursor": "pointer",
+                "touchAction": "manipulation",
+                "WebkitTapHighlightColor": "rgba(0,0,0,0.08)",
+                "userSelect": "none",
+                "WebkitUserSelect": "none",
+            }
+        )
+        # Graham Number cell — populated after full analysis
+        gn    = r.get("graham_number")
+        price = r.get("price")
+        if gn:
+            gn_color = GREEN if (price and price <= gn) else MUTED
+            gn_cell = html.Td(
+                html.Span(f"${gn:.0f}", style={"color": gn_color, "fontWeight": "600"}),
+                title=f"Graham Number ${gn:.2f}" + (f" · Price ${price:.2f}" if price else "") +
+                      (" · Price below GN ✓" if (price and price <= gn) else " · Price above GN"),
+            )
+        else:
+            gn_cell = html.Td("—", className="text-xs text-muted",
+                              title="Run full analysis to calculate Graham Number")
+        # Buffett IV cell — populated after full analysis
+        biv = r.get("buffett_iv")
+        if biv:
+            biv_color = GREEN if (price and price <= biv) else MUTED
+            biv_cell = html.Td(
+                html.Span(f"${biv:.0f}", style={"color": biv_color, "fontWeight": "600"}),
+                title=f"Economic Moat Rating ${biv:.2f}" + (f" · Price ${price:.2f}" if price else "") +
+                      (" · Price below IV ✓" if (price and price <= biv) else " · Price above IV"),
+            )
+        else:
+            biv_cell = html.Td("—", className="text-xs text-muted",
+                               title="Run full analysis to calculate Intrinsic Value")
+        row_style = {}
+        if in_port:  row_style = {"borderLeft": f"3px solid {AMBER}"}
+        elif viewed: row_style = {"borderLeft": f"3px solid {GREEN}44"}
+        
+        rows.append(html.Tr(style=row_style, children=[
+            html.Td(str(i), className="rank-num"),
+            ticker_cell,
+            html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
+            html.Td(r["sector"][:18], className="text-xs text-muted",title=r["sector"]),
+            html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
+            html.Td(
+                html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")
+                if r.get("analyzed")
+                else html.Span("—", className="score-pill")
+            ),
+            gn_cell,
+            biv_cell,
+            html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
+            html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
+        ]))
+        # ── Accordion item (mobile) ─────────────────────────────────────
+        acc_gn_color  = (GREEN if (price and gn  and price <= gn)  else MUTED) if gn  else MUTED
+        acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
+        acc_rows = [
+            html.Div([html.Span("Company",   className="accordion-label"),
+                      html.Span(r["name"],   className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Sector",    className="accordion-label"),
+                      html.Span(r.get("sector","")[:28], className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Mkt Cap",   className="accordion-label"),
+                      html.Span(_fmt_market_cap(r.get("market_cap")), className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Composite", className="accordion-label"),
+                      html.Span(f"{r['composite_score']:.0f}",
+                                className=f"score-pill {get_score_class(r['composite_score'])}")],
+                     className="accordion-row"),
+            html.Div([html.Span("GN Price",  className="accordion-label"),
+                      html.Span(f"${gn:.0f}"  if gn  else "—",
+                                className="accordion-value", style={"color": acc_gn_color})],  className="accordion-row"),
+            html.Div([html.Span("Buffett IV", className="accordion-label"),
+                      html.Span(f"${biv:.0f}" if biv else "—",
+                                className="accordion-value", style={"color": acc_biv_color})], className="accordion-row"),
+            html.Div([html.Span("Updated",   className="accordion-label"),
+                      html.Span(_fmt_updated(r.get("updated_at")), className="accordion-value")], className="accordion-row"),
+        ]
+        if badges:
+            acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
+        acc_rows.append(
+            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym},
+                     n_clicks=0, className="accordion-analyze-btn")
+        )
+        accordion_items.append(html.Details(
+            className="accordion-item" + (" in-portfolio" if in_port else "") + (" viewed" if viewed else ""),
+            children=[
+                html.Summary(className="accordion-summary", children=[
+                    html.Span(f"#{i}", className="accordion-rank"),
+                    html.Span(sym, className="ticker-link-btn"),
+                    html.Div([html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")],
+                             className="accordion-summary-right"),
+                ]),
+                html.Div(acc_rows, className="accordion-content"),
+            ]
+        ))
+    n_analyzed  = sum(1 for r in filtered if r.get("analyzed"))
+    n_portfolio = sum(1 for r in filtered if portfolio_symbols.get(r["symbol"]))
+    note = html.Div([
+        html.Span(f"{len(filtered):,} stocks", className="font-semibold"),
+        html.Span(f" · {n_analyzed} analyzed · {n_portfolio} in portfolio"
+                  " · * Verdict = fundamentals only — analyze individually to add Momentum",
+                  className="text-muted"),
+    ], style={"fontSize": "11px", "padding": "8px 4px", "fontStyle": "italic"})
+    table = html.Table(className="screener-table", children=[
+        html.Thead(html.Tr(children=header_cells)),
+        html.Tbody(rows),
+    ])
+    # Pagination controls
+    pagination = html.Div(className="pagination-controls", children=[
+        html.Button(
+            "◀ Prev",
+            id={"type": "screener-page-btn", "index": "prev"},
+            className="pagination-btn",
+            n_clicks=0,
+            disabled=(page <= 1),
+            style={"touchAction": "manipulation"},
+        ),
+        html.Span(
+            f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
+            className="pagination-info",
+        ),
+        html.Button(
+            "Next ▶",
+            id={"type": "screener-page-btn", "index": "next"},
+            className="pagination-btn",
+            n_clicks=0,
+            disabled=(page >= total_pages),
+            style={"touchAction": "manipulation"},
+        ),
+    ])
+    return html.Div([
+        table,
+        html.Div(accordion_items, className="screener-accordion"),
+        note,
+        pagination,
+    ]), sector_options, page_reset
+
+# ── Screener page navigation ──────────────────────────────────────────────────
+@callback(
+    Output("screener-page-store", "data"),
+    Input({"type": "screener-page-btn", "index": dash.ALL}, "n_clicks"),
+    State("screener-page-store", "data"),
+    State("screener-sort-store", "data"),
+    State("sector-filter", "value"),
+    prevent_initial_call=True
+)
+def navigate_screener_page(n_clicks_list, current_page, sort_state, sector_filter):
+    triggered = dash.ctx.triggered_id
+    if not triggered or not any(n for n in n_clicks_list if n):
+        return dash.no_update
+    results = screener.get_screener_results()
+    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    total_pages = max(1, math.ceil(len(filtered) / PAGE_SIZE))
+    cp = current_page or 1
+    direction = triggered.get("index", "next")
+    if direction == "prev":
+        return max(1, cp - 1)
+    return min(total_pages, cp + 1)
+
+# ── Screener column sort ──────────────────────────────────────────────────────
+@callback(
+    Output("screener-sort-store", "data"),
+    Input({"type": "screener-sort-btn", "index": dash.ALL}, "n_clicks"),
+    State("screener-sort-store", "data"),
+    prevent_initial_call=True
+)
+def update_sort(n_clicks_list, sort_state):
+    triggered = dash.ctx.triggered_id
+    if not triggered or not any(n for n in n_clicks_list if n):
+        return dash.no_update
+    col = triggered["index"]
+    # Toggle direction if same col clicked again, else default desc for scores,
+    # asc for text columns
+    if sort_state and sort_state.get("col") == col:
+        return {"col": col, "asc": not sort_state["asc"]}
+    text_cols = {"symbol", "name", "sector", "updated_at"}
+    return {"col": col, "asc": col in text_cols}
+
+@callback(
+    Output("loading-trigger", "children"),
+    Output("screener-progress-interval", "disabled"),
+    Input("load-universe-btn", "n_clicks"),
+    Input("page-load-interval", "n_intervals"),
+    prevent_initial_call=True
+)
+def load_universe(n_clicks, n_load):
+    triggered = dash.ctx.triggered_id
+    if triggered == "page-load-interval":
+        # On page load: enable the interval if a run is active or results exist
+        prog = screener.get_progress()
+        if prog["running"] or prog["done"] > 0:
+            return dash.no_update, False
+        return dash.no_update, True
+    if n_clicks and n_clicks > 0:
+        try:
+            check_rate_limit("load_universe", calls=1, period_seconds=300)
+        except RateLimited as rl:
+            return html.Div(f"⏳ Load universe rate limited — try again in {rl.retry_after}s."), True
+        try:
+            screener.load_universe_background()
+        except Exception as e:
+            print(f"load_universe failed: {type(e).__name__}: {e}")
+            return html.Div("❌ Failed to start universe load — try again later."), True
+        return "", False   # enable the interval so progress callbacks fire
+    return "", True
+
+
+
+def register_clientside_callbacks(app):
+    # Polls window.scrollY while the screener tab is visible and stores it so it
+    # can be restored when the user navigates back.
+    app.clientside_callback(
+        """
+        function(n_intervals) {
+            var tab = document.getElementById('tab-screener');
+            if (tab && tab.style.display !== 'none') {
+                return window.scrollY;
+            }
+            return window.dash_clientside.no_update;
+        }
+        """,
+        Output("screener-scroll-pos", "data"),
+        Input("screener-scroll-poll-interval", "n_intervals"),
+    )
+
+    # Restore the saved scroll position when the screener tab becomes visible.
+    # Analyze / Portfolio tabs always reset to top on switch.
+    app.clientside_callback(
+        """
+        function(screener_style, analyze_style, portfolio_style, saved_pos) {
+            if (screener_style && screener_style.display !== 'none') {
+                requestAnimationFrame(function() {
+                    window.scrollTo(0, saved_pos || 0);
+                });
+            } else if ((analyze_style && analyze_style.display !== 'none') ||
+                       (portfolio_style && portfolio_style.display !== 'none')) {
+                window.scrollTo(0, 0);
+            }
+            return window.dash_clientside.no_update;
+        }
+        """,
+        Output("screener-table-container", "id"),
+        Input("tab-screener", "style"),
+        Input("tab-analyze", "style"),
+        Input("tab-portfolio", "style"),
+        State("screener-scroll-pos", "data"),
+    )
