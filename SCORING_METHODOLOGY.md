@@ -27,6 +27,7 @@ All fundamental data is sourced exclusively from **SEC EDGAR XBRL filings** (fre
 15. [Greenblatt — Magic Formula Ranking](#15-greenblatt--magic-formula-ranking)
 16. [Regime — Market Condition Overlay](#16-regime--market-condition-overlay)
 17. [Insider Activity — Management Conviction](#17-insider-activity--management-conviction)
+18. [Alternative Data — Phase E Signals](#18-alternative-data--phase-e-signals)
 
 ---
 
@@ -904,6 +905,50 @@ High-seniority insiders (30 → 100 range). Returns 50 (neutral) when no buys ex
 ### Low Coverage Rule
 
 When only 1 analyst covers the stock (`n_analyst ≤ 1`), revision breadth is set to `null` to avoid signal noise from a single analyst's revisions.
+
+---
+
+## 18. Alternative Data — Phase E Signals
+
+**Display-only.** Alternative Data is not included in the enhanced composite score. It provides provider-ready research signals while preserving deterministic scoring and avoiding hidden black-box dependencies.
+
+### Phase E Scope
+
+- [x] SEC 8-K sentiment analysis (deterministic, auditable, no external AI dependency)
+- [x] Hiring velocity via job posting trends
+- [x] Web traffic analytics (once a reliable long-term data source is available)
+- [x] Insider buying and selling trends
+- [x] Institutional ownership changes
+- [x] Patent and intellectual property activity
+- [x] Supply chain relationship analysis (long-term research)
+
+### Implemented Signals
+
+SEC 8-K sentiment, insider buying/selling trends, institutional ownership changes, and patent/IP activity are live when their source data is available:
+
+- SEC 8-K sentiment uses recent SEC EDGAR 8-K / 8-K/A primary documents.
+- Insider buying/selling trends reuse the same open-market Form 4 transaction feed used by the Insider Activity card.
+- Institutional ownership changes use Finnhub institutional ownership data, aggregated by quarter.
+- Patent/IP activity uses Finnhub USPTO patent data, aggregated by year.
+
+Hiring velocity, web traffic, and supply-chain relationship analysis expose deterministic trend-scoring hooks for future provider data. Until those durable sources are wired in, those signals remain neutral and explicitly marked as planned, waiting for source, or research.
+
+### SEC 8-K Sentiment
+
+Recent 8-K and 8-K/A primary filing documents are fetched from SEC EDGAR, persisted in the `sec_8k_filings` Postgres table by accession number, and scored with a fixed lexicon. The method is deterministic: the same filing text and term dictionary always produce the same score. No external AI model or probabilistic classifier is used.
+
+When no 8-K text is available, the signal is `NO_DATA` and the Alternative Data score remains neutral at `50/100`.
+
+### Provider Trend Signals
+
+When provider trend data is supplied, Phase E compares the latest value with the prior baseline:
+
+```
+delta_pct = (latest - prior) / prior × 100
+score = clamp(50 + delta_pct × 2, 0, 100)
+```
+
+Positive trend acceleration moves the signal above 50; deterioration moves it below 50. Missing or insufficient provider data remains neutral.
 
 ---
 

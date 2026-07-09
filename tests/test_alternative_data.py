@@ -8,6 +8,7 @@ SEC 8-K sentiment can score caller-supplied text deterministically.
 
 import os
 import sys
+from datetime import datetime
 
 import pytest
 
@@ -102,6 +103,83 @@ def test_sec_8k_sentiment_can_turn_bearish():
     assert signal["available"] is True
     assert signal["signal"] == "BEARISH"
     assert signal["score"] < 40
+
+
+def test_phase_e_trend_signals_score_supplied_provider_data():
+    result = alternative_data.get_alternative_data_score(
+        "AAPL",
+        job_posting_trends=[
+            {"month": "2026-01", "count": 100},
+            {"month": "2026-06", "count": 130},
+        ],
+        web_traffic_trends=[
+            {"month": "2026-01", "visits": 1_000_000},
+            {"month": "2026-06", "visits": 900_000},
+        ],
+        ownership_trends=[
+            {"period": "2026-Q1", "value": 62.0},
+            {"period": "2026-Q2", "value": 63.0},
+        ],
+        patent_trends=[
+            {"year": "2025", "count": 20},
+            {"year": "2026", "count": 24},
+        ],
+        supply_chain_trends=[
+            {"period": "2026-Q1", "count": 10},
+            {"period": "2026-Q2", "count": 8},
+        ],
+    )
+    by_name = {signal["name"]: signal for signal in result["signals"]}
+
+    assert by_name["hiring_velocity"]["status"] == "AVAILABLE"
+    assert by_name["hiring_velocity"]["score"] > 50
+    assert by_name["web_traffic"]["status"] == "AVAILABLE"
+    assert by_name["web_traffic"]["score"] < 50
+    assert by_name["institutional_ownership"]["status"] == "AVAILABLE"
+    assert by_name["patent_activity"]["status"] == "AVAILABLE"
+    assert by_name["supply_chain_relationships"]["status"] == "AVAILABLE"
+
+
+def test_insider_trends_uses_existing_transaction_signal():
+    transactions = [
+        {
+            "date": "2026-06-01",
+            "insider_id": "A",
+            "role": "CEO",
+            "transaction": "buy",
+            "shares": 50_000,
+            "is_open_market": True,
+        },
+        {
+            "date": "2026-06-03",
+            "insider_id": "B",
+            "role": "Director",
+            "transaction": "buy",
+            "shares": 40_000,
+            "is_open_market": True,
+        },
+        {
+            "date": "2026-06-05",
+            "insider_id": "C",
+            "role": "CFO",
+            "transaction": "buy",
+            "shares": 30_000,
+            "is_open_market": True,
+        },
+    ]
+
+    result = alternative_data.get_alternative_data_score(
+        "MSFT",
+        insider_transactions=transactions,
+        shares_outstanding=1_000_000,
+        reference_date=datetime(2026, 6, 30),
+    )
+    signal = {s["name"]: s for s in result["signals"]}["insider_trends"]
+
+    assert signal["status"] == "AVAILABLE"
+    assert signal["score"] > 50
+    assert signal["value"]["n_buy_transactions"] == 3
+    assert signal["value"]["cluster_detected"] is True
 
 
 def test_framework_only_does_not_change_enhanced_composite_weights():

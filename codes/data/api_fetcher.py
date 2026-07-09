@@ -889,6 +889,139 @@ def get_insider_transactions(symbol: str, years: int = 1) -> list[dict]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Phase E alternative-data provider feeds — Finnhub
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _period_from_date(value: object, granularity: str = "quarter") -> str:
+    try:
+        ts = pd.Timestamp(str(value)[:10])
+    except Exception:
+        ts = pd.Timestamp.now()
+    if granularity == "year":
+        return str(ts.year)
+    quarter = ((ts.month - 1) // 3) + 1
+    return f"{ts.year}-Q{quarter}"
+
+
+def _as_records_by_period(
+    rows: list[dict],
+    *,
+    date_keys: tuple[str, ...],
+    value_keys: tuple[str, ...],
+    granularity: str = "quarter",
+) -> list[dict]:
+    by_period: dict[str, float] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        date_value = next((row.get(k) for k in date_keys if row.get(k)), None)
+        period = _period_from_date(date_value, granularity=granularity)
+        value = None
+        for key in value_keys:
+            try:
+                raw = row.get(key)
+                if raw is not None:
+                    value = float(raw)
+                    break
+            except (TypeError, ValueError):
+                continue
+        if value is None:
+            value = 1.0
+        by_period[period] = by_period.get(period, 0.0) + value
+    return [
+        {"period": period, "value": round(value, 4)}
+        for period, value in sorted(by_period.items())
+    ]
+
+
+def _payload_rows(payload: object) -> list[dict]:
+    if isinstance(payload, dict):
+        rows = payload.get("data") or payload.get("ownership") or payload.get("patent") or []
+    else:
+        rows = payload or []
+    return rows if isinstance(rows, list) else []
+
+
+def _fh_get_institutional_ownership_trends(symbol: str, years: int = 2) -> list[dict]:
+    """Institutional ownership trend records from Finnhub, aggregated by quarter."""
+    if not _fh_client:
+        return []
+    _fh_limiter.check()
+    try:
+        end = pd.Timestamp.now()
+        start = end - pd.DateOffset(years=years)
+        payload = _fh_client.institutional_ownership(
+            symbol.upper(),
+            None,
+            start.strftime("%Y-%m-%d"),
+            end.strftime("%Y-%m-%d"),
+        )
+        _fh_limiter.record()
+        return _as_records_by_period(
+            _payload_rows(payload),
+            date_keys=("reportDate", "filingDate", "date", "period"),
+            value_keys=("share", "shares", "ownership", "value", "marketValue"),
+            granularity="quarter",
+        )
+    except RateLimitError:
+        raise
+    except Exception as e:
+        print(f"  [Finnhub] institutional_ownership error for {symbol}: {e}")
+        return []
+
+
+def get_institutional_ownership_trends(symbol: str, years: int = 2) -> list[dict]:
+    """Cached institutional ownership trend records for Phase E."""
+    symbol = symbol.upper().strip()
+    cached = read("institutional_ownership", symbol)
+    if cached is not None:
+        return cached
+    trends = _fh_get_institutional_ownership_trends(symbol, years) if _fh_client else []
+    if trends:
+        write("institutional_ownership", symbol, trends)
+    return trends
+
+
+def _fh_get_patent_trends(symbol: str, years: int = 3) -> list[dict]:
+    """USPTO patent activity from Finnhub, aggregated by year."""
+    if not _fh_client:
+        return []
+    _fh_limiter.check()
+    try:
+        end = pd.Timestamp.now()
+        start = end - pd.DateOffset(years=years)
+        payload = _fh_client.stock_uspto_patent(
+            symbol.upper(),
+            _from=start.strftime("%Y-%m-%d"),
+            to=end.strftime("%Y-%m-%d"),
+        )
+        _fh_limiter.record()
+        return _as_records_by_period(
+            _payload_rows(payload),
+            date_keys=("filingDate", "publicationDate", "applicationDate", "date"),
+            value_keys=(),
+            granularity="year",
+        )
+    except RateLimitError:
+        raise
+    except Exception as e:
+        print(f"  [Finnhub] stock_uspto_patent error for {symbol}: {e}")
+        return []
+
+
+def get_patent_trends(symbol: str, years: int = 3) -> list[dict]:
+    """Cached patent activity trend records for Phase E."""
+    symbol = symbol.upper().strip()
+    cached = read("patents", symbol)
+    if cached is not None:
+        return cached
+    trends = _fh_get_patent_trends(symbol, years) if _fh_client else []
+    if trends:
+        write("patents", symbol, trends)
+    return trends
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Diagnostics
 # ══════════════════════════════════════════════════════════════════════════════
 

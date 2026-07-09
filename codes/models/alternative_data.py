@@ -11,7 +11,13 @@ sources are wired in.
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import Any, Iterable
+
+try:
+    from . import insider_activity
+except ImportError:  # tests import this module directly from codes/models
+    import insider_activity
 
 
 NEUTRAL_SCORE = 50.0
@@ -106,6 +112,77 @@ def _base_signal(
         "source": source,
         "phase": phase,
         "details": details or {},
+    }
+
+
+def _score_from_delta(delta_pct: float, *, scale: float = 2.0) -> float:
+    """Map a signed percent change to 0-100, centered at neutral."""
+    return _clamp(50.0 + (delta_pct * scale))
+
+
+def _latest_prior_values(records: Iterable[Any] | None) -> tuple[float | None, float | None]:
+    """
+    Pull latest and prior numeric values from simple time-series records.
+
+    Accepts numbers directly or dicts with value-like keys. Dicts are sorted by
+    common date keys when present.
+    """
+    if not records:
+        return None, None
+
+    rows = []
+    for idx, record in enumerate(records):
+        if isinstance(record, dict):
+            raw_value = (
+                record.get("value")
+                if record.get("value") is not None
+                else record.get("count")
+                if record.get("count") is not None
+                else record.get("visits")
+                if record.get("visits") is not None
+                else record.get("patents")
+            )
+            date_key = (
+                record.get("date")
+                or record.get("as_of")
+                or record.get("period")
+                or record.get("month")
+                or idx
+            )
+        else:
+            raw_value = record
+            date_key = idx
+        try:
+            value = float(raw_value)
+        except (TypeError, ValueError):
+            continue
+        rows.append((str(date_key), value))
+
+    if len(rows) < 2:
+        return None, rows[-1][1] if rows else None
+
+    rows.sort(key=lambda item: item[0])
+    return rows[-1][1], rows[0][1]
+
+
+def _trend_signal_value(records: Iterable[Any] | None) -> dict[str, Any]:
+    latest, prior = _latest_prior_values(records)
+    if latest is None or prior is None or prior <= 0:
+        return {
+            "score": NEUTRAL_SCORE,
+            "status": STATUS_NO_DATA,
+            "available": False,
+            "value": None,
+            "details": {"method": "trend_delta_v1"},
+        }
+    delta_pct = ((latest - prior) / prior) * 100.0
+    score = round(_score_from_delta(delta_pct), 2)
+    return {
+        "score": score,
+        "status": STATUS_AVAILABLE,
+        "available": True,
+        "value": {"latest": latest, "prior": prior, "delta_pct": round(delta_pct, 2)},
+        "details": {"method": "trend_delta_v1"},
     }
 
 
@@ -210,26 +287,87 @@ def get_sec_8k_sentiment_signal(
 
 
 def get_hiring_velocity_signal(ticker: str) -> dict[str, Any]:
+    return get_hiring_velocity_signal_from_records(ticker, None)
+
+
+def get_hiring_velocity_signal_from_records(
+    ticker: str,
+    job_posting_trends: Iterable[Any] | None,
+) -> dict[str, Any]:
+    trend = _trend_signal_value(job_posting_trends)
+    status = trend["status"] if trend["available"] else STATUS_PLANNED
     return _base_signal(
         "hiring_velocity",
         "Hiring Velocity",
         "Hiring velocity via job posting trends.",
-        status=STATUS_PLANNED,
+        status=status,
         source=None,
+        score=trend["score"],
+        available=trend["available"],
+        value=trend["value"],
+        details=trend["details"],
     )
 
 
 def get_web_traffic_signal(ticker: str) -> dict[str, Any]:
+    return get_web_traffic_signal_from_records(ticker, None)
+
+
+def get_web_traffic_signal_from_records(
+    ticker: str,
+    web_traffic_trends: Iterable[Any] | None,
+) -> dict[str, Any]:
+    trend = _trend_signal_value(web_traffic_trends)
+    status = trend["status"] if trend["available"] else STATUS_WAITING_FOR_SOURCE
     return _base_signal(
         "web_traffic",
         "Web Traffic Analytics",
         "Web traffic analytics once a reliable long-term data source is available.",
-        status=STATUS_WAITING_FOR_SOURCE,
+        status=status,
         source=None,
+        score=trend["score"],
+        available=trend["available"],
+        value=trend["value"],
+        details=trend["details"],
     )
 
 
-def get_insider_trends_signal(ticker: str) -> dict[str, Any]:
+def get_insider_trends_signal(
+    ticker: str,
+    transactions: list[dict] | None = None,
+    shares_outstanding: float | None = None,
+    reference_date: datetime | None = None,
+) -> dict[str, Any]:
+    if transactions:
+        score = insider_activity.get_insider_score(
+            ticker,
+            transactions,
+            shares_outstanding=shares_outstanding,
+            reference_date=reference_date,
+        )
+        return _base_signal(
+            "insider_trends",
+            "Insider Buying/Selling Trends",
+            "Insider buying and selling trends.",
+            status=STATUS_AVAILABLE,
+            source="SEC Form 4 / provider transaction feeds",
+            score=score["insider_confidence_score"],
+            available=True,
+            value={
+                "net_insider_buying": score["net_insider_buying"],
+                "n_buy_transactions": score["n_buy_transactions"],
+                "n_sell_transactions": score["n_sell_transactions"],
+                "cluster_detected": score["cluster_detected"],
+            },
+            details={
+                "method": "insider_activity_v1",
+                "cluster_buying_score": score["cluster_buying_score"],
+                "insider_type_quality": score["insider_type_quality"],
+                "n_distinct_buyers": score["n_distinct_buyers"],
+                "low_coverage": score["low_coverage"],
+            },
+        )
+
     return _base_signal(
         "insider_trends",
         "Insider Buying/Selling Trends",
@@ -239,33 +377,60 @@ def get_insider_trends_signal(ticker: str) -> dict[str, Any]:
     )
 
 
-def get_institutional_ownership_signal(ticker: str) -> dict[str, Any]:
+def get_institutional_ownership_signal(
+    ticker: str,
+    ownership_trends: Iterable[Any] | None = None,
+) -> dict[str, Any]:
+    trend = _trend_signal_value(ownership_trends)
+    status = trend["status"] if trend["available"] else STATUS_PLANNED
     return _base_signal(
         "institutional_ownership",
         "Institutional Ownership Changes",
         "Institutional ownership changes.",
-        status=STATUS_PLANNED,
+        status=status,
         source="SEC 13F filings / provider ownership feeds",
+        score=trend["score"],
+        available=trend["available"],
+        value=trend["value"],
+        details=trend["details"],
     )
 
 
-def get_patent_activity_signal(ticker: str) -> dict[str, Any]:
+def get_patent_activity_signal(
+    ticker: str,
+    patent_trends: Iterable[Any] | None = None,
+) -> dict[str, Any]:
+    trend = _trend_signal_value(patent_trends)
+    status = trend["status"] if trend["available"] else STATUS_PLANNED
     return _base_signal(
         "patent_activity",
         "Patent/IP Activity",
         "Patent and intellectual property activity.",
-        status=STATUS_PLANNED,
+        status=status,
         source="USPTO / patent data providers",
+        score=trend["score"],
+        available=trend["available"],
+        value=trend["value"],
+        details=trend["details"],
     )
 
 
-def get_supply_chain_signal(ticker: str) -> dict[str, Any]:
+def get_supply_chain_signal(
+    ticker: str,
+    relationship_trends: Iterable[Any] | None = None,
+) -> dict[str, Any]:
+    trend = _trend_signal_value(relationship_trends)
+    status = trend["status"] if trend["available"] else STATUS_RESEARCH
     return _base_signal(
         "supply_chain_relationships",
         "Supply Chain Relationships",
         "Supply chain relationship analysis.",
-        status=STATUS_RESEARCH,
+        status=status,
         source=None,
+        score=trend["score"],
+        available=trend["available"],
+        value=trend["value"],
+        details=trend["details"],
     )
 
 
@@ -273,6 +438,14 @@ def get_alternative_data_score(
     ticker: str,
     *,
     sec_8k_filings: Iterable[Any] | None = None,
+    insider_transactions: list[dict] | None = None,
+    shares_outstanding: float | None = None,
+    job_posting_trends: Iterable[Any] | None = None,
+    web_traffic_trends: Iterable[Any] | None = None,
+    ownership_trends: Iterable[Any] | None = None,
+    patent_trends: Iterable[Any] | None = None,
+    supply_chain_trends: Iterable[Any] | None = None,
+    reference_date: datetime | None = None,
 ) -> dict[str, Any]:
     """
     Return a JSON-compatible Phase E alternative-data result.
@@ -284,12 +457,17 @@ def get_alternative_data_score(
     symbol = ticker.upper().strip()
     signals = [
         get_sec_8k_sentiment_signal(symbol, sec_8k_filings),
-        get_hiring_velocity_signal(symbol),
-        get_web_traffic_signal(symbol),
-        get_insider_trends_signal(symbol),
-        get_institutional_ownership_signal(symbol),
-        get_patent_activity_signal(symbol),
-        get_supply_chain_signal(symbol),
+        get_hiring_velocity_signal_from_records(symbol, job_posting_trends),
+        get_web_traffic_signal_from_records(symbol, web_traffic_trends),
+        get_insider_trends_signal(
+            symbol,
+            insider_transactions,
+            shares_outstanding,
+            reference_date,
+        ),
+        get_institutional_ownership_signal(symbol, ownership_trends),
+        get_patent_activity_signal(symbol, patent_trends),
+        get_supply_chain_signal(symbol, supply_chain_trends),
     ]
     available_scores = [s["score"] for s in signals if s["available"]]
     score = (

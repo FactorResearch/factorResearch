@@ -532,9 +532,10 @@ def analyze_stock(symbol: str) -> dict:
         print(f"Growth quality calculation failed: {e}")
     # Insider Activity (P4)
     insider_activity_result = None
+    transactions = []
+    shares_out = None
     try:
         transactions = api_fetcher.get_insider_transactions(symbol)
-        shares_out = None
         sh_recs = sec_facts.get("shares", [])
         if sh_recs:
             try:
@@ -561,7 +562,29 @@ def analyze_stock(symbol: str) -> dict:
     # Alternative Data (Phase E display-only framework)
     alternative_data_result = None
     try:
-        alternative_data_result = alternative_data_model.get_alternative_data_score(symbol)
+        sec_8k_filings = []
+        ownership_trends = []
+        patent_trends = []
+        try:
+            sec_8k_filings = sec_data.get_recent_8k_filings(symbol)
+        except Exception as e:
+            print(f"SEC 8-K fetch failed for {symbol}: {e}")
+        try:
+            ownership_trends = api_fetcher.get_institutional_ownership_trends(symbol)
+        except Exception as e:
+            print(f"Institutional ownership fetch failed for {symbol}: {e}")
+        try:
+            patent_trends = api_fetcher.get_patent_trends(symbol)
+        except Exception as e:
+            print(f"Patent activity fetch failed for {symbol}: {e}")
+        alternative_data_result = alternative_data_model.get_alternative_data_score(
+            symbol,
+            sec_8k_filings=sec_8k_filings,
+            insider_transactions=transactions,
+            shares_outstanding=shares_out,
+            ownership_trends=ownership_trends,
+            patent_trends=patent_trends,
+        )
     except Exception as e:
         print(f"Alternative data framework failed: {e}")
     # Enhanced orthogonal composite

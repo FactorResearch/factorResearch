@@ -46,6 +46,9 @@ Mitigation in this module:
   - Cache strategy already minimizes re-fetching; no additional bias introduced.
 """
 
+import html
+import re
+
 import requests
 import pandas as pd
 from . import cache,db
@@ -55,6 +58,7 @@ SEC_HEADERS = {"User-Agent": "GrahamScoreApp/1.0 contact@example.com"}
 FACTS_URL   = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
 SUBS_URL    = "https://data.sec.gov/submissions/CIK{cik}.json"
 TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
+ARCHIVE_URL = "https://www.sec.gov/Archives/edgar/data/{cik_int}/{accession}/{document}"
 
 # Module-level in-memory cache for the ticker map (one read per process).
 _tickermap: dict | None = None
@@ -130,6 +134,103 @@ def _fetch_submissions(cik: str) -> dict:
     r = requests.get(SUBS_URL.format(cik=cik), headers=SEC_HEADERS, timeout=15)
     r.raise_for_status()
     return r.json()
+
+
+def _strip_sec_html(text: str) -> str:
+    """Convert SEC filing HTML-ish documents to compact plain text."""
+    text = re.sub(r"(?is)<script.*?</script>|<style.*?</style>", " ", text or "")
+    text = re.sub(r"(?s)<[^>]+>", " ", text)
+    text = html.unescape(text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _recent_8k_metadata(subs: dict, limit: int) -> list[dict]:
+    """Return recent 8-K metadata rows from a submissions payload."""
+    recent = (subs.get("filings") or {}).get("recent") or {}
+    forms = recent.get("form") or []
+    dates = recent.get("filingDate") or []
+    accessions = recent.get("accessionNumber") or []
+    documents = recent.get("primaryDocument") or []
+
+    rows = []
+    for form, filing_date, accession, document in zip(forms, dates, accessions, documents):
+        if form not in {"8-K", "8-K/A"} or not accession or not document:
+            continue
+        rows.append({
+            "form": form,
+            "filing_date": filing_date,
+            "accession": accession,
+            "document": document,
+        })
+        if len(rows) >= limit:
+            break
+    return rows
+
+
+def get_recent_8k_filings(
+    symbol: str,
+    *,
+    limit: int = 5,
+    max_chars_per_filing: int = 250_000,
+) -> list[dict]:
+    """
+    Fetch recent SEC 8-K primary document text for deterministic sentiment.
+
+    Documents are persisted in Postgres by accession. We only download primary
+    document text for accessions not already cached; when SEC reports the same
+    latest accession as the DB, cached rows are returned immediately.
+    """
+    symbol = symbol.upper().strip()
+    limit = max(1, min(int(limit), 10))
+
+    cik, _ = get_cik(symbol)
+    subs = _fetch_submissions(cik)
+    rows = _recent_8k_metadata(subs, limit)
+    if not rows:
+        return []
+
+    latest_accession = rows[0]["accession"]
+    cached_latest = db.get_latest_sec_8k_accession(symbol)
+    if cached_latest == latest_accession:
+        cached = db.get_sec_8k_filings(symbol, limit=limit)
+        if cached:
+            return cached
+
+    existing_accessions = db.list_existing_sec_8k_accessions(
+        symbol,
+        [row["accession"] for row in rows],
+    )
+
+    cik_int = str(int(cik))
+    fetched_filings = []
+    for row in rows:
+        if row["accession"] in existing_accessions:
+            continue
+        accession_path = row["accession"].replace("-", "")
+        url = ARCHIVE_URL.format(
+            cik_int=cik_int,
+            accession=accession_path,
+            document=row["document"],
+        )
+        try:
+            r = requests.get(url, headers=SEC_HEADERS, timeout=20)
+            r.raise_for_status()
+        except Exception as e:
+            print(f"  [SEC] 8-K fetch failed for {symbol} {row['accession']}: {e}")
+            continue
+
+        fetched_filings.append({
+            "form": row["form"],
+            "filing_date": row["filing_date"],
+            "accession": row["accession"],
+            "document": row["document"],
+            "source_url": url,
+            "text": _strip_sec_html(r.text)[:max_chars_per_filing],
+        })
+
+    db.upsert_sec_8k_filings(symbol, fetched_filings)
+    cached = db.get_sec_8k_filings(symbol, limit=limit)
+    return cached
 
 
 def _latest_filing_date(subs: dict) -> str | None:

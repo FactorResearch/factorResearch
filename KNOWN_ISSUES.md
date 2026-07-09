@@ -1097,6 +1097,59 @@ future_extensions:
   maximizes cache efficiency, and enables scalable customization as the
   platform grows.
 ---
+
+## ISSUE_013:
+
+Status: [x]
+
+title: "Phase E alternative data framework"
+
+category: data
+
+files:
+
+* codes/models/alternative_data.py
+* codes/data/sec_data.py
+* codes/data/db.py
+* codes/app.py
+* tests/test_alternative_data.py
+* tests/test_sec_8k_filings.py
+* tests/test_phase_e_provider_fetchers.py
+* SCORING_METHODOLOGY.md
+
+problem: >
+Alternative data was previously represented as a generic placeholder. The
+platform needs an explicit Phase E scope that separates deterministic,
+auditable signals available today from provider-dependent research areas.
+
+required_fix: >
+Add Phase E Alternative Data coverage for:
+
+- [x] SEC 8-K sentiment analysis (deterministic, auditable, no external AI dependency)
+- [x] Hiring velocity via job posting trends
+- [x] Web traffic analytics (once a reliable long-term data source is available)
+- [x] Insider buying and selling trends
+- [x] Institutional ownership changes
+- [x] Patent and intellectual property activity
+- [x] Supply chain relationship analysis (long-term research)
+
+completion_notes: >
+Phase E is complete at the signal-framework level. SEC 8-K sentiment,
+insider buying/selling trends, institutional ownership changes, and patent/IP
+activity are wired to current data sources. Hiring velocity, web traffic, and
+supply-chain relationship analysis expose deterministic trend-scoring hooks
+and remain neutral until durable provider data is supplied.
+
+important_rules:
+
+- Alternative Data remains display-only until durable provider-backed coverage exists.
+- Never alter Graham Score.
+- Never alter Buffett Score.
+- Never alter Quality Score.
+- Never alter the enhanced composite score.
+- SEC 8-K sentiment must stay deterministic and auditable.
+
+---
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
 
 # AI EXECUTION PROTOCOL

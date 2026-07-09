@@ -63,6 +63,21 @@ CREATE TABLE IF NOT EXISTS sec_facts_items (
 
 CREATE INDEX IF NOT EXISTS idx_sec_facts_items_ticker ON sec_facts_items(ticker);
 
+CREATE TABLE IF NOT EXISTS sec_8k_filings (
+    ticker      TEXT NOT NULL,
+    accession   TEXT NOT NULL,
+    form        TEXT,
+    filing_date TEXT,
+    document    TEXT,
+    source_url  TEXT,
+    text        TEXT NOT NULL,
+    fetched_at  TEXT NOT NULL,
+    PRIMARY KEY (ticker, accession)
+);
+
+CREATE INDEX IF NOT EXISTS idx_sec_8k_filings_ticker_date
+    ON sec_8k_filings(ticker, filing_date DESC);
+
 CREATE TABLE IF NOT EXISTS value_metrics (
     ticker          TEXT PRIMARY KEY,
     market_cap      REAL,
@@ -158,6 +173,45 @@ _SELECT_ANALYSIS_TICKERS = "SELECT ticker FROM analysis_cache"
 _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
 _SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
 
+_UPSERT_SEC_8K = """
+INSERT INTO sec_8k_filings (
+    ticker, accession, form, filing_date, document, source_url, text, fetched_at
+)
+VALUES (
+    %(ticker)s, %(accession)s, %(form)s, %(filing_date)s, %(document)s,
+    %(source_url)s, %(text)s, %(fetched_at)s
+)
+ON CONFLICT (ticker, accession) DO UPDATE SET
+    form = excluded.form,
+    filing_date = excluded.filing_date,
+    document = excluded.document,
+    source_url = excluded.source_url,
+    text = excluded.text,
+    fetched_at = excluded.fetched_at
+"""
+
+_SELECT_SEC_8K = """
+SELECT ticker, accession, form, filing_date, document, source_url, text, fetched_at
+FROM sec_8k_filings
+WHERE ticker = %(ticker)s
+ORDER BY filing_date DESC NULLS LAST, fetched_at DESC, accession DESC
+LIMIT %(limit)s
+"""
+
+_SELECT_SEC_8K_LATEST = """
+SELECT accession
+FROM sec_8k_filings
+WHERE ticker = %(ticker)s
+ORDER BY filing_date DESC NULLS LAST, fetched_at DESC, accession DESC
+LIMIT 1
+"""
+
+_SELECT_SEC_8K_ACCESSIONS = """
+SELECT accession
+FROM sec_8k_filings
+WHERE ticker = %(ticker)s AND accession = ANY(%(accessions)s)
+"""
+
 
 def upsert_analysis(ticker: str, data: dict) -> None:
     """Persist a full analyze_stock() result. Replaces cache.write('analysis', ...)."""
@@ -198,6 +252,67 @@ def list_analysis_tickers() -> list[str]:
     with _conn() as con:
         rows = con.execute(_SELECT_ANALYSIS_TICKERS).fetchall()
     return sorted(r[0] for r in rows)
+
+
+def upsert_sec_8k_filings(ticker: str, filings: list[dict]) -> None:
+    """Persist fetched SEC 8-K primary-document text by accession."""
+    if not filings:
+        return
+    _ensure_init()
+    t = ticker.upper()
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        for filing in filings:
+            accession = filing.get("accession")
+            text = filing.get("text")
+            if not accession or not text:
+                continue
+            con.execute(_UPSERT_SEC_8K, {
+                "ticker": t,
+                "accession": accession,
+                "form": filing.get("form"),
+                "filing_date": filing.get("filing_date"),
+                "document": filing.get("document"),
+                "source_url": filing.get("source_url"),
+                "text": text,
+                "fetched_at": now,
+            })
+
+
+def get_sec_8k_filings(ticker: str, limit: int = 5) -> list[dict]:
+    """Return cached SEC 8-K filings newest-first."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(
+            _SELECT_SEC_8K,
+            {"ticker": ticker.upper(), "limit": max(1, min(int(limit), 10))},
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_latest_sec_8k_accession(ticker: str) -> str | None:
+    """Return newest cached SEC 8-K accession for ticker, if present."""
+    _ensure_init()
+    with _conn() as con:
+        row = con.execute(
+            _SELECT_SEC_8K_LATEST,
+            {"ticker": ticker.upper()},
+        ).fetchone()
+    return row[0] if row else None
+
+
+def list_existing_sec_8k_accessions(ticker: str, accessions: list[str]) -> set[str]:
+    """Return cached accessions from a candidate accession list."""
+    if not accessions:
+        return set()
+    _ensure_init()
+    with _conn() as con:
+        rows = con.execute(
+            _SELECT_SEC_8K_ACCESSIONS,
+            {"ticker": ticker.upper(), "accessions": accessions},
+        ).fetchall()
+    return {row[0] for row in rows}
 
 def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> None:
     """
