@@ -53,6 +53,7 @@ class AnalysisSnapshot:
     intrinsic_value: float | None
     market_price: float | None
     market_fear_score: float | None
+    sector: str = ""
     created_at: datetime | None = None
     id: int | None = None
 
@@ -123,5 +124,5 @@ class AnalysisSnapshot:
                 or regime.get("fear_score")
                 or regime.get("market_trend_score")
             ),
+            sector=str(result.get("sector") or ""),
         )
-
