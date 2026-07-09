@@ -39,16 +39,18 @@ The final score is a **weighted average of 10 independent factors**, each normal
 | Factor | Weight | Source |
 |--------|--------|--------|
 | Quality | 18% | `quality.py` |
-| Graham / Value | 12% | `graham.py` |
-| Momentum | 12% | `momentum.py` |
+| Graham / Value | 10% | `graham.py`  |
+| Momentum | 10% | `momentum.py` |
 | Profitability | 12% | `profitability.py` |
 | Earnings Revision | 12% | `earnings_revision.py` |
 | FCF Quality | 10% | `fcf_quality.py` |
 | Capital Allocation | 8% | `capital_allocation.py` |
-| Growth Quality | 7% | `growth_quality.py` |
-| Risk | 6% | `risk_metrics.py` |
+| Growth Quality | 9% | `growth_quality.py` |
+| Risk | 8% | `risk_metrics.py` |
 | Altman Safety | 3% | `altman.py` |
 | **Total** | **100%** | |
+
+*Co-momentum shifts 2% from Momentum to Risk; the regime layer absorbs the crowding signal.*
 
 ### Formula
 

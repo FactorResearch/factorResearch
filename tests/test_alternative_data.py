@@ -1,8 +1,9 @@
 """
-Tests for P4 alternative_data.py framework stubs.
+Tests for Phase E alternative_data.py.
 
 The module is intentionally provider-free for now: it must return a stable,
 neutral schema without performing network access or affecting composite scores.
+SEC 8-K sentiment can score caller-supplied text deterministically.
 """
 
 import os
@@ -32,7 +33,7 @@ def _base_scorer_args(**overrides):
     return base
 
 
-def test_alternative_data_schema_is_neutral_stub():
+def test_alternative_data_schema_is_neutral_without_provider_data():
     result = alternative_data.get_alternative_data_score(" aapl ")
 
     assert result["ticker"] == "AAPL"
@@ -40,25 +41,67 @@ def test_alternative_data_schema_is_neutral_stub():
     assert result["total_score"] == pytest.approx(50.0)
     assert result["total_max"] == pytest.approx(100.0)
     assert result["signal"] == "NEUTRAL"
-    assert result["status"] == "STUB"
+    assert result["status"] == "NO_DATA"
     assert result["available"] is False
     assert result["low_coverage"] is True
     assert result["provider"] is None
+    assert result["phase"] == "Phase E"
 
 
-def test_alternative_data_includes_three_stub_signals():
+def test_alternative_data_includes_phase_e_signals():
     result = alternative_data.get_alternative_data_score("MSFT")
     signals = result["signals"]
 
     assert [s["name"] for s in signals] == [
-        "web_traffic",
+        "sec_8k_sentiment",
         "hiring_velocity",
-        "sentiment",
+        "web_traffic",
+        "insider_trends",
+        "institutional_ownership",
+        "patent_activity",
+        "supply_chain_relationships",
     ]
     assert all(s["score"] == pytest.approx(50.0) for s in signals)
     assert all(s["signal"] == "NEUTRAL" for s in signals)
-    assert all(s["status"] == "STUB" for s in signals)
     assert all(s["available"] is False for s in signals)
+    assert signals[0]["status"] == "NO_DATA"
+    assert signals[1]["status"] == "PLANNED"
+    assert signals[2]["status"] == "WAITING_FOR_SOURCE"
+    assert signals[-1]["status"] == "RESEARCH"
+
+
+def test_sec_8k_sentiment_is_deterministic_and_auditable():
+    filings = [
+        {
+            "title": "8-K",
+            "text": (
+                "The company reported strong growth and improved profitability. "
+                "A prior material weakness was resolved."
+            ),
+        }
+    ]
+
+    result = alternative_data.get_alternative_data_score("MSFT", sec_8k_filings=filings)
+    signal = result["signals"][0]
+
+    assert result["available"] is True
+    assert signal["name"] == "sec_8k_sentiment"
+    assert signal["status"] == "AVAILABLE"
+    assert signal["score"] > 50
+    assert signal["details"]["method"] == "fixed_lexicon_v1"
+    assert signal["details"]["positive_hits"] > signal["details"]["negative_hits"]
+
+
+def test_sec_8k_sentiment_can_turn_bearish():
+    filings = [
+        "The issuer disclosed a default, an impairment charge, and a lawsuit."
+    ]
+
+    signal = alternative_data.get_sec_8k_sentiment_signal("TSLA", filings)
+
+    assert signal["available"] is True
+    assert signal["signal"] == "BEARISH"
+    assert signal["score"] < 40
 
 
 def test_framework_only_does_not_change_enhanced_composite_weights():

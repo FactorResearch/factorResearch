@@ -659,7 +659,21 @@ class TestSignalThresholds:
 class TestScorerIntegration:
     def test_growth_quality_key_in_weights(self):
         assert "growth_quality" in scorer.ENHANCED_WEIGHTS
-        assert scorer.ENHANCED_WEIGHTS["growth_quality"] == pytest.approx(0.07)
+        assert scorer.ENHANCED_WEIGHTS["growth_quality"] == pytest.approx(0.09)
+
+    def test_enhanced_weight_vector_matches_methodology(self):
+        assert scorer.ENHANCED_WEIGHTS == pytest.approx({
+            "graham":             0.10,
+            "quality":            0.18,
+            "momentum":           0.10,
+            "risk":               0.08,
+            "altman":             0.03,
+            "earnings_revision":  0.12,
+            "profitability":      0.12,
+            "fcf_quality":        0.10,
+            "capital_allocation": 0.08,
+            "growth_quality":     0.09,
+        })
 
     def test_enhanced_weights_sum_to_one(self):
         assert sum(scorer.ENHANCED_WEIGHTS.values()) == pytest.approx(1.0)

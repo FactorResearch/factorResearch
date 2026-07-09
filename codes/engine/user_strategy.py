@@ -15,17 +15,17 @@ from .factor_engine import FACTOR_SOURCES
 # piotroski/buffett default to 0 since they're currently display-only in
 # the legacy composite. Users can raise them via set_user_weights().
 DEFAULT_WEIGHTS = {
-    "graham":             0.12,
+    "graham":             0.10,
     "quality":            0.18,
-    "momentum":           0.12,
+    "momentum":           0.10,
     "piotroski":          0.0,
-    "risk":               0.06,
+    "risk":               0.08,
     "buffett":            0.0,
     "earnings_revision":  0.12,
     "profitability":      0.12,
     "fcf_quality":        0.10,
     "capital_allocation": 0.08,
-    "growth_quality":     0.07,
+    "growth_quality":     0.09,
 }
 
 

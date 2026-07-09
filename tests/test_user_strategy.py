@@ -14,6 +14,14 @@ def test_normalize_weights_all_zero_falls_back_equal():
     assert abs(w["graham"] - 1.0 / n) < 1e-9
 
 
+def test_default_weights_match_enhanced_scoring_defaults_without_altman():
+    from codes.engine.scorer import ENHANCED_WEIGHTS
+
+    expected = {k: v for k, v in ENHANCED_WEIGHTS.items() if k in user_strategy.FACTOR_SOURCES}
+    expected.update({"piotroski": 0.0, "buffett": 0.0})
+    assert user_strategy.DEFAULT_WEIGHTS == expected
+
+
 def test_compute_weighted_score_missing_analysis():
     with patch("codes.engine.user_strategy.company_analysis.get_company_analysis", return_value=None):
         result = user_strategy.compute_weighted_score("ZZZZ")

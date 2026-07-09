@@ -558,7 +558,7 @@ def analyze_stock(symbol: str) -> dict:
         )
     except Exception as e:
         print(f"Factor momentum calculation failed: {e}")
-    # Alternative Data (P4 framework only)
+    # Alternative Data (Phase E display-only framework)
     alternative_data_result = None
     try:
         alternative_data_result = alternative_data_model.get_alternative_data_score(symbol)
@@ -1585,16 +1585,16 @@ def _composite_banner(data: dict) -> html.Div:
     # Pillar list
     if has_enh:
         pillars = [
-            ("IVE",    enhanced.get("graham_pct",    0), "12%"),
+            ("IVE",    enhanced.get("graham_pct",    0), "10%"),
             ("Quality",   enhanced.get("quality_pct",   0), "18%"),
-            ("Momentum",  enhanced.get("momentum_pct",  0), "12%"),
-            ("Risk",      enhanced.get("risk_pct",      0), " 6%"),
+            ("Momentum",  enhanced.get("momentum_pct",  0), "10%"),
+            ("Risk",      enhanced.get("risk_pct",      0), " 8%"),
             ("Altman",    enhanced.get("altman_pct",    0), " 3%"),
             ("E.Rev",     enhanced.get("earnings_revision_pct", 0), "12%"),
             ("Profit.",   enhanced.get("profitability_pct", 0), "12%"),
             ("FCF Qual.", enhanced.get("fcf_quality_pct", 0), "10%"),
             ("Cap.Alloc", enhanced.get("capital_allocation_pct", 0), " 8%"),
-            ("Growth Q.", enhanced.get("growth_quality_pct", 0), " 7%"),
+            ("Growth Q.", enhanced.get("growth_quality_pct", 0), " 9%"),
         ]
         score_label = "Enhanced Score"
     else:
@@ -2013,7 +2013,7 @@ def _factor_momentum_card(data: dict) -> html.Div:
 
 
 def _alternative_data_card(data: dict) -> html.Div:
-    """Alternative Data card: provider-ready P4 framework placeholders."""
+    """Alternative Data card: provider-ready Phase E signals."""
     ad = data.get("alternative_data") or {}
     if not ad:
         return html.Div()

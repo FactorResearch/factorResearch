@@ -108,30 +108,30 @@ def fundamental_only(graham_result: dict, quality_result: dict) -> dict:
 # ══════════════════════════════════════════════════════════════════════════════
 #
 # Weight breakdown (sums to 1.0):
-#   Graham/Value        0.12   Valuation anchor (price vs intrinsic value)
+#   Graham/Value        0.10   Valuation anchor (price vs intrinsic value)
 #   Quality             0.18   Business quality (ROE, margins, FCF, revenue growth)
-#   Momentum            0.12   Price trend confirmation (moving avg, RS, drawdown)
+#   Momentum            0.10   Price trend confirmation (moving avg, RS, drawdown)
 #   Profitability       0.12   ROIC/ROE/margins/capital efficiency
 #   FCF Quality         0.10   Cash conversion, stability, accrual quality
 #   Earnings Revisions  0.12   Forward estimate and surprise momentum
 #   Capital Allocation  0.08   ROIC spread, reinvestment, shareholder yield
-#   Growth Quality      0.07   Long-term revenue/EPS/FCF quality
-#   Risk                0.06   Risk-adjusted profile (Sharpe, beta, drawdown, vol)
+#   Growth Quality      0.09   Long-term revenue/EPS/FCF quality
+#   Risk                0.08   Risk-adjusted profile; absorbs co-momentum crowding
 #   Altman              0.03   Bankruptcy risk filter (directly encoded as safety cap)
 #
 # Altman also acts as a HARD CAP: distress zone stocks cannot exceed 50/100.
 
 ENHANCED_WEIGHTS = {
-    "graham":             0.12,
+    "graham":             0.10,
     "quality":            0.18,
-    "momentum":           0.12,
-    "risk":               0.06,
+    "momentum":           0.10,
+    "risk":               0.08,
     "altman":             0.03,
     "earnings_revision":  0.12,
     "profitability":      0.12,
     "fcf_quality":        0.10,
     "capital_allocation": 0.08,
-    "growth_quality":     0.07,
+    "growth_quality":     0.09,
 }
 
 ENHANCED_VERDICTS = [
@@ -183,7 +183,7 @@ def enhanced_composite(
     profitability_result: dict | None = None,          # P1 structural quality; 12% weight
     fcf_quality_result: dict | None = None,            # P1 cash generation quality; 10% weight
     capital_allocation_result: dict | None = None,     # P2 capital allocation; 8% weight
-    growth_quality_result: dict | None = None,         # P2 growth quality; 7% weight
+    growth_quality_result: dict | None = None,         # P2 growth quality; 9% weight
     factor_momentum_result: dict | None = None,        # P4 display-only diagnostic
 ) -> dict:
     """
