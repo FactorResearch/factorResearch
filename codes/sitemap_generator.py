@@ -8,13 +8,16 @@ from codes.services.analysis_snapshot_service import list_public_snapshots
 def generate_analysis_sitemap(base_url: str, *, limit: int = 5000) -> str:
     base_url = base_url.rstrip("/")
     urls = []
-    for snapshot in list_public_snapshots(limit=limit):
+    for index, snapshot in enumerate(list_public_snapshots(limit=limit)):
         loc = html.escape(f"{base_url}{snapshot.public_path}")
         lastmod = snapshot.analysis_date.isoformat()
+        priority = "0.8" if index < 100 else "0.6"
         urls.append(
             "  <url>\n"
             f"    <loc>{loc}</loc>\n"
             f"    <lastmod>{lastmod}</lastmod>\n"
+            "    <changefreq>weekly</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
             "  </url>"
         )
     return (
@@ -23,4 +26,3 @@ def generate_analysis_sitemap(base_url: str, *, limit: int = 5000) -> str:
         + "\n".join(urls)
         + "\n</urlset>\n"
     )
-

@@ -72,13 +72,34 @@ class AnalysisSnapshot:
 
     @property
     def description(self) -> str:
-        score = self.valuation_score
-        score_text = f"valuation score {score:.0f}" if score is not None else "valuation metrics"
+        score_parts = []
+        if self.valuation_score is not None:
+            score_parts.append(f"valuation score {self.valuation_score:.0f}/100")
+        if self.quality_score is not None:
+            score_parts.append(f"quality score {self.quality_score:.0f}/100")
+        if self.growth_score is not None:
+            score_parts.append(f"growth score {self.growth_score:.0f}/100")
+        metric_text = ", ".join(score_parts[:3]) if score_parts else "valuation and factor metrics"
         return (
-            f"{self.company_name} ({self.ticker}) FactorResearch analysis for "
-            f"{self.analysis_date.isoformat()} with {score_text}, factor ranking, "
-            f"investment metrics, and rating {self.final_rating}."
+            f"{self.company_name} ({self.ticker}) stock analysis for "
+            f"{self.analysis_date.isoformat()} with {metric_text}, intrinsic value, "
+            f"market price, risk metrics, and FactorResearch rating {self.final_rating}."
         )
+
+    @property
+    def keywords(self) -> str:
+        terms = [
+            self.company_name,
+            self.ticker,
+            f"{self.ticker} stock analysis",
+            f"{self.company_name} valuation",
+            "factor score",
+            "intrinsic value",
+            "investment metrics",
+        ]
+        if self.sector:
+            terms.append(f"{self.sector} stocks")
+        return ", ".join(terms)
 
     @classmethod
     def from_analysis_result(

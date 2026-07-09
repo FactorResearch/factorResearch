@@ -229,6 +229,20 @@ def _metric_property(name: str, value, unit_text: str | None = None) -> dict | N
     return prop
 
 
+def _drop_empty(value):
+    if isinstance(value, dict):
+        return {
+            key: cleaned
+            for key, child in value.items()
+            if (cleaned := _drop_empty(child)) is not None
+        }
+    if isinstance(value, list):
+        return [cleaned for child in value if (cleaned := _drop_empty(child)) is not None]
+    if value == "" or value is None:
+        return None
+    return value
+
+
 def _structured_data(snapshot, canonical_url: str) -> str:
     date_published = (
         snapshot.created_at.isoformat()
@@ -252,15 +266,32 @@ def _structured_data(snapshot, canonical_url: str) -> str:
         "@context": "https://schema.org",
         "@graph": [
             {
+                "@type": "WebPage",
+                "@id": f"{canonical_url}#webpage",
+                "url": canonical_url,
+                "name": snapshot.title,
+                "description": snapshot.description,
+                "datePublished": date_published,
+                "dateModified": date_published,
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "name": "FactorResearch",
+                    "url": flask.request.url_root.rstrip("/"),
+                },
+                "about": {"@id": f"{canonical_url}#stock"},
+                "primaryImageOfPage": flask.request.url_root.rstrip("/") + "/assets/logo.png",
+            },
+            {
                 "@type": "Article",
                 "@id": f"{canonical_url}#article",
                 "headline": snapshot.title,
                 "description": snapshot.description,
                 "url": canonical_url,
-                "mainEntityOfPage": canonical_url,
+                "mainEntityOfPage": {"@id": f"{canonical_url}#webpage"},
                 "datePublished": date_published,
                 "dateModified": date_published,
                 "articleSection": "Stock analysis",
+                "keywords": snapshot.keywords,
                 "author": {
                     "@type": "Organization",
                     "name": "FactorResearch",
@@ -273,6 +304,7 @@ def _structured_data(snapshot, canonical_url: str) -> str:
                 },
                 "about": {
                     "@type": "Corporation",
+                    "@id": f"{canonical_url}#stock",
                     "name": snapshot.company_name,
                     "tickerSymbol": snapshot.ticker,
                     "industry": snapshot.sector or None,
@@ -302,6 +334,7 @@ def _structured_data(snapshot, canonical_url: str) -> str:
             },
         ],
     }
+    graph = _drop_empty(graph)
     return json.dumps(graph, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
@@ -334,11 +367,17 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
 
     title = html.escape(snapshot.title)
     description = html.escape(snapshot.description)
+    keywords = html.escape(snapshot.keywords)
     company = html.escape(snapshot.company_name)
     rating = html.escape(snapshot.final_rating)
     canonical_url = _absolute_url(snapshot.public_path)
     url = html.escape(canonical_url)
     structured_data = _structured_data(snapshot, canonical_url)
+    published = html.escape(
+        snapshot.created_at.isoformat()
+        if snapshot.created_at is not None
+        else snapshot.analysis_date.isoformat()
+    )
 
     body = f"""<!doctype html>
 <html lang="en">
@@ -347,6 +386,18 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content="{description}">
+  <meta name="keywords" content="{keywords}">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="FactorResearch">
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{description}">
+  <meta property="og:url" content="{url}">
+  <meta property="article:published_time" content="{published}">
+  <meta property="article:modified_time" content="{published}">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{title}">
+  <meta name="twitter:description" content="{description}">
   <link rel="canonical" href="{url}">
   <script type="application/ld+json">{structured_data}</script>
   <style>
@@ -399,7 +450,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
   <header>
     <p class="muted">FactorResearch historical analysis</p>
     <h1>{company} Stock Analysis</h1>
-    <p>{snapshot.analysis_date.isoformat()} · {html.escape(snapshot.ticker)} · Algorithm {html.escape(snapshot.algorithm_version)}</p>
+    <p><time datetime="{snapshot.analysis_date.isoformat()}">{snapshot.analysis_date.isoformat()}</time> · {html.escape(snapshot.ticker)} · Algorithm {html.escape(snapshot.algorithm_version)}</p>
   </header>
   <section class="grid">
     <div class="metric"><div class="label">Final Rating</div><div class="value">{rating}</div></div>

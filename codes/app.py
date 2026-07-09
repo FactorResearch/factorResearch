@@ -121,6 +121,16 @@ def analysis_sitemap():
     base_url = flask.request.url_root.rstrip("/")
     return flask.Response(generate_analysis_sitemap(base_url), mimetype="application/xml")
 
+@server.route("/robots.txt")
+def robots_txt():
+    base_url = flask.request.url_root.rstrip("/")
+    body = (
+        "User-agent: *\n"
+        "Allow: /analyze/\n"
+        f"Sitemap: {base_url}/sitemap-analysis.xml\n"
+    )
+    return flask.Response(body, mimetype="text/plain")
+
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)
 
