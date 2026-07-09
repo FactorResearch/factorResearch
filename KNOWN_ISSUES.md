@@ -354,6 +354,369 @@ No vague instructions allowed.
 
 ---
 ---
+
+## ISSUE_004:
+
+ Status:[ ]
+
+ title: implement seo optimized historical stock analysis pages
+
+ category: product-growth / seo / data-architecture
+
+
+files:
+  - codes/app.py
+  - codes/routes/analyze.py
+  - codes/services/analysis_snapshot_service.py
+  - codes/models/analysis_snapshot.py
+  - codes/workers/daily_analysis_worker.py
+  - codes/sitemap_generator.py
+
+
+problem: >
+
+  Current stock analysis results are generated dynamically and are not
+  discoverable through search engines. Historical analysis results are not
+  permanently stored, preventing users from viewing how a stock analysis
+  changed over time.
+
+  We need to create SEO-friendly public analysis pages with unique URLs while
+  preserving user privacy for custom algorithms.
+
+  Example:
+
+  https://www.factorresearch.com/analyze/20260708/apple
+
+  These pages will allow users to discover FactorResearch through search
+  engines and create a proprietary historical investment analysis database.
+
+
+solution: >
+
+  Implement a historical analysis snapshot system that stores only
+  FactorResearch default algorithm results.
+
+  Each standard algorithm execution creates a permanent snapshot containing:
+
+  - stock information
+  - factor scores
+  - valuation metrics
+  - quality metrics
+  - growth metrics
+  - momentum metrics
+  - risk metrics
+  - market context
+  - algorithm version
+
+  Generate public SEO pages using:
+
+  /analyze/{YYYYMMDD}/{ticker}
+
+  Example:
+
+  /analyze/20260708/AAPL
+
+
+
+requirements:
+
+
+  analysis_storage:
+
+    create_analysis_types:
+
+      - STANDARD
+      - CUSTOM_USER
+      - BACKTEST
+      - EXPERIMENTAL
+
+
+    storage_rules:
+
+      STANDARD:
+        status: store permanently
+        public_url: yes
+        seo_index: yes
+
+
+      CUSTOM_USER:
+        status: temporary only
+        public_url: no
+        seo_index: no
+
+
+      BACKTEST:
+        status: user specific
+        public_url: no
+
+
+      EXPERIMENTAL:
+        status: internal only
+
+
+
+  database_changes:
+
+
+    create_table:
+
+      analysis_snapshots:
+
+        purpose: >
+
+          Store historical snapshots of FactorResearch standard algorithm
+          results for SEO pages and historical comparisons.
+
+
+        columns:
+
+          - id
+          - ticker
+          - company_name
+          - analysis_date
+          - algorithm_version
+          - valuation_score
+          - quality_score
+          - growth_score
+          - momentum_score
+          - risk_score
+          - final_rating
+          - intrinsic_value
+          - market_price
+          - market_fear_score
+          - created_at
+
+
+
+      analysis_versions:
+
+        purpose: >
+
+          Track algorithm versions so historical analysis can be reproduced
+          accurately.
+
+
+
+seo_pages:
+
+
+  url_structure:
+
+    format:
+
+      /analyze/{date}/{ticker}
+
+
+    examples:
+
+      - /analyze/20260708/AAPL
+      - /analyze/20260708/MSFT
+      - /analyze/20260708/NVDA
+
+
+
+  page_content:
+
+    include:
+
+      - company name
+      - analysis date
+      - factor scores
+      - valuation summary
+      - quality metrics
+      - growth metrics
+      - risk metrics
+      - final rating
+      - algorithm version
+
+
+
+  seo_metadata:
+
+    generate:
+
+      title:
+
+        example:
+
+          Apple Stock Analysis July 8 2026 | FactorResearch
+
+
+      description:
+
+        include:
+
+          - valuation information
+          - factor ranking
+          - analysis date
+          - investment metrics
+
+
+
+historical_analysis:
+
+
+  feature:
+
+    view_previous_analysis:
+
+
+      example:
+
+        Apple Analysis History:
+
+        2026-07-08
+        Rating: BUY
+        Score: 82
+
+
+        2026-06-08
+        Rating: HOLD
+        Score: 74
+
+
+
+  comparison:
+
+    compare_dates:
+
+      example:
+
+        Compare:
+
+        /analyze/20260708/AAPL
+
+        vs
+
+        /analyze/20260608/AAPL
+
+
+      display_changes:
+
+        - score changes
+        - valuation changes
+        - factor movement
+        - rating changes
+
+
+
+seo_growth:
+
+
+  sitemap:
+
+
+    create:
+
+      /sitemap-analysis.xml
+
+
+    include:
+
+      - latest stock analyses
+      - historical analysis pages
+
+
+
+  internal_links:
+
+
+    automatically_generate:
+
+      - similar factor stocks
+      - industry competitors
+      - previous analysis dates
+      - related market sectors
+
+
+
+daily_pipeline:
+
+
+  workflow:
+
+    - market_close
+    - refresh_market_data
+    - run_standard_factor_algorithm
+    - save_analysis_snapshot
+    - publish_analysis_page
+    - update_sitemap
+
+
+
+implementation_phases:
+
+
+  phase_1_core:
+
+
+    estimated_time: 1-2 weeks
+
+
+    tasks:
+
+      - create analysis snapshot database
+      - store standard algorithm results
+      - create analyze URL route
+      - display historical analysis pages
+      - generate sitemap
+
+
+
+  phase_2_seo_expansion:
+
+
+    estimated_time: 2-4 weeks
+
+
+    tasks:
+
+      - improve metadata generation
+      - add structured data
+      - create internal linking system
+      - optimize page indexing
+
+
+
+  phase_3_data_moat:
+
+
+    estimated_time: 1-3 months
+
+
+    tasks:
+
+      - daily historical snapshots
+      - expand to global markets
+      - track long-term factor changes
+      - build historical investment database
+
+
+
+expected_result: >
+
+  FactorResearch becomes a searchable historical investment analysis platform.
+
+  Users can search:
+
+  - "Apple stock analysis July 2026"
+  - "Tesla valuation history"
+  - "Microsoft factor score"
+
+  and discover FactorResearch pages.
+
+  Over time the platform builds a proprietary dataset:
+
+  - millions of historical stock analyses
+  - factor score history
+  - valuation history
+  - algorithm version history
+  - market condition history
+
+  This creates an SEO acquisition engine and a long-term competitive moat.
+
+---
+---
 ## ISSUE_012:
 
 Status: [x]
