@@ -385,7 +385,7 @@ problem: >
 
   Example:
 
-  https://www.factorresearch.com/analyze/20260708/apple
+  https://www.factorresearch.com/analyze/apple/20260301
 
   These pages will allow users to discover FactorResearch through search
   engines and create a proprietary historical investment analysis database.
@@ -410,11 +410,11 @@ solution: >
 
   Generate public SEO pages using:
 
-  /analyze/{YYYYMMDD}/{ticker}
+  /analyze/{ticker}/{YYYYMMDD}
 
   Example:
 
-  /analyze/20260708/AAPL
+  /analyze/AAPL/202060103
 
 
 
@@ -504,14 +504,14 @@ seo_pages:
 
     format:
 
-      /analyze/{date}/{ticker}
+      /analyze/{ticker}/{date}
 
 
     examples:
 
-      - /analyze/20260708/AAPL
-      - /analyze/20260708/MSFT
-      - /analyze/20260708/NVDA
+      - /analyze/AAPL/20260404
+      - /analyze/MSFT/202060404
+      - /analyze/NVDA/202060303
 
 
 
@@ -584,11 +584,11 @@ historical_analysis:
 
         Compare:
 
-        /analyze/20260708/AAPL
+        /analyze/AAPL/202060101
 
         vs
 
-        /analyze/20260608/AAPL
+        /analyze/AAPL/20260303
 
 
       display_changes:
