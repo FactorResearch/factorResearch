@@ -357,7 +357,7 @@ No vague instructions allowed.
 
 ## ISSUE_004:
 
- Status:[ ]
+ Status:[~]
 
  title: implement seo optimized historical stock analysis pages
 
@@ -647,7 +647,7 @@ daily_pipeline:
 implementation_phases:
 
 
-  phase_1_core:
+  phase_1_core:[x]
 
 
     estimated_time: 1-2 weeks
@@ -663,7 +663,7 @@ implementation_phases:
 
 
 
-  phase_2_seo_expansion:
+  phase_2_seo_expansion:[x]
 
 
     estimated_time: 2-4 weeks
