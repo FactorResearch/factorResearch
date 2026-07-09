@@ -6,9 +6,9 @@ import time as _time
 from concurrent.futures import ThreadPoolExecutor
 
 from codes import security
-from codes.data import api_fetcher, sec_data, db
+from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
-from codes.engine import factor_engine, scorer, screener
+from codes.engine import factor_engine, scorer, screener, market_fear
 from codes.models import (
     graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt,
     buffett, earnings_revision, profitability as profitability_model,
@@ -30,8 +30,11 @@ _analysis_cache = {}
 _analysis_cache_lock = threading.Lock()
 _comomentum_cache = {"ts": 0.0, "result": None}
 _comomentum_lock = threading.Lock()
+_market_fear_cache = {"ts": 0.0, "result": None}
+_market_fear_lock = threading.Lock()
 _COMOMENTUM_TTL = 3600  # seconds
 _COMOMENTUM_TOP_N = 20
+_MARKET_FEAR_TTL = 3600  # seconds
 
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
@@ -92,6 +95,38 @@ def _get_comomentum_result() -> dict | None:
     with _comomentum_lock:
         _comomentum_cache = {"ts": now, "result": result}
     return result
+
+
+def _get_market_fear_result() -> dict | None:
+    """Current VIX/VIXEQ fear gauge, recomputed at most once per hour."""
+    global _market_fear_cache
+    now = _time.time()
+    with _market_fear_lock:
+        if _market_fear_cache["result"] is not None and now - _market_fear_cache["ts"] < _MARKET_FEAR_TTL:
+            return _market_fear_cache["result"]
+
+    try:
+        inputs = market_data.get_market_fear_inputs()
+        result = market_fear.analyze(
+            inputs.get("vix"),
+            inputs.get("vixeq"),
+            spread_history=inputs.get("spread_history"),
+        )
+    except Exception as e:
+        print(f"Market fear gauge failed: {e}")
+        result = None
+
+    with _market_fear_lock:
+        _market_fear_cache = {"ts": now, "result": result}
+    return result
+
+
+def _attach_market_fear(result: dict) -> dict:
+    if result and "error" not in result:
+        result["market_fear"] = _get_market_fear_result()
+    return result
+
+
 def is_production() -> bool:
     
     return os.environ.get("FLASK_ENV", "").lower() == "production"
@@ -113,6 +148,7 @@ def analyze_stock(symbol: str) -> dict:
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
             cached_memory = _analysis_cache[symbol]
+            _attach_market_fear(cached_memory)
             try:
                 save_standard_snapshot(cached_memory, analysis_type=AnalysisType.STANDARD)
             except Exception as e:
@@ -122,6 +158,7 @@ def analyze_stock(symbol: str) -> dict:
     cached = db.get_analysis(symbol)
 
     if cached:
+        _attach_market_fear(cached)
         try:
             save_standard_snapshot(cached, analysis_type=AnalysisType.STANDARD)
         except Exception as e:
@@ -394,6 +431,7 @@ def analyze_stock(symbol: str) -> dict:
         "insider_activity":   insider_activity_result,
         "factor_momentum": factor_momentum_result,
         "alternative_data": alternative_data_result,
+        "market_fear":       _get_market_fear_result(),
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,

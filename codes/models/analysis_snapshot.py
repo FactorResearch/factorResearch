@@ -117,6 +117,7 @@ class AnalysisSnapshot:
         momentum = result.get("momentum") or {}
         risk = result.get("risk") or {}
         regime = result.get("regime") or {}
+        market_fear = result.get("market_fear") or {}
 
         valuation_score = _num(
             enhanced.get("composite_score")
@@ -141,7 +142,8 @@ class AnalysisSnapshot:
             ),
             market_price=_num(result.get("price")),
             market_fear_score=_num(
-                regime.get("market_fear_score")
+                market_fear.get("market_fear_score")
+                or regime.get("market_fear_score")
                 or regime.get("fear_score")
                 or regime.get("market_trend_score")
             ),

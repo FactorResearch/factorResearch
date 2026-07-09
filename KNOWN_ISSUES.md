@@ -834,7 +834,7 @@ priority: High
 
 ## ISSUE_013:
 
-Status: [ ]
+Status: [x]
 
 title: "Add Market Fear Gauge (VIX/VIXEQ Regime Analysis)"
 category: market-intelligence
@@ -1098,7 +1098,7 @@ future_extensions:
   platform grows.
 ---
 
-## ISSUE_013:
+## ISSUE_014:
 
 Status: [x]
 
@@ -1150,7 +1150,411 @@ important_rules:
 - SEC 8-K sentiment must stay deterministic and auditable.
 
 ---
+
+# ISSUE_015
+**Objective:**
+
+Implement a subscription-based pricing model where users receive limited access to experience IntrinsicIQ analysis, then require payment to unlock unlimited research capabilities and advanced quantitative features.
+
+The pricing model should differentiate between:
+
+- Low-cost cached analysis features
+- User customization features
+- High-compute research features (backtesting, optimization, simulations)
+
+**User Access Model**
+
+**Trial User**
+
+**Purpose:**
+
+Allow users to experience the platform value before requiring payment.
+
+Limits:
+
+- ✅ Maximum 3 company analyses
+- ✅ View full company analysis
+- ✅ View Graham/Buffett/Quality scores
+- ✅ Adjust custom factor weights
+- ✅ Preview personalized composite score
+- ❌ No historical backtesting
+- ❌ No saved strategies
+- ❌ No portfolio analytics
+- ❌ No unlimited screening
+
+After the third analysis:
+
+Display upgrade prompt:
+
+You have used your 3 free analyses.
+
+Unlock IntrinsicIQ Premium:
+
+✓ Unlimited company analysis
+
+✓ Custom investment strategies
+
+✓ Historical backtesting
+
+✓ Portfolio analytics
+
+✓ Strategy tracking
+
+**Premium Features**
+
+**Unlimited Analysis**
+
+Unlock:
+
+- Unlimited company research
+- Unlimited factor scoring
+- Unlimited custom weighting
+- Full screening capabilities
+
+Implementation:
+
+Add user entitlement check before analysis execution.
+
+Example:
+
+request analysis
+
+|
+
+▼
+
+check subscription status
+
+trial_remaining > 0
+
+|
+
+▼
+
+allow analysis
+
+decrement counter
+
+OR
+
+premium_user
+
+|
+
+▼
+
+allow unlimited access
+
+**Custom Factor Weighting**
+
+**Status: Existing functionality**
+
+Allow all trial users to experiment with custom formulas.
+
+Example:
+
+Default:
+
+Graham       25%
+
+Buffett      25%
+
+Quality      20%
+
+Health       15%
+
+Growth       10%
+
+Momentum      5%
+
+User customization:
+
+Graham       50%
+
+Buffett       0%
+
+Quality      30%
+
+Health       20%
+
+Growth        0%
+
+Momentum      0%
+
+The personalized score calculation remains available during trial.
+
+Purpose:
+
+Increase user engagement and demonstrate value.
+
+**Backtest Engine Premium Gate**
+
+**Highest-value premium feature**
+
+Backtesting requires subscription.
+
+Before execution:
+
+User clicks "Run Backtest"
+
+|
+
+▼
+
+check subscription
+
+premium?
+
+|
+
+├── Yes
+
+│      Run backtest
+
+│
+
+└── No
+
+Show upgrade prompt
+
+**Backtest Entitlement Levels**
+
+**Premium**
+
+Includes:
+
+- Custom weight backtesting
+- Historical performance
+- CAGR
+- Sharpe
+- Maximum drawdown
+- Strategy comparison
+
+**Professional (Future)**
+
+Includes:
+
+- Large universe backtesting
+- Daily rebalance
+- Factor optimization
+- Monte Carlo simulation
+- API access
+- Export research data
+
+**Required Database Changes**
+
+**User Subscription Table**
+
+New table:
+
+subscriptions
+
+id
+
+user_id
+
+plan
+
+status
+
+start_date
+
+end_date
+
+stripe_customer_id
+
+stripe_subscription_id
+
+Plans:
+
+trial
+
+premium
+
+professional
+
+cancelled
+
+**User Usage Tracking**
+
+New table:
+
+user_usage
+
+user_id
+
+analysis_count
+
+period_start
+
+period_end
+
+feature_usage
+
+Track:
+
+company_analysis
+
+screening_runs
+
+backtests
+
+portfolio_analysis
+
+**Feature Permission Layer**
+
+Create centralized permission service:
+
+New file:
+
+codes/services/permissions.py
+
+Responsibilities:
+
+can_access_feature(
+
+user,
+
+feature_name
+
+)
+
+Examples:
+
+can_access_feature(
+
+user,
+
+"backtest"
+
+)
+
+returns:
+
+True / False
+
+Features:
+
+ANALYSIS
+
+CUSTOM_WEIGHTS
+
+SCREENING
+
+BACKTEST
+
+PORTFOLIO_ANALYTICS
+
+EXPORT
+
+Avoid scattering subscription checks throughout the application.
+
+**UI Changes**
+
+Add:
+
+UpgradeBanner
+
+FeatureLockedModal
+
+UsageCounter
+
+Examples:
+
+Trial:
+
+2 / 3 free analyses remaining
+
+Locked feature:
+
+Historical backtesting requires Premium
+
+Unlock strategy validation →
+
+**Stripe Integration**
+
+Files:
+
+codes/payments/
+
+stripe_client.py
+
+subscriptions.py
+
+webhooks.py
+
+Implement:
+
+- Checkout session creation
+- Subscription status sync
+- Cancellation handling
+- Payment failure handling
+- Webhook validation
+
+**Analytics Tracking**
+
+Track conversion funnel:
+
+Events:
+
+analysis_completed
+
+custom_weight_created
+
+backtest_clicked
+
+upgrade_viewed
+
+subscription_started
+
+Important funnel:
+
+Company Analysis
+
+↓
+
+Custom Strategy Created
+
+↓
+
+Backtest Attempted
+
+↓
+
+Subscription Conversion
+
+**Acceptance Criteria**
+
+- Trial users are limited to 3 company analyses.
+- Trial usage persists across sessions.
+- Premium users have unlimited analysis access.
+- Custom weighting works for trial and premium users.
+- Backtesting requires an active subscription.
+- Feature restrictions are enforced server-side.
+- Subscription status updates automatically from payment provider.
+- Users receive clear upgrade prompts when hitting limits.
+- Existing factor engine and backtest engine continue working without major refactoring.
+
+**Future Enhancement**
+
+Introduce usage-based premium tiers:
+
+Premium:
+
+Normal backtests
+
+Professional:
+
+Large universe research
+
+Institutional:
+
+API + bulk research
+
+The architecture should support additional paid tiers without rewriting feature access logic.
+
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
+
 
 # AI EXECUTION PROTOCOL
 

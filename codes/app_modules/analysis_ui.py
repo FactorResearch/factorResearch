@@ -761,6 +761,69 @@ def _regime_card(data: dict) -> html.Div:
         ]),
     ])
 
+
+def _market_fear_card(data: dict) -> html.Div:
+    """Display-only VIX/VIXEQ Market Fear Gauge."""
+    fear = data.get("market_fear") or {}
+    if not fear or fear.get("error"):
+        return html.Div()
+
+    color_map = {
+        "green": GREEN,
+        "blue": BLUE,
+        "amber": AMBER,
+        "orange": "#f97316",
+        "red": RED,
+    }
+    accent = color_map.get(fear.get("color"), MUTED)
+
+    def _fmt(v, suffix="", decimals=1):
+        return f"{v:.{decimals}f}{suffix}" if v is not None else "N/A"
+
+    metrics = [
+        ("VIX", _fmt(fear.get("vix"))),
+        ("VIXEQ", _fmt(fear.get("vixeq"))),
+        ("Spread", _fmt(fear.get("spread"), decimals=1)),
+        ("Ratio", _fmt(fear.get("ratio"), "x", 2)),
+        ("Z-Score", _fmt(fear.get("z_score"), decimals=2)),
+        ("Fear Score", _fmt(fear.get("market_fear_score"), "/100", 0)),
+    ]
+    metric_rows = [
+        html.Div(style={
+            "display": "flex", "justifyContent": "space-between",
+            "padding": "4px 0", "borderBottom": f"1px solid {BORDER}", "fontSize": "12px",
+        }, children=[
+            html.Span(label, className="text-muted"),
+            html.Span(value, style={"color": TEXT, "fontWeight": "600"}),
+        ])
+        for label, value in metrics
+    ]
+
+    return html.Div(className="scorecard", children=[
+        html.Div(style={"display": "flex", "alignItems": "center",
+                        "gap": "10px", "padding": "14px 18px 10px",
+                        "flexWrap": "wrap"}, children=[
+            html.Span("Market Fear Gauge",
+                      style={"fontSize": "14px", "fontWeight": "700", "color": TEXT}),
+            html.Span(fear.get("badge", "Market Conditions"),
+                      style={"fontSize": "18px", "fontWeight": "800", "color": accent}),
+        ]),
+        html.Div(style={"padding": "0 18px 14px"}, children=[
+            *metric_rows,
+            html.P(
+                fear.get("interpretation"),
+                style={"fontSize": "12px", "color": TEXT, "lineHeight": "1.5",
+                       "margin": "10px 0 0"},
+            ),
+            html.Div(
+                "Informational only. Intrinsic value, quality scores, rankings, "
+                "and portfolio sizing are unchanged by market fear.",
+                style={"fontSize": "11px", "color": MUTED, "marginTop": "8px",
+                       "fontStyle": "italic", "lineHeight": "1.5"},
+            ),
+        ]),
+    ])
+
 def _build_analysis_content(data: dict) -> list:
     """Render analysis data into Dash components. Pure function, no side effects."""
     if not data or "error" in data:
@@ -1033,6 +1096,7 @@ _stat(
     altman_card = _altman_card(data)
     risk_card = _risk_card(data)
     fcf_quality_card = _fcf_quality_card(data)
+    market_fear_card = _market_fear_card(data)
     regime_card = _regime_card(data)
     capital_allocation_card = _capital_allocation_card(data)
     growth_quality_card = _growth_quality_card(data)
@@ -1048,7 +1112,8 @@ _stat(
         html.Div(className="card-row", children=[quality_card, graham_card]),
         html.Div(className="quant_row", children=[piotroski_card, altman_card])
         if p_data and a_data else html.Div(),
-        html.Div(className="card-row", children=[fcf_quality_card, regime_card]),
+        html.Div(className="card-row", children=[market_fear_card, regime_card]),
+        html.Div(className="card-row", children=[fcf_quality_card]),
         html.Div(className="card-row", children=[capital_allocation_card, growth_quality_card]),
         html.Div(className="card-row", children=[_insider_activity_card(data), alternative_data_card]),
         html.Div(className="card-row", children=[factor_momentum_card,_options_signal_card(data)]),
