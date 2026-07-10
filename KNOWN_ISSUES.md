@@ -1896,7 +1896,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_019:
 
- Status:[ ]
+ Status:[x]
   title: "Importing codes eagerly loads the full data/model stack"
   category: performance-testing
 

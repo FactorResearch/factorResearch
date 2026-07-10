@@ -14,19 +14,32 @@ Tests for:
 import pytest
 import sys
 import os
-import importlib.util
+import subprocess
 from pathlib import Path
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Load the security module directly so this regression suite does not depend on
-# pandas-heavy package initialization in codes/__init__.py.
-spec = importlib.util.spec_from_file_location("graham_security", PROJECT_ROOT / "codes" / "security.py")
-security = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(security)
+from codes import security
+
+
+def test_security_package_import_stays_lightweight():
+    script = (
+        "import sys\n"
+        "from codes import security\n"
+        "blocked = {'pandas', 'codes.data.sec_data', 'codes.data.api_fetcher'}\n"
+        "loaded = blocked.intersection(sys.modules)\n"
+        "assert not loaded, f'unexpected eager imports: {sorted(loaded)}'\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 class TestInputValidation:
