@@ -9,9 +9,9 @@
   height: 64px;
   background: $bg;
   border-bottom: 1px solid $border;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: relative;
+  top: auto;
+  z-index: 1;
   transition: background 0.2s, border-color 0.2s;
 }
 
