@@ -13,7 +13,6 @@ from codes.app_modules.config import (
     AMBER, BLUE, GREEN, MUTED, RED, PAGE_SIZE,
     get_score_class, get_verdict_class,
 )
-from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.screener_markets import (
     SCREENER_COUNTRIES,
     get_screener_country,
@@ -122,7 +121,7 @@ def update_progress(n, ready_val):
         new_ready = dash.no_update
     if not prog["running"] and prog["total"] == 0:
         return html.Div([
-            html.Span("🟢 Ready to load universe", className="text-muted"),
+            html.Span("🟢 Ready", className="text-muted"),
         ], className="flex align-items-center gap-md"), True, new_ready
     if prog["running"]:
         pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
@@ -238,7 +237,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
                 page_reset,
             )
         return (
-            html.Div("Click 'Load Universe' to start analysis",
+            html.Div("Screener is waiting for cached universe data.",
                      className="text-center p-4xl text-muted"),
             sector_options,
             page_reset,
@@ -506,30 +505,14 @@ def update_sort(n_clicks_list, sort_state):
 @callback(
     Output("loading-trigger", "children"),
     Output("screener-progress-interval", "disabled"),
-    Input("load-universe-btn", "n_clicks"),
     Input("page-load-interval", "n_intervals"),
     prevent_initial_call=True
 )
-def load_universe(n_clicks, n_load):
-    triggered = dash.ctx.triggered_id
-    if triggered == "page-load-interval":
-        # On page load: enable the interval if a run is active or results exist
-        prog = screener.get_progress()
-        if prog["running"] or prog["done"] > 0:
-            return dash.no_update, False
-        return dash.no_update, True
-    if n_clicks and n_clicks > 0:
-        try:
-            check_rate_limit("load_universe", calls=1, period_seconds=300)
-        except RateLimited as rl:
-            return html.Div(f"⏳ Load universe rate limited — try again in {rl.retry_after}s."), True
-        try:
-            screener.load_universe_background()
-        except Exception as e:
-            print(f"load_universe failed: {type(e).__name__}: {e}")
-            return html.Div("❌ Failed to start universe load — try again later."), True
-        return "", False   # enable the interval so progress callbacks fire
-    return "", True
+def sync_screener_interval_state(n_load):
+    prog = screener.get_progress()
+    if prog["running"] or prog["done"] > 0:
+        return dash.no_update, False
+    return dash.no_update, True
 
 
 

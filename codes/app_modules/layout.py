@@ -54,13 +54,6 @@ def build_layout():
         html.Div(id="tab-screener", className="screener-content block", children=[
             html.Div(className="screener-toolbar", children=[
                 html.Div(className="screener-controls", children=[
-                    html.Button(
-                        "Load U.S. Universe (~10,000 securities)",
-                        id="load-universe-btn",
-                        className="load-btn",
-                        n_clicks=0,
-                        disabled=False
-                    ),
                     html.Div(id="screener-progress-info", className="screener-info"),
                 ]),
                 html.Div(className="screener-controls flex gap-lg align-items-center", children=[
@@ -113,6 +106,15 @@ def build_layout():
                 html.Div(id="status-msg", className="status-msg", style={"width": "100%"}),
             ]),
             html.Div(id="history-section", className="history-section"),
+
+            dcc.Loading(
+                id="analysis-loading",
+                type="default",
+                color=BLUE,
+                children=[
+                    html.Div(id="analysis-content", children=[])
+                ]
+            ),
             # ── Add to Portfolio panel (shown after analysis completes) ──────────
             html.Div(id="add-to-portfolio-panel", style={"display": "none"}, children=[
                 html.Div(className="portfolio-add-panel", children=[
@@ -146,15 +148,6 @@ def build_layout():
                     html.Div(id="portfolio-add-msg", className="fs-13 mt-6"),
                 ])
             ]),
-
-            dcc.Loading(
-                id="analysis-loading",
-                type="default",
-                color=BLUE,
-                children=[
-                    html.Div(id="analysis-content", children=[])
-                ]
-            ),
             html.Div(id="analysis-anchor-scroll-trigger", style={"display": "none"}),
         ]),
         # ── Tab: Portfolios ──────────────────────────────────────────────────────

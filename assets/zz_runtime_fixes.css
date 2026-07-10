@@ -7,6 +7,74 @@
   z-index: 1 !important;
 }
 
+/* Give the analyze ticker bar more breathing room on desktop. */
+#tab-analyze .analyze-header {
+  align-items: stretch !important;
+}
+
+#tab-analyze .analyze-ticker-input {
+  flex: 1 1 420px !important;
+  min-width: min(100%, 320px) !important;
+}
+
+#tab-analyze .analyze-ticker-input input {
+  width: min(100%, 360px) !important;
+  min-width: 220px !important;
+  flex: 1 1 auto !important;
+}
+
+/* Make the sector dropdown follow the active theme explicitly. */
+#sector-filter .Select-control {
+  background: #161d2a !important;
+  border-color: #1e2a3a !important;
+  color: #e8eaf0 !important;
+}
+
+#sector-filter .Select-menu-outer {
+  background: #161d2a !important;
+  border-color: #1e2a3a !important;
+}
+
+#sector-filter .Select-option {
+  background: transparent !important;
+  color: #8899aa !important;
+}
+
+#sector-filter .Select-option:hover,
+#sector-filter .Select-option.is-focused {
+  background: rgba(22, 119, 255, 0.08) !important;
+  color: #e8eaf0 !important;
+}
+
+#sector-filter .Select-placeholder,
+#sector-filter .Select-value-label,
+#sector-filter .Select-input > input {
+  color: #e8eaf0 !important;
+}
+
+body.light #sector-filter .Select-control,
+body.light #sector-filter .Select-menu-outer {
+  background: #ffffff !important;
+  border-color: #d9dee7 !important;
+  color: #111111 !important;
+}
+
+body.light #sector-filter .Select-option {
+  color: #6b7280 !important;
+}
+
+body.light #sector-filter .Select-option:hover,
+body.light #sector-filter .Select-option.is-focused {
+  background: rgba(22, 119, 255, 0.08) !important;
+  color: #111111 !important;
+}
+
+body.light #sector-filter .Select-placeholder,
+body.light #sector-filter .Select-value-label,
+body.light #sector-filter .Select-input > input {
+  color: #111111 !important;
+}
+
 /* Keep the report's own section navigation visible. */
 #tab-analyze .analysis-jump-nav {
   position: sticky !important;
@@ -25,6 +93,32 @@
 #analysis-content,
 #analysis-loading > div {
   overflow: visible !important;
+}
+
+/* Keep the add-to-portfolio controls horizontal on desktop. */
+#add-to-portfolio-panel .portfolio-add-panel {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+#add-to-portfolio-panel .portfolio-add-header,
+#add-to-portfolio-panel .portfolio-add-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+#add-to-portfolio-panel .portfolio-add-header {
+  flex: 0 0 auto;
+}
+
+#add-to-portfolio-panel .portfolio-add-controls {
+  flex: 1 1 auto;
 }
 
 body.light #tab-analyze .analysis-jump-nav {

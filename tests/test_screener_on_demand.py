@@ -175,6 +175,10 @@ class TestLoadCachedOnly:
 # ══════════════════════════════════════════════════════════════════════════════
 
 class TestLoadUniverseBackground:
+    def test_full_universe_load_requires_explicit_ticker_list(self):
+        with pytest.raises(RuntimeError, match="disabled"):
+            screener.load_universe_background()
+
     def test_no_sec_fetch_for_uncached(self):
         """Background loader must never fetch uncached stocks from SEC."""
         symbols = ["AAPL", "NVDA", "NEW1", "NEW2"]

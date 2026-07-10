@@ -1980,7 +1980,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_021:
 
- Status:[ ]
+ Status:[x]
   title: "Tracked rejected patch artifact remains in source tree"
   category: repository-hygiene
 
@@ -2015,7 +2015,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_022:
 
- Status:[ ]
+ Status:[x]
   title: "Environment template is missing and .gitignore has a typo"
   category: configuration-developer-experience
 

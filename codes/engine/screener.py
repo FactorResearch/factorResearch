@@ -307,16 +307,19 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
 
 def load_universe_background(tickers: list[str] | None = None):
     """
-    Populate the screener with the full universe — no SEC fetches.
+    Populate the screener from an explicit ticker list — no SEC fetches.
     Each row is a placeholder until the user runs a full analysis on the stock.
     Previously-analysed stocks are enriched from the local analysis cache.
     """
+    if tickers is None:
+        raise RuntimeError("Full-universe loading is disabled; pass an explicit ticker list.")
+
     with _lock:
         if _progress["running"]:
             return
 
     def _worker():
-        symbols = tickers or universe.get_universe()
+        symbols = tickers
 
         try:
             ticker_map = sec_data.get_ticker_map()
