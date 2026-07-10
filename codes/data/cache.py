@@ -85,6 +85,10 @@ _ENCRYPTED_KINDS = {"portfolio"}
 _encryptor: "security.SensitiveDataEncryptor | None" = None
 
 
+def _is_production() -> bool:
+    return os.environ.get("FLASK_ENV", "").lower() == "production"
+
+
 def _get_encryptor() -> "security.SensitiveDataEncryptor":
     global _encryptor
     if _encryptor is None:
@@ -114,6 +118,8 @@ def _dumps(data, *, latest_filing: str | None = None, kind: str | None = None) -
         if cipher is not None:
             stored_data = cipher
             encrypted = True
+        elif _is_production():
+            raise RuntimeError(f"Encryption unavailable for sensitive cache kind: {kind}")
 
     payload: dict = {"ts": time.time(), "data": stored_data, "encrypted": encrypted}
     if latest_filing is not None:

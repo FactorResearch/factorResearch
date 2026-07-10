@@ -1773,7 +1773,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: MEDIUM
 
 ---
-
 # ISSUE_016:
 
  Status:[x]
@@ -1812,6 +1811,243 @@ risk_if_not_fixed: HIGH
     - Tests prove startup does not call the large backfill path by default.
 
   risk_if_not_fixed: MEDIUM
+
+---
+
+# ISSUE_017:
+
+ Status:[x]
+  title: "Portfolio encryption fails open to plaintext when ENCRYPTION_KEY is missing or invalid"
+  category: security-data-protection
+
+  files:
+    - codes/security.py
+    - codes/data/cache.py
+    - tests/test_issue_017_encryption_fail_closed.py
+
+  problem: >
+    Portfolio cache payloads are intended to be encrypted at rest, but the
+    encryptor returns None when ENCRYPTION_KEY is missing/invalid in production.
+    cache._dumps then writes the original portfolio payload with encrypted=false,
+    so sensitive portfolio names, holdings, and share counts can be stored
+    plaintext despite the production encryption requirement.
+
+  root_cause: >
+    codes/security.py lines 157-161 logs the missing production key and leaves
+    cipher as None; codes/data/cache.py lines 111-118 treats a None cipher as a
+    non-encrypted write instead of failing closed for encrypted kinds.
+
+  required_fix: >
+    Fail closed for encrypted cache kinds in production when encryption is not
+    available. Either raise a clear configuration error before writing or make
+    cache.write return False without persisting plaintext. Keep the non-production
+    ephemeral-key behavior only for local development.
+
+  acceptance_criteria:
+    - In production without ENCRYPTION_KEY, portfolio cache writes do not create
+      plaintext cache files.
+    - Invalid ENCRYPTION_KEY fails portfolio writes instead of silently
+      downgrading to plaintext.
+    - Non-sensitive cache kinds such as sec_facts still write normally.
+    - Tests cover missing-key and invalid-key production paths.
+
+  risk_if_not_fixed: HIGH
+
+---
+
+# ISSUE_018:
+
+ Status:[ ]
+  title: "Auth0 OAuth flow does not validate state parameter"
+  category: security-authentication
+
+  files:
+    - codes/auth.py
+    - tests/test_issue_018_auth0_state.py
+
+  problem: >
+    The Auth0 login route starts an OAuth authorization-code flow without a
+    state parameter, and the callback accepts any code without validating state
+    against the user's session. Same-origin POST/CSRF checks do not protect this
+    GET callback, leaving the login flow exposed to OAuth login CSRF/session
+    swapping risks.
+
+  root_cause: >
+    codes/auth.py lines 331-338 builds the authorize URL without state, and
+    lines 340-376 never reads or verifies request.args["state"] before exchanging
+    the code.
+
+  required_fix: >
+    Generate a cryptographically random state value in /login, store it in the
+    server-side/session context, include it in the authorize URL, and require an
+    exact constant-time match on /callback before token exchange. Clear the state
+    after successful or failed validation.
+
+  acceptance_criteria:
+    - /login includes a state parameter in the Auth0 redirect.
+    - /callback without state is rejected before token exchange.
+    - /callback with mismatched state is rejected before token exchange.
+    - /callback with matching state proceeds to token exchange.
+    - Tests prove token exchange is not called when state validation fails.
+
+  risk_if_not_fixed: HIGH
+
+---
+
+# ISSUE_019:
+
+ Status:[ ]
+  title: "Importing codes eagerly loads the full data/model stack"
+  category: performance-testing
+
+  files:
+    - codes/__init__.py
+    - tests/test_security.py
+    - tests/test_issue_014_portfolio_cache_keys.py
+    - tests/test_issue_016_metadata_backfill.py
+
+  problem: >
+    Importing lightweight modules through `from codes import security` or
+    `from codes import portfolio` executes codes/__init__.py, which eagerly
+    imports data fetchers, SEC data, models, engine modules, and portfolio code.
+    This makes small security/cache tests require heavy optional/runtime
+    dependencies like pandas and increases import/startup cost for unrelated
+    modules.
+
+  root_cause: >
+    codes/__init__.py lines 14-23 imports nearly every subpackage at package
+    import time to register compatibility aliases.
+
+  required_fix: >
+    Make package initialization lazy. Avoid importing data/model/engine modules
+    from codes/__init__.py just to expose aliases; use explicit imports at call
+    sites, lazy __getattr__, or a narrow compatibility layer that does not load
+    the full market-data stack for unrelated modules.
+
+  acceptance_criteria:
+    - `import codes.security` or `from codes import security` does not import
+      pandas/sec_data/api_fetcher.
+    - Targeted security/cache tests collect without loading the full data stack.
+    - Backward-compatible imports still work for documented legacy module paths.
+    - Import-time benchmark for a lightweight module is materially lower.
+
+  risk_if_not_fixed: MEDIUM
+
+---
+
+# ISSUE_020:
+
+ Status:[ ]
+  title: "Portfolio simulation callback has no rate limit or subscription gate"
+  category: performance-authorization
+
+  files:
+    - codes/app_modules/tabs/portfolio.py
+    - codes/portfolio.py
+    - codes/app_modules/rate_limit.py
+    - codes/services/permissions.py
+    - tests/test_issue_020_portfolio_sim_limits.py
+
+  problem: >
+    Portfolio simulation can run expensive 10-year backtests, Monte Carlo
+    projections, split lookups, and optional comparison/weak-link analysis from
+    a Dash callback without the shared rate limiting or paid-feature checks used
+    by analysis and factor-lab backtests. A user can repeatedly trigger this
+    path and consume CPU/network resources.
+
+  root_cause: >
+    codes/app_modules/tabs/portfolio.py lines 685-690 calls
+    portfolio_engine.run_simulation() directly after get_user_id(), with no
+    check_rate_limit() call and no permissions.can_access_feature() gate for
+    backtest/simulation access.
+
+  required_fix: >
+    Apply the shared per-user rate limiter to portfolio simulations and decide
+    whether simulations are a paid BACKTEST feature. If paid, gate the callback
+    with permissions.can_access_feature() and record usage only after successful
+    simulation. Return clear upgrade/rate-limit messages to the UI.
+
+  acceptance_criteria:
+    - Repeated simulation clicks are rate-limited per user.
+    - Trial/free users cannot run premium simulation work if simulations are
+      classified as BACKTEST.
+    - Paid users can run simulations within the configured limit.
+    - Tests cover allowed, rate-limited, and unauthorized simulation paths.
+
+  risk_if_not_fixed: MEDIUM
+
+---
+
+# ISSUE_021:
+
+ Status:[ ]
+  title: "Tracked rejected patch artifact remains in source tree"
+  category: repository-hygiene
+
+  files:
+    - codes/portfolio.py.rej
+    - .gitignore
+
+  problem: >
+    codes/portfolio.py.rej is tracked in git. Rejected patch artifacts contain
+    stale implementation fragments, can confuse audits/searches, and may be
+    accidentally packaged or interpreted as source context by future agents.
+
+  root_cause: >
+    A failed patch/rebase artifact was committed or left tracked instead of
+    being removed after the corresponding portfolio comparison work landed in
+    codes/portfolio.py.
+
+  required_fix: >
+    Delete codes/portfolio.py.rej after confirming no unique logic remains only
+    in the rejection file. Add a general *.rej ignore rule so future rejected
+    patch artifacts are not accidentally tracked.
+
+  acceptance_criteria:
+    - codes/portfolio.py.rej is removed from git.
+    - .gitignore includes *.rej.
+    - rg --files no longer lists any .rej files.
+    - Portfolio comparison tests still pass after removal.
+
+  risk_if_not_fixed: LOW
+
+---
+
+# ISSUE_022:
+
+ Status:[ ]
+  title: "Environment template is missing and .gitignore has a typo"
+  category: configuration-developer-experience
+
+  files:
+    - .gitignore
+    - .env.example
+    - AUTHENTICATION_SETUP.md
+    - SETUP_QUANT.md
+
+  problem: >
+    .gitignore contains ".ev.example" instead of ".env.example", and the repo
+    does not provide a committed .env.example template. New developers must
+    infer required environment variables from several docs and modules, while
+    the typo makes it unclear whether an example env file was intended.
+
+  root_cause: >
+    The ignore rule appears to contain a misspelling, and configuration
+    documentation is spread across setup/auth/payment/data modules rather than
+    captured in one sanitized template.
+
+  required_fix: >
+    Replace the typo with an intentional rule set, add a sanitized .env.example
+    containing variable names and safe placeholder values only, and update setup
+    docs to point at it. Keep real .env ignored.
+
+  acceptance_criteria:
+    - .gitignore keeps .env ignored and no longer contains the .ev.example typo.
+    - .env.example is committed with no real secrets.
+    - Setup docs reference copying .env.example to .env.
+    - Secret-scanning/search confirms no real credentials were added.
+
+  risk_if_not_fixed: LOW
 
 ---
 

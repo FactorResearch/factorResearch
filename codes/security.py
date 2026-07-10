@@ -30,6 +30,11 @@ SECURITY_LOGGER.setLevel(getattr(logging, SECURITY_LOG_LEVEL, logging.INFO))
 
 IS_PRODUCTION = os.environ.get("FLASK_ENV", "").lower() == "production"
 
+
+def _is_production() -> bool:
+    return os.environ.get("FLASK_ENV", "").lower() == "production"
+
+
 SENSITIVE_PATTERNS = [
     r"password",
     r"token",
@@ -156,7 +161,7 @@ class SensitiveDataEncryptor:
 
         key = os.environ.get("ENCRYPTION_KEY")
         if not key:
-            if IS_PRODUCTION:
+            if _is_production():
                 SECURITY_LOGGER.error("ENCRYPTION_KEY is required in production")
                 return
             key = Fernet.generate_key().decode("ascii")
