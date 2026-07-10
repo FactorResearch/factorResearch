@@ -158,6 +158,23 @@ body.light {
     color: $light-text-dim;
   }
 
+  .analysis-metric-row {
+    border-bottom-color: rgba($light-border, 0.5);
+
+    &:hover {
+      background: rgba($light-blue, 0.03);
+    }
+  }
+
+  .analysis-metric-label,
+  .analysis-card-subtitle {
+    color: $light-text-dim;
+  }
+
+  .analysis-metric-value {
+    color: $light-text;
+  }
+
   .score-bar {
     background: rgba($light-border, 0.8);
   }

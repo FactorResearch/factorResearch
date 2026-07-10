@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+from codes import auth
 from codes.data import db
 
 
@@ -52,6 +53,9 @@ def normalize_feature(feature: Feature | str) -> Feature:
 
 
 def get_or_create_subscription(user_id: str) -> dict[str, Any]:
+    override = auth.get_dev_subscription_override()
+    if override and override.get("user_id") == user_id:
+        return override
     sub = db.get_subscription(user_id)
     if sub:
         return sub

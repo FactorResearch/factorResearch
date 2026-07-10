@@ -60,6 +60,27 @@ _jwks_cache: dict[str, tuple[dict, datetime]] = {}
 _JWKS_CACHE_TTL = 3600  # 1 hour
 GENERIC_AUTH_ERROR = "Authentication failed. Please try again."
 AUTH0_OAUTH_STATE_KEY = "_auth0_oauth_state"
+DEV_PERSONA_SESSION_KEY = "_dev_persona"
+DEV_PERSONAS = {
+    "free": {
+        "user_id": "dev-free-user",
+        "plan": "trial",
+        "status": "trialing",
+        "label": "Free / Trial",
+    },
+    "paid": {
+        "user_id": "dev-paid-user",
+        "plan": "premium",
+        "status": "active",
+        "label": "Paid / Premium",
+    },
+    "pro": {
+        "user_id": "dev-pro-user",
+        "plan": "professional",
+        "status": "active",
+        "label": "Pro / Professional",
+    },
+}
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -241,6 +262,50 @@ def _verify_supabase_token(token: str) -> Optional[str]:
     return None
 
 
+def _is_dev_mode() -> bool:
+    return os.environ.get("FLASK_ENV", "").lower() != "production"
+
+
+def get_dev_persona() -> Optional[dict]:
+    if not _is_dev_mode():
+        return None
+    if not flask.has_request_context():
+        return None
+    key = session.get(DEV_PERSONA_SESSION_KEY)
+    if not key:
+        return None
+    persona = DEV_PERSONAS.get(str(key))
+    if not persona:
+        session.pop(DEV_PERSONA_SESSION_KEY, None)
+        return None
+    return {"key": str(key), **persona}
+
+
+def set_dev_persona(persona_key: str) -> dict:
+    if not _is_dev_mode():
+        raise RuntimeError("Developer personas are disabled in production.")
+    key = str(persona_key or "").strip().lower()
+    if key not in DEV_PERSONAS:
+        raise KeyError(key)
+    session[DEV_PERSONA_SESSION_KEY] = key
+    return {"key": key, **DEV_PERSONAS[key]}
+
+
+def clear_dev_persona() -> None:
+    session.pop(DEV_PERSONA_SESSION_KEY, None)
+
+
+def get_dev_subscription_override() -> Optional[dict]:
+    persona = get_dev_persona()
+    if not persona:
+        return None
+    return {
+        "user_id": persona["user_id"],
+        "plan": persona["plan"],
+        "status": persona["status"],
+    }
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Session Management
 # ──────────────────────────────────────────────────────────────────────────────
@@ -252,6 +317,10 @@ def get_authenticated_user_id() -> Optional[str]:
     Returns:
         Authenticated user_id if session is valid, None otherwise.
     """
+    persona = get_dev_persona()
+    if persona:
+        return persona["user_id"]
+
     if "_authenticated_user_id" in session:
         return session.get("_authenticated_user_id")
 
@@ -277,6 +346,7 @@ def clear_authenticated_user() -> None:
     """Clear authentication from session."""
     session.pop("_authenticated_user_id", None)
     session.pop("_auth_token", None)
+    clear_dev_persona()
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -468,6 +538,23 @@ def init_auth(app_server):
         raise RuntimeError("AUTH_PROVIDER must be configured in production.")
 
     configure_secure_cookies(app_server)
+
+    @app_server.route("/dev/impersonate", methods=["GET"])
+    def dev_impersonate():
+        if not _is_dev_mode():
+            return {"error": "Not found"}, 404
+        persona_key = (request.args.get("persona") or "").strip().lower()
+        if persona_key in {"", "clear", "none"}:
+            clear_dev_persona()
+            return {"ok": True, "persona": None, "available": sorted(DEV_PERSONAS)}
+        try:
+            persona = set_dev_persona(persona_key)
+        except KeyError:
+            return {
+                "error": f"Unknown persona '{persona_key}'",
+                "available": sorted(DEV_PERSONAS),
+            }, 400
+        return {"ok": True, "persona": persona, "available": sorted(DEV_PERSONAS)}
 
     if AUTH_PROVIDER == "auth0":
         setup_auth0_routes(app_server)

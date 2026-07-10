@@ -2698,7 +2698,7 @@ Create a client-ready conversion flow that:
 
 # issue_025
 
-**Status:** [ ]
+**Status:** [x]
 
 **Problem**
     
@@ -2962,6 +2962,12 @@ usage.
 
   algorithim should never produce these word: BUY,SELL,HOLD. for legal reason we need to play around with the word, ENHANCED_VERDICTS from scorer.py is a good anchor, all 
   buy and sell signal must get their information from there, this includes, option signal and any other signal in future
+---
+# ISSUE_028:
+  **Status:** [ ]
+  title: developer qa
+
+  create a solution that in development mode, dev can easily pretend to be different user type, paid free and pro. make it so it is exapndable in future
 
 
 # AI EXECUTION PROTOCOL

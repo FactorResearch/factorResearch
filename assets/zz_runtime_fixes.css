@@ -134,3 +134,67 @@ body.light #tab-analyze .analysis-jump-nav {
   pointer-events: auto !important;
   cursor: pointer;
 }
+
+/* Shared analysis card structure for issue 025 normalized cards. */
+#tab-analyze .analysis-card-body {
+  padding: 0 18px 16px;
+}
+
+#tab-analyze .analysis-metric-row {
+  align-items: flex-start;
+  transition: background 0.12s ease;
+}
+
+#tab-analyze .analysis-metric-row:last-child {
+  border-bottom: none !important;
+}
+
+#tab-analyze .analysis-metric-row:hover {
+  background: rgba(22, 119, 255, 0.03) !important;
+}
+
+#tab-analyze .analysis-metric-label {
+  font-family: "DM Mono", "Fira Code", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #8899aa;
+}
+
+#tab-analyze .analysis-metric-value {
+  font-family: "DM Mono", "Fira Code", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e8eaf0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+#tab-analyze .analysis-card-subtitle {
+  line-height: 1.5;
+}
+
+#tab-analyze .stability-card .analysis-card-body {
+  padding-top: 0;
+}
+
+#tab-analyze .stability-zone {
+  border-radius: 10px;
+}
+
+body.light #tab-analyze .analysis-metric-row {
+  border-bottom-color: rgba(203, 213, 225, 0.6) !important;
+}
+
+body.light #tab-analyze .analysis-metric-row:hover {
+  background: rgba(22, 119, 255, 0.03) !important;
+}
+
+body.light #tab-analyze .analysis-metric-label,
+body.light #tab-analyze .analysis-card-subtitle {
+  color: #475569 !important;
+}
+
+body.light #tab-analyze .analysis-metric-value {
+  color: #0f172a !important;
+}

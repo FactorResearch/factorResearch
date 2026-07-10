@@ -33,6 +33,48 @@
   border-bottom: 1px solid $border;
 }
 
+.analysis-card-body {
+  padding: 0 18px 16px;
+}
+
+.analysis-metric-row {
+  align-items: flex-start;
+  transition: background 0.12s ease;
+
+  &:last-child {
+    border-bottom: none !important;
+  }
+
+  &:hover {
+    background: rgba($blue, 0.03);
+  }
+}
+
+.analysis-metric-label {
+  @include mono(12px, 500);
+  color: $text-dim;
+  letter-spacing: 0.02em;
+}
+
+.analysis-metric-value {
+  @include mono(12px, 600);
+  color: $text;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.analysis-card-subtitle {
+  line-height: 1.5;
+}
+
+.stability-card .analysis-card-body {
+  padding-top: 0;
+}
+
+.stability-zone {
+  border-radius: 10px;
+}
+
 .criterion-row {
   display: flex;
   justify-content: space-between;
