@@ -62,6 +62,21 @@ def is_tracking_opted_out() -> bool:
     return bool(flask.session.get(_SESSION_OPT_OUT_KEY))
 
 
+def get_tracking_context() -> dict[str, object]:
+    authenticated_user_id = None
+    anonymous_id = None
+    if flask.has_request_context():
+        authenticated_user_id = flask.session.get("_authenticated_user_id")
+        anonymous_id = flask.session.get("_uid")
+    return {
+        "tracking_enabled": _tracking_enabled(),
+        "analytics_opt_out": is_tracking_opted_out(),
+        "authenticated": bool(authenticated_user_id),
+        "user_id": authenticated_user_id,
+        "anonymous_id": anonymous_id,
+    }
+
+
 def _record_event_sync(user_id: str | None, event_name: str, metadata: Mapping[str, object] | None = None) -> None:
     if not _tracking_enabled() or not event_name:
         return

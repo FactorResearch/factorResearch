@@ -1,7 +1,9 @@
 import os
 import sys
+import importlib
 from types import SimpleNamespace
 from unittest.mock import Mock
+from unittest.mock import patch
 
 import flask
 
@@ -11,7 +13,7 @@ from codes.app_modules import analysis as stock_analysis
 from codes.app_modules.tabs import analyze, factor_lab, pricing, screener
 from codes.data import analytics_db
 from codes.payments import webhooks
-from codes.services import product_analytics
+from codes.services import analytics_bootstrap, product_analytics
 from codes.services.permissions import Feature, PermissionResult
 
 
@@ -68,6 +70,64 @@ def test_tracking_opt_out_flag_round_trip():
         assert product_analytics.is_tracking_opted_out() is False
         product_analytics.set_tracking_opt_out(True)
         assert product_analytics.is_tracking_opted_out() is True
+
+
+def test_tracking_context_reports_authenticated_session():
+    app = flask.Flask(__name__)
+    app.secret_key = "test-secret"
+
+    with app.test_request_context("/privacy/analytics"):
+        flask.session["_authenticated_user_id"] = "user-123"
+        flask.session["_uid"] = "anon-123"
+        product_analytics.set_tracking_opt_out(True)
+        ctx = product_analytics.get_tracking_context()
+
+    assert ctx == {
+        "tracking_enabled": False,
+        "analytics_opt_out": True,
+        "authenticated": True,
+        "user_id": "user-123",
+        "anonymous_id": "anon-123",
+    }
+
+
+def test_build_head_snippets_includes_context_sync(monkeypatch):
+    monkeypatch.setenv("POSTHOG_KEY", "ph_test")
+    monkeypatch.setenv("SENTRY_DSN", "https://dsn.example/1")
+
+    html = analytics_bootstrap.build_head_snippets()
+
+    assert "fetch('/privacy/analytics'" in html
+    assert "window.factorResearchSyncAnalyticsContext=syncAnalyticsContext" in html
+    assert "posthog.identify(ctx.user_id)" in html
+    assert "Sentry.setUser({id:ctx.user_id})" in html
+
+
+def test_privacy_analytics_route_round_trip(monkeypatch):
+    monkeypatch.setenv("FLASK_SECRET_KEY", "test-secret")
+    sys.modules.pop("codes.app", None)
+    with patch("codes.data.sec_data.get_ticker_map", return_value={}), \
+         patch("codes.data.db.init_db", return_value=None), \
+         patch("codes.services.analysis_snapshot_service.ensure_schema_if_configured", return_value=False), \
+         patch("codes.engine.universe.get_universe", return_value=[]), \
+         patch("codes.engine.screener.load_cached_only", return_value=[]):
+        app_mod = importlib.import_module("codes.app")
+
+    client = app_mod.server.test_client()
+
+    response = client.get("/privacy/analytics")
+    assert response.status_code == 200
+    assert response.get_json()["analytics_opt_out"] is False
+
+    response = client.post(
+        "/privacy/analytics",
+        json={"opt_out": True},
+        headers={"Origin": "http://localhost"},
+    )
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["analytics_opt_out"] is True
+    assert body["tracking_enabled"] is False
 
 
 def test_pricing_tab_tracks_page_view(monkeypatch):

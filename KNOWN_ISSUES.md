@@ -2798,76 +2798,11 @@ behavior if analytics writes fail.
 
 ------------------------------------------------------------------------
 
-## Post-Implementation Follow-Up
+## Post-Launch Ownership
 
-### Third-party validation still recommended
-
--   verify real PostHog end-to-end event delivery in a configured
-    environment
--   verify real Clarity script/session recording behavior
--   verify real Sentry browser error capture
--   add any required provider-specific identify / group / alias logic
-
-### Future feature-dependent instrumentation
-
--   add `watchlist_added` if a watchlist feature is introduced later
-
-### Optional database / reporting expansion
-
-The following suggested tables are **not** implemented yet:
-
--   `analytics_company_views`
--   `analytics_analysis_runs`
--   `analytics_portfolios`
--   `analytics_searches`
--   `analytics_subscriptions`
--   `analytics_performance`
--   `analytics_errors`
-
-Right now only `analytics_events` exists as the canonical event log,
-which is sufficient for the current implementation.
-
-------------------------------------------------------------------------
-
-## Reporting Questions Not Yet Implemented As First-Class Views
-
-The current foundation can collect raw events, but it does **not yet**
-ship finished reporting views for:
-
--   most viewed companies
--   trending companies
--   most viewed sectors
--   geographic popularity
--   most used algorithms
--   average runtime
--   cache hit ratio
--   failure rate
--   most common screener filters
--   most common searches
--   average portfolio size
--   most owned companies
--   highest converting landing pages
--   time-between-funnel-step analysis
-
-These need reporting queries, materialized summaries, or dashboards on
-top of the event stream.
-
-------------------------------------------------------------------------
-
-## Recommended Follow-Up Work
-
-1. Validate third-party integrations in a real configured environment.
-2. Decide whether to keep one event table or fan out into dedicated
-   summary tables.
-3. Build a first internal analytics dashboard/report for:
-   - top viewed stocks
-   - analysis completion/failure counts
-   - screener filter usage
-   - pricing → checkout → subscription funnel
-4. Add stronger privacy controls if needed:
-   - suppression of sensitive metadata
-   - broader user-facing preference management
-5. Add `watchlist_added` if a watchlist feature is introduced.
+All remaining production validation, rollout, and optional reporting
+expansion for ISSUE_026 has been moved to `Publish.md` under
+`ISSUE_026_ANALYTICS_OPERATIONS`.
 
 ------------------------------------------------------------------------
 

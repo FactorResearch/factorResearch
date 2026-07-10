@@ -91,17 +91,19 @@ def terms_page():
 def privacy_page():
     return render_template(
         "privacy.html",
-        legal_notice=_LEGAL_PLACEHOLDER_NOTICE
+        legal_notice=_LEGAL_PLACEHOLDER_NOTICE,
+        analytics_opt_out=product_analytics.is_tracking_opted_out(),
     )
 
 
-@server.route("/privacy/analytics", methods=["POST"])
+@server.route("/privacy/analytics", methods=["GET", "POST"])
 def update_analytics_preference():
-    payload = flask.request.get_json(silent=True) or flask.request.form or {}
-    raw_value = payload.get("opt_out")
-    opt_out = str(raw_value).lower() in {"1", "true", "yes", "on"}
-    product_analytics.set_tracking_opt_out(opt_out)
-    return flask.jsonify({"analytics_opt_out": product_analytics.is_tracking_opted_out()})
+    if flask.request.method == "POST":
+        payload = flask.request.get_json(silent=True) or flask.request.form or {}
+        raw_value = payload.get("opt_out")
+        opt_out = str(raw_value).lower() in {"1", "true", "yes", "on"}
+        product_analytics.set_tracking_opt_out(opt_out)
+    return flask.jsonify(product_analytics.get_tracking_context())
 
 @server.route("/sitemap-analysis.xml")
 def analysis_sitemap():

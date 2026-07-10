@@ -46,4 +46,31 @@ def build_head_snippets() -> str:
             "</script>"
         )
 
+    if posthog_key or sentry_dsn:
+        snippets.append(
+            "<script>"
+            "(function(){"
+            "function syncAnalyticsContext(ctx){"
+            "if(window.posthog){"
+            "if(ctx.analytics_opt_out){"
+            "if(window.posthog.opt_out_capturing){window.posthog.opt_out_capturing();}"
+            "}else{"
+            "if(window.posthog.opt_in_capturing){window.posthog.opt_in_capturing();}"
+            "if(ctx.authenticated&&ctx.user_id&&window.posthog.identify){window.posthog.identify(ctx.user_id);}"
+            "}"
+            "}"
+            "if(window.Sentry&&window.Sentry.setUser){"
+            "if(ctx.authenticated&&ctx.user_id&&!ctx.analytics_opt_out){window.Sentry.setUser({id:ctx.user_id});}"
+            "else{window.Sentry.setUser(null);}"
+            "}"
+            "}"
+            "window.factorResearchSyncAnalyticsContext=syncAnalyticsContext;"
+            "fetch('/privacy/analytics',{credentials:'same-origin'})"
+            ".then(function(r){return r.json();})"
+            ".then(syncAnalyticsContext)"
+            ".catch(function(){});"
+            "})();"
+            "</script>"
+        )
+
     return "".join(snippets)
