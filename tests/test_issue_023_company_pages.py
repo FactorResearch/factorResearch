@@ -47,12 +47,15 @@ def _client_with_dash_shell():
     return app.test_client()
 
 
-def test_uppercase_ticker_route_yields_to_dash_without_snapshot_lookup():
-    with patch("codes.routes.analyze.get_company_snapshots_by_slug") as snapshots:
+def test_uppercase_ticker_route_renders_company_history_without_slug_lookup():
+    with patch("codes.routes.analyze.list_ticker_snapshots", return_value=[_official()]) as history, \
+         patch("codes.routes.analyze.get_company_snapshots_by_slug") as snapshots, \
+         patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None):
         response = _client_with_dash_shell().get("/analyze/META")
 
     assert response.status_code == 200
-    assert response.get_data(as_text=True) == "dash shell for analyze/META"
+    assert "FactorResearch History" in response.get_data(as_text=True)
+    history.assert_called_once_with("META", limit=12)
     snapshots.assert_not_called()
 
 
@@ -61,6 +64,20 @@ def test_dash_analysis_parser_accepts_bare_and_dated_ticker_urls():
     assert _ticker_from_analyze_path("/analyze/NVDA/") == "NVDA"
     assert _ticker_from_analyze_path("/analyze/NVDA/20260710") == "NVDA"
     assert _ticker_from_analyze_path("/analyze/nvda/2026-07-10") == "NVDA"
+
+
+def test_ticker_page_bootstraps_first_snapshot_from_cached_official_analysis():
+    cached = {"symbol": "GOOGL", "name": "Alphabet Inc."}
+    with patch("codes.routes.analyze.list_ticker_snapshots", side_effect=[[], [_official()]]) as history, \
+         patch("codes.routes.analyze.db.get_analysis", return_value=cached), \
+         patch("codes.routes.analyze.save_standard_snapshot") as save, \
+         patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None):
+        response = _client().get("/analyze/GOOGL/")
+
+    assert response.status_code == 200
+    assert "FactorResearch History" in response.get_data(as_text=True)
+    save.assert_called_once_with(cached)
+    assert history.call_count == 2
 
 
 def test_company_page_falls_back_to_dash_when_snapshot_database_is_unavailable():

@@ -82,23 +82,41 @@ def _database_url() -> str | None:
         os.environ.get("ANALYTICS_DATABASE_URL")
         or os.environ.get("FACTORRESEARCH_ANALYTICS_DATABASE_URL")
         or os.environ.get("DATABASE_URL")
+        or os.environ.get("DATABASE_MARKET_URL")
     )
+
+
+def _database_urls() -> list[str]:
+    urls = [
+        os.environ.get("ANALYTICS_DATABASE_URL"),
+        os.environ.get("FACTORRESEARCH_ANALYTICS_DATABASE_URL"),
+        os.environ.get("DATABASE_URL"),
+        os.environ.get("DATABASE_MARKET_URL"),
+    ]
+    return list(dict.fromkeys(url for url in urls if url))
 
 
 @contextmanager
 def _connect() -> Iterator:
-    dsn = _database_url()
-    if not dsn:
-        raise RuntimeError("ANALYTICS_DATABASE_URL or DATABASE_URL is required for analysis snapshots.")
+    urls = _database_urls()
+    if not urls:
+        raise RuntimeError("An analytics or market database URL is required for analysis snapshots.")
 
-    try:
-        import psycopg
-
-        conn = psycopg.connect(dsn)
-    except ImportError:
-        import psycopg2
-
-        conn = psycopg2.connect(dsn)
+    conn = None
+    last_error = None
+    for dsn in urls:
+        try:
+            try:
+                import psycopg
+                conn = psycopg.connect(dsn)
+            except ImportError:
+                import psycopg2
+                conn = psycopg2.connect(dsn)
+            break
+        except Exception as exc:
+            last_error = exc
+    if conn is None:
+        raise last_error or RuntimeError("Unable to connect to snapshot storage.")
 
     try:
         yield conn

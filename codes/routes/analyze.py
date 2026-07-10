@@ -7,6 +7,7 @@ import re
 import flask
 
 from codes import auth
+from codes.data import db
 from codes.models.analysis_snapshot import company_slug
 from codes.services import permissions
 from codes.services.analysis_snapshot_service import (
@@ -16,6 +17,7 @@ from codes.services.analysis_snapshot_service import (
     list_custom_snapshots,
     list_related_snapshots,
     list_ticker_snapshots,
+    save_standard_snapshot,
 )
 
 
@@ -37,6 +39,7 @@ def _theme_for(snapshot) -> tuple[str, str]:
         "jpmorgan-chase": ("#f1f6fb", "#0b5fa5"),
         "tesla": ("#f5f5f5", "#c71920"),
         "microsoft": ("#f5f7fa", "#0067b8"),
+        "alphabet": ("#f7f9ff", "#4285f4"),
     }
     return approved.get(company_slug(snapshot.company_name), ("#f7f8fb", "#2563eb"))
 
@@ -94,21 +97,25 @@ def _custom_history_column(user_id: str | None, ticker: str) -> str:
     return '<section><h2>My Custom Models</h2>' + "".join(cards) + '</section>'
 
 
-@analyze_pages.route("/analyze/<slug>")
+@analyze_pages.route("/analyze/<slug>", strict_slashes=False)
 def company_analysis_page(slug: str):
     raw_slug = slug or ""
-    if raw_slug == raw_slug.upper() and _TICKER_RE.match(raw_slug):
-        fallback = _dash_shell_response()
-        if fallback is not None:
-            return fallback
-        flask.abort(404)
-
+    ticker = raw_slug.upper() if raw_slug == raw_slug.upper() and _TICKER_RE.match(raw_slug) else None
     slug = raw_slug.lower()
-    if not _SLUG_RE.match(slug):
+    if not ticker and not _SLUG_RE.match(slug):
         flask.abort(404)
     try:
         page = max(1, int(flask.request.args.get("page", "1")))
-        history = get_company_snapshots_by_slug(slug, limit=12, offset=(page - 1) * 12)
+        if ticker:
+            all_history = list_ticker_snapshots(ticker, limit=min(page * 12, 120))
+            if not all_history and page == 1:
+                cached = db.get_analysis(ticker)
+                if cached and not cached.get("error"):
+                    save_standard_snapshot(cached)
+                    all_history = list_ticker_snapshots(ticker, limit=12)
+            history = all_history[(page - 1) * 12:page * 12]
+        else:
+            history = get_company_snapshots_by_slug(slug, limit=12, offset=(page - 1) * 12)
     except (TypeError, ValueError):
         flask.abort(404)
     except Exception as exc:
@@ -118,9 +125,12 @@ def company_analysis_page(slug: str):
             return fallback
         flask.abort(404)
     if not history:
+        fallback = _dash_shell_response()
+        if fallback is not None:
+            return fallback
         flask.abort(404)
     latest = history[0]
-    if company_slug(latest.company_name) != slug:
+    if not ticker and company_slug(latest.company_name) != slug:
         flask.abort(404)
     bg, accent = _theme_for(latest)
     canonical = _absolute_url(latest.company_path)
