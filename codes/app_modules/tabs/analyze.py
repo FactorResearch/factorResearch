@@ -16,7 +16,9 @@ from codes import billing
 from codes.services import permissions
 
 
-_ANALYZE_PATH_RE = re.compile(r"^/analyze/([A-Za-z]{1,6})/\d{8}/?$")
+_ANALYZE_PATH_RE = re.compile(
+    r"^/analyze/([A-Za-z]{1,6})(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?/?$"
+)
 
 
 clientside_callback(

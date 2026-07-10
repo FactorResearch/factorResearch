@@ -5,6 +5,7 @@ import flask
 
 from codes.models.analysis_snapshot import AnalysisSnapshot, CustomAnalysisSnapshot
 from codes.routes.analyze import analyze_pages
+from codes.app_modules.tabs.analyze import _ticker_from_analyze_path
 from codes.services.permissions import Feature, PermissionResult
 
 
@@ -53,6 +54,13 @@ def test_uppercase_ticker_route_yields_to_dash_without_snapshot_lookup():
     assert response.status_code == 200
     assert response.get_data(as_text=True) == "dash shell for analyze/META"
     snapshots.assert_not_called()
+
+
+def test_dash_analysis_parser_accepts_bare_and_dated_ticker_urls():
+    assert _ticker_from_analyze_path("/analyze/NVDA") == "NVDA"
+    assert _ticker_from_analyze_path("/analyze/NVDA/") == "NVDA"
+    assert _ticker_from_analyze_path("/analyze/NVDA/20260710") == "NVDA"
+    assert _ticker_from_analyze_path("/analyze/nvda/2026-07-10") == "NVDA"
 
 
 def test_company_page_falls_back_to_dash_when_snapshot_database_is_unavailable():
