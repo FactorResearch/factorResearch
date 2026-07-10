@@ -1857,7 +1857,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_018:
 
- Status:[ ]
+ Status:[x]
   title: "Auth0 OAuth flow does not validate state parameter"
   category: security-authentication
 

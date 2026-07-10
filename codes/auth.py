@@ -17,6 +17,7 @@ Environment variables required:
 
 import os
 import json
+import secrets
 import requests
 from functools import wraps
 from typing import Optional, Tuple
@@ -58,6 +59,7 @@ TOKEN_CACHE_TTL = 3600  # 1 hour
 _jwks_cache: dict[str, tuple[dict, datetime]] = {}
 _JWKS_CACHE_TTL = 3600  # 1 hour
 GENERIC_AUTH_ERROR = "Authentication failed. Please try again."
+AUTH0_OAUTH_STATE_KEY = "_auth0_oauth_state"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -327,14 +329,16 @@ def setup_auth0_routes(app_server):
     @app_server.route("/login")
     def auth_login():
         """Redirect to Auth0 login."""
+        state = secrets.token_urlsafe(32)
+        session[AUTH0_OAUTH_STATE_KEY] = state
         auth0_authorize_url = f"https://{AUTH0_DOMAIN}/authorize"
         params = {
             "client_id": AUTH0_CLIENT_ID,
             "redirect_uri": CALLBACK_URL,
             "response_type": "code",
             "scope": "openid profile email",
+            "state": state,
         }
-        query_string = "&".join(f"{k}={v}" for k, v in params.items())
         return redirect(f"{auth0_authorize_url}?{urlencode(params)}")
     
     @app_server.route("/callback")
@@ -342,9 +346,15 @@ def setup_auth0_routes(app_server):
         """Handle Auth0 OAuth callback."""
         code = request.args.get("code")
         error = request.args.get("error")
+        returned_state = request.args.get("state")
+        expected_state = session.pop(AUTH0_OAUTH_STATE_KEY, None)
         
         if error:
             print("[AUTH] Callback received provider error")
+            return GENERIC_AUTH_ERROR, 400
+
+        if not expected_state or not returned_state or not secrets.compare_digest(expected_state, returned_state):
+            print("[AUTH] Callback rejected invalid OAuth state")
             return GENERIC_AUTH_ERROR, 400
         
         if not code:

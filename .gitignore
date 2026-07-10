@@ -13,3 +13,5 @@ assets/*.css.map
 assets/*.css
 agency-agents/*
 .ev.example
+.codex/
+.agents
