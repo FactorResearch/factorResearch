@@ -61,9 +61,6 @@ def create_portfolio(n, name, refresh):
     name = validate_portfolio_name(name)
     if not name:
         return dash.no_update, dash.no_update, "❌ Invalid name (letters, numbers, spaces, - or _, max 32 chars).", dash.no_update
-    # Validate portfolio name: alphanumeric + underscore, max 32 chars
-    if not re.fullmatch(r"^[A-Za-z0-9_]{1,32}$", name):
-        return dash.no_update, dash.no_update, "❌ Invalid portfolio name. Use up to 32 letters, numbers, or underscores.", dash.no_update
     uid = get_user_id()
     existing = portfolio_engine.list_portfolios(uid)
     if name in existing:
@@ -112,9 +109,6 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     port_name = validate_portfolio_name(new_name) or selected
     if not port_name:
         return "❌ Select or name a portfolio first.", {"color": RED}, dash.no_update, dash.no_update
-    # Validate portfolio name when provided/created
-    if not re.fullmatch(r"^[A-Za-z0-9_]{1,32}$", port_name):
-        return "❌ Invalid portfolio name. Use up to 32 letters, numbers, or underscores.", {"color": RED}, dash.no_update, dash.no_update
     # Shares validation
     try:
         shares = int(shares or 0)

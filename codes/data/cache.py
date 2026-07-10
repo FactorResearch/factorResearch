@@ -202,14 +202,16 @@ def is_stale_for_company(symbol: str, sec_latest_filing: str) -> bool:
     return stale
 
 
-def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> None:
+def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> bool:
     try:
         _path(kind, key).write_text(_dumps(data, latest_filing=latest_filing, kind=kind))
         suffix = f" (filing {latest_filing})" if latest_filing else ""
         if kind!="company_meta":
             print(f"[CACHE SAVED] {kind}:{key}{suffix}")
+        return True
     except Exception as e:
         print(f"[CACHE ERROR] {e}")
+        return False
 
 
 def list_cached_stocks() -> list[str]:

@@ -47,6 +47,48 @@ _DASH_CALLBACK_PATH = "/_dash-update-component"
 _STRIPE_WEBHOOK_PATH = "/billing/webhook"
 
 
+class SensitiveDataEncryptor:
+    """Small Fernet wrapper for encrypting sensitive local cache payloads."""
+
+    def __init__(self):
+        self.cipher = None
+        if not HAS_CRYPTO:
+            SECURITY_LOGGER.warning("Encryption unavailable: cryptography is not installed")
+            return
+
+        key = os.environ.get("ENCRYPTION_KEY")
+        if not key:
+            if IS_PRODUCTION:
+                SECURITY_LOGGER.error("ENCRYPTION_KEY is required in production")
+                return
+            key = Fernet.generate_key().decode("ascii")
+            SECURITY_LOGGER.warning("Using ephemeral encryption key for this session")
+
+        try:
+            self.cipher = Fernet(key.encode("ascii") if isinstance(key, str) else key)
+        except Exception as exc:
+            SECURITY_LOGGER.error("Invalid ENCRYPTION_KEY: %s", exc)
+            self.cipher = None
+
+    def encrypt(self, plaintext: str) -> str | None:
+        if self.cipher is None:
+            return None
+        try:
+            return self.cipher.encrypt(plaintext.encode("utf-8")).decode("ascii")
+        except Exception as exc:
+            SECURITY_LOGGER.error("Sensitive data encryption failed: %s", exc)
+            return None
+
+    def decrypt(self, ciphertext: str) -> str | None:
+        if self.cipher is None:
+            return None
+        try:
+            return self.cipher.decrypt(ciphertext.encode("ascii")).decode("utf-8")
+        except Exception as exc:
+            SECURITY_LOGGER.error("Sensitive data decryption failed: %s", exc)
+            return None
+
+
 def _generate_csrf_token() -> str:
     import secrets
     return secrets.token_urlsafe(32)

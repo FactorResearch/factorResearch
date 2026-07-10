@@ -28,6 +28,7 @@ Simulation output:
 import math
 import time
 import datetime
+import hashlib
 import numpy as np
 import pandas as pd
 from .data import cache
@@ -95,12 +96,63 @@ def get_cumulative_split_factor(symbol: str, since_date: str) -> float:
 # Storage helpers
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _cache_token(value: str) -> str:
+    """Stable filename-safe token for user-controlled cache key parts."""
+    return hashlib.sha256(str(value).encode("utf-8")).hexdigest()
+
+
+def _portfolio_index_key(user_id: str) -> str:
+    return f"u_{_cache_token(user_id)}_index"
+
+
+def _portfolio_key(user_id: str, name: str) -> str:
+    return f"u_{_cache_token(user_id)}_p_{_cache_token(name)}"
+
+
+def _simulation_key(user_id: str, portfolio_name: str) -> str:
+    return f"u_{_cache_token(user_id)}_sim_{_cache_token(portfolio_name)}"
+
+
+def _legacy_index_key(user_id: str) -> str:
+    return f"{user_id}_index"
+
+
+def _legacy_portfolio_key(user_id: str, name: str) -> str:
+    return f"{user_id}_p_{name}"
+
+
+def _legacy_simulation_key(user_id: str, portfolio_name: str) -> str:
+    return f"{user_id}_{portfolio_name}"
+
+
+def _write_cache_or_raise(kind: str, key: str, data) -> None:
+    if cache.write(kind, key, data) is False:
+        raise RuntimeError(f"Failed to write cache entry {kind}:{key}")
+
+
+def _clear_cache_if_safe(kind: str, key: str) -> None:
+    try:
+        cache.clear(kind, key)
+    except ValueError:
+        pass
+
+
+def _read_cache_if_safe(kind: str, key: str):
+    try:
+        return cache.read(kind, key)
+    except ValueError:
+        return None
+
+
 def _load_index(user_id: str) -> list[str]:
-    return cache.read("portfolio", f"{user_id}_index") or []
+    encoded = cache.read("portfolio", _portfolio_index_key(user_id))
+    if encoded is not None:
+        return encoded
+    return _read_cache_if_safe("portfolio", _legacy_index_key(user_id)) or []
 
 
 def _save_index(user_id: str, names: list[str]) -> None:
-    cache.write("portfolio", f"{user_id}_index", names)
+    _write_cache_or_raise("portfolio", _portfolio_index_key(user_id), names)
 
 
 def list_portfolios(user_id: str) -> list[str]:
@@ -108,12 +160,15 @@ def list_portfolios(user_id: str) -> list[str]:
 
 
 def load_portfolio(user_id: str, name: str) -> dict | None:
-    return cache.read("portfolio", f"{user_id}_p_{name}")
+    encoded = cache.read("portfolio", _portfolio_key(user_id, name))
+    if encoded is not None:
+        return encoded
+    return _read_cache_if_safe("portfolio", _legacy_portfolio_key(user_id, name))
 
 
 def save_portfolio(user_id: str, portfolio: dict) -> None:
     name = portfolio["name"]
-    cache.write("portfolio", f"{user_id}_p_{name}", portfolio)
+    _write_cache_or_raise("portfolio", _portfolio_key(user_id, name), portfolio)
     idx = _load_index(user_id)
     if name not in idx:
         idx.append(name)
@@ -121,7 +176,8 @@ def save_portfolio(user_id: str, portfolio: dict) -> None:
 
 
 def delete_portfolio(user_id: str, name: str) -> None:
-    cache.clear("portfolio", f"{user_id}_p_{name}")
+    _clear_cache_if_safe("portfolio", _portfolio_key(user_id, name))
+    _clear_cache_if_safe("portfolio", _legacy_portfolio_key(user_id, name))
     idx = [n for n in _load_index(user_id) if n != name]
     _save_index(user_id, idx)
 
@@ -718,8 +774,11 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
     if p is None:
         return {"error": f'Portfolio "{portfolio_name}" not found'}
 
-    cache_key = f"{user_id}_{portfolio_name}"
+    cache_key = _simulation_key(user_id, portfolio_name)
     cached = cache.read("port_sim", cache_key)
+    if cached:
+        return cached
+    cached = _read_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
     if cached:
         return cached
 
@@ -733,12 +792,13 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
         "holdings":       p["holdings"],
     }
 
-    cache.write("port_sim", cache_key, result)
+    _write_cache_or_raise("port_sim", cache_key, result)
     return result
 
 
 def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
-    cache.clear("port_sim", f"{user_id}_{portfolio_name}")
+    _clear_cache_if_safe("port_sim", _simulation_key(user_id, portfolio_name))
+    _clear_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
 
 def delete_all_user_data(user_id: str) -> dict:
     """
@@ -753,7 +813,8 @@ def delete_all_user_data(user_id: str) -> dict:
     for name in names:
         invalidate_simulation_cache(user_id, name)
         delete_portfolio(user_id, name)
-    cache.clear("portfolio", f"{user_id}_index")
+    _clear_cache_if_safe("portfolio", _portfolio_index_key(user_id))
+    _clear_cache_if_safe("portfolio", _legacy_index_key(user_id))
     return {"user_id": user_id, "portfolios_deleted": names, "deleted": True}
 # ══════════════════════════════════════════════════════════════════════════════
 # Multi-Portfolio Comparison (PROJECT_MAP.md — Portfolio Page Refactor)

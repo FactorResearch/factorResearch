@@ -1699,7 +1699,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_014:
 
- Status:[ ]
+ Status:[x]
   title: "Portfolio cache keys reject real auth IDs and portfolio names"
   category: correctness-security
 
