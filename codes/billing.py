@@ -7,6 +7,7 @@ import os
 
 import flask
 
+from codes.app_modules.session import get_user_id
 from codes.payments import stripe_client, subscriptions, webhooks
 from codes.services import permissions
 
@@ -21,9 +22,10 @@ def init_billing(server: Optional[flask.Flask] = None):
 
     @server.route("/billing/checkout", methods=["GET"])
     def _checkout():
-        user_id = flask.request.args.get("user_id") or flask.session.get("_uid")
         plan = flask.request.args.get("plan", "premium")
-        if not user_id:
+        try:
+            user_id = get_user_id()
+        except RuntimeError:
             return "missing user_id", 400
         try:
             return flask.redirect(get_checkout_url(user_id, plan=plan))
@@ -34,8 +36,9 @@ def init_billing(server: Optional[flask.Flask] = None):
 
     @server.route("/billing/portal", methods=["GET"])
     def _portal():
-        user_id = flask.request.args.get("user_id") or flask.session.get("_uid")
-        if not user_id:
+        try:
+            user_id = get_user_id()
+        except RuntimeError:
             return "missing user_id", 400
         try:
             return flask.redirect(get_portal_url(user_id))
@@ -62,8 +65,9 @@ def init_billing(server: Optional[flask.Flask] = None):
     if not _is_production():
         @server.route("/billing/mark_paid", methods=["GET"])
         def _mark_paid():
-            uid = flask.request.args.get("user_id") or flask.session.get("_uid")
-            if not uid:
+            try:
+                uid = get_user_id()
+            except RuntimeError:
                 return "missing user_id", 400
             subscriptions.mark_paid_for_dev(uid)
             flask.session["is_paid"] = True
@@ -86,7 +90,7 @@ def get_checkout_url(user_id: str, plan: str = "premium") -> str:
         return stripe_client.create_checkout_session(user_id, plan=plan)
     if _is_production():
         raise RuntimeError("Stripe checkout is not configured in production.")
-    return f"/billing/mark_paid?user_id={user_id}"
+    return "/billing/mark_paid"
 
 
 def get_portal_url(user_id: str) -> str:
@@ -94,4 +98,4 @@ def get_portal_url(user_id: str) -> str:
         return stripe_client.create_billing_portal_session(user_id)
     if _is_production():
         raise RuntimeError("Stripe portal is not configured in production.")
-    return f"/billing/mark_paid?user_id={user_id}"
+    return "/billing/mark_paid"
