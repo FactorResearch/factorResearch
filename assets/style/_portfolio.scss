@@ -316,3 +316,17 @@ body.light {
   }
   & + div { flex: 1 1 50%; }
 }
+
+body.light .risk-row .metric_cell {
+  background: $light-card;
+  border-color: $light-border;
+
+  > .risk-metric-cell {
+    background: $light-surface;
+    border-color: $light-border;
+
+    p:first-child {
+      color: $light-text-dim !important;
+    }
+  }
+}

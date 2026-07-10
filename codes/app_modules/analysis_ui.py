@@ -599,25 +599,25 @@ def _altman_card(data: dict) -> html.Div:
     comp_rows = []
     for key, lbl in comp_labels:
         v = comps.get(key)
-        comp_rows.append(html.Div(className="d-flex jc-between py-4 fs-12",
+        comp_rows.append(html.Div(className="stability-component-row d-flex jc-between py-4 fs-12",
                                  style={"borderBottom": f"1px solid {BORDER}"},
                                  children=[
             html.Span(lbl, className="text-muted"),
             html.Span(f"{v:.3f}" if v is not None else "N/A",
-                      className="fw-600",
+                      className="stability-component-value fw-600",
                       style={"color": TEXT if v is not None else MUTED}),
         ]))
-    return html.Div(className="scorecard", children=[
+    return html.Div(className="scorecard stability-card", children=[
         html.Div("Stability Score (Bankruptcy Risk)",
                  className="fs-14 fw-700 clr-text pt-14 px-18 pb-10"),
         # Zone badge
-        html.Div(className="br-10 mb-14 p-14 px-18",
+        html.Div(className=f"stability-zone stability-zone--{zone} br-10 mb-14 p-14 px-18",
                  style={"background": zbg, "margin": "0 16px 14px",
                         "border": f"1px solid {zc}33"}, children=[
             html.Div(f"Z = {z_score:.2f}" if z_score is not None else "N/A",
-                     className="fs-34 fw-800", style={"color": zc}),
+                     className="stability-status fs-34 fw-800", style={"color": zc}),
             html.Div(zone_label,
-                     className="fs-16 fw-700 mt-2", style={"color": zc}),
+                     className="stability-status fs-16 fw-700 mt-2", style={"color": zc}),
             html.Div(note,
                      className="fs-11 clr-muted mt-6"),
             html.Div(f"Model: {model} · {n_avail}/5 components",
@@ -669,17 +669,25 @@ def _risk_card(data: dict) -> html.Div:
         ("Calmar Ratio (≥1.0 good)",       _fv(r.get("calmar")),
          _mc(r.get("calmar"), good_above=1.0, bad_below=0)),
     ]
+    def _risk_value_class(color):
+        return (
+            "risk-value--positive" if color == GREEN else
+            "risk-value--danger" if color == RED else
+            "risk-value--caution" if color == AMBER else
+            "risk-value--neutral"
+        )
     metric_cells = [
-        html.Div(children=[
+        html.Div(className="risk-metric-cell", children=[
             html.P(lbl, className="clr-muted fs-12 m-0"),
-            html.P(val, className="fw-600 m-0", style={"color": col}),
+            html.P(val, className=f"risk-value {_risk_value_class(col)} fw-600 m-0",
+                   style={"color": col}),
         ])
         for lbl, val, col in metrics
     ]
     risk_criteria = r.get("risk_criteria") or []
     return html.Div(className="risk-row",children=[
             
-            html.Div( className="metric_cell scorecard",children=[
+            html.Div(className="metric_cell risk-metric-grid scorecard", children=[
                     html.P(
                     f"Risk & Performance — {n_yrs:.0f}yr History", className="scorecard-header"
                 ),

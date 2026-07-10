@@ -167,6 +167,67 @@ body.light {
     box-shadow: none;
   }
 
+  // Analysis cards with dark inline status surfaces need explicit light skins.
+  .stability-card {
+    background: $light-card;
+    border-color: $light-border;
+  }
+
+  .stability-zone {
+    background: $light-surface !important;
+    border-color: $light-border !important;
+    color: $light-text;
+  }
+
+  .stability-zone--safe {
+    background: rgba($light-positive, 0.08) !important;
+    border-color: rgba($light-positive, 0.35) !important;
+    .stability-status { color: $light-positive !important; }
+  }
+
+  .stability-zone--grey {
+    background: rgba($light-amber, 0.08) !important;
+    border-color: rgba($light-amber, 0.35) !important;
+    .stability-status { color: $light-amber !important; }
+  }
+
+  .stability-zone--distress {
+    background: rgba($light-negative, 0.07) !important;
+    border-color: rgba($light-negative, 0.32) !important;
+    .stability-status { color: $light-negative !important; }
+  }
+
+  .stability-component-row {
+    border-bottom-color: $light-border !important;
+    color: $light-text;
+  }
+
+  .stability-component-value {
+    color: $light-text !important;
+  }
+
+  .risk-value--positive { color: $light-positive !important; }
+  .risk-value--danger { color: $light-negative !important; }
+  .risk-value--caution { color: $light-amber !important; }
+  .risk-value--neutral { color: $light-text-dim !important; }
+
+  // Dash inline colors are authored for the dark theme. Remap the shared
+  // design tokens in light mode while preserving their semantic meaning.
+  [style*="color: rgb(232, 234, 240)"],
+  [style*="color: #e8eaf0"] { color: $light-text !important; }
+  [style*="color: rgb(136, 153, 170)"],
+  [style*="color: #8899aa"] { color: $light-text-dim !important; }
+  [style*="color: rgb(74, 85, 104)"],
+  [style*="color: #4a5568"] { color: $light-text-muted !important; }
+  [style*="color: rgb(0, 230, 118)"],
+  [style*="color: #00e676"] { color: $light-positive !important; }
+  [style*="color: rgb(255, 171, 0)"],
+  [style*="color: #ffab00"] { color: $light-amber !important; }
+  [style*="color: rgb(255, 23, 68)"],
+  [style*="color: #ff1744"] { color: $light-negative !important; }
+  [style*="color: rgb(22, 119, 255)"],
+  [style*="color: #1677ff"] { color: $light-blue !important; }
+
   .scorecard [style*="#1e2a3a"],
   .scorecard [style*="rgb(30, 42, 58)"],
   .scorecard [style*="border-bottom"],
