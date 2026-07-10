@@ -98,13 +98,12 @@ def _official_history_cards(history) -> str:
             f'<div class="warning-row">{"".join(warnings)}</div>'
             f'<p>Score change: {_fmt_delta(score_change)} · Price at analysis: ${_fmt(item.market_price)} · Current-price change: {_fmt_delta(price_change, "%")}</p>'
             '<div class="mini-grid">'
-            f'<span>Graham {_fmt(metrics.get("graham_score"))}</span><span>Piotroski {_fmt(metrics.get("piotroski_f_score"))}</span>'
-            f'<span>Altman Z {_fmt(metrics.get("altman_z_score"))}</span><span>Beneish M {_fmt(metrics.get("beneish_m_score"))}</span>'
-            f'<span>Ohlson O {_fmt(metrics.get("ohlson_o_score"))}</span><span>Margin of safety {_fmt(metrics.get("margin_of_safety"), "%")}</span>'
-            f'<span>Quality {_fmt(item.quality_score)}</span><span>Profitability {_fmt(metrics.get("profitability_score"))}</span>'
-            f'<span>Growth {_fmt(item.growth_score)}</span><span>Momentum {_fmt(item.momentum_score)}</span><span>Risk {_fmt(item.risk_score)}</span>'
+            f'<span>Intrinsic Value {_fmt(metrics.get("graham_score"))}</span><span>Financial Health {_fmt(metrics.get("piotroski_f_score"), "/9")}</span>'
+            f'<span>Stability Score {_fmt(metrics.get("altman_z_score"))}</span><span>Margin of Safety {_fmt(metrics.get("margin_of_safety"), "%")}</span>'
+            f'<span>Moat Rating {_fmt(item.quality_score)}</span><span>Profitability {_fmt(metrics.get("profitability_score"))}</span>'
+            f'<span>Growth Quality {_fmt(item.growth_score)}</span><span>Momentum Analysis {_fmt(item.momentum_score)}</span><span>Risk &amp; Performance {_fmt(item.risk_score)}</span>'
             '</div>'
-            f'<a href="{html.escape(item.permanent_path)}">Complete historical report</a>'
+            f'<a href="{html.escape(item.public_path)}">Complete historical report</a>'
             '</article>'
         )
     return "".join(cards)
@@ -577,6 +576,11 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     route_id = ticker or ""
     if not _DATE_RE.match(yyyymmdd):
         flask.abort(404)
+
+    if route_id == route_id.upper() and _TICKER_RE.match(route_id) and re.fullmatch(r"\d{8}", yyyymmdd):
+        fallback = _dash_shell_response()
+        if fallback is not None:
+            return fallback
 
     ticker = route_id.upper()
     is_company_slug = route_id == route_id.lower() and _SLUG_RE.match(route_id)

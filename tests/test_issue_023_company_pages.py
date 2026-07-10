@@ -101,13 +101,28 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
     assert response.status_code == 200
     assert "Apple Inc." in body and "(AAPL)" in body
     assert "FactorResearch History" in body
-    assert "/analyze/apple/2026-07-09" in body
+    assert "/analyze/AAPL/20260709" in body
     assert "Sign in and upgrade" in body
     assert 'rel="canonical" href="http://localhost/analyze/apple"' in body
     assert "FactorResearch company dossier" in body
     assert "Company Research" in body
     assert "non-proprietary design elements" in body
+    assert "Intrinsic Value" in body
+    assert "Financial Health" in body
+    assert "Stability Score" in body
+    assert "Moat Rating" in body
+    assert "Graham" not in body
+    assert "Piotroski" not in body
+    assert "Altman Z" not in body
+    assert "Beneish" not in body
+    assert "Ohlson" not in body
     custom.assert_not_called()
+
+
+def test_compact_historical_ticker_url_opens_dash_analyze_tab():
+    response = _client_with_dash_shell().get("/analyze/NVDA/20260710")
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "dash shell for analyze/NVDA/20260710"
 
 
 def test_company_visual_tokens_are_distinct_without_logo_assets():
