@@ -35,6 +35,37 @@ def _client():
     return app.test_client()
 
 
+def _client_with_dash_shell():
+    app = flask.Flask(__name__)
+    app.secret_key = "test"
+    app.register_blueprint(analyze_pages)
+    app.add_url_rule(
+        "/<path:path>", endpoint="/<path:path>",
+        view_func=lambda path: flask.Response(f"dash shell for {path}"),
+    )
+    return app.test_client()
+
+
+def test_uppercase_ticker_route_yields_to_dash_without_snapshot_lookup():
+    with patch("codes.routes.analyze.get_company_snapshots_by_slug") as snapshots:
+        response = _client_with_dash_shell().get("/analyze/META")
+
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "dash shell for analyze/META"
+    snapshots.assert_not_called()
+
+
+def test_company_page_falls_back_to_dash_when_snapshot_database_is_unavailable():
+    with patch(
+        "codes.routes.analyze.get_company_snapshots_by_slug",
+        side_effect=RuntimeError("database unavailable"),
+    ):
+        response = _client_with_dash_shell().get("/analyze/meta")
+
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "dash shell for analyze/meta"
+
+
 def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private_data():
     with patch("codes.routes.analyze.get_company_snapshots_by_slug", return_value=[_official()]), \
          patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None), \

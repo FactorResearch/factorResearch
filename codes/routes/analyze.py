@@ -96,13 +96,26 @@ def _custom_history_column(user_id: str | None, ticker: str) -> str:
 
 @analyze_pages.route("/analyze/<slug>")
 def company_analysis_page(slug: str):
-    slug = (slug or "").lower()
+    raw_slug = slug or ""
+    if raw_slug == raw_slug.upper() and _TICKER_RE.match(raw_slug):
+        fallback = _dash_shell_response()
+        if fallback is not None:
+            return fallback
+        flask.abort(404)
+
+    slug = raw_slug.lower()
     if not _SLUG_RE.match(slug):
         flask.abort(404)
     try:
         page = max(1, int(flask.request.args.get("page", "1")))
         history = get_company_snapshots_by_slug(slug, limit=12, offset=(page - 1) * 12)
     except (TypeError, ValueError):
+        flask.abort(404)
+    except Exception as exc:
+        print(f"Company snapshot lookup failed for {slug}: {type(exc).__name__}: {exc}")
+        fallback = _dash_shell_response()
+        if fallback is not None:
+            return fallback
         flask.abort(404)
     if not history:
         flask.abort(404)
