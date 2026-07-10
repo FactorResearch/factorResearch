@@ -57,6 +57,7 @@ TOKEN_CACHE_TTL = 3600  # 1 hour
 # Cache for remote JWKS documents
 _jwks_cache: dict[str, tuple[dict, datetime]] = {}
 _JWKS_CACHE_TTL = 3600  # 1 hour
+GENERIC_AUTH_ERROR = "Authentication failed. Please try again."
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -343,7 +344,8 @@ def setup_auth0_routes(app_server):
         error = request.args.get("error")
         
         if error:
-            return f"Login failed: {error}", 400
+            print("[AUTH] Callback received provider error")
+            return GENERIC_AUTH_ERROR, 400
         
         if not code:
             return "Missing authorization code", 400
@@ -361,7 +363,8 @@ def setup_auth0_routes(app_server):
             response = requests.post(token_url, json=payload, timeout=10)
             
             if response.status_code != 200:
-                return f"Token exchange failed: {response.text}", 400
+                print(f"[AUTH] Token exchange failed with status {response.status_code}")
+                return GENERIC_AUTH_ERROR, 400
             
             token_data = response.json()
             access_token = token_data.get("access_token")
@@ -372,10 +375,10 @@ def setup_auth0_routes(app_server):
                 set_authenticated_user(user_id, access_token)
                 return redirect("/")  # Redirect to app
         except Exception as e:
-            print(f"[AUTH] Callback error: {e}")
-            return f"Authentication failed: {e}", 500
+            print(f"[AUTH] Callback error type: {type(e).__name__}")
+            return GENERIC_AUTH_ERROR, 500
         
-        return "Authentication failed", 400
+        return GENERIC_AUTH_ERROR, 400
     
     @app_server.route("/logout")
     def auth_logout():
