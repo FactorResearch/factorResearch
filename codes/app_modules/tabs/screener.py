@@ -14,11 +14,40 @@ from codes.app_modules.config import (
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
+from codes.app_modules.screener_markets import (
+    SCREENER_COUNTRIES,
+    get_screener_country,
+    row_matches_country,
+)
 from codes.app_modules.session import get_portfolio_symbols
 
 last_progress_state = None
 last_progress_bar_state = None
 last_screener_state = None
+
+
+def _country_tab_buttons(active_country):
+    active = get_screener_country(active_country)["code"]
+    buttons = []
+    for country in SCREENER_COUNTRIES:
+        is_active = country["code"] == active
+        buttons.append(html.Button(
+            [
+                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
+                html.Span(country["short_label"], className="screener-country-label"),
+            ],
+            id={"type": "screener-country-tab", "index": country["code"]},
+            className="screener-country-tab" + (" active" if is_active else ""),
+            title=country["label"],
+            n_clicks=0,
+        ))
+    return buttons
+
+
+def _filter_results_by_country(results, country_code):
+    active = get_screener_country(country_code)["code"]
+    return [r for r in results if row_matches_country(r, active)]
+
 
 # ── Screener ticker-click → store ─────────────────────────────────────────────
 @callback(
@@ -32,6 +61,38 @@ def capture_screener_click(n_clicks_list):
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
     return triggered["index"]  # the symbol string
+
+
+@callback(
+    Output("screener-country-store", "data"),
+    Output("screener-page-store", "data", allow_duplicate=True),
+    Input({"type": "screener-country-tab", "index": dash.ALL}, "n_clicks"),
+    prevent_initial_call=True
+)
+def switch_screener_country(n_clicks_list):
+    triggered = dash.ctx.triggered_id
+    if not triggered or not any(n for n in n_clicks_list if n):
+        return dash.no_update, dash.no_update
+    return triggered["index"], 1
+
+
+@callback(
+    Output("sector-filter", "value", allow_duplicate=True),
+    Input("screener-country-store", "data"),
+    prevent_initial_call=True
+)
+def reset_sector_filter_for_country(active_country):
+    return ""
+
+
+@callback(
+    Output("screener-country-tabs-container", "children"),
+    Input("screener-country-store", "data"),
+    prevent_initial_call=False
+)
+def render_screener_country_tabs(active_country):
+    return _country_tab_buttons(active_country)
+
 
 @callback(
     Output("screener-progress-info", "children"),
@@ -119,6 +180,7 @@ def update_progress_bar(n):
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
+    Input("screener-country-store","data"),
     Input("page-load-interval",    "n_intervals"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
@@ -126,11 +188,12 @@ def update_progress_bar(n):
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, viewed_data):
+def render_screener_table(ready, active_country, n_load, sector_filter, sort_state, page_num, viewed_data):
     global last_screener_state
     if dash.ctx.triggered_id == "page-load-interval":
         last_screener_state = None
-    results    = screener.get_screener_results()
+    active_country = get_screener_country(active_country)["code"]
+    results    = _filter_results_by_country(screener.get_screener_results(), active_country)
    
     prog       = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
@@ -140,12 +203,13 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
     
-    if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store"]:
+    if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store", "screener-country-store"]:
         page = 1
         page_reset = 1
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
     state_tuple = (
         json.dumps([r["symbol"] for r in results], sort_keys=True),
+        active_country,
         sector_filter or "",
         sort_col,
         sort_asc,
@@ -404,13 +468,14 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
     State("screener-page-store", "data"),
     State("screener-sort-store", "data"),
     State("sector-filter", "value"),
+    State("screener-country-store", "data"),
     prevent_initial_call=True
 )
-def navigate_screener_page(n_clicks_list, current_page, sort_state, sector_filter):
+def navigate_screener_page(n_clicks_list, current_page, sort_state, sector_filter, active_country):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
-    results = screener.get_screener_results()
+    results = _filter_results_by_country(screener.get_screener_results(), active_country)
     filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
     total_pages = max(1, math.ceil(len(filtered) / PAGE_SIZE))
     cp = current_page or 1

@@ -96,6 +96,105 @@
   border-radius: 8px;
 }
 
+.screener-market-shell {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
+
+  @include m.phones {
+    grid-template-columns: 1fr;
+  }
+}
+
+.screener-country-tabs {
+  position: sticky;
+  top: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding-top: 14px;
+  z-index: 2;
+
+  @include m.phones {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 0 0 8px;
+    overflow-x: auto;
+  }
+}
+
+.screener-country-tab {
+  position: relative;
+  right: -1px;
+  width: 42px;
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 7px;
+  border: 1px solid rgba($border, 0.85);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  background: rgba($surface, 0.96);
+  color: $text-muted;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 9px 5px 12px;
+  box-shadow: -5px 6px 16px rgba($black, 0.16);
+
+  @include m.phones {
+    right: auto;
+    width: auto;
+    min-width: 48px;
+    min-height: 44px;
+    flex-direction: row;
+    justify-content: center;
+    border: 1px solid rgba($border, 0.85);
+    border-radius: 7px;
+    padding: 7px 9px;
+  }
+
+  &:hover,
+  &.active {
+    border-color: rgba($blue, 0.7);
+    background: linear-gradient(180deg, rgba($blue, 0.22), rgba($blue, 0.08));
+    color: $text;
+  }
+
+  &.active {
+    box-shadow: -6px 8px 18px rgba($blue, 0.14);
+  }
+}
+
+.screener-country-flag {
+  width: 24px;
+  height: 16px;
+  display: block;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba($text, 0.18);
+}
+
+.screener-country-label {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+
+  @include m.phones {
+    writing-mode: horizontal-tb;
+  }
+}
+
 .screener-table {
   width: 100%;
   border-collapse: collapse;

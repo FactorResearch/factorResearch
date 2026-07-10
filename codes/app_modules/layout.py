@@ -5,6 +5,23 @@ from dash import dcc, html
 from codes.engine import scorer
 
 from .config import BLUE
+from .screener_markets import DEFAULT_SCREENER_COUNTRY, SCREENER_COUNTRIES
+
+
+def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
+    return [
+        html.Button(
+            [
+                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
+                html.Span(country["short_label"], className="screener-country-label"),
+            ],
+            id={"type": "screener-country-tab", "index": country["code"]},
+            className="screener-country-tab" + (" active" if country["code"] == active_country else ""),
+            title=country["label"],
+            n_clicks=0,
+        )
+        for country in SCREENER_COUNTRIES
+    ]
 
 
 def _topbar():
@@ -38,7 +55,7 @@ def build_layout():
             html.Div(className="screener-toolbar", children=[
                 html.Div(className="screener-controls", children=[
                     html.Button(
-                        "Load Universe (~10,000 U.S security)",
+                        "Load U.S. Universe (~10,000 securities)",
                         id="load-universe-btn",
                         className="load-btn",
                         n_clicks=0,
@@ -59,16 +76,24 @@ def build_layout():
                 ]),
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),
-            dcc.Loading(
-                id="screener-loading",
-                type="default",
-                color=BLUE,
-                children=[
-                    html.Div(id="screener-table-container", className="screener-table-wrap", children=[
-                        html.Div("Loading screener data...", className="text-center p-4xl text-muted")
-                    ])
-                ]
-            ),
+            html.Div(className="screener-market-shell", children=[
+                html.Div(
+                    id="screener-country-tabs-container",
+                    className="screener-country-tabs",
+                    role="tablist",
+                    children=_screener_country_tabs(),
+                ),
+                dcc.Loading(
+                    id="screener-loading",
+                    type="default",
+                    color=BLUE,
+                    children=[
+                        html.Div(id="screener-table-container", className="screener-table-wrap", children=[
+                            html.Div("Loading screener data...", className="text-center p-4xl text-muted")
+                        ])
+                    ]
+                ),
+            ]),
         ]),
         # ── Tab: Analyze ─────────────────────────────────────────────────────────
         html.Div(id="tab-analyze", className="main-content", children=[
@@ -276,6 +301,7 @@ def build_layout():
         dcc.Store(id="screener-cache"),
         dcc.Store(id="analysis-store"),
         dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
+        dcc.Store(id="screener-country-store", data=DEFAULT_SCREENER_COUNTRY, storage_type="session"),
         dcc.Store(id="screener-page-store", data=1, storage_type="session"),  # current page in screener table
         dcc.Store(id="search-history-store"),
         dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table

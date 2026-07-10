@@ -51,6 +51,7 @@ body.light {
   .tab-btn { color: $light-text-dim; &:hover { color: $light-text; } &.active { color: $light-blue; border-bottom-color: $light-blue; } }
   .screener-toolbar { background: $light-surface; border-color: $light-border; border-left-color: $light-blue; }
   .screener-table-wrap { background: $light-card; border-color: $light-border; }
+  .screener-country-tab { background: $light-surface; border-color: $light-border; color: $light-text-dim; &:hover, &.active { background: rgba($light-blue, 0.1); color: #16345f; } }
   .screener-table thead tr { background: $light-surface; border-bottom-color: $light-border; }
   .screener-table th { color: $light-text-dim; border-right-color: rgba($light-border, 0.5); }
   .screener-table tbody tr { border-bottom-color: rgba($light-border, 0.6); &:hover { background: rgba($light-blue, 0.04); } }

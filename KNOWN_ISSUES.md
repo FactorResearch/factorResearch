@@ -1583,7 +1583,7 @@ risk_if_not_fixed: HIGH
 ---
 # ISSUE_011:
 
- Status:[]
+ Status:[x]
   title: analyze tab is too long
   category: style
 
@@ -1616,6 +1616,206 @@ risk_if_not_fixed: HIGH
     - smoth scrolling between slides, and functioning system in mobile and tablet.
 
   risk_if_not_fixed: LOW
+
+---
+
+# ISSUE_012:
+
+ Status:[ ]
+  title: "Billing routes trust user_id from query string"
+  category: security-authorization
+
+  files:
+    - codes/billing.py
+    - codes/app_modules/session.py
+    - codes/payments/stripe_client.py
+    - tests/test_issue_012_billing_auth.py
+
+  problem: >
+    /billing/checkout and /billing/portal accept user_id from request query
+    parameters before falling back to the session. A caller can request a
+    checkout or billing portal URL for a different user_id if they know or
+    guess it, causing subscription/customer metadata to be associated with the
+    wrong account.
+
+  root_cause: >
+    codes/billing.py lines 24 and 37 use flask.request.args.get("user_id")
+    as the authority for paid-account actions instead of deriving identity
+    exclusively from the authenticated/session user boundary.
+
+  required_fix: >
+    Remove user_id query-string trust from production billing routes. Use
+    get_user_id() or the authenticated session identity only, and reject
+    missing/unauthenticated users. Keep development-only mark_paid safe by
+    either using the current session user or gating explicit user_id behind a
+    clearly local-only path.
+
+  acceptance_criteria:
+    - /billing/checkout ignores or rejects user_id query parameters.
+    - /billing/portal ignores or rejects user_id query parameters.
+    - Stripe checkout metadata and client_reference_id always match the
+      current authenticated/session user.
+    - Tests prove a request with ?user_id=other_user cannot create a checkout
+      or portal for other_user.
+
+  risk_if_not_fixed: HIGH
+
+---
+
+# ISSUE_013:
+
+ Status:[ ]
+  title: "Auth0 callback reflects provider errors and exception details"
+  category: security-information-disclosure
+
+  files:
+    - codes/auth.py
+    - tests/test_issue_013_auth_errors.py
+
+  problem: >
+    The Auth0 callback route returns raw provider error values, token exchange
+    response bodies, and exception messages to the browser. These responses can
+    leak sensitive implementation details and can reflect untrusted input in an
+    authentication page.
+
+  root_cause: >
+    codes/auth.py lines 345-376 return f-string responses containing
+    request.args["error"], response.text, and caught exception text.
+
+  required_fix: >
+    Return generic user-facing authentication errors from the callback route,
+    log sanitized details server-side, and avoid embedding provider response
+    bodies or exception messages in HTTP responses.
+
+  acceptance_criteria:
+    - /callback?error=<script...> response does not contain raw supplied text.
+    - Token exchange failures return a generic message.
+    - Exception paths return a generic message in production and do not expose
+      secrets or stack details.
+    - Tests cover reflected error and token-exchange failure paths.
+
+  risk_if_not_fixed: MEDIUM
+
+---
+
+# ISSUE_014:
+
+ Status:[ ]
+  title: "Portfolio cache keys reject real auth IDs and portfolio names"
+  category: correctness-security
+
+  files:
+    - codes/portfolio.py
+    - codes/data/cache.py
+    - tests/test_issue_014_portfolio_cache_keys.py
+
+  problem: >
+    Portfolio persistence builds cache keys from raw user_id and portfolio
+    name. The cache layer correctly allows only [a-z0-9_.-], but real auth
+    provider IDs often contain characters such as "|" and users may create
+    portfolio names with spaces. Those keys raise ValueError in cache._path;
+    cache.write swallows the error, so portfolio saves can appear to succeed
+    while data is not persisted.
+
+  root_cause: >
+    codes/portfolio.py lines 98-124 interpolate raw user-controlled values
+    into cache keys, while codes/data/cache.py lines 18-27 reject unsafe
+    filename characters.
+
+  required_fix: >
+    Add a deterministic portfolio cache-key encoder for user_id and portfolio
+    name, or migrate portfolio storage to the database. Preserve the displayed
+    portfolio name inside the saved payload; only the storage key should be
+    normalized. Surface write failures in tests instead of silently accepting
+    lost data.
+
+  acceptance_criteria:
+    - create/load/delete works for auth IDs like "auth0|abc123".
+    - create/load/delete works for portfolio names like "Long Term Value".
+    - Existing safe keys remain readable or have a migration fallback.
+    - Tests prove portfolio writes do not silently disappear on unsafe input.
+
+  risk_if_not_fixed: HIGH
+
+---
+
+# ISSUE_015:
+
+ Status:[ ]
+  title: "Security test suite is stale and currently cannot validate security module"
+  category: security-testing
+
+  files:
+    - codes/security.py
+    - tests/test_security.py
+    - requirements.txt
+
+  problem: >
+    The security test suite references helpers that are not present in the
+    current security module, including validate_ticker, validate_email,
+    validate_numeric, validate_json_payload, RateLimiter,
+    SensitiveDataEncryptor, and log_security_event. In this environment the
+    targeted security tests also fail during collection because pandas is not
+    installed, so the app currently lacks a passing security regression signal.
+
+  root_cause: >
+    tests/test_security.py appears to describe an older security API while
+    codes/security.py now focuses on CSRF/header helpers. Dependency setup is
+    also not guaranteed before test execution.
+
+  required_fix: >
+    Reconcile tests with the current security API or restore the missing
+    helpers intentionally. Ensure the documented test command installs/uses
+    requirements and can run in CI before security-sensitive changes merge.
+
+  acceptance_criteria:
+    - pytest tests/test_security.py collects and runs successfully.
+    - Tests cover current CSRF, security-header, input-validation, and
+      encryption behavior.
+    - CI or local setup fails fast when dependencies like pandas are missing.
+
+  risk_if_not_fixed: MEDIUM
+
+---
+
+# ISSUE_016:
+
+ Status:[ ]
+  title: "Startup launches large SEC metadata backfill on every app process"
+  category: performance-reliability
+
+  files:
+    - codes/app.py
+    - codes/data/company_metadata.py
+    - codes/engine/screener.py
+    - tests/test_issue_016_metadata_backfill.py
+
+  problem: >
+    App startup calls company_metadata.start_background_refresh() with the full
+    universe. The worker can issue up to 2,000 SEC submissions requests per
+    process at roughly 3/sec. This is technically asynchronous, but it still
+    competes for CPU, network, logs, SEC rate budget, and dyno/container
+    resources immediately after every deploy/restart.
+
+  root_cause: >
+    codes/app.py line 199 starts the metadata backfill unconditionally, and
+    codes/data/company_metadata.py lines 90-125 processes up to max_symbols
+    missing entries in one daemon thread without a persisted cooldown or
+    deployment-wide coordination.
+
+  required_fix: >
+    Move large metadata refreshes to an explicit worker/scheduled job or add a
+    persisted cooldown and small startup budget. The web process should serve
+    cached metadata instantly and only perform tiny opportunistic refreshes
+    during request handling.
+
+  acceptance_criteria:
+    - Starting the web app does not trigger thousands of outbound SEC requests.
+    - Metadata backfill has a persisted cooldown or runs only in a worker.
+    - Screener remains usable immediately with cached/unknown sector values.
+    - Tests prove startup does not call the large backfill path by default.
+
+  risk_if_not_fixed: MEDIUM
 
 ---
 
