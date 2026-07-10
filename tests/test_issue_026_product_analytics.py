@@ -8,6 +8,7 @@ import flask
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from codes.app_modules.tabs import analyze, factor_lab, pricing
+from codes.data import analytics_db
 from codes.payments import webhooks
 from codes.services import product_analytics
 from codes.services.permissions import Feature, PermissionResult
@@ -102,3 +103,96 @@ def test_webhook_tracks_subscription_completed(monkeypatch):
 
     assert webhooks.handle_event(event) is True
     tracked.assert_called_once_with("u1", "subscription_completed", {"plan": "premium"})
+
+
+class _FakeResult:
+    def __init__(self, rows):
+        self._rows = rows
+
+    def fetchall(self):
+        return self._rows
+
+
+class _FakeConn:
+    def __init__(self, rows):
+        self.rows = rows
+        self.row_factory = None
+        self.last_sql = None
+        self.last_params = None
+
+    def execute(self, sql, params):
+        self.last_sql = sql
+        self.last_params = params
+        return _FakeResult(self.rows)
+
+
+def test_analytics_db_list_recent_events(monkeypatch):
+    conn = _FakeConn([
+        {
+            "occurred_at": "2026-07-10T12:00:00Z",
+            "user_id": "u1",
+            "anonymous_id": "a1",
+            "event_name": "stock_viewed",
+            "page_path": "/analyze/AAPL",
+            "metadata_json": {"symbol": "AAPL"},
+        }
+    ])
+
+    class _Ctx:
+        def __enter__(self):
+            return conn
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(analytics_db, "ensure_schema", lambda: None)
+    monkeypatch.setattr(analytics_db, "_conn", lambda: _Ctx())
+
+    rows = analytics_db.list_recent_events(limit=5)
+
+    assert rows[0]["event_name"] == "stock_viewed"
+    assert conn.last_params == {"limit": 5}
+
+
+def test_analytics_db_get_event_counts(monkeypatch):
+    conn = _FakeConn([
+        {"event_name": "stock_viewed", "event_count": 12},
+        {"event_name": "analysis_completed", "event_count": 4},
+    ])
+
+    class _Ctx:
+        def __enter__(self):
+            return conn
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(analytics_db, "ensure_schema", lambda: None)
+    monkeypatch.setattr(analytics_db, "_conn", lambda: _Ctx())
+
+    rows = analytics_db.get_event_counts(limit=10)
+
+    assert rows[0] == {"event_name": "stock_viewed", "event_count": 12}
+    assert conn.last_params == {"limit": 10}
+
+
+def test_analytics_db_get_top_metadata_values(monkeypatch):
+    conn = _FakeConn([
+        {"metadata_value": "AAPL", "event_count": 7},
+        {"metadata_value": "MSFT", "event_count": 3},
+    ])
+
+    class _Ctx:
+        def __enter__(self):
+            return conn
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+    monkeypatch.setattr(analytics_db, "ensure_schema", lambda: None)
+    monkeypatch.setattr(analytics_db, "_conn", lambda: _Ctx())
+
+    rows = analytics_db.get_top_metadata_values("stock_viewed", "symbol", limit=8)
+
+    assert rows[0] == {"metadata_value": "AAPL", "event_count": 7}
+    assert conn.last_params == {"event_name": "stock_viewed", "metadata_key": "symbol", "limit": 8}

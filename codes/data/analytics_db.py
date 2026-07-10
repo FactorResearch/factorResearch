@@ -48,6 +48,33 @@ VALUES (
 )
 """
 
+_SELECT_RECENT_EVENTS = """
+SELECT occurred_at, user_id, anonymous_id, event_name, page_path, metadata_json
+FROM analytics_events
+ORDER BY occurred_at DESC
+LIMIT %(limit)s
+"""
+
+_SELECT_EVENT_COUNTS = """
+SELECT event_name, COUNT(*) AS event_count
+FROM analytics_events
+GROUP BY event_name
+ORDER BY event_count DESC, event_name ASC
+LIMIT %(limit)s
+"""
+
+_SELECT_TOP_METADATA_VALUES = """
+SELECT
+    metadata_json ->> %(metadata_key)s AS metadata_value,
+    COUNT(*) AS event_count
+FROM analytics_events
+WHERE event_name = %(event_name)s
+  AND COALESCE(metadata_json ->> %(metadata_key)s, '') <> ''
+GROUP BY metadata_value
+ORDER BY event_count DESC, metadata_value ASC
+LIMIT %(limit)s
+"""
+
 
 def _db_url() -> str:
     url = os.environ.get("DATABASE_ANALYTICS_URL") or os.environ.get("DATABASE_MARKET_URL")
@@ -91,3 +118,35 @@ def insert_event(*, user_id: str | None, anonymous_id: str | None, event_name: s
     with _conn() as con:
         con.execute(_INSERT_EVENT, payload)
 
+
+def list_recent_events(limit: int = 50) -> list[dict]:
+    ensure_schema()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_RECENT_EVENTS, {"limit": max(int(limit or 0), 1)}).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_event_counts(limit: int = 50) -> list[dict]:
+    ensure_schema()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_EVENT_COUNTS, {"limit": max(int(limit or 0), 1)}).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_top_metadata_values(event_name: str, metadata_key: str, limit: int = 20) -> list[dict]:
+    if not event_name or not metadata_key:
+        return []
+    ensure_schema()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(
+            _SELECT_TOP_METADATA_VALUES,
+            {
+                "event_name": event_name,
+                "metadata_key": metadata_key,
+                "limit": max(int(limit or 0), 1),
+            },
+        ).fetchall()
+    return [dict(row) for row in rows]

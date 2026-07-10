@@ -2767,6 +2767,10 @@ behavior if analytics writes fail.
 -   product analytics service created
 -   event writes made asynchronous / best-effort
 -   `analytics_events` table added
+-   read/query helpers added for:
+    -   recent events
+    -   event counts by event name
+    -   top metadata values by event/key
 -   page path, user id, anonymous id, timestamp, and metadata are stored
 -   usage-counter summaries for events are still maintained for quick
     aggregate counts
@@ -2845,22 +2849,21 @@ top of the event stream.
 
 ## Recommended Next Steps For A Future Session
 
-1. Create read/query helpers for `analytics_events`.
-2. Add missing domain events:
+1. Add missing domain events:
    - `screener_run`
    - `algorithm_selected`
    - explicit cache-hit/runtime events
-3. Decide whether to keep one event table or fan out into dedicated
+2. Decide whether to keep one event table or fan out into dedicated
    summary tables.
-4. Build a first internal analytics dashboard/report for:
+3. Build a first internal analytics dashboard/report for:
    - top viewed stocks
    - analysis completion/failure counts
    - screener filter usage
    - pricing → checkout → subscription funnel
-5. Add privacy controls:
+4. Add privacy controls:
    - app-level analytics opt-out
    - suppression of sensitive metadata
-6. Validate third-party integrations in a real configured environment.
+5. Validate third-party integrations in a real configured environment.
 
 ------------------------------------------------------------------------
 
