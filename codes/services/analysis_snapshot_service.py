@@ -55,6 +55,16 @@ DROP CONSTRAINT IF EXISTS analysis_snapshots_ticker_analysis_date_algorithm_vers
 CREATE INDEX IF NOT EXISTS idx_analysis_snapshots_ticker_date
 ON analysis_snapshots(ticker, analysis_date DESC, created_at DESC);
 
+UPDATE analysis_snapshots
+SET final_rating = CASE
+    WHEN valuation_score >= 75 THEN 'HIGH CONVICTION'
+    WHEN valuation_score >= 60 THEN 'FAVORABLE'
+    WHEN valuation_score >= 45 THEN 'BALANCED'
+    WHEN valuation_score >= 30 THEN 'CAUTION'
+    ELSE 'UNFAVORABLE'
+END
+WHERE final_rating IN ('STRONG BUY', 'BUY', 'WATCH', 'HOLD', 'AVOID');
+
 CREATE TABLE IF NOT EXISTS custom_analysis_snapshots (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,

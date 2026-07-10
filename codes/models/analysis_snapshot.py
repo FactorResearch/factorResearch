@@ -6,6 +6,8 @@ from enum import Enum
 from typing import Any
 import re
 
+from codes.engine.scorer import ENHANCED_VERDICTS
+
 
 class AnalysisType(str, Enum):
     STANDARD = "STANDARD"
@@ -32,17 +34,23 @@ def _num(value: Any) -> float | None:
         return None
 
 
-def _rating(score: float | None) -> str:
-    score = score or 0
-    if score >= 75:
-        return "STRONG BUY"
-    if score >= 60:
-        return "BUY"
-    if score >= 45:
-        return "WATCH"
-    if score >= 30:
-        return "HOLD"
-    return "AVOID"
+def _first_num(*values: Any) -> float | None:
+    for value in values:
+        number = _num(value)
+        if number is not None:
+            return number
+    return None
+
+
+def _enhanced_verdict(enhanced: dict[str, Any], score: float | None) -> str:
+    """Use the scorer's exact warning verdict; derive only for legacy payloads."""
+    if enhanced.get("verdict"):
+        return str(enhanced["verdict"])
+    value = score or 0
+    for threshold, verdict, _label, _description in ENHANCED_VERDICTS:
+        if value >= threshold:
+            return verdict
+    return ENHANCED_VERDICTS[-1][1]
 
 
 @dataclass(frozen=True)
@@ -140,10 +148,10 @@ class AnalysisSnapshot:
         ohlson = result.get("ohlson") or {}
         profitability = result.get("profitability") or {}
 
-        valuation_score = _num(
-            enhanced.get("composite_score")
-            or (result.get("composite") or {}).get("composite_score")
-            or graham.get("total_score")
+        valuation_score = _first_num(
+            enhanced.get("composite_score"),
+            (result.get("composite") or {}).get("composite_score"),
+            graham.get("total_score"),
         )
 
         return cls(
@@ -152,11 +160,11 @@ class AnalysisSnapshot:
             analysis_date=analysis_date or date.today(),
             algorithm_version=algorithm_version,
             valuation_score=valuation_score,
-            quality_score=_num(quality.get("total_score")),
-            growth_score=_num(growth.get("growth_quality_score")),
-            momentum_score=_num(momentum.get("total_score")),
-            risk_score=_num(risk.get("risk_score")),
-            final_rating=_rating(valuation_score),
+            quality_score=_first_num(enhanced.get("quality_pct"), quality.get("total_score")),
+            growth_score=_first_num(enhanced.get("growth_quality_pct"), growth.get("growth_quality_score")),
+            momentum_score=_first_num(enhanced.get("momentum_pct"), momentum.get("total_score")),
+            risk_score=_first_num(enhanced.get("risk_pct"), risk.get("risk_score")),
+            final_rating=_enhanced_verdict(enhanced, valuation_score),
             intrinsic_value=_num(
                 graham.get("graham_number")
                 or (result.get("buffett") or {}).get("intrinsic_value")
@@ -171,14 +179,19 @@ class AnalysisSnapshot:
             sector=str(result.get("sector") or ""),
             official_metrics={
                 "composite_score": valuation_score,
-                "valuation_verdict": result.get("valuation_verdict") or graham.get("verdict"),
-                "margin_of_safety": _num(result.get("margin_of_safety") or graham.get("margin_of_safety")),
-                "graham_score": _num(graham.get("total_score")),
-                "piotroski_f_score": _num(piotroski.get("f_score") or piotroski.get("score")),
-                "altman_z_score": _num(altman.get("z_score") or altman.get("score")),
-                "beneish_m_score": _num(beneish.get("m_score") or beneish.get("score")),
-                "ohlson_o_score": _num(ohlson.get("o_score") or ohlson.get("score")),
-                "profitability_score": _num(profitability.get("score") or profitability.get("total_score")),
+                "verdict": _enhanced_verdict(enhanced, valuation_score),
+                "verdict_label": enhanced.get("verdict_label"),
+                "verdict_desc": enhanced.get("verdict_desc"),
+                "margin_of_safety": _first_num(result.get("margin_of_safety"), graham.get("margin_of_safety")),
+                "graham_score": _first_num(enhanced.get("graham_pct"), graham.get("total_score")),
+                "piotroski_f_score": _first_num(piotroski.get("f_score"), piotroski.get("score")),
+                "altman_z_score": _first_num(altman.get("z_score"), altman.get("score")),
+                "beneish_m_score": _first_num(beneish.get("m_score"), beneish.get("score")),
+                "ohlson_o_score": _first_num(ohlson.get("o_score"), ohlson.get("score")),
+                "profitability_score": _first_num(enhanced.get("profitability_pct"), profitability.get("score"), profitability.get("total_score")),
+                "value_trap_warning": bool(enhanced.get("value_trap_warning")),
+                "compounder_flag": bool(enhanced.get("compounder_flag")),
+                "altman_cap_applied": bool(enhanced.get("altman_cap_applied")),
             },
         )
 

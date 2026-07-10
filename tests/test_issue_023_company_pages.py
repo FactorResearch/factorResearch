@@ -14,7 +14,7 @@ def _official():
         ticker="AAPL", company_name="Apple Inc.", analysis_date=date(2026, 7, 9),
         algorithm_version="standard-v1", valuation_score=81, quality_score=74,
         growth_score=69, momentum_score=62, risk_score=58,
-        final_rating="STRONG BUY", intrinsic_value=220, market_price=195,
+        final_rating="HIGH CONVICTION", intrinsic_value=220, market_price=195,
         market_fear_score=31, sector="Technology",
     )
 
@@ -127,6 +127,52 @@ def test_company_visual_tokens_are_distinct_without_logo_assets():
     assert _theme_for(bank)["motif"] == "finance"
     assert _theme_for(software)["motif"] == "platform"
     assert _theme_for(bank)["accent"] != _theme_for(software)["accent"]
+
+
+def test_snapshot_uses_exact_enhanced_verdict_and_factor_values():
+    result = {
+        "symbol": "META",
+        "name": "Meta Platforms Inc.",
+        "sector": "Communication Services",
+        "price": 500,
+        "enhanced": {
+            "composite_score": 35,
+            "verdict": "CAUTION",
+            "verdict_label": "hold",
+            "verdict_desc": "Several important metrics warrant closer examination.",
+            "graham_pct": 41,
+            "quality_pct": 72,
+            "growth_quality_pct": 63,
+            "momentum_pct": 28,
+            "risk_pct": 54,
+            "profitability_pct": 68,
+            "value_trap_warning": True,
+        },
+        "graham": {"total_score": 9, "total_max": 15},
+        "quality": {"total_score": 10},
+        "growth_quality": {"growth_quality_score": 11},
+        "momentum": {"total_score": 12},
+        "risk": {"risk_score": 13},
+    }
+
+    snapshot = AnalysisSnapshot.from_analysis_result(result)
+
+    assert snapshot.final_rating == "CAUTION"
+    assert snapshot.quality_score == 72
+    assert snapshot.growth_score == 63
+    assert snapshot.momentum_score == 28
+    assert snapshot.risk_score == 54
+    assert snapshot.official_metrics["graham_score"] == 41
+    assert snapshot.official_metrics["profitability_score"] == 68
+    assert snapshot.official_metrics["verdict_desc"] == result["enhanced"]["verdict_desc"]
+
+
+def test_legacy_payload_fallback_uses_enhanced_verdict_table():
+    snapshot = AnalysisSnapshot.from_analysis_result({
+        "symbol": "META", "name": "Meta Platforms Inc.",
+        "enhanced": {"composite_score": 35},
+    })
+    assert snapshot.final_rating == "CAUTION"
 
 
 def test_eligible_owner_sees_only_their_custom_history():
