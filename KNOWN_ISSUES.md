@@ -1660,7 +1660,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: HIGH
 
 ---
-
 # ISSUE_013:
 
  Status:[x]
@@ -1696,7 +1695,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: MEDIUM
 
 ---
-
 # ISSUE_014:
 
  Status:[x]
@@ -1737,7 +1735,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: HIGH
 
 ---
-
 # ISSUE_015:
 
  Status:[x]
@@ -1779,7 +1776,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_016:
 
- Status:[ ]
+ Status:[x]
   title: "Startup launches large SEC metadata backfill on every app process"
   category: performance-reliability
 

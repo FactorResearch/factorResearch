@@ -23,7 +23,7 @@ from codes import auth
 from codes import billing
 from codes import security
 from flask import render_template
-from codes.data import sec_data, company_metadata
+from codes.data import sec_data
 from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
@@ -196,7 +196,6 @@ def startup():
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener.load_cached_only()
-    company_metadata.start_background_refresh(universe.get_universe())
     print(f"✅ {len(results)} cached stocks ready\n")
 
 startup()
