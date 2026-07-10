@@ -1,11 +1,14 @@
 """Factor Lab tab callbacks."""
 
+from math import isclose
+
 from dash import Input, Output, State, callback, dcc, html
 
 from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.config import AMBER, BLUE, GREEN, MUTED, RED, TEXT
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
+from codes.engine import scorer
 from codes.services import permissions
 from codes.services import product_analytics
 from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
@@ -16,6 +19,17 @@ _FB_WEIGHT_KEYS = [
     "graham", "quality", "momentum", "profitability", "fcf_quality",
     "earnings_revision", "capital_allocation", "growth_quality", "risk", "altman"
 ]
+
+
+def _strategy_variant(custom_weights: dict[str, float]) -> str:
+    total = sum(max(0.0, float(custom_weights.get(key, 0.0))) for key in _FB_WEIGHT_KEYS)
+    for key in _FB_WEIGHT_KEYS:
+        default_val = float(scorer.ENHANCED_WEIGHTS.get(key, 0.0))
+        current_raw = max(0.0, float(custom_weights.get(key, 0.0)))
+        current_val = (current_raw / total) if total > 0 else 0.0
+        if not isclose(default_val, current_val, rel_tol=0, abs_tol=1e-9):
+            return "custom_weights"
+    return "default_weights"
 
 
 @callback(
@@ -86,6 +100,11 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable", None
 
     # Layer 4: cache-aware backtest, reused across identical configs
+    product_analytics.track_event(
+        uid,
+        "algorithm_selected",
+        {"source": "factor_lab", "algorithm": _strategy_variant(custom_weights)},
+    )
     product_analytics.track_event(uid, "backtest_started", {"source": "factor_lab", "top_n": top_n or 10, "years": years or 5})
     result = strategy_cache.get_or_run_backtest(
         weights=custom_weights,

@@ -199,7 +199,8 @@ def update_progress_bar(n):
 )
 def render_screener_table(ready, active_country, n_load, sector_filter, sort_state, page_num, viewed_data):
     global last_screener_state
-    if dash.ctx.triggered_id == "page-load-interval":
+    triggered_id = dash.ctx.triggered_id
+    if triggered_id == "page-load-interval":
         last_screener_state = None
     active_country = get_screener_country(active_country)["code"]
     results    = _filter_results_by_country(screener.get_screener_results(), active_country)
@@ -260,6 +261,21 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
+    if triggered_id in {"screener-ready-store", "page-load-interval", "sector-filter", "screener-sort-store", "screener-country-store"}:
+        try:
+            product_analytics.track_event(
+                get_user_id(),
+                "screener_run",
+                {
+                    "country": active_country,
+                    "sector": sector_filter or "",
+                    "sort_col": sort_col,
+                    "sort_asc": sort_asc,
+                    "result_count": len(filtered),
+                },
+            )
+        except Exception:
+            pass
     SORT_COLS = [
         ("#",           None,               None),
         ("Ticker",      "symbol",           "Stock ticker symbol. Click to run full analysis."),

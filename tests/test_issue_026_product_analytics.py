@@ -7,7 +7,7 @@ import flask
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from codes.app_modules.tabs import analyze, factor_lab, pricing
+from codes.app_modules.tabs import analyze, factor_lab, pricing, screener
 from codes.data import analytics_db
 from codes.payments import webhooks
 from codes.services import product_analytics
@@ -88,7 +88,33 @@ def test_factor_lab_tracks_backtest_started_and_completed(monkeypatch):
     factor_lab.run_factor_backtest_cb(1, 10, 5, *([10] * 10))
 
     names = [call.args[1] for call in factor_lab.product_analytics.track_event.call_args_list]
-    assert names == ["backtest_started", "backtest_completed"]
+    assert names == ["algorithm_selected", "backtest_started", "backtest_completed"]
+    assert factor_lab.product_analytics.track_event.call_args_list[0].args[2]["algorithm"] == "custom_weights"
+
+
+def test_factor_lab_default_weights_track_default_algorithm(monkeypatch):
+    monkeypatch.setattr(factor_lab, "check_rate_limit", lambda *args, **kwargs: None)
+    monkeypatch.setattr(factor_lab, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(factor_lab.product_analytics, "track_event", Mock())
+    monkeypatch.setattr(factor_lab.permissions, "can_access_feature",
+                        lambda *_: PermissionResult(True, Feature.BACKTEST, plan="premium", status="active"))
+    monkeypatch.setattr(factor_lab.permissions, "record_feature_usage", lambda *args, **kwargs: None)
+
+    from codes.engine import strategy_cache, user_strategy
+    monkeypatch.setattr(user_strategy, "set_user_weights", lambda *args, **kwargs: None)
+    monkeypatch.setattr(strategy_cache, "get_or_run_backtest", lambda **kwargs: {
+        "custom": {"error": None}, "default": {"error": None}, "spy": {"error": None},
+        "n_analysed": 10, "top_n": 10, "years": 5, "cache_hit": False,
+        "weight_changes": [], "custom_top": [], "default_top": [], "ranked_stocks": [], "overlap": [],
+    })
+    monkeypatch.setattr(factor_lab, "_render_fb_results", lambda result: ["ok"])
+
+    weight_vals = [round(factor_lab.scorer.ENHANCED_WEIGHTS.get(k, 0) * 100) for k in factor_lab._FB_WEIGHT_KEYS]
+    factor_lab.run_factor_backtest_cb(1, 10, 5, *weight_vals)
+
+    first = factor_lab.product_analytics.track_event.call_args_list[0]
+    assert first.args[1] == "algorithm_selected"
+    assert first.args[2]["algorithm"] == "default_weights"
 
 
 def test_webhook_tracks_subscription_completed(monkeypatch):
@@ -103,6 +129,44 @@ def test_webhook_tracks_subscription_completed(monkeypatch):
 
     assert webhooks.handle_event(event) is True
     tracked.assert_called_once_with("u1", "subscription_completed", {"plan": "premium"})
+
+
+def test_screener_tracks_screener_run(monkeypatch):
+    screener.last_screener_state = None
+    monkeypatch.setattr(screener.dash, "ctx", SimpleNamespace(triggered_id="sector-filter"))
+    monkeypatch.setattr(screener, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(screener, "get_portfolio_symbols", lambda: {})
+    monkeypatch.setattr(screener.screener, "get_progress", lambda: {"running": False, "total": 1, "done": 1})
+    monkeypatch.setattr(screener.screener, "get_screener_results", lambda: [{
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "sector": "Technology",
+        "market_cap": 1000,
+        "composite_score": 72,
+        "graham_number": 180,
+        "buffett_iv": 190,
+        "updated_at": "2026-07-10",
+        "verdict": "HIGH CONVICTION",
+        "verdict_label": "strong-buy",
+        "analyzed": True,
+        "price": 170,
+    }])
+    tracked = Mock()
+    monkeypatch.setattr(screener.product_analytics, "track_event", tracked)
+
+    screener.render_screener_table(-1, "US", 1, "Technology", {"col": "composite_score", "asc": False}, 1, [])
+
+    tracked.assert_called_once_with(
+        "u1",
+        "screener_run",
+        {
+            "country": "US",
+            "sector": "Technology",
+            "sort_col": "composite_score",
+            "sort_asc": False,
+            "result_count": 1,
+        },
+    )
 
 
 class _FakeResult:

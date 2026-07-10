@@ -2738,6 +2738,8 @@ Implemented domain events currently include:
 -   `analysis_started`
 -   `analysis_completed`
 -   `analysis_failed`
+-   `algorithm_selected`
+-   `screener_run`
 -   `screener_filter_changed`
 -   `portfolio_created`
 -   `portfolio_updated`
@@ -2778,8 +2780,8 @@ behavior if analytics writes fail.
 ### Implemented instrumentation points
 
 -   Analyze flow
--   Screener ticker clicks / country filter changes
--   Factor Lab backtests
+-   Screener ticker clicks / country filter changes / screener run
+-   Factor Lab backtests / algorithm selection
 -   Portfolio create/update/simulation flows
 -   Pricing page views
 -   Checkout/subscription completion webhook
@@ -2799,8 +2801,6 @@ behavior if analytics writes fail.
 ### Phase 2 follow-through
 
 -   add missing domain events:
-    -   `algorithm_selected`
-    -   `screener_run`
     -   `watchlist_added` (if/when watchlist exists)
 -   add explicit runtime / cache metrics for analysis and backtest flows
 -   add failure classification for analytics/debug reporting
@@ -2850,8 +2850,7 @@ top of the event stream.
 ## Recommended Next Steps For A Future Session
 
 1. Add missing domain events:
-   - `screener_run`
-   - `algorithm_selected`
+   - `watchlist_added`
    - explicit cache-hit/runtime events
 2. Decide whether to keep one event table or fan out into dedicated
    summary tables.
