@@ -71,6 +71,17 @@ def test_alternative_data_includes_phase_e_signals():
     assert signals[-1]["status"] == "RESEARCH"
 
 
+def test_provider_backed_signals_report_missing_configuration():
+    result = alternative_data.get_alternative_data_score(
+        "MSFT", market_provider_ready=False
+    )
+    by_name = {signal["name"]: signal for signal in result["signals"]}
+
+    for name in ("insider_trends", "institutional_ownership", "patent_activity"):
+        assert by_name[name]["status"] == "CONFIGURATION_REQUIRED"
+        assert by_name[name]["details"]["provider_configuration_required"] is True
+
+
 def test_sec_8k_sentiment_is_deterministic_and_auditable():
     filings = [
         {

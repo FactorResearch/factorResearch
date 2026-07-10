@@ -2844,6 +2844,28 @@ expansion for ISSUE_026 has been moved to `Publish.md` under
 
   create a solution that in development mode, dev can easily pretend to be different user type, paid free and pro. make it so it is exapndable in future
 
+# ISSUE_029:
+**Status:** []
+title: alt data not complete
+
+context: every time run analysis we get a same alt data, just available,planned, it looks like it is not completly wired up and working
+files: alternative_data.py
+
+implementation status:
+- [x] Phase 1 — SEC 8-K sentiment is already wired into analysis through the free SEC EDGAR feed and cached filing text. Verified by `tests/test_sec_8k_filings.py`.
+- [x] Phase 1 — provider configuration diagnostics: placeholder credentials (for example `your_api_key_here`) are no longer treated as live. Insider, institutional ownership, and patent cards now show `CONFIGURATION_REQUIRED` instead of silently remaining generic placeholders.
+- [ ] Phase 2 — add a real `FINNHUB_API_KEY` with entitlement for insider transactions, institutional ownership, and USPTO patents. The current `.env` value is a placeholder, so these provider calls cannot return records yet.
+- [ ] Phase 3 — add dedicated providers and scheduled storage for hiring velocity, web traffic, and supply-chain relationships; FMP/Finnhub do not supply those complete datasets.
+- [ ] Phase 4 — add freshness/source timestamps and a background refresh job before treating alternative data as production-ready.
+
+# ISSUE_030:
+**Status:** []
+title: TOC and Privacy
+
+context: both page are currenlty empty and open in new page
+
+solution: fill both page with legal content, and make them open as popup with same look and feel as rest of the application, popups up should not take the whole page but allow user to make them whole page.
+
 
 # AI EXECUTION PROTOCOL
 

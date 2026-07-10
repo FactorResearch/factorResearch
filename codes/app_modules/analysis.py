@@ -344,6 +344,7 @@ def analyze_stock(symbol: str) -> dict:
             shares_outstanding=shares_out,
             ownership_trends=ownership_trends,
             patent_trends=patent_trends,
+            market_provider_ready=api_fetcher.is_finnhub_configured(),
         )
     except Exception as e:
         print(f"Alternative data framework failed: {e}")

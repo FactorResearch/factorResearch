@@ -103,7 +103,7 @@ def _composite_banner(data: dict) -> html.Div:
     # Factor circles (top 5)
     if has_enh:
         factor_data = [
-            ("Graham",   enhanced.get("graham_pct", 0)),
+            ("Intrinsic",   enhanced.get("graham_pct", 0)),
             ("Quality",  enhanced.get("quality_pct", 0)),
             ("Momentum", enhanced.get("momentum_pct", 0)),
             ("Risk",     enhanced.get("risk_pct", 0)),
@@ -111,7 +111,7 @@ def _composite_banner(data: dict) -> html.Div:
         ]
     else:
         factor_data = [
-            ("Graham",   comp.get("graham_pct", 0)),
+            ("Intrinsic",   comp.get("graham_pct", 0)),
             ("Quality",  comp.get("quality_pct", 0)),
             ("Momentum", comp.get("momentum_pct") or 0),
             ("Altman",   comp.get("altman_pct", 0)),

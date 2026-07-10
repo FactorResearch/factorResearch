@@ -299,10 +299,28 @@ def _is_price_history_cache_fresh(entry: dict) -> bool:
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Finnhub
+def _is_usable_api_key(value: str | None) -> bool:
+    """Reject unset and example credentials before making provider requests."""
+    normalized = (value or "").strip().lower()
+    return normalized not in {
+        "",
+        "your_api_key_here",
+        "your_api_key",
+        "replace_me",
+        "changeme",
+    }
+
+
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "")
+FINNHUB_CONFIGURED = _is_usable_api_key(FINNHUB_API_KEY)
 _fh_client: finnhub.Client | None = (
-    finnhub.Client(api_key=FINNHUB_API_KEY) if FINNHUB_API_KEY else None
+    finnhub.Client(api_key=FINNHUB_API_KEY) if FINNHUB_CONFIGURED else None
 )
+
+
+def is_finnhub_configured() -> bool:
+    """Whether a non-placeholder Finnhub credential is available to this process."""
+    return FINNHUB_CONFIGURED
 
 # Tiingo
 TIINGO_API_KEY  = os.getenv("TIINGO_API_KEY", "")

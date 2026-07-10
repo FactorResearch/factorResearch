@@ -27,6 +27,7 @@ STATUS_NO_DATA = "NO_DATA"
 STATUS_PLANNED = "PLANNED"
 STATUS_WAITING_FOR_SOURCE = "WAITING_FOR_SOURCE"
 STATUS_RESEARCH = "RESEARCH"
+STATUS_CONFIGURATION_REQUIRED = "CONFIGURATION_REQUIRED"
 
 _WORD_RE = re.compile(r"[a-z][a-z\-']+")
 
@@ -337,6 +338,7 @@ def get_insider_trends_signal(
     transactions: list[dict] | None = None,
     shares_outstanding: float | None = None,
     reference_date: datetime | None = None,
+    provider_ready: bool | None = None,
 ) -> dict[str, Any]:
     if transactions:
         score = insider_activity.get_insider_score(
@@ -368,21 +370,27 @@ def get_insider_trends_signal(
             },
         )
 
+    status = STATUS_CONFIGURATION_REQUIRED if provider_ready is False else STATUS_PLANNED
     return _base_signal(
         "insider_trends",
         "Insider Buying/Selling Trends",
         "Insider buying and selling trends.",
-        status=STATUS_PLANNED,
+        status=status,
         source="SEC Form 4 / provider transaction feeds",
+        details={"provider_configuration_required": provider_ready is False},
     )
 
 
 def get_institutional_ownership_signal(
     ticker: str,
     ownership_trends: Iterable[Any] | None = None,
+    provider_ready: bool | None = None,
 ) -> dict[str, Any]:
     trend = _trend_signal_value(ownership_trends)
-    status = trend["status"] if trend["available"] else STATUS_PLANNED
+    status = (
+        trend["status"] if trend["available"] else
+        STATUS_CONFIGURATION_REQUIRED if provider_ready is False else STATUS_PLANNED
+    )
     return _base_signal(
         "institutional_ownership",
         "Institutional Ownership Changes",
@@ -392,16 +400,23 @@ def get_institutional_ownership_signal(
         score=trend["score"],
         available=trend["available"],
         value=trend["value"],
-        details=trend["details"],
+        details={
+            **trend["details"],
+            "provider_configuration_required": provider_ready is False,
+        },
     )
 
 
 def get_patent_activity_signal(
     ticker: str,
     patent_trends: Iterable[Any] | None = None,
+    provider_ready: bool | None = None,
 ) -> dict[str, Any]:
     trend = _trend_signal_value(patent_trends)
-    status = trend["status"] if trend["available"] else STATUS_PLANNED
+    status = (
+        trend["status"] if trend["available"] else
+        STATUS_CONFIGURATION_REQUIRED if provider_ready is False else STATUS_PLANNED
+    )
     return _base_signal(
         "patent_activity",
         "Patent/IP Activity",
@@ -411,7 +426,10 @@ def get_patent_activity_signal(
         score=trend["score"],
         available=trend["available"],
         value=trend["value"],
-        details=trend["details"],
+        details={
+            **trend["details"],
+            "provider_configuration_required": provider_ready is False,
+        },
     )
 
 
@@ -446,6 +464,7 @@ def get_alternative_data_score(
     patent_trends: Iterable[Any] | None = None,
     supply_chain_trends: Iterable[Any] | None = None,
     reference_date: datetime | None = None,
+    market_provider_ready: bool | None = None,
 ) -> dict[str, Any]:
     """
     Return a JSON-compatible Phase E alternative-data result.
@@ -464,9 +483,12 @@ def get_alternative_data_score(
             insider_transactions,
             shares_outstanding,
             reference_date,
+            market_provider_ready,
         ),
-        get_institutional_ownership_signal(symbol, ownership_trends),
-        get_patent_activity_signal(symbol, patent_trends),
+        get_institutional_ownership_signal(
+            symbol, ownership_trends, market_provider_ready
+        ),
+        get_patent_activity_signal(symbol, patent_trends, market_provider_ready),
         get_supply_chain_signal(symbol, supply_chain_trends),
     ]
     available_scores = [s["score"] for s in signals if s["available"]]
