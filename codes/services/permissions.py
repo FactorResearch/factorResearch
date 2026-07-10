@@ -10,6 +10,7 @@ from codes.data import db
 
 
 TRIAL_ANALYSIS_LIMIT = 3
+TRIAL_PORTFOLIO_SIM_LIMIT = 1
 ACTIVE_SUBSCRIPTION_STATUSES = {"active", "trialing", "past_due"}
 PAID_PLANS = {"premium", "professional"}
 
@@ -66,9 +67,14 @@ def is_paid_subscription(subscription: dict[str, Any] | None) -> bool:
 
 
 def get_trial_analysis_usage(user_id: str) -> int:
+    return get_feature_usage_total(user_id, Feature.ANALYSIS)
+
+
+def get_feature_usage_total(user_id: str, feature: Feature | str) -> int:
+    feature = normalize_feature(feature)
     if hasattr(db, "get_total_usage"):
-        return int(db.get_total_usage(user_id, Feature.ANALYSIS.value) or 0)
-    usage = db.get_usage(user_id, Feature.ANALYSIS.value)
+        return int(db.get_total_usage(user_id, feature.value) or 0)
+    usage = db.get_usage(user_id, feature.value)
     return int(usage.get("usage_count") or 0)
 
 
@@ -85,7 +91,7 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
         return PermissionResult(True, feature, plan=plan, status=status)
 
     if feature == Feature.ANALYSIS:
-        used = get_trial_analysis_usage(user_id)
+        used = get_feature_usage_total(user_id, feature)
         remaining = max(TRIAL_ANALYSIS_LIMIT - used, 0)
         if remaining > 0:
             return PermissionResult(
@@ -99,7 +105,7 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
             False,
             feature,
             reason=(
-                "You have used your 3 free analyses. Unlock IntrinsicIQ Premium "
+                "You have used your 3 free analyses. Unlock Factor Research Premium "
                 "for unlimited company analysis, custom strategies, historical "
                 "backtesting, portfolio analytics, and strategy tracking."
             ),
@@ -109,9 +115,32 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
             upgrade_required=True,
         )
 
+    if feature == Feature.PORTFOLIO_ANALYTICS:
+        used = get_feature_usage_total(user_id, feature)
+        remaining = max(TRIAL_PORTFOLIO_SIM_LIMIT - used, 0)
+        if remaining > 0:
+            return PermissionResult(
+                True,
+                feature,
+                plan=plan,
+                status=status,
+                remaining=remaining,
+            )
+        return PermissionResult(
+            False,
+            feature,
+            reason=(
+                "You have used your free portfolio simulation. Unlock Factor Research Premium "
+                "for unlimited portfolio analytics, simulations, and strategy backtesting."
+            ),
+            plan=plan,
+            status=status,
+            remaining=0,
+            upgrade_required=True,
+        )
+
     messages = {
         Feature.BACKTEST: "Historical backtesting requires Premium.",
-        Feature.PORTFOLIO_ANALYTICS: "Portfolio analytics requires Premium.",
         Feature.SCREENING: "Unlimited screening requires Premium.",
         Feature.EXPORT: "Research data export requires Premium.",
     }

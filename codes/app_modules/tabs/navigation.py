@@ -9,33 +9,43 @@ from dash import Input, Output, State, callback, clientside_callback
     Output("tab-analyze",      "style"),
     Output("tab-portfolio",    "style"),
     Output("tab-factorlab",    "style"),
+    Output("tab-pricing",      "style"),
     Output("tab-screener-btn", "className"),
     Output("tab-analyze-btn",  "className"),
     Output("tab-portfolio-btn","className"),
     Output("tab-factorlab-btn", "className"),
+    Output("tab-pricing-btn", "className"),
     Input("tab-screener-btn",     "n_clicks"),
     Input("tab-analyze-btn",      "n_clicks"),
     Input("tab-portfolio-btn",    "n_clicks"),
     Input("tab-factorlab-btn",    "n_clicks"),
+    Input("tab-pricing-btn",      "n_clicks"),
     Input("screener-click-ticker","data"),
+    Input("upgrade-funnel-store", "data"),
     Input("url",                  "pathname"),
     prevent_initial_call=False
 )
-def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, clicked_ticker, pathname):
+def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clicked_ticker, upgrade_context, pathname):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
     if triggered == "screener-click-ticker" and clicked_ticker:
-        return HIDE, SHOW, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered in ("url", None) and (pathname or "").startswith("/analyze/"):
-        return HIDE, SHOW, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+    if triggered in ("url", None) and (pathname or "") == "/pricing":
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    if triggered == "upgrade-funnel-store" and upgrade_context:
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if triggered == "tab-analyze-btn":
-        return HIDE, SHOW, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "tab-portfolio-btn":
-        return HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, ACTIVE, IDLE
+        return HIDE, HIDE, SHOW, HIDE, HIDE, IDLE, IDLE, ACTIVE, IDLE, IDLE
     if triggered == "tab-factorlab-btn":
-        return HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, ACTIVE
-    return SHOW, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE
+        return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
+    if triggered == "tab-pricing-btn":
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
 
 
 # ── Theme Toggle ────────────────────────────────────────────────────────────

@@ -12,8 +12,9 @@ from codes.app_modules.analysis import analyze_stock, _is_rate_limit_error, is_p
 from codes.app_modules.analysis_ui import _build_analysis_content
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
-from codes import billing
 from codes.services import permissions
+from codes.services import product_analytics
+from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
 
 
 _ANALYZE_PATH_RE = re.compile(
@@ -90,6 +91,7 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
     Output("add-to-portfolio-panel",  "style"),
     Output("active-analysis-symbol",  "data"),
     Output("screener-viewed-store",   "data"),
+    Output("upgrade-funnel-store",    "data"),
     Input("analyze-btn",          "n_clicks"),
     Input("screener-click-ticker","data"),
     Input("url",                  "pathname"),
@@ -114,37 +116,62 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
     if triggered in ("url", None) and not route_ticker:
         raise PreventUpdate
     if not ticker or not ticker.strip():
-        return dash.no_update, [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+        return dash.no_update, [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     symbol = ticker.strip().upper()
     # Input validation: ticker must be 1-6 uppercase letters
     if not re.fullmatch(r"^[A-Z]{1,6}$", symbol):
-        return dash.no_update, [], None, "❌ Invalid ticker format. Use 1–6 uppercase letters (A–Z).", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+        return dash.no_update, [], None, "❌ Invalid ticker format. Use 1–6 uppercase letters (A–Z).", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     # Rate limit (per-user) — max 10 analyze calls per minute
     try:
         check_rate_limit("analyze", calls=10, period_seconds=60)
     except RateLimited as rl:
-        return dash.no_update, [], None, f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+        return dash.no_update, [], None, f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     user_id = get_user_id()
     try:
         access = permissions.can_access_feature(user_id, permissions.Feature.ANALYSIS)
         if not access.allowed:
-            checkout = billing.get_checkout_url(user_id)
-            msg = f"🔒 {access.message} Upgrade: {checkout}"
-            return dash.no_update, [], None, msg, False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+            product_analytics.track_event(
+                user_id,
+                "upgrade_viewed",
+                {"feature": "analysis", "source": "analyze_lock", "plan": "premium"},
+            )
+            return (
+                "/pricing",
+                [build_upgrade_prompt(
+                    title="Analysis limit reached",
+                    body=access.message,
+                    source="analyze_lock",
+                    feature="analysis",
+                )],
+                None,
+                "🔒 Upgrade required to continue.",
+                False,
+                False,
+                dash.no_update,
+                {"display": "none"},
+                None,
+                dash.no_update,
+                open_upgrade_funnel(
+                    feature="analysis",
+                    feature_label="Company analysis",
+                    reason=access.message,
+                    source="analyze_lock",
+                ),
+            )
     except Exception:
         if is_production():
-            return dash.no_update, [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+            return dash.no_update, [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
         access = None
     try:
         result = analyze_stock(symbol)
     except Exception as e:
         if _is_rate_limit_error(e):
             message = getattr(e, "user_message", str(e))
-            return dash.no_update, [], None, f"❌ {message}", False, False, symbol, {"display": "none"}, None, dash.no_update
+            return dash.no_update, [], None, f"❌ {message}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
         print(f"run_analysis unexpected error: {type(e).__name__}: {e}")
-        return dash.no_update, [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
+        return dash.no_update, [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     if "error" in result:
-        return dash.no_update, [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update
+        return dash.no_update, [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
     viewed_updated = list(set((viewed_list or []) + [symbol]))
     content = _build_analysis_content(result)
     # Update screener row with full analysis data (Graham Number, live price, enhanced score)
@@ -162,4 +189,5 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
         {"display": "block"},
         symbol,
         viewed_updated,
+        dash.no_update,
     )

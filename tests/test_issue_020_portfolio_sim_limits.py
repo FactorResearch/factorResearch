@@ -7,7 +7,7 @@ from codes.services.permissions import Feature, PermissionResult
 
 def test_paid_user_can_run_simulation_and_usage_is_recorded(monkeypatch):
     monkeypatch.setattr(portfolio, "get_user_id", lambda: "paid-user")
-    allow = PermissionResult(True, Feature.BACKTEST, plan="premium", status="active")
+    allow = PermissionResult(True, Feature.PORTFOLIO_ANALYTICS, plan="premium", status="active")
     monkeypatch.setattr(portfolio.permissions, "can_access_feature", lambda *_: allow)
     limiter = Mock()
     monkeypatch.setattr(portfolio, "check_rate_limit", limiter)
@@ -17,18 +17,18 @@ def test_paid_user_can_run_simulation_and_usage_is_recorded(monkeypatch):
     usage = Mock()
     monkeypatch.setattr(portfolio.permissions, "record_feature_usage", usage)
 
-    assert portfolio.run_simulation(1, "Growth", "Income") == ["charts"]
+    assert portfolio.run_simulation(1, "Growth", "Income") == (["charts"], None)
     limiter.assert_called_once_with(
         "portfolio_simulation", calls=3, period_seconds=3600, key="paid-user"
     )
     usage.assert_called_once_with(
-        "paid-user", Feature.BACKTEST, usage_key="portfolio:Growth:Income"
+        "paid-user", Feature.PORTFOLIO_ANALYTICS, usage_key="portfolio:Growth:Income"
     )
 
 
 def test_rate_limited_user_does_not_run_simulation(monkeypatch):
     monkeypatch.setattr(portfolio, "get_user_id", lambda: "paid-user")
-    allow = PermissionResult(True, Feature.BACKTEST, plan="premium", status="active")
+    allow = PermissionResult(True, Feature.PORTFOLIO_ANALYTICS, plan="premium", status="active")
     monkeypatch.setattr(portfolio.permissions, "can_access_feature", lambda *_: allow)
     monkeypatch.setattr(
         portfolio, "check_rate_limit", Mock(side_effect=RateLimited(retry_after=42))
@@ -36,10 +36,11 @@ def test_rate_limited_user_does_not_run_simulation(monkeypatch):
     simulation = Mock()
     monkeypatch.setattr(portfolio.portfolio_engine, "run_simulation", simulation)
 
-    result = portfolio.run_simulation(1, "Growth", None)
+    result, upgrade = portfolio.run_simulation(1, "Growth", None)
 
     assert "rate limit" in result.children.lower()
     assert "42 seconds" in result.children
+    assert upgrade is None
     simulation.assert_not_called()
 
 
@@ -47,8 +48,8 @@ def test_trial_user_is_blocked_before_rate_limit_or_simulation(monkeypatch):
     monkeypatch.setattr(portfolio, "get_user_id", lambda: "trial-user")
     deny = PermissionResult(
         False,
-        Feature.BACKTEST,
-        reason="Historical backtesting requires Premium.",
+        Feature.PORTFOLIO_ANALYTICS,
+        reason="Portfolio analytics requires Premium.",
         upgrade_required=True,
     )
     monkeypatch.setattr(portfolio.permissions, "can_access_feature", lambda *_: deny)
@@ -56,10 +57,12 @@ def test_trial_user_is_blocked_before_rate_limit_or_simulation(monkeypatch):
     simulation = Mock()
     monkeypatch.setattr(portfolio, "check_rate_limit", limiter)
     monkeypatch.setattr(portfolio.portfolio_engine, "run_simulation", simulation)
+    tracked = Mock()
+    monkeypatch.setattr(portfolio.product_analytics, "track_event", tracked)
 
-    result = portfolio.run_simulation(1, "Growth", None)
+    result, upgrade = portfolio.run_simulation(1, "Growth", None)
 
-    assert "requires Premium" in result.children
-    assert "Upgrade" in result.children
+    assert "Premium" in str(result.children)
+    assert upgrade["feature"] == "portfolio_analytics"
     limiter.assert_not_called()
     simulation.assert_not_called()

@@ -35,6 +35,7 @@ def _topbar():
             html.Button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", **{"data-tab": "analyze"}),
             html.Button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "portfolio"}),
             html.Button("Factor Lab", id="tab-factorlab-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "factorlab"}),
+            html.Button("Pricing", id="tab-pricing-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "pricing"}),
         ]),
         html.Div(className="topbar-actions", children=[
             html.Div(id="theme-toggle", className="theme-toggle", children=[
@@ -281,6 +282,7 @@ def build_layout():
                 html.Div(id="fb-results", children=[])
             ]),
         ]),
+        html.Div(id="tab-pricing", className="main-content d-none", children=[]),
 
         # Legal footer (ISSUE_013) — routes are placeholders until ToS/Privacy pages exist.
         html.Div(className="app-footer tac p-16 fs-11 clr-muted", children=[
@@ -301,6 +303,7 @@ def build_layout():
         dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table
         dcc.Store(id="portfolio-refresh-store", data=0),  # increment to trigger refresh
         dcc.Store(id="active-analysis-symbol"),           # symbol currently analyzed
+        dcc.Store(id="upgrade-funnel-store", data=None),
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab

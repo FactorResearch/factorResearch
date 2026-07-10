@@ -15,6 +15,8 @@ from codes.app_modules.config import (
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.services import permissions
+from codes.services import product_analytics
+from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
 
 PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
@@ -682,6 +684,7 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
 # ── Run simulation ────────────────────────────────────────────────────────────
 @callback(
     Output("portfolio-sim-results", "children"),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
     Input("run-simulation-btn",        "n_clicks"),
     State("portfolio-active-dropdown", "value"),
     State("portfolio-compare-dropdown","value"),
@@ -689,12 +692,26 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
 )
 def run_simulation(n, active, compare):
     if not n or not active:
-        return []
+        return [], None
     uid = get_user_id()
-    access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
+    access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
     if not access.allowed:
-        return html.Div(f"🔒 {access.message} Upgrade to run portfolio simulations.",
-                        className="text-danger")
+        product_analytics.track_event(
+            uid,
+            "upgrade_viewed",
+            {"feature": "portfolio_analytics", "source": "portfolio_sim_lock", "plan": "premium"},
+        )
+        return build_upgrade_prompt(
+            title="Portfolio simulation limit reached",
+            body=access.message,
+            source="portfolio_sim_lock",
+            feature="portfolio_analytics",
+        ), open_upgrade_funnel(
+            feature="portfolio_analytics",
+            feature_label="Portfolio analytics",
+            reason=access.message,
+            source="portfolio_sim_lock",
+        )
     try:
         check_rate_limit(
             "portfolio_simulation",
@@ -705,7 +722,7 @@ def run_simulation(n, active, compare):
     except RateLimited as exc:
         wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
         return html.Div(f"⏳ Portfolio simulation rate limit reached.{wait}",
-                        className="text-danger")
+                        className="text-danger"), None
 
     def _build_sim_charts(port_name: str, color: str) -> list:
         sim = portfolio_engine.run_simulation(uid, port_name)
@@ -960,17 +977,17 @@ def run_simulation(n, active, compare):
                     f"⚠️ Comparison unavailable: {cmp_result['error']}",
                     className="clr-muted fs-13 py-8 px-4 mt-16"
                 ),
-            ]
+            ], None
         result = _build_comparison_view(uid,active, compare, cmp_result, PALETTE)
-        permissions.record_feature_usage(uid, permissions.Feature.BACKTEST,
+        permissions.record_feature_usage(uid, permissions.Feature.PORTFOLIO_ANALYTICS,
                                          usage_key=f"portfolio:{active}:{compare}")
-        return result
+        return result, None
     result = [
         html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
         *_build_sim_charts(active, PALETTE[0]),
     ]
     if not any(getattr(component, "className", None) == "text-danger"
                for component in result):
-        permissions.record_feature_usage(uid, permissions.Feature.BACKTEST,
+        permissions.record_feature_usage(uid, permissions.Feature.PORTFOLIO_ANALYTICS,
                                          usage_key=f"portfolio:{active}")
-    return result
+    return result, None

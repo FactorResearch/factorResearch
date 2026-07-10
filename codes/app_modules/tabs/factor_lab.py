@@ -6,8 +6,9 @@ from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.config import AMBER, BLUE, GREEN, MUTED, RED, TEXT
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
-from codes import billing
 from codes.services import permissions
+from codes.services import product_analytics
+from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
 
 # ── Factor Lab callbacks ─────────────────────────────────────────────────────
 
@@ -38,6 +39,7 @@ def update_weight_sum(*values):
 @callback(
     Output("fb-results", "children"),
     Output("fb-status",  "children"),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
     Input("fb-run-btn",  "n_clicks"),
     State("fb-top-n",    "value"),
     State("fb-years",    "value"),
@@ -46,11 +48,11 @@ def update_weight_sum(*values):
 )
 def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     if not n_clicks:
-        return [], ""
+        return [], "", None
     try:
         check_rate_limit("backtest", calls=3, period_seconds=60)
     except RateLimited as rl:
-        return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger p-20")], "⏳ Rate limited"
+        return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger p-20")], "⏳ Rate limited", None
 
     from codes.engine import strategy_cache, user_strategy
 
@@ -62,16 +64,26 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     try:
         access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
         if not access.allowed:
-            checkout = billing.get_checkout_url(uid)
+            product_analytics.track_event(
+                uid,
+                "upgrade_viewed",
+                {"feature": "backtest", "source": "factor_lab_lock", "plan": "premium"},
+            )
             return [
-                html.Div([
-                    html.Div(f"🔒 {access.message}", className="text-danger"),
-                    html.A("Unlock strategy validation", href=checkout, className="analyze-btn d-inline-block mt-12",
-                           style={"textDecoration": "none"}),
-                ], className="p-20")
-            ], "🔒 Premium required"
+                build_upgrade_prompt(
+                    title="Backtesting requires Premium",
+                    body=access.message,
+                    source="factor_lab_lock",
+                    feature="backtest",
+                )
+            ], "🔒 Premium required", open_upgrade_funnel(
+                feature="backtest",
+                feature_label="Historical backtesting",
+                reason=access.message,
+                source="factor_lab_lock",
+            )
     except Exception:
-        return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable"
+        return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable", None
 
     # Layer 4: cache-aware backtest, reused across identical configs
     result = strategy_cache.get_or_run_backtest(
@@ -81,7 +93,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     )
 
     if result.get("error"):
-        return [html.Div(f"❌ {result['error']}", className="text-danger p-20")], "❌ Error"
+        return [html.Div(f"❌ {result['error']}", className="text-danger p-20")], "❌ Error", None
 
     permissions.record_feature_usage(uid, permissions.Feature.BACKTEST)
     cache_note = " (cached)" if result.get("cache_hit") else ""
@@ -89,7 +101,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         f"✅ {result['n_analysed']} stocks scored · "
         f"top {result['top_n']} selected · "
         f"{result['years']}yr backtest{cache_note}"
-    )
+    ), None
 
 
 def _render_fb_results(r: dict) -> list:

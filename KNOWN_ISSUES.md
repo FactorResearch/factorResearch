@@ -2647,7 +2647,7 @@ The architecture should support additional paid tiers without rewriting feature 
 ---
 
 # ISSUE_024
-Status: [ ]
+Status: [x]
 **Objective:**
 
 Finish the client-facing subscription conversion funnel so trial users hit a clear, consistent buy path instead of only seeing scattered upgrade text in feature gates.

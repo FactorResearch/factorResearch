@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Optional
+from urllib.parse import urlencode
 import os
 
 import flask
@@ -10,6 +11,7 @@ import flask
 from codes.app_modules.session import get_user_id
 from codes.payments import stripe_client, subscriptions, webhooks
 from codes.services import permissions
+from codes.services import product_analytics
 
 
 def _is_production() -> bool:
@@ -23,11 +25,23 @@ def init_billing(server: Optional[flask.Flask] = None):
     @server.route("/billing/checkout", methods=["GET"])
     def _checkout():
         plan = flask.request.args.get("plan", "premium")
+        source = flask.request.args.get("source", "direct")
+        feature = flask.request.args.get("feature", "")
         try:
             user_id = get_user_id()
         except RuntimeError:
             return "missing user_id", 400
         try:
+            product_analytics.track_event(
+                user_id,
+                "upgrade_clicked",
+                {"plan": plan, "source": source, "feature": feature},
+            )
+            product_analytics.track_event(
+                user_id,
+                "subscription_started",
+                {"plan": plan, "source": source, "feature": feature},
+            )
             return flask.redirect(get_checkout_url(user_id, plan=plan))
         except Exception as exc:
             if _is_production():
@@ -91,6 +105,14 @@ def get_checkout_url(user_id: str, plan: str = "premium") -> str:
     if _is_production():
         raise RuntimeError("Stripe checkout is not configured in production.")
     return "/billing/mark_paid"
+
+
+def get_billing_entry_url(plan: str = "premium", **context: str | None) -> str:
+    params = {"plan": plan}
+    for key, value in context.items():
+        if value:
+            params[key] = value
+    return f"/billing/checkout?{urlencode(params)}"
 
 
 def get_portal_url(user_id: str) -> str:

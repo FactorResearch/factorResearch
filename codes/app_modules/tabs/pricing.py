@@ -1,0 +1,165 @@
+"""Dedicated pricing tab and reusable upgrade prompt UI."""
+
+from __future__ import annotations
+
+import time
+
+from dash import Input, Output, callback, dcc, html
+
+from codes import billing
+
+
+PLAN_CARDS = [
+    {
+        "name": "Trial",
+        "price": "$0",
+        "subtitle": "Start free",
+        "features": [
+            "3 company analyses",
+            "1 portfolio simulation",
+            "Custom factor weights",
+        ],
+        "cta": None,
+    },
+    {
+        "name": "Premium",
+        "price": "$29",
+        "subtitle": "Per month",
+        "features": [
+            "Unlimited company analysis",
+            "Historical backtesting",
+            "Portfolio analytics and simulations",
+            "Strategy validation workflow",
+        ],
+        "cta": billing.get_billing_entry_url(plan="premium", source="pricing_tab", feature="subscription"),
+    },
+    {
+        "name": "Professional",
+        "price": "$79",
+        "subtitle": "Per month",
+        "features": [
+            "Everything in Premium",
+            "Advanced workflow support",
+            "Team-ready research flow",
+            "Priority expansion path",
+        ],
+        "cta": billing.get_billing_entry_url(plan="professional", source="pricing_tab", feature="subscription"),
+    },
+]
+
+
+def build_upgrade_prompt(*, title: str, body: str, source: str, feature: str) -> html.Div:
+    return html.Div(
+        className="scorecard mt-16",
+        children=[
+            html.Div("Upgrade to continue", className="scorecard-header"),
+            html.Div(
+                className="p-20",
+                children=[
+                    html.H3(title, className="mt-0 mb-8"),
+                    html.P(body, className="clr-muted mb-16"),
+                    html.Div(
+                        className="d-flex gap-12 flex-wrap",
+                        children=[
+                            dcc.Link("Compare plans", href="/pricing", className="analyze-btn"),
+                            html.A(
+                                "Start Premium",
+                                href=billing.get_billing_entry_url(
+                                    plan="premium",
+                                    source=source,
+                                    feature=feature,
+                                ),
+                                className="load-btn",
+                                style={"textDecoration": "none"},
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+
+def build_pricing_tab(context: dict | None = None) -> html.Div:
+    context = context or {}
+    feature = context.get("feature_label") or "Premium features"
+    reason = context.get("reason") or "Choose a plan to unlock the full workflow."
+    source = context.get("source") or "pricing_tab"
+
+    cards = []
+    for plan in PLAN_CARDS:
+        cta = html.Span("Current plan", className="clr-muted fs-12")
+        if plan["cta"]:
+            cta = html.A(
+                f"Choose {plan['name']}",
+                href=plan["cta"],
+                className="analyze-btn d-inline-block mt-12",
+                style={"textDecoration": "none"},
+            )
+        cards.append(
+            html.Div(
+                className="scorecard",
+                style={"height": "100%"},
+                children=[
+                    html.Div(plan["name"], className="scorecard-header"),
+                    html.Div(
+                        className="p-20",
+                        children=[
+                            html.Div(plan["price"], className="text-2xl font-semibold"),
+                            html.Div(plan["subtitle"], className="clr-muted fs-12 mb-16"),
+                            html.Ul([html.Li(item) for item in plan["features"]], className="clr-text"),
+                            cta,
+                        ],
+                    ),
+                ],
+            )
+        )
+
+    return html.Div(
+        className="main-content",
+        children=[
+            html.Div(
+                className="app-header mb-24",
+                children=[
+                    html.Div("💳", className="app-header-icon"),
+                    html.Div(
+                        className="app-header-content",
+                        children=[
+                            html.H1("Pricing"),
+                            html.P("A single upgrade path for analysis, backtesting, and portfolio workflow."),
+                        ],
+                    ),
+                ],
+            ),
+            build_upgrade_prompt(
+                title=f"{feature} is locked on your current plan",
+                body=reason,
+                source=source,
+                feature=context.get("feature") or "subscription",
+            ),
+            html.Div(
+                className="d-grid gap-20 mt-20",
+                style={"gridTemplateColumns": "repeat(auto-fit, minmax(240px, 1fr))"},
+                children=cards,
+            ),
+        ],
+    )
+
+
+def open_upgrade_funnel(*, feature: str, feature_label: str, reason: str, source: str) -> dict:
+    return {
+        "feature": feature,
+        "feature_label": feature_label,
+        "reason": reason,
+        "source": source,
+        "nonce": time.time(),
+    }
+
+
+@callback(
+    Output("tab-pricing", "children"),
+    Input("upgrade-funnel-store", "data"),
+    prevent_initial_call=False,
+)
+def render_pricing_tab(context):
+    return build_pricing_tab(context)

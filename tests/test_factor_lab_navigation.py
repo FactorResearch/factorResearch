@@ -33,17 +33,19 @@ def test_topbar_exposes_factor_lab_beside_portfolio():
 
 def test_factor_lab_button_shows_page_and_sets_active_state():
     with patch.object(navigation.dash, "ctx", SimpleNamespace(triggered_id="tab-factorlab-btn")):
-        result = navigation.switch_tabs(0, 0, 0, 1, None, "/")
+        result = navigation.switch_tabs(0, 0, 0, 1, 0, None, None, "/")
 
-    assert result[:4] == (
+    assert result[:5] == (
         {"display": "none"},
         {"display": "none"},
         {"display": "none"},
         {"display": "block"},
+        {"display": "none"},
     )
-    assert result[4:] == (
+    assert result[5:] == (
         "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn active",
+        "topbar-nav-btn tab-btn",
     )
