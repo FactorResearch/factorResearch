@@ -918,9 +918,10 @@ def _build_analysis_content(data: dict) -> list:
             html.Div(
                 className="company-header-left",
                 children=[
-                    html.H2(html.A(
+                    html.H2(dcc.Link(
                         name,
                         href=f"/analyze/{symbol}/",
+                        refresh=True,
                         className="company-title-link",
                         title=f"Open {name} company research",
                     )),

@@ -47,17 +47,25 @@ def _spread_history(vix_hist: pd.DataFrame, vixeq_hist: pd.DataFrame) -> list[fl
 
 
 def get_market_fear_inputs() -> dict:
-    """Fetch current VIX/VIXEQ readings and optional matched spread history."""
-    vix_symbols = ("VIX", "^VIX")
-    vixeq_symbols = ("VIXEQ", "^VIXEQ")
+    """Return VIX inputs when supplied by the dedicated index provider.
 
-    vix = _first_price(vix_symbols)
-    vixeq = _first_price(vixeq_symbols)
+    Tiingo's daily equity endpoint does not provide VIX/VIXEQ. Keep these
+    generic-adapter calls disabled so each analysis does not burn quote and
+    history quota on guaranteed misses. FMP will populate them later.
+    """
+    # vix_symbols = ("VIX", "^VIX")
+    # vixeq_symbols = ("VIXEQ", "^VIXEQ")
+    # vix = _first_price(vix_symbols)
+    # vixeq = _first_price(vixeq_symbols)
+    vix = None
+    vixeq = None
     spreads = []
 
-    if vix is not None and vixeq is not None:
-        vix_hist = _history(vix_symbols, years=2)
-        vixeq_hist = _history(vixeq_symbols, years=2)
-        spreads = _spread_history(vix_hist, vixeq_hist)
+    # Historical spread requests remain disabled with current readings. Enable
+    # this block when both index series are wired to FMP.
+    # if vix is not None and vixeq is not None:
+    #     vix_hist = _history(vix_symbols, years=2)
+    #     vixeq_hist = _history(vixeq_symbols, years=2)
+    #     spreads = _spread_history(vix_hist, vixeq_hist)
 
     return {"vix": vix, "vixeq": vixeq, "spread_history": spreads}

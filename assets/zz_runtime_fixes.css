@@ -1,0 +1,42 @@
+/* Runtime overrides: Dash loads .css assets directly; SCSS is source-only. */
+
+/* The global application navigation should leave the viewport when scrolling. */
+#topbar.topbar {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+}
+
+/* Keep the report's own section navigation visible. */
+#tab-analyze .analysis-jump-nav {
+  position: sticky !important;
+  position: -webkit-sticky !important;
+  top: 0 !important;
+  z-index: 900 !important;
+  background: rgba(13, 17, 23, 0.97) !important;
+  border-bottom: 1px solid #1e2a3a !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+/* A clipping ancestor prevents position:sticky from reaching the viewport. */
+#tab-analyze,
+#analysis-loading,
+#analysis-content,
+#analysis-loading > div {
+  overflow: visible !important;
+}
+
+body.light #tab-analyze .analysis-jump-nav {
+  background: rgba(255, 255, 255, 0.97) !important;
+  border-bottom-color: #cbd5e1 !important;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+/* Ensure the company heading remains above adjacent header content. */
+.company-title-link {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto !important;
+  cursor: pointer;
+}

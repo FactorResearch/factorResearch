@@ -27,4 +27,13 @@ def test_light_analysis_overrides_dark_inline_tokens_and_component_borders():
 def test_analyze_company_heading_links_to_company_research():
     source = (ROOT / "codes/app_modules/analysis_ui.py").read_text()
     assert 'href=f"/analyze/{symbol}/"' in source
+    assert "refresh=True" in source
     assert 'className="company-title-link"' in source
+
+
+def test_runtime_css_applies_navigation_scroll_behavior():
+    styles = (ROOT / "assets/zz_runtime_fixes.css").read_text()
+    assert "#topbar.topbar" in styles
+    assert "position: relative !important" in styles
+    assert "#tab-analyze .analysis-jump-nav" in styles
+    assert "position: sticky !important" in styles
