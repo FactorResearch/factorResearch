@@ -1618,10 +1618,9 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: LOW
 
 ---
-
 # ISSUE_012:
 
- Status:[ ]
+ Status:[x]
   title: "Billing routes trust user_id from query string"
   category: security-authorization
 
@@ -1664,7 +1663,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_013:
 
- Status:[ ]
+ Status:[x]
   title: "Auth0 callback reflects provider errors and exception details"
   category: security-information-disclosure
 
