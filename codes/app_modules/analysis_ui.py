@@ -918,7 +918,12 @@ def _build_analysis_content(data: dict) -> list:
             html.Div(
                 className="company-header-left",
                 children=[
-                    html.H2(name),
+                    html.H2(html.A(
+                        name,
+                        href=f"/analyze/{symbol}/",
+                        className="company-title-link",
+                        title=f"Open {name} company research",
+                    )),
                     html.Div(f"{symbol} · {sector}", className="company-meta"),
                     html.Div(
                         className="stats-row",

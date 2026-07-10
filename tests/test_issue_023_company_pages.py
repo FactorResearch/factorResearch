@@ -107,6 +107,9 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
     assert "FactorResearch company dossier" in body
     assert "Company Research" in body
     assert "non-proprietary design elements" in body
+    assert 'localStorage.getItem("fr-theme")' in body
+    assert "html.light .history-card" in body
+    assert "prefers-color-scheme: light" in body
     assert "Intrinsic Value" in body
     assert "Financial Health" in body
     assert "Stability Score" in body

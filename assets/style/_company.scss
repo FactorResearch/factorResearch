@@ -20,6 +20,20 @@
     letter-spacing: -0.01em;
     margin-bottom: 4px;
   }
+
+  .company-title-link {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      color: $blue-bright;
+      border-bottom-color: $blue-bright;
+      outline: none;
+    }
+  }
 }
 
 .company-meta {

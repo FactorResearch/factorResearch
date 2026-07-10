@@ -22,3 +22,9 @@ def test_light_analysis_overrides_dark_inline_tokens_and_component_borders():
     assert 'style*="color: #00e676"' in styles
     assert "body.light .risk-row .metric_cell" in portfolio
     assert "border-color: $light-border" in portfolio
+
+
+def test_analyze_company_heading_links_to_company_research():
+    source = (ROOT / "codes/app_modules/analysis_ui.py").read_text()
+    assert 'href=f"/analyze/{symbol}/"' in source
+    assert 'className="company-title-link"' in source
