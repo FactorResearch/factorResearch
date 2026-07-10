@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import os
+import json
 from contextlib import contextmanager
 from datetime import date, datetime
-from typing import Iterator
+from typing import Any, Iterator
+import uuid
 
 from codes.models.analysis_snapshot import (
     AnalysisSnapshot,
     AnalysisType,
+    CustomAnalysisSnapshot,
     PUBLIC_ANALYSIS_TYPES,
+    company_slug,
 )
 
 
@@ -41,6 +45,35 @@ CREATE TABLE IF NOT EXISTS analysis_versions (
 
 ALTER TABLE analysis_snapshots
 ADD COLUMN IF NOT EXISTS sector TEXT;
+
+ALTER TABLE analysis_snapshots
+ADD COLUMN IF NOT EXISTS official_metrics JSONB NOT NULL DEFAULT '{}'::jsonb;
+
+ALTER TABLE analysis_snapshots
+DROP CONSTRAINT IF EXISTS analysis_snapshots_ticker_analysis_date_algorithm_version_key;
+
+CREATE INDEX IF NOT EXISTS idx_analysis_snapshots_ticker_date
+ON analysis_snapshots(ticker, analysis_date DESC, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS custom_analysis_snapshots (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    ticker TEXT NOT NULL,
+    company_name TEXT NOT NULL,
+    formula_name TEXT NOT NULL,
+    formula_version TEXT NOT NULL,
+    composite_score DOUBLE PRECISION,
+    factors JSONB NOT NULL DEFAULT '{}'::jsonb,
+    backtest_summary JSONB NOT NULL DEFAULT '{}'::jsonb,
+    default_comparison JSONB NOT NULL DEFAULT '{}'::jsonb,
+    benchmark_comparison JSONB NOT NULL DEFAULT '{}'::jsonb,
+    notes TEXT NOT NULL DEFAULT '',
+    analysis_date DATE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_custom_analysis_owner_ticker_date
+ON custom_analysis_snapshots(user_id, ticker, analysis_date DESC, created_at DESC);
 """
 
 
@@ -128,22 +161,9 @@ def save_standard_snapshot(
                     ticker, company_name, analysis_date, algorithm_version,
                     valuation_score, quality_score, growth_score, momentum_score,
                     risk_score, final_rating, intrinsic_value, market_price,
-                    market_fear_score, sector
+                    market_fear_score, sector, official_metrics
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (ticker, analysis_date, algorithm_version)
-                DO UPDATE SET
-                    company_name = EXCLUDED.company_name,
-                    valuation_score = EXCLUDED.valuation_score,
-                    quality_score = EXCLUDED.quality_score,
-                    growth_score = EXCLUDED.growth_score,
-                    momentum_score = EXCLUDED.momentum_score,
-                    risk_score = EXCLUDED.risk_score,
-                    final_rating = EXCLUDED.final_rating,
-                    intrinsic_value = EXCLUDED.intrinsic_value,
-                    market_price = EXCLUDED.market_price,
-                    market_fear_score = EXCLUDED.market_fear_score,
-                    sector = EXCLUDED.sector
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s::jsonb)
                 RETURNING id, created_at
                 """,
                 (
@@ -161,6 +181,7 @@ def save_standard_snapshot(
                     snapshot.market_price,
                     snapshot.market_fear_score,
                     snapshot.sector,
+                    json.dumps(snapshot.official_metrics or {}),
                 ),
             )
             row = cur.fetchone()
@@ -168,6 +189,123 @@ def save_standard_snapshot(
     return AnalysisSnapshot(
         **{**snapshot.__dict__, "id": row[0], "created_at": row[1]},
     )
+
+
+def get_company_snapshots_by_slug(slug: str, *, limit: int = 12, offset: int = 0) -> list[AnalysisSnapshot]:
+    """Return a paginated official history for an exact normalized company slug."""
+    initialize_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """SELECT DISTINCT ON (ticker) ticker, company_name
+                   FROM analysis_snapshots
+                   ORDER BY ticker, analysis_date DESC, created_at DESC"""
+            )
+            ticker = next(
+                (row[0] for row in cur.fetchall() if company_slug(row[1]) == slug),
+                None,
+            )
+    if not ticker:
+        return []
+    history = list_ticker_snapshots(ticker, limit=max(1, min(limit + offset, 120)))
+    return history[offset:offset + limit]
+
+
+def save_custom_snapshot(
+    user_id: str,
+    analysis_result: dict[str, Any],
+    *,
+    formula_name: str,
+    formula_version: str,
+    factors: dict[str, float],
+    backtest_summary: dict[str, Any] | None = None,
+    default_comparison: dict[str, Any] | None = None,
+    benchmark_comparison: dict[str, Any] | None = None,
+    notes: str = "",
+    analysis_date: date | None = None,
+) -> CustomAnalysisSnapshot:
+    """Append an immutable private custom-model result for one owner."""
+    snapshot = CustomAnalysisSnapshot(
+        id=uuid.uuid4().hex,
+        user_id=user_id,
+        ticker=str(analysis_result.get("symbol") or "").upper(),
+        company_name=str(analysis_result.get("name") or analysis_result.get("symbol") or ""),
+        formula_name=formula_name,
+        formula_version=formula_version,
+        composite_score=float(analysis_result["composite_score"]) if analysis_result.get("composite_score") is not None else None,
+        factors=dict(factors),
+        backtest_summary=dict(backtest_summary or {}),
+        default_comparison=dict(default_comparison or {}),
+        benchmark_comparison=dict(benchmark_comparison or {}),
+        notes=notes,
+        analysis_date=analysis_date or date.today(),
+    )
+    if not snapshot.user_id or not snapshot.ticker:
+        raise ValueError("user_id and ticker are required")
+    initialize_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO custom_analysis_snapshots (
+                    id, user_id, ticker, company_name, formula_name, formula_version,
+                    composite_score, factors, backtest_summary, default_comparison,
+                    benchmark_comparison, notes, analysis_date
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb, %s::jsonb, %s, %s)
+                RETURNING created_at
+                """,
+                (snapshot.id, snapshot.user_id, snapshot.ticker, snapshot.company_name,
+                 snapshot.formula_name, snapshot.formula_version, snapshot.composite_score,
+                 json.dumps(snapshot.factors), json.dumps(snapshot.backtest_summary),
+                 json.dumps(snapshot.default_comparison), json.dumps(snapshot.benchmark_comparison),
+                 snapshot.notes, snapshot.analysis_date),
+            )
+            created_at = cur.fetchone()[0]
+    return CustomAnalysisSnapshot(**{**snapshot.__dict__, "created_at": created_at})
+
+
+def _custom_from_row(row) -> CustomAnalysisSnapshot:
+    return CustomAnalysisSnapshot(
+        id=row[0], user_id=row[1], ticker=row[2], company_name=row[3],
+        formula_name=row[4], formula_version=row[5], composite_score=row[6],
+        factors=row[7] or {}, backtest_summary=row[8] or {},
+        default_comparison=row[9] or {}, benchmark_comparison=row[10] or {},
+        notes=row[11] or "", analysis_date=row[12], created_at=row[13],
+    )
+
+
+def list_custom_snapshots(user_id: str, ticker: str, *, limit: int = 12, offset: int = 0) -> list[CustomAnalysisSnapshot]:
+    initialize_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """SELECT id, user_id, ticker, company_name, formula_name,
+                          formula_version, composite_score, factors, backtest_summary,
+                          default_comparison, benchmark_comparison, notes,
+                          analysis_date, created_at
+                   FROM custom_analysis_snapshots
+                   WHERE user_id = %s AND ticker = %s
+                   ORDER BY analysis_date DESC, created_at DESC
+                   LIMIT %s OFFSET %s""",
+                (user_id, ticker.upper(), limit, offset),
+            )
+            return [_custom_from_row(row) for row in cur.fetchall()]
+
+
+def get_custom_snapshot_for_owner(snapshot_id: str, user_id: str) -> CustomAnalysisSnapshot | None:
+    initialize_schema()
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """SELECT id, user_id, ticker, company_name, formula_name,
+                          formula_version, composite_score, factors, backtest_summary,
+                          default_comparison, benchmark_comparison, notes,
+                          analysis_date, created_at
+                   FROM custom_analysis_snapshots WHERE id = %s AND user_id = %s""",
+                (snapshot_id, user_id),
+            )
+            row = cur.fetchone()
+    return _custom_from_row(row) if row else None
 
 
 def get_snapshot(ticker: str, yyyymmdd: str) -> AnalysisSnapshot | None:
@@ -180,7 +318,7 @@ def get_snapshot(ticker: str, yyyymmdd: str) -> AnalysisSnapshot | None:
                 SELECT id, ticker, company_name, analysis_date, algorithm_version,
                        valuation_score, quality_score, growth_score, momentum_score,
                        risk_score, final_rating, intrinsic_value, market_price,
-                       market_fear_score, sector, created_at
+                       market_fear_score, sector, created_at, official_metrics
                 FROM analysis_snapshots
                 WHERE ticker = %s AND analysis_date = %s
                 ORDER BY created_at DESC
@@ -208,6 +346,7 @@ def get_snapshot(ticker: str, yyyymmdd: str) -> AnalysisSnapshot | None:
         market_fear_score=row[13],
         sector=row[14] or "",
         created_at=row[15],
+        official_metrics=row[16] or {},
     )
 
 
@@ -221,7 +360,7 @@ def list_ticker_snapshots(ticker: str, limit: int = 24) -> list[AnalysisSnapshot
                        id, ticker, company_name, analysis_date, algorithm_version,
                        valuation_score, quality_score, growth_score, momentum_score,
                        risk_score, final_rating, intrinsic_value, market_price,
-                       market_fear_score, sector, created_at
+                       market_fear_score, sector, created_at, official_metrics
                 FROM analysis_snapshots
                 WHERE ticker = %s
                 ORDER BY analysis_date DESC, created_at DESC, algorithm_version DESC
@@ -248,6 +387,7 @@ def list_ticker_snapshots(ticker: str, limit: int = 24) -> list[AnalysisSnapshot
             market_fear_score=row[13],
             sector=row[14] or "",
             created_at=row[15],
+            official_metrics=row[16] or {},
         )
         for row in rows
     ]
@@ -262,7 +402,7 @@ def list_public_snapshots(limit: int = 500) -> list[AnalysisSnapshot]:
                 SELECT id, ticker, company_name, analysis_date, algorithm_version,
                        valuation_score, quality_score, growth_score, momentum_score,
                        risk_score, final_rating, intrinsic_value, market_price,
-                       market_fear_score, sector, created_at
+                       market_fear_score, sector, created_at, official_metrics
                 FROM analysis_snapshots
                 ORDER BY analysis_date DESC, created_at DESC
                 LIMIT %s
@@ -288,6 +428,7 @@ def list_public_snapshots(limit: int = 500) -> list[AnalysisSnapshot]:
             market_fear_score=row[13],
             sector=row[14] or "",
             created_at=row[15],
+            official_metrics=row[16] or {},
         )
         for row in rows
     ]
@@ -311,6 +452,7 @@ def _snapshot_from_row(row) -> AnalysisSnapshot:
         market_fear_score=row[13],
         sector=row[14] or "",
         created_at=row[15],
+        official_metrics=row[16] or {},
     )
 
 
@@ -333,7 +475,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
                    id, ticker, company_name, analysis_date, algorithm_version,
                    valuation_score, quality_score, growth_score, momentum_score,
                    risk_score, final_rating, intrinsic_value, market_price,
-                   market_fear_score, sector, created_at
+                   market_fear_score, sector, created_at, official_metrics
             FROM analysis_snapshots
             WHERE ticker <> %(ticker)s
             ORDER BY ticker, analysis_date DESC, created_at DESC

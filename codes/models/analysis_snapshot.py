@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum
 from typing import Any
+import re
 
 
 class AnalysisType(str, Enum):
@@ -14,6 +15,12 @@ class AnalysisType(str, Enum):
 
 
 PUBLIC_ANALYSIS_TYPES = {AnalysisType.STANDARD}
+
+
+def company_slug(company_name: str) -> str:
+    """Stable, URL-safe company-name slug with common legal suffixes removed."""
+    value = re.sub(r"\b(incorporated|inc|corporation|corp|company|co|ltd|plc)\b\.?", "", company_name, flags=re.I)
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
 
 
 def _num(value: Any) -> float | None:
@@ -56,6 +63,7 @@ class AnalysisSnapshot:
     sector: str = ""
     created_at: datetime | None = None
     id: int | None = None
+    official_metrics: dict[str, Any] | None = None
 
     @property
     def url_date(self) -> str:
@@ -64,6 +72,14 @@ class AnalysisSnapshot:
     @property
     def public_path(self) -> str:
         return f"/analyze/{self.ticker}/{self.url_date}"
+
+    @property
+    def company_path(self) -> str:
+        return f"/analyze/{company_slug(self.company_name)}"
+
+    @property
+    def permanent_path(self) -> str:
+        return f"{self.company_path}/{self.analysis_date.isoformat()}"
 
     @property
     def title(self) -> str:
@@ -118,6 +134,11 @@ class AnalysisSnapshot:
         risk = result.get("risk") or {}
         regime = result.get("regime") or {}
         market_fear = result.get("market_fear") or {}
+        altman = result.get("altman") or {}
+        piotroski = result.get("piotroski") or {}
+        beneish = result.get("beneish") or {}
+        ohlson = result.get("ohlson") or {}
+        profitability = result.get("profitability") or {}
 
         valuation_score = _num(
             enhanced.get("composite_score")
@@ -148,4 +169,37 @@ class AnalysisSnapshot:
                 or regime.get("market_trend_score")
             ),
             sector=str(result.get("sector") or ""),
+            official_metrics={
+                "composite_score": valuation_score,
+                "valuation_verdict": result.get("valuation_verdict") or graham.get("verdict"),
+                "margin_of_safety": _num(result.get("margin_of_safety") or graham.get("margin_of_safety")),
+                "graham_score": _num(graham.get("total_score")),
+                "piotroski_f_score": _num(piotroski.get("f_score") or piotroski.get("score")),
+                "altman_z_score": _num(altman.get("z_score") or altman.get("score")),
+                "beneish_m_score": _num(beneish.get("m_score") or beneish.get("score")),
+                "ohlson_o_score": _num(ohlson.get("o_score") or ohlson.get("score")),
+                "profitability_score": _num(profitability.get("score") or profitability.get("total_score")),
+            },
         )
+
+
+@dataclass(frozen=True)
+class CustomAnalysisSnapshot:
+    id: str
+    user_id: str
+    ticker: str
+    company_name: str
+    formula_name: str
+    formula_version: str
+    composite_score: float | None
+    factors: dict[str, float]
+    backtest_summary: dict[str, Any]
+    default_comparison: dict[str, Any]
+    benchmark_comparison: dict[str, Any]
+    notes: str
+    analysis_date: date
+    created_at: datetime | None = None
+
+    @property
+    def private_path(self) -> str:
+        return f"/analyze/{company_slug(self.company_name)}/custom/{self.id}"
