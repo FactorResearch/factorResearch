@@ -7,6 +7,8 @@ import time
 from dash import Input, Output, callback, dcc, html
 
 from codes import billing
+from codes.app_modules.session import get_user_id
+from codes.services import product_analytics
 
 
 PLAN_CARDS = [
@@ -162,4 +164,8 @@ def open_upgrade_funnel(*, feature: str, feature_label: str, reason: str, source
     prevent_initial_call=False,
 )
 def render_pricing_tab(context):
+    try:
+        product_analytics.track_event(get_user_id(), "pricing_page_viewed", context or {})
+    except Exception:
+        pass
     return build_pricing_tab(context)

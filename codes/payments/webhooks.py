@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from codes.payments import subscriptions
+from codes.services import product_analytics
 
 
 HANDLED_EVENTS = {
@@ -33,7 +34,14 @@ def handle_event(event) -> bool:
         return False
 
     if event_type == "checkout.session.completed":
-        subscriptions.sync_checkout_completed(_as_dict(obj))
+        session = _as_dict(obj)
+        subscriptions.sync_checkout_completed(session)
+        metadata = session.get("metadata") or {}
+        product_analytics.track_event(
+            metadata.get("user_id") or session.get("client_reference_id") or "",
+            "subscription_completed",
+            {"plan": metadata.get("plan") or "premium"},
+        )
         return True
 
     if event_type in {

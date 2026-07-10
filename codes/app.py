@@ -27,6 +27,7 @@ from codes.data import sec_data
 from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
+from codes.services.analytics_bootstrap import build_head_snippets
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
@@ -172,6 +173,10 @@ app.index_string = app.index_string.replace(
     '  });'
     '})();'
     '</script></head>'
+)
+app.index_string = app.index_string.replace(
+    '</head>',
+    build_head_snippets() + '</head>'
 )
 
 app.index_string = app.index_string.replace(

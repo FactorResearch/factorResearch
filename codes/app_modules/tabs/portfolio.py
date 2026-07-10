@@ -73,6 +73,7 @@ def create_portfolio(n, name, refresh):
     if name in existing:
         return dash.no_update, dash.no_update, f"❌ '{name}' already exists.", dash.no_update
     portfolio_engine.create_portfolio(uid, name)
+    product_analytics.track_event(uid, "portfolio_created", {"portfolio_name": name})
     security.audit_log_access("CREATE", f"portfolio:{name}", uid)
     return (refresh or 0) + 1, name, "", ""
 
@@ -136,6 +137,7 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     _, err = portfolio_engine.add_holding(uid,port_name, symbol, shares, price, company)
     if err:
         return f"❌ {err}", {"color": RED}, dash.no_update, dash.no_update
+    product_analytics.track_event(uid, "portfolio_updated", {"portfolio_name": port_name, "symbol": symbol, "action": "add_holding"})
     portfolio_engine.invalidate_simulation_cache(uid, port_name)
     invalidate_portfolio_cache()
     p = portfolio_engine.load_portfolio(uid, port_name)
@@ -721,8 +723,10 @@ def run_simulation(n, active, compare):
         )
     except RateLimited as exc:
         wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
+        product_analytics.track_event(uid, "backtest_failed", {"source": "portfolio", "reason": "rate_limit"})
         return html.Div(f"⏳ Portfolio simulation rate limit reached.{wait}",
                         className="text-danger"), None
+    product_analytics.track_event(uid, "backtest_started", {"source": "portfolio", "portfolio_name": active, "compare": compare or ""})
 
     def _build_sim_charts(port_name: str, color: str) -> list:
         sim = portfolio_engine.run_simulation(uid, port_name)
@@ -981,6 +985,7 @@ def run_simulation(n, active, compare):
         result = _build_comparison_view(uid,active, compare, cmp_result, PALETTE)
         permissions.record_feature_usage(uid, permissions.Feature.PORTFOLIO_ANALYTICS,
                                          usage_key=f"portfolio:{active}:{compare}")
+        product_analytics.track_event(uid, "backtest_completed", {"source": "portfolio", "portfolio_name": active, "compare": compare})
         return result, None
     result = [
         html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
@@ -990,4 +995,5 @@ def run_simulation(n, active, compare):
                for component in result):
         permissions.record_feature_usage(uid, permissions.Feature.PORTFOLIO_ANALYTICS,
                                          usage_key=f"portfolio:{active}")
+        product_analytics.track_event(uid, "backtest_completed", {"source": "portfolio", "portfolio_name": active})
     return result, None

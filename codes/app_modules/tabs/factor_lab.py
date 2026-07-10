@@ -86,6 +86,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable", None
 
     # Layer 4: cache-aware backtest, reused across identical configs
+    product_analytics.track_event(uid, "backtest_started", {"source": "factor_lab", "top_n": top_n or 10, "years": years or 5})
     result = strategy_cache.get_or_run_backtest(
         weights=custom_weights,
         top_n=top_n or 10,
@@ -93,9 +94,11 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     )
 
     if result.get("error"):
+        product_analytics.track_event(uid, "backtest_failed", {"source": "factor_lab"})
         return [html.Div(f"❌ {result['error']}", className="text-danger p-20")], "❌ Error", None
 
     permissions.record_feature_usage(uid, permissions.Feature.BACKTEST)
+    product_analytics.track_event(uid, "backtest_completed", {"source": "factor_lab", "top_n": result["top_n"], "years": result["years"]})
     cache_note = " (cached)" if result.get("cache_hit") else ""
     return _render_fb_results(result), (
         f"✅ {result['n_analysed']} stocks scored · "

@@ -162,16 +162,22 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
         if is_production():
             return dash.no_update, [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
         access = None
+    product_analytics.track_event(user_id, "analysis_started", {"symbol": symbol, "source": triggered or "direct"})
     try:
         result = analyze_stock(symbol)
     except Exception as e:
         if _is_rate_limit_error(e):
             message = getattr(e, "user_message", str(e))
+            product_analytics.track_event(user_id, "analysis_failed", {"symbol": symbol, "reason": "rate_limit"})
             return dash.no_update, [], None, f"❌ {message}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
         print(f"run_analysis unexpected error: {type(e).__name__}: {e}")
+        product_analytics.track_event(user_id, "analysis_failed", {"symbol": symbol, "reason": type(e).__name__})
         return dash.no_update, [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     if "error" in result:
+        product_analytics.track_event(user_id, "analysis_failed", {"symbol": symbol, "reason": "business_error"})
         return dash.no_update, [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
+    product_analytics.track_event(user_id, "analysis_completed", {"symbol": symbol, "source": triggered or "direct"})
+    product_analytics.track_event(user_id, "stock_viewed", {"symbol": symbol, "source": "analysis"})
     viewed_updated = list(set((viewed_list or []) + [symbol]))
     content = _build_analysis_content(result)
     # Update screener row with full analysis data (Graham Number, live price, enhanced score)

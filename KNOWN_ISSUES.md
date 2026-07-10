@@ -2707,7 +2707,7 @@ update the layout form and structure of Financial Health,Stability Score,Market 
 ---
 # ISSUE_026
 
-**Status:** [ ]
+**Status:** [~]
 
 **Title:** Implement Product Analytics Platform
 
@@ -2715,242 +2715,177 @@ update the layout form and structure of Financial Health,Stability Score,Market 
 
 **Estimated effort:** 3--5 days (initial integration), ongoing expansion
 
-**Problem**
+**Current State**
 
-We currently have no visibility into how users interact with the
-platform. Product decisions are based on assumptions rather than real
-usage data.
+This issue is partially implemented. The event collection foundation now
+exists, but the full analytics platform described below is not complete.
 
-We do not know:
+The current codebase now has:
 
--   Which stocks are viewed the most
--   Which algorithms are used the most
--   Which screener filters are popular
--   Which pages convert visitors into subscribers
--   Where users abandon the subscription funnel
--   Which features provide the most value
--   Which parts of the application are confusing or underused
+-   async, best-effort product event tracking
+-   a dedicated `analytics_events` persistence path
+-   optional analytics DB URL support via `DATABASE_ANALYTICS_URL`
+-   fallback to `DATABASE_MARKET_URL` if a separate analytics DB is not
+    configured
+-   optional third-party script bootstrap via env vars for:
+    -   PostHog
+    -   Microsoft Clarity
+    -   Sentry
 
-The goal is **not** to build a generic analytics platform from scratch.
-Existing products already solve that problem well. Our engineering
-effort should focus on collecting financial domain-specific analytics
-that are unique to FactorResearch.
+Implemented domain events currently include:
 
-------------------------------------------------------------------------
+-   `stock_viewed`
+-   `analysis_started`
+-   `analysis_completed`
+-   `analysis_failed`
+-   `screener_filter_changed`
+-   `portfolio_created`
+-   `portfolio_updated`
+-   `backtest_started`
+-   `backtest_completed`
+-   `backtest_failed`
+-   `pricing_page_viewed`
+-   `subscription_started`
+-   `subscription_completed`
 
-## Proposed Architecture
-
-    User Action
-          │
-          ▼
-    Application Event
-          │
-          ├── PostHog
-          │      ├─ Product analytics
-          │      ├─ Funnels
-          │      ├─ Feature usage
-          │      ├─ Retention
-          │      ├─ Dashboards
-          │      └─ A/B testing (future)
-          │
-          ├── Microsoft Clarity
-          │      ├─ Heatmaps
-          │      ├─ Session recordings
-          │      ├─ Scroll depth
-          │      └─ Rage/dead clicks
-          │
-          ├── Sentry
-          │      ├─ Backend exceptions
-          │      ├─ Frontend errors
-          │      └─ Performance monitoring
-          │
-          └── factorresearch_analytics (PostgreSQL)
-                 ├─ Stock views
-                 ├─ Analysis events
-                 ├─ Portfolio events
-                 ├─ Screener usage
-                 ├─ Recommendation analytics
-                 └─ Business intelligence
+These are wired into the existing app flows and do not block product
+behavior if analytics writes fail.
 
 ------------------------------------------------------------------------
 
-## Phase 1 -- Third-Party Analytics
+## What Has Already Been Done
 
-Integrate:
+### Phase 1 foundation
 
--   PostHog
--   Microsoft Clarity
--   Sentry
+-   optional PostHog snippet injection
+-   optional Microsoft Clarity snippet injection
+-   optional Sentry browser snippet injection
+-   env-driven setup instead of hardcoding vendor config
 
-These services should handle generic analytics instead of building our
-own.
+### Phase 2 foundation
 
-Capabilities include:
+-   product analytics service created
+-   event writes made asynchronous / best-effort
+-   `analytics_events` table added
+-   page path, user id, anonymous id, timestamp, and metadata are stored
+-   usage-counter summaries for events are still maintained for quick
+    aggregate counts
 
--   Page views
--   Sessions
--   Funnels
--   Retention
--   User journeys
--   Session recordings
--   Heatmaps
--   Feature flags (future)
--   A/B testing (future)
--   Error monitoring
--   Performance monitoring
+### Implemented instrumentation points
 
-------------------------------------------------------------------------
-
-## Phase 2 -- Domain-Specific Analytics
-
-Implement our own event system for financial workflows.
-
-Example events:
-
--   stock_viewed
--   analysis_started
--   analysis_completed
--   analysis_failed
--   algorithm_selected
--   screener_run
--   screener_filter_changed
--   portfolio_created
--   portfolio_updated
--   watchlist_added
--   backtest_started
--   backtest_completed
--   pricing_page_viewed
--   subscription_started
--   subscription_completed
+-   Analyze flow
+-   Screener ticker clicks / country filter changes
+-   Factor Lab backtests
+-   Portfolio create/update/simulation flows
+-   Pricing page views
+-   Checkout/subscription completion webhook
 
 ------------------------------------------------------------------------
 
-## Database
+## What Is Still Missing
 
-Create a dedicated analytics database.
+### Phase 1 follow-through
 
-Database:
+-   verify real PostHog end-to-end event delivery in a configured
+    environment
+-   verify real Clarity script/session recording behavior
+-   verify real Sentry browser error capture
+-   add any required provider-specific identify / group / alias logic
 
--   factorresearch_analytics
+### Phase 2 follow-through
 
-Suggested tables:
+-   add missing domain events:
+    -   `algorithm_selected`
+    -   `screener_run`
+    -   `watchlist_added` (if/when watchlist exists)
+-   add explicit runtime / cache metrics for analysis and backtest flows
+-   add failure classification for analytics/debug reporting
+-   add opt-out controls beyond env-level disablement
 
--   analytics_events
--   analytics_company_views
--   analytics_analysis_runs
--   analytics_portfolios
--   analytics_searches
--   analytics_subscriptions
--   analytics_performance
--   analytics_errors
+### Database / reporting work still not done
 
-------------------------------------------------------------------------
+The following suggested tables are **not** implemented yet:
 
-## Questions the System Should Answer
+-   `analytics_company_views`
+-   `analytics_analysis_runs`
+-   `analytics_portfolios`
+-   `analytics_searches`
+-   `analytics_subscriptions`
+-   `analytics_performance`
+-   `analytics_errors`
 
-### Company Analytics
-
--   Most viewed companies
--   Trending companies
--   Most viewed sectors
--   Geographic popularity
-
-### Analysis Analytics
-
--   Most used algorithms
--   Average runtime
--   Cache hit ratio
--   Failure rate
-
-### Screener Analytics
-
--   Most common filters
--   Most searched sectors
--   Most searched industries
--   Saved screeners
-
-### Portfolio Analytics
-
--   Average portfolio size
--   Most owned companies
--   Most popular weighting method
--   Most common factor combinations
-
-### Subscription Funnel
-
-Landing Page
-
-↓
-
-Company Page
-
-↓
-
-Analysis
-
-↓
-
-Paywall
-
-↓
-
-Pricing
-
-↓
-
-Checkout
-
-↓
-
-Subscription
-
-Measure:
-
--   Conversion rate
--   Drop-off rate
--   Time between steps
+Right now only `analytics_events` exists as the canonical event log.
 
 ------------------------------------------------------------------------
 
-## Future Business Intelligence
+## Questions the Current Implementation Still Cannot Answer Cleanly
 
-Weekly automated reports should summarize:
+The current foundation can collect raw events, but it does **not yet**
+provide finished reporting for:
 
--   Top viewed stocks
--   Fastest growing sectors
--   Highest converting landing pages
--   Highest converting algorithms
--   Most abandoned pages
--   Most common searches
--   Most active subscribers
+-   most viewed companies
+-   trending companies
+-   most viewed sectors
+-   geographic popularity
+-   most used algorithms
+-   average runtime
+-   cache hit ratio
+-   failure rate
+-   most common screener filters
+-   most common searches
+-   average portfolio size
+-   most owned companies
+-   highest converting landing pages
+-   time-between-funnel-step analysis
 
-These reports should help prioritize future development based on real
-usage.
-
-------------------------------------------------------------------------
-
-## Privacy Requirements
-
--   Anonymous tracking for guests
--   User-linked events after login
--   No selling user data
--   GDPR/privacy compliance where applicable
--   Analytics opt-out support
--   Avoid storing unnecessary sensitive financial information
+These need reporting queries, materialized summaries, or dashboards on
+top of the event stream.
 
 ------------------------------------------------------------------------
 
-## Acceptance Criteria
+## Recommended Next Steps For A Future Session
 
--   Generic analytics are handled by third-party platforms.
--   Domain-specific financial events are stored in our own analytics
-    database.
--   Analytics collection is asynchronous and does not impact page
-    performance.
--   Product dashboards provide actionable insights for product,
-    engineering, and business decisions.
--   Future recommendation engines can leverage historical analytics
-    data.
+1. Create read/query helpers for `analytics_events`.
+2. Add missing domain events:
+   - `screener_run`
+   - `algorithm_selected`
+   - explicit cache-hit/runtime events
+3. Decide whether to keep one event table or fan out into dedicated
+   summary tables.
+4. Build a first internal analytics dashboard/report for:
+   - top viewed stocks
+   - analysis completion/failure counts
+   - screener filter usage
+   - pricing → checkout → subscription funnel
+5. Add privacy controls:
+   - app-level analytics opt-out
+   - suppression of sensitive metadata
+6. Validate third-party integrations in a real configured environment.
+
+------------------------------------------------------------------------
+
+## Privacy / Safety Notes
+
+-   Anonymous tracking exists for guest-style sessions
+-   User-linked events exist after authentication or session identity
+-   Analytics failures should not break user workflows
+-   Sensitive financial payloads should continue to be minimized in event
+    metadata
+
+------------------------------------------------------------------------
+
+## Acceptance Criteria For Marking This Fully Complete Later
+
+-   Generic analytics are actually configured and verified in third-party
+    platforms.
+-   Domain-specific financial events are stored in a dedicated analytics
+    pipeline.
+-   Analytics collection remains asynchronous and non-blocking.
+-   Product dashboards or query surfaces answer the core business and
+    product questions from this issue.
+-   Funnel analysis is queryable from landing/page interaction through
+    subscription completion.
+-   Future recommendation/reporting systems can build on this data.
 
 
 
@@ -2964,7 +2899,7 @@ usage.
   buy and sell signal must get their information from there, this includes, option signal and any other signal in future
 ---
 # ISSUE_028:
-  **Status:** [ ]
+  **Status:** [x]
   title: developer qa
 
   create a solution that in development mode, dev can easily pretend to be different user type, paid free and pro. make it so it is exapndable in future

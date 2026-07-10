@@ -19,6 +19,8 @@ from codes.app_modules.screener_markets import (
     row_matches_country,
 )
 from codes.app_modules.session import get_portfolio_symbols
+from codes.app_modules.session import get_user_id
+from codes.services import product_analytics
 
 last_progress_state = None
 last_progress_bar_state = None
@@ -59,6 +61,10 @@ def capture_screener_click(n_clicks_list):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
+    try:
+        product_analytics.track_event(get_user_id(), "stock_viewed", {"symbol": triggered["index"], "source": "screener"})
+    except Exception:
+        pass
     return triggered["index"]  # the symbol string
 
 
@@ -72,6 +78,10 @@ def switch_screener_country(n_clicks_list):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update, dash.no_update
+    try:
+        product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": triggered["index"]})
+    except Exception:
+        pass
     return triggered["index"], 1
 
 
