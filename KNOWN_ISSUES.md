@@ -1740,7 +1740,7 @@ risk_if_not_fixed: HIGH
 
 # ISSUE_015:
 
- Status:[ ]
+ Status:[x]
   title: "Security test suite is stale and currently cannot validate security module"
   category: security-testing
 

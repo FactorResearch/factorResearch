@@ -14,12 +14,19 @@ Tests for:
 import pytest
 import sys
 import os
+import importlib.util
 from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
-from codes import security
+# Load the security module directly so this regression suite does not depend on
+# pandas-heavy package initialization in codes/__init__.py.
+spec = importlib.util.spec_from_file_location("graham_security", PROJECT_ROOT / "codes" / "security.py")
+security = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(security)
 
 
 class TestInputValidation:
@@ -96,15 +103,17 @@ class TestSanitization:
         result = security.sanitize_string("<script>alert('xss')</script>")
         assert "<script>" not in result
         assert "alert" in result  # Content preserved
+        assert "&lt;script&gt;" in result
         
         # Event handler
         result = security.sanitize_string('<img src=x onerror="alert(1)">')
-        assert "onerror=" not in result or "onerror=" not in result
+        assert "<img" not in result
+        assert "&lt;img" in result
         
         # SVG attack
         result = security.sanitize_string('<svg onload=alert(1)>')
-        assert "<svg" in result  # Escaped
-        assert "onload=" in result  # Escaped
+        assert "<svg" not in result
+        assert "&lt;svg" in result
     
     def test_sanitize_sql_injection(self):
         """Test sanitization of SQL injection attempts."""
@@ -185,6 +194,38 @@ class TestCSRFProtection:
         assert isinstance(token, str)
         assert len(token) == 43  # Standard base64url token length
 
+    def test_require_csrf_accepts_session_token(self):
+        """Test explicit CSRF decorator accepts a matching header token."""
+        app = security.flask.Flask(__name__)
+        app.secret_key = "test-secret"
+
+        @app.post("/form")
+        @security.require_csrf
+        def form_post():
+            return "ok"
+
+        client = app.test_client()
+        with client.session_transaction() as sess:
+            sess["_csrf_token"] = "known-token"
+
+        assert client.post("/form", headers={"X-CSRF-Token": "known-token"}).status_code == 200
+        assert client.post("/form", headers={"X-CSRF-Token": "bad-token"}).status_code == 403
+
+    def test_init_csrf_protection_enforces_same_origin_posts(self):
+        """Test blanket CSRF guard rejects cross-origin state-changing requests."""
+        app = security.flask.Flask(__name__)
+        app.secret_key = "test-secret"
+        security.init_csrf_protection(app)
+
+        @app.post("/mutate")
+        def mutate():
+            return "ok"
+
+        client = app.test_client()
+        assert client.post("/mutate", headers={"Origin": "http://localhost"}).status_code == 200
+        assert client.post("/mutate", headers={"Origin": "http://evil.example"}).status_code == 403
+        assert client.post("/mutate").status_code == 403
+
 
 class TestEncryption:
     """Test sensitive data encryption."""
@@ -254,18 +295,39 @@ class TestSecurityHeaders:
         assert hasattr(security, 'SECURITY_LOGGER')
         assert hasattr(security, 'SENSITIVE_PATTERNS')
 
+    def test_init_security_sets_baseline_headers(self):
+        """Test that init_security adds browser hardening headers."""
+        app = security.flask.Flask(__name__)
+        app.secret_key = "test-secret"
+        security.init_security(app)
+
+        @app.get("/")
+        def index():
+            return "ok"
+
+        response = app.test_client().get("/")
+        assert response.headers["X-Content-Type-Options"] == "nosniff"
+        assert response.headers["X-Frame-Options"] == "DENY"
+        assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
+        assert response.headers["Access-Control-Allow-Origin"] == "none"
+
 
 class TestLogging:
     """Test security event logging."""
     
-    def test_log_security_event_masks_sensitive_data(self):
+    def test_log_security_event_masks_sensitive_data(self, caplog):
         """Test that sensitive data is masked in logs."""
-        # This would need to capture logs and verify masking
-        # For now, we just verify the function exists and works
+        caplog.set_level("INFO", logger=security.SECURITY_LOGGER.name)
         security.log_security_event(
             event_type="TEST_EVENT",
-            details={"password": "secret123"}
+            details={"password": "secret123", "nested": {"api_key": "abc"}, "safe": "visible"}
         )
+        log_text = caplog.text
+        assert "TEST_EVENT" in log_text
+        assert "visible" in log_text
+        assert "secret123" not in log_text
+        assert "abc" not in log_text
+        assert "[REDACTED]" in log_text
     
     def test_audit_log_access_records_event(self):
         """Test that audit logging records access."""

@@ -46,6 +46,104 @@ SENSITIVE_PATTERNS = [
 _DASH_CALLBACK_PATH = "/_dash-update-component"
 _STRIPE_WEBHOOK_PATH = "/billing/webhook"
 
+_TICKER_RE = re.compile(r"^(?=.*[A-Z])[A-Z][A-Z0-9.-]{0,9}$", re.IGNORECASE)
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+
+
+def validate_ticker(value: Any) -> bool:
+    """Validate a ticker-like symbol before it reaches downstream data APIs."""
+    if not isinstance(value, str):
+        return False
+    ticker = value.strip()
+    if not ticker or ticker.isdigit():
+        return False
+    return bool(_TICKER_RE.fullmatch(ticker))
+
+
+def validate_email(value: Any) -> bool:
+    """Validate email shape for account/billing forms without doing DNS checks."""
+    if not isinstance(value, str):
+        return False
+    email = value.strip()
+    if len(email) > 254:
+        return False
+    return bool(_EMAIL_RE.fullmatch(email))
+
+
+def validate_numeric(
+    value: Any,
+    min_val: float | None = None,
+    max_val: float | None = None,
+) -> tuple[bool, float | None]:
+    """Parse and optionally range-check a finite numeric value."""
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return False, None
+
+    if not parsed == parsed or parsed in (float("inf"), float("-inf")):
+        return False, None
+    if min_val is not None and parsed < min_val:
+        return False, None
+    if max_val is not None and parsed > max_val:
+        return False, None
+    return True, parsed
+
+
+def validate_json_payload(payload: Any, max_size: int = 1_000_000) -> bool:
+    """Ensure a payload is JSON-serializable and below the configured byte cap."""
+    if not isinstance(payload, (dict, list)):
+        return False
+    try:
+        encoded = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return False
+    return len(encoded) <= max_size
+
+
+class RateLimiter:
+    """Simple in-memory fixed-window limiter for local security checks/tests."""
+
+    def __init__(self):
+        self._requests: dict[str, list[float]] = {}
+        self._lock = threading.Lock()
+
+    def is_allowed(self, key: str, limit: int, window_seconds: int) -> bool:
+        if limit <= 0 or window_seconds <= 0:
+            return False
+
+        now = time.monotonic()
+        cutoff = now - window_seconds
+        with self._lock:
+            recent = [ts for ts in self._requests.get(key, []) if ts > cutoff]
+            if len(recent) >= limit:
+                self._requests[key] = recent
+                return False
+            recent.append(now)
+            self._requests[key] = recent
+            return True
+
+
+def _mask_sensitive_details(value: Any) -> Any:
+    if isinstance(value, dict):
+        masked: dict[Any, Any] = {}
+        for key, item in value.items():
+            key_text = str(key).lower()
+            if any(re.search(pattern, key_text) for pattern in SENSITIVE_PATTERNS):
+                masked[key] = "[REDACTED]"
+            else:
+                masked[key] = _mask_sensitive_details(item)
+        return masked
+    if isinstance(value, list):
+        return [_mask_sensitive_details(item) for item in value]
+    return value
+
+
+def log_security_event(event_type: str, details: dict[str, Any] | None = None) -> None:
+    """Log a security-relevant event while masking common secret-bearing fields."""
+    masked = _mask_sensitive_details(details or {})
+    SECURITY_LOGGER.info("SECURITY_EVENT type=%s details=%s", event_type, masked)
+
 
 class SensitiveDataEncryptor:
     """Small Fernet wrapper for encrypting sensitive local cache payloads."""
