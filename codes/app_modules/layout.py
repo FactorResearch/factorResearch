@@ -34,6 +34,7 @@ def _topbar():
             html.Button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", **{"data-tab": "screener"}),
             html.Button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", **{"data-tab": "analyze"}),
             html.Button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "portfolio"}),
+            html.Button("Factor Lab", id="tab-factorlab-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "factorlab"}),
         ]),
         html.Div(className="topbar-actions", children=[
             html.Div(id="theme-toggle", className="theme-toggle", children=[
@@ -53,9 +54,9 @@ def build_layout():
         # ── Tab: Screener ────────────────────────────────────────────────────────
         html.Div(id="tab-screener", className="screener-content block", children=[
             html.Div(className="screener-toolbar", children=[
-                html.Div(className="screener-controls", children=[
-                    html.Div(id="screener-progress-info", className="screener-info"),
-                ]),
+                # html.Div(className="screener-controls", children=[
+                #     html.Div(id="screener-progress-info", className="screener-info"),
+                # ]),
                 html.Div(className="screener-controls flex gap-lg align-items-center", children=[
                     html.Label("Filter by sector:", className="text-sm text-muted"),
                     dcc.Dropdown(

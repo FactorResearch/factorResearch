@@ -1813,7 +1813,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: MEDIUM
 
 ---
-
 # ISSUE_017:
 
  Status:[x]
@@ -1854,7 +1853,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: HIGH
 
 ---
-
 # ISSUE_018:
 
  Status:[x]
@@ -1893,7 +1891,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: HIGH
 
 ---
-
 # ISSUE_019:
 
  Status:[x]
@@ -1934,7 +1931,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: MEDIUM
 
 ---
-
 # ISSUE_020:
 
  Status:[X]
@@ -1977,7 +1973,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: MEDIUM
 
 ---
-
 # ISSUE_021:
 
  Status:[x]
@@ -2012,7 +2007,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: LOW
 
 ---
-
 # ISSUE_022:
 
  Status:[x]
@@ -2050,7 +2044,6 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: LOW
 
 ---
-
 # ISSUE_023:
 Status:[x]
   Create a dedicated, permanent analysis page for every supported company.
@@ -2258,6 +2251,446 @@ The ticker should remain stored as the internal company identifier so company-na
 **Risk if not implemented:** MEDIUM
 
 Without permanent company analysis pages, FactorResearch loses opportunities for organic search traffic, long-term research history, repeat visits, and differentiation between its official methodology and subscriber-created investment models.
+
+
+**User Access Model**
+
+**Trial User**
+
+**Purpose:**
+
+Allow users to experience the platform value before requiring payment.
+
+Limits:
+
+- ✅ Maximum 3 company analyses
+- ✅ View full company analysis
+- ✅ View Graham/Buffett/Quality scores
+- ✅ Adjust custom factor weights
+- ✅ Preview personalized composite score
+- ❌ No historical backtesting
+- ❌ No saved strategies
+- ❌ No portfolio analytics
+- ❌ No unlimited screening
+
+After the third analysis:
+
+Display upgrade prompt:
+
+You have used your 3 free analyses.
+
+Unlock IntrinsicIQ Premium:
+
+✓ Unlimited company analysis
+
+✓ Custom investment strategies
+
+✓ Historical backtesting
+
+✓ Portfolio analytics
+
+✓ Strategy tracking
+
+**Premium Features**
+**Unlimited Analysis**
+
+Unlock:
+
+- Unlimited company research
+- Unlimited factor scoring
+- Unlimited custom weighting
+- Full screening capabilities
+
+Implementation:
+
+Add user entitlement check before analysis execution.
+
+Example:
+
+request analysis
+
+|
+
+▼
+
+check subscription status
+
+trial_remaining > 0
+
+|
+
+▼
+
+allow analysis
+
+decrement counter
+
+OR
+
+premium_user
+
+|
+
+▼
+
+allow unlimited access
+
+**Custom Factor Weighting**
+
+**Status: Existing functionality**
+
+Allow all trial users to experiment with custom formulas.
+
+Example:
+
+Default:
+
+Graham       25%
+
+Buffett      25%
+
+Quality      20%
+
+Health       15%
+
+Growth       10%
+
+Momentum      5%
+
+User customization:
+
+Graham       50%
+
+Buffett       0%
+
+Quality      30%
+
+Health       20%
+
+Growth        0%
+
+Momentum      0%
+
+The personalized score calculation remains available during trial.
+
+Purpose:
+
+Increase user engagement and demonstrate value.
+
+**Backtest Engine Premium Gate**
+
+**Highest-value premium feature**
+
+Backtesting requires subscription.
+
+Before execution:
+
+User clicks "Run Backtest"
+
+|
+
+▼
+
+check subscription
+
+premium?
+
+|
+
+├── Yes
+
+│      Run backtest
+
+│
+
+└── No
+
+Show upgrade prompt
+
+**Backtest Entitlement Levels**
+
+**Premium**
+
+Includes:
+
+- Custom weight backtesting
+- Historical performance
+- CAGR
+- Sharpe
+- Maximum drawdown
+- Strategy comparison
+
+**Professional (Future)**
+
+Includes:
+
+- Large universe backtesting
+- Daily rebalance
+- Factor optimization
+- Monte Carlo simulation
+- API access
+- Export research data
+
+ **Required Database Changes**
+
+ **User Subscription Table**
+
+New table:
+
+subscriptions
+
+id
+
+user_id
+
+plan
+
+status
+
+start_date
+
+end_date
+
+stripe_customer_id
+
+stripe_subscription_id
+
+Plans:
+
+trial
+
+premium
+
+professional
+
+cancelled
+
+ **User Usage Tracking**
+
+New table:
+
+user_usage
+
+user_id
+
+analysis_count
+
+period_start
+
+period_end
+
+feature_usage
+
+Track:
+
+company_analysis
+
+screening_runs
+
+backtests
+
+portfolio_analysis
+
+ **Feature Permission Layer**
+
+Create centralized permission service:
+
+New file:
+
+codes/services/permissions.py
+
+Responsibilities:
+
+can_access_feature(
+
+user,
+
+feature_name
+
+)
+
+Examples:
+
+can_access_feature(
+
+user,
+
+"backtest"
+
+)
+
+returns:
+
+True / False
+
+Features:
+
+ANALYSIS
+
+CUSTOM_WEIGHTS
+
+SCREENING
+
+BACKTEST
+
+PORTFOLIO_ANALYTICS
+
+EXPORT
+
+Avoid scattering subscription checks throughout the application.
+
+**UI Changes**
+
+Add:
+
+UpgradeBanner
+
+FeatureLockedModal
+
+UsageCounter
+
+Examples:
+
+Trial:
+
+2 / 3 free analyses remaining
+
+Locked feature:
+
+Historical backtesting requires Premium
+
+Unlock strategy validation →
+
+ **Stripe Integration**
+
+Files:
+
+codes/payments/
+
+stripe_client.py
+
+subscriptions.py
+
+webhooks.py
+
+Implement:
+
+- Checkout session creation
+- Subscription status sync
+- Cancellation handling
+- Payment failure handling
+- Webhook validation
+
+#**Analytics Tracking**
+
+Track conversion funnel:
+
+Events:
+
+analysis_completed
+
+custom_weight_created
+
+backtest_clicked
+
+upgrade_viewed
+
+subscription_started
+
+Important funnel:
+
+Company Analysis
+
+↓
+
+Custom Strategy Created
+
+↓
+
+Backtest Attempted
+
+↓
+
+Subscription Conversion
+
+ **Acceptance Criteria**
+
+- Trial users are limited to 3 company analyses.
+- Trial usage persists across sessions.
+- Premium users have unlimited analysis access.
+- Custom weighting works for trial and premium users.
+- Backtesting requires an active subscription.
+- Feature restrictions are enforced server-side.
+- Subscription status updates automatically from payment provider.
+- Users receive clear upgrade prompts when hitting limits.
+- Existing factor engine and backtest engine continue working without major refactoring.
+
+ **Future Enhancement**
+
+Introduce usage-based premium tiers:
+
+Premium:
+
+Normal backtests
+
+Professional:
+
+Large universe research
+
+Institutional:
+
+API + bulk research
+
+The architecture should support additional paid tiers without rewriting feature access logic.
+
+---
+
+# ISSUE_024
+Status: [ ]
+**Objective:**
+
+Finish the client-facing subscription conversion funnel so trial users hit a clear, consistent buy path instead of only seeing scattered upgrade text in feature gates.
+
+The core entitlement checks from ISSUE_008 already exist. What remains is the conversion experience:
+
+- A dedicated upgrade / pricing surface that explains trial vs premium vs professional
+- A single reusable upgrade banner/modal pattern instead of feature-specific ad hoc messages
+- Consistent CTA routing to checkout or the pricing surface
+- Funnel analytics for upgrade views and clicks so conversion can be measured
+
+**Current Gaps**
+
+- Analyze and Factor Lab already block gated features, but the buy experience is embedded inside feature callbacks.
+- There is no dedicated plan comparison / pricing page.
+- Upgrade prompts are plain text or inline links, not a consistent branded conversion component.
+- No visible analytics events are emitted for upgrade view/click/conversion steps.
+
+**Required Next Step**
+
+Create a client-ready conversion flow that:
+
+1. Surfaces a dedicated pricing / upgrade view from every locked feature.
+2. Reuses a single UI pattern for locked states across analyze, backtest, and future premium features.
+3. Routes all buy CTAs through the billing entry point.
+4. Records funnel events for upgrade_viewed, upgrade_clicked, and subscription_started.
+
+**Files**
+
+- codes/app_modules/layout.py
+- codes/app_modules/tabs/analyze.py
+- codes/app_modules/tabs/factor_lab.py
+- codes/billing.py
+- codes/services/permissions.py
+- codes/payments/webhooks.py
+- codes/app_modules/tabs/pricing.py
+
+**Acceptance Criteria**
+
+- Trial users see a clear pricing / upgrade view when they hit a lock.
+- The same upgrade component is reused across analysis, backtesting, and future premium gates.
+- All buy CTAs resolve through the billing flow.
+- Upgrade view and click events are tracked.
+- Premium users continue to bypass the prompt and use features normally.
 
 # AI EXECUTION PROTOCOL
 
