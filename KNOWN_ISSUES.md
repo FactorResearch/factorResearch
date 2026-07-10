@@ -1973,6 +1973,7 @@ risk_if_not_fixed: HIGH
   risk_if_not_fixed: MEDIUM
 
 ---
+---
 # ISSUE_021:
 
  Status:[x]
@@ -2692,11 +2693,14 @@ Create a client-ready conversion flow that:
 - All buy CTAs resolve through the billing flow.
 - Upgrade view and click events are tracked.
 - Premium users continue to bypass the prompt and use features normally.
+---
+---
 
 # issue_025
   status[]
     - update the layout form and structure of Financial Health,Stability Score,Market Regime,FCF Quality,Capital Allocation,Growth Quality,Alternative Data,Options Signal,Factor Momentum to match other cards , so similar css applys , and their html and class codes improves.
-
+---
+---
 # ISSUE_026
 
 **Status:** [ ]
@@ -2946,7 +2950,10 @@ usage.
 
 
 
-
+---
+---
+---
+---
 # ISSUE_027:
   **Status:** [ ]
   title: recomendation labels
