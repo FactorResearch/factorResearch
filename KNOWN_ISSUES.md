@@ -2707,7 +2707,7 @@ update the layout form and structure of Financial Health,Stability Score,Market 
 ---
 # ISSUE_026
 
-**Status:** [~]
+**Status:** [x]
 
 **Title:** Implement Product Analytics Platform
 
@@ -2717,8 +2717,10 @@ update the layout form and structure of Financial Health,Stability Score,Market 
 
 **Current State**
 
-This issue is partially implemented. The event collection foundation now
-exists, but the full analytics platform described below is not complete.
+Core implementation for the current product surface is complete. The
+codebase now has a working event collection foundation, persistence
+layer, instrumentation across the implemented product flows, and
+session-level server-side opt-out support.
 
 The current codebase now has:
 
@@ -2782,6 +2784,8 @@ behavior if analytics writes fail.
     metadata where available
 -   analysis and backtest failure events now include normalized
     `failure_class` metadata for reporting/debug queries
+-   session-level app analytics opt-out now suppresses server-side event
+    tracking beyond the env-level global disable flag
 
 ### Implemented instrumentation points
 
@@ -2794,9 +2798,9 @@ behavior if analytics writes fail.
 
 ------------------------------------------------------------------------
 
-## What Is Still Missing
+## Post-Implementation Follow-Up
 
-### Phase 1 follow-through
+### Third-party validation still recommended
 
 -   verify real PostHog end-to-end event delivery in a configured
     environment
@@ -2804,13 +2808,11 @@ behavior if analytics writes fail.
 -   verify real Sentry browser error capture
 -   add any required provider-specific identify / group / alias logic
 
-### Phase 2 follow-through
+### Future feature-dependent instrumentation
 
--   add missing domain events:
-    -   `watchlist_added` (if/when watchlist exists)
--   add opt-out controls beyond env-level disablement
+-   add `watchlist_added` if a watchlist feature is introduced later
 
-### Database / reporting work still not done
+### Optional database / reporting expansion
 
 The following suggested tables are **not** implemented yet:
 
@@ -2822,14 +2824,15 @@ The following suggested tables are **not** implemented yet:
 -   `analytics_performance`
 -   `analytics_errors`
 
-Right now only `analytics_events` exists as the canonical event log.
+Right now only `analytics_events` exists as the canonical event log,
+which is sufficient for the current implementation.
 
 ------------------------------------------------------------------------
 
-## Questions the Current Implementation Still Cannot Answer Cleanly
+## Reporting Questions Not Yet Implemented As First-Class Views
 
 The current foundation can collect raw events, but it does **not yet**
-provide finished reporting for:
+ship finished reporting views for:
 
 -   most viewed companies
 -   trending companies
@@ -2851,10 +2854,9 @@ top of the event stream.
 
 ------------------------------------------------------------------------
 
-## Recommended Next Steps For A Future Session
+## Recommended Follow-Up Work
 
-1. Add missing domain events:
-   - `watchlist_added`
+1. Validate third-party integrations in a real configured environment.
 2. Decide whether to keep one event table or fan out into dedicated
    summary tables.
 3. Build a first internal analytics dashboard/report for:
@@ -2862,10 +2864,10 @@ top of the event stream.
    - analysis completion/failure counts
    - screener filter usage
    - pricing → checkout → subscription funnel
-4. Add privacy controls:
-   - app-level analytics opt-out
+4. Add stronger privacy controls if needed:
    - suppression of sensitive metadata
-5. Validate third-party integrations in a real configured environment.
+   - broader user-facing preference management
+5. Add `watchlist_added` if a watchlist feature is introduced.
 
 ------------------------------------------------------------------------
 

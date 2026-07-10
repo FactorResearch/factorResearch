@@ -28,6 +28,7 @@ from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
+from codes.services import product_analytics
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
@@ -92,6 +93,15 @@ def privacy_page():
         "privacy.html",
         legal_notice=_LEGAL_PLACEHOLDER_NOTICE
     )
+
+
+@server.route("/privacy/analytics", methods=["POST"])
+def update_analytics_preference():
+    payload = flask.request.get_json(silent=True) or flask.request.form or {}
+    raw_value = payload.get("opt_out")
+    opt_out = str(raw_value).lower() in {"1", "true", "yes", "on"}
+    product_analytics.set_tracking_opt_out(opt_out)
+    return flask.jsonify({"analytics_opt_out": product_analytics.is_tracking_opted_out()})
 
 @server.route("/sitemap-analysis.xml")
 def analysis_sitemap():

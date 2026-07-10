@@ -39,6 +39,37 @@ def test_track_event_updates_usage_and_persists_event(monkeypatch):
     assert insert.call_args.kwargs["page_path"] == "/pricing"
 
 
+def test_track_event_skips_when_session_opted_out(monkeypatch):
+    app = flask.Flask(__name__)
+    app.secret_key = "test-secret"
+    increment = Mock()
+    insert = Mock()
+    executor = Mock()
+    executor.submit = lambda fn, *args: fn(*args)
+
+    monkeypatch.setattr(product_analytics.db, "increment_usage", increment)
+    monkeypatch.setattr(product_analytics.analytics_db, "insert_event", insert)
+    monkeypatch.setattr(product_analytics, "_EXECUTOR", executor)
+
+    with app.test_request_context("/pricing"):
+        product_analytics.set_tracking_opt_out(True)
+        result = product_analytics.track_event("user-1", "pricing_page_viewed", {"source": "test"})
+
+    assert result == {"usage_count": 0, "feature_usage": {}}
+    increment.assert_not_called()
+    insert.assert_not_called()
+
+
+def test_tracking_opt_out_flag_round_trip():
+    app = flask.Flask(__name__)
+    app.secret_key = "test-secret"
+
+    with app.test_request_context("/privacy/analytics"):
+        assert product_analytics.is_tracking_opted_out() is False
+        product_analytics.set_tracking_opt_out(True)
+        assert product_analytics.is_tracking_opted_out() is True
+
+
 def test_pricing_tab_tracks_page_view(monkeypatch):
     tracked = Mock()
     monkeypatch.setattr(pricing.product_analytics, "track_event", tracked)

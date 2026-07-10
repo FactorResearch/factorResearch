@@ -12,6 +12,7 @@ from codes.data import analytics_db
 from codes.data import db
 
 _EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="product-analytics")
+_SESSION_OPT_OUT_KEY = "analytics_opt_out"
 
 
 def _usage_key(metadata: Mapping[str, object] | None) -> str:
@@ -42,7 +43,23 @@ def _page_path() -> str | None:
 
 
 def _tracking_enabled() -> bool:
-    return os.environ.get("ANALYTICS_OPT_OUT", "").lower() not in {"1", "true", "yes"}
+    if os.environ.get("ANALYTICS_OPT_OUT", "").lower() in {"1", "true", "yes"}:
+        return False
+    if flask.has_request_context() and flask.session.get(_SESSION_OPT_OUT_KEY):
+        return False
+    return True
+
+
+def set_tracking_opt_out(opt_out: bool) -> None:
+    if not flask.has_request_context():
+        return
+    flask.session[_SESSION_OPT_OUT_KEY] = bool(opt_out)
+
+
+def is_tracking_opted_out() -> bool:
+    if not flask.has_request_context():
+        return False
+    return bool(flask.session.get(_SESSION_OPT_OUT_KEY))
 
 
 def _record_event_sync(user_id: str | None, event_name: str, metadata: Mapping[str, object] | None = None) -> None:
@@ -58,7 +75,7 @@ def _record_event_sync(user_id: str | None, event_name: str, metadata: Mapping[s
 
 
 def track_event(user_id: str, event_name: str, metadata: Mapping[str, object] | None = None) -> dict:
-    if not event_name:
+    if not event_name or not _tracking_enabled():
         return {"usage_count": 0, "feature_usage": {}}
     try:
         usage = db.increment_usage(
