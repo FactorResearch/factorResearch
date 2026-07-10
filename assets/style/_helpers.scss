@@ -1,0 +1,55 @@
+@use 'tokens' as *;
+// ── Mixins ──────────────────────────────────────────────────────────────────
+@mixin card {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+}
+
+@mixin card-raised {
+  background: $card-raised;
+  border: 1px solid $border;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+@mixin glow-line($color: $blue) {
+  border-top: 2px solid $color;
+  box-shadow: 0 -1px 12px rgba($color, 0.4);
+}
+
+@mixin mono($size: 13px, $weight: 400) {
+  font-family: $font-mono;
+  font-size: $size;
+  font-weight: $weight;
+  letter-spacing: 0.02em;
+}
+
+@mixin base-text($size: 14px, $weight: 400) {
+  font-family: $font-base;
+  font-size: $size;
+  font-weight: $weight;
+}
+
+@mixin label-caps {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+@mixin pill($bg, $color) {
+  background: $bg;
+  color: $color;
+  border: 1px solid rgba($color, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: $font-mono;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}

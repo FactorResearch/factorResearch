@@ -1,0 +1,69 @@
+@use 'tokens' as *;
+@use 'helpers' as *;
+// ── Dropdown (Dash DCC) ───────────────────────────────────────────────────────
+.Select-control {
+  background: $card !important;
+  border: 1px solid $border !important;
+  border-radius: 4px !important;
+  @include mono(12px);
+  color: $text !important;
+}
+
+.Select-menu-outer {
+  background: $card-raised !important;
+  border: 1px solid $border-glow !important;
+  border-radius: 4px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+.Select-option {
+  background: transparent !important;
+  color: $text-dim !important;
+  @include mono(12px);
+  padding: 8px 12px !important;
+
+  &:hover,
+  &.is-focused {
+    background: rgba($blue-bright, 0.08) !important;
+    color: $text !important;
+  }
+}
+
+.Select-value-label {
+  color: $text !important;
+}
+
+// ── Scrollbar ────────────────────────────────────────────────────────────────
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $border;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $text-muted;
+}
+
+// ── Selection ────────────────────────────────────────────────────────────────
+::selection {
+  background: rgba($blue-bright, 0.25);
+  color: $text;
+}
+
+.sort-header-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+}

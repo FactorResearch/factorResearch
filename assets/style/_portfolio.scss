@@ -1,0 +1,306 @@
+@use 'tokens' as *;
+@use 'helpers' as *;
+
+/* ── Portfolio Header ─────────────────────────────────────── */
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+  margin-bottom: 20px;
+
+  &-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3, 12px);
+  }
+
+  h2 { font-size: 20px; font-weight: 700; color: $text; }
+}
+
+.portfolio-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portfolio-action-btn {
+  padding: 8px 16px;
+  font-family: $font-base;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid $border;
+  border-radius: 8px;
+  color: $text-dim;
+  cursor: pointer;
+  transition: all 0.15s;
+  touch-action: manipulation;
+
+  &:hover { border-color: $blue; color: $blue; }
+  &.primary { background: $blue; color: #fff; border-color: $blue; }
+  &.primary:hover { background: $blue-bright; }
+}
+
+/* ── Portfolio Summary Row ────────────────────────────────── */
+.portfolio-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.portfolio-summary-card {
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 16px 18px;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: $blue; }
+}
+
+.portfolio-summary-value {
+  font-family: $font-mono;
+  font-size: 20px;
+  font-weight: 700;
+  color: $text;
+  line-height: 1.2;
+}
+
+.portfolio-summary-label {
+  font-size: 12px;
+  color: $text-dim;
+  margin-top: 4px;
+}
+
+.portfolio-summary-delta {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+  display: inline-block;
+
+  &.pos { color: $green; }
+  &.neg { color: $red; }
+}
+
+/* ── Portfolio Table ──────────────────────────────────────── */
+.portfolio-table-wrap {
+  @include card;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.portfolio-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    font-family: $font-mono;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $text-muted;
+    padding: 12px 14px;
+    text-align: left;
+    white-space: nowrap;
+    background: $surface;
+    border-bottom: 2px solid $border;
+  }
+
+  td {
+    padding: 10px 14px;
+    font-family: $font-mono;
+    font-size: 13px;
+    color: $text;
+    border-bottom: 1px solid rgba($border, 0.6);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .pcol-symbol { font-weight: 600; }
+  .pcol-num { font-family: $font-mono; font-size: 13px; }
+  .pcol-return { &.pos { color: $green; } &.neg { color: $red; } }
+  .pcol-score { font-family: $font-mono; font-weight: 600; }
+}
+
+/* ── Portfolio Empty State ────────────────────────────────── */
+.portfolio-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: $text-dim;
+
+  &-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
+  h3 { font-size: 18px; color: $text; margin-bottom: 8px; font-family: $font-base; }
+  p { font-size: 14px; color: $text-dim; }
+}
+
+/* ── Editable shares cell ─────────────────────────────────── */
+.shares-input {
+  width: 70px;
+  padding: 3px 6px;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: 6px;
+  color: $text;
+  font-size: 13px;
+  font-family: $font-mono;
+}
+
+.shares-save-btn {
+  background: none;
+  border: 1px solid $border;
+  border-radius: 5px;
+  color: $green;
+  touch-action: manipulation;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 7px;
+  line-height: 1;
+}
+
+.portfolio-remove-btn {
+  background: none;
+  border: none;
+  color: $red;
+  touch-action: manipulation;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ── Simulation results ───────────────────────────────────── */
+#portfolio-sim-results .dash-graph { width: 100%; max-width: 100%; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+#tab-analyze #analysis-content {
+  position: relative;
+  @media (max-width: $mobile) { width: 100%; }
+  .infolayer .scrollbox {
+    position: absolute;
+    transform: translate(67%, 0px);
+    @media (max-width: $mobile) { transform: translate(50%, 0px); }
+  }
+}
+
+#add-to-portfolio-panel {
+  margin-bottom: 16px;
+
+  .portfolio-add-panel {
+    margin-bottom: 0;
+  }
+}
+
+.analysis-section {
+  scroll-margin-top: 24px;
+}
+
+.analysis-jump-nav {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 0 12px;
+  margin-bottom: 12px;
+}
+
+.analysis-jump-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  padding: 5px 9px;
+  border: 1px solid $border;
+  border-radius: 999px;
+  color: $text-dim;
+  background: $surface;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.16s ease, color 0.16s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: $border-glow;
+    color: $text;
+    outline: none;
+  }
+}
+
+.analysis-jump-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.analysis-jump-label {
+  font-family: $font-mono;
+  font-size: 11px;
+}
+
+body.light {
+  .analysis-jump-link {
+    color: $light-text-dim;
+    background: $light-surface;
+    border-color: $light-border;
+
+    &:hover,
+    &:focus-visible {
+      color: $light-text;
+      border-color: $light-blue;
+    }
+  }
+}
+
+@media (max-width: $tablet) {
+  .analysis-jump-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: $mobile) {
+  .analysis-section {
+    scroll-margin-top: 16px;
+  }
+
+  .analysis-jump-label {
+    font-size: 10px;
+  }
+}
+
+.quant_row, .card-row, .moment_quality_row, .risk-row {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  @media (max-width: $tablet) { flex-direction: column; }
+  .scorecard { flex: 1 1 50%; }
+}
+
+.risk-row .metric_cell {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 50%;
+  p { width: 100%; }
+  div {
+    flex: 1 1 50%;
+    border-radius: 8px;
+    padding: 10px 14px;
+    border: 1px solid $border;
+    min-width: 140px;
+    p {
+      &:nth-child(1) { font-size: 11px; color: $text-muted; margin-bottom: 4px; }
+      &:nth-child(2) { font-size: 18px; font-weight: 700; color: $amber; }
+    }
+  }
+  & + div { flex: 1 1 50%; }
+}

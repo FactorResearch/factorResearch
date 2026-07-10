@@ -1,0 +1,246 @@
+@use 'tokens' as *;
+@use 'helpers' as *;
+// ── Topbar ────────────────────────────────────────────────────────────────────
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 64px;
+  background: $bg;
+  border-bottom: 1px solid $border;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba($blue, 0.12);
+  color: $blue;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-base;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.topbar-title {
+  font-family: $font-base;
+  font-size: 15px;
+  font-weight: 600;
+  color: $text;
+  letter-spacing: -0.01em;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto;
+  background: $surface;
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid $border;
+  height: auto;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.topbar-nav-btn {
+  font-family: $font-base;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: $text-dim;
+  cursor: pointer;
+  padding: 7px 18px;
+  letter-spacing: 0;
+  transition: color 0.15s, background 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+
+  &:hover {
+    color: $text;
+  }
+
+  &.active {
+    color: #fff;
+    background: $blue;
+  }
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle {
+  display: flex;
+  gap: 2px;
+  background: rgba($border, 0.3);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.theme-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: $text-dim;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    color: $text;
+  }
+
+  &.active {
+    background: $card;
+    color: $blue;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+}
+
+// ── Analyze Tab — Header ─────────────────────────────────────────────────────
+.analyze-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.analyze-ticker-input {
+  display: flex;
+  gap: 8px;
+}
+
+.analyze-ticker-input input {
+  width: 140px;
+  padding: 9px 12px;
+  border: 1px solid $border-glow;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: $font-mono;
+  font-weight: 600;
+  background: $card;
+  color: $text;
+  text-transform: uppercase;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.analyze-ticker-input input:focus {
+  border-color: $blue;
+  outline: none;
+}
+
+.analyze-current {
+  font-size: 13px;
+  color: $text-dim;
+}
+
+// ── Analyze Tab — Search ──────────────────────────────────────────────────────
+.main-content {
+  padding-top: 4px;
+}
+
+.search-section {
+  margin-bottom: 24px;
+}
+
+.search-container {
+  max-width: 560px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  gap: 0;
+  border: 1px solid $border-glow;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: $blue;
+    box-shadow: 0 0 0 3px rgba($blue, 0.12);
+  }
+}
+
+.ticker-input {
+  @include mono(14px);
+  background: $card;
+  border: none;
+  color: $text;
+  flex: 1;
+  outline: none;
+
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &::placeholder {
+    color: $text-muted;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.analyze-btn {
+  @include mono(12px, 500);
+  background: $blue;
+  border: none;
+  border-left: 1px solid $border-glow;
+  color: $white;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  padding: 12px 24px;
+  text-transform: uppercase;
+  transition: background 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: $blue-bright;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.status-msg {
+  @include mono(12px);
+  color: $text-dim;
+  margin-top: 8px;
+  min-height: 18px;
+  padding-left: 2px;
+}

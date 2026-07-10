@@ -4,7 +4,8 @@ import re
 import time as _time
 
 import dash
-from dash import Input, Output, State, callback
+from dash import Input, Output, State, callback, clientside_callback
+from dash.exceptions import PreventUpdate
 
 from codes.engine import screener
 from codes.app_modules.analysis import analyze_stock, _is_rate_limit_error, is_production
@@ -13,6 +14,66 @@ from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes import billing
 from codes.services import permissions
+
+
+_ANALYZE_PATH_RE = re.compile(r"^/analyze/([A-Za-z]{1,6})/\d{8}/?$")
+
+
+clientside_callback(
+    """
+    function(children, hash, tabStyle) {
+        if (!hash || hash.length < 2) {
+            return window.dash_clientside.no_update;
+        }
+        if (tabStyle && tabStyle.display === 'none') {
+            return window.dash_clientside.no_update;
+        }
+
+        var id = hash.slice(1);
+        try {
+            id = decodeURIComponent(id);
+        } catch (e) {}
+        var attempts = 0;
+
+        function findTarget() {
+            if (window.CSS && CSS.escape) {
+                return document.querySelector('#' + CSS.escape(id));
+            }
+            return document.getElementById(id);
+        }
+
+        function scrollWhenReady() {
+            var target = findTarget();
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            attempts += 1;
+            if (attempts < 20) {
+                window.setTimeout(scrollWhenReady, 100);
+            }
+        }
+
+        window.requestAnimationFrame(function() {
+            window.setTimeout(scrollWhenReady, 0);
+        });
+        return hash;
+    }
+    """,
+    Output("analysis-anchor-scroll-trigger", "children"),
+    Input("analysis-content", "children"),
+    Input("url", "hash"),
+    Input("tab-analyze", "style"),
+    prevent_initial_call=False,
+)
+
+
+def _ticker_from_analyze_path(pathname: str | None) -> str | None:
+    match = _ANALYZE_PATH_RE.fullmatch(pathname or "")
+    if not match:
+        return None
+    return match.group(1).upper()
+
 
 # ── Analyze ───────────────────────────────────────────────────────────────────
 # ── New quant UI helpers ──────────────────────────────────────────────────────
@@ -29,21 +90,27 @@ from codes.services import permissions
     Output("screener-viewed-store",   "data"),
     Input("analyze-btn",          "n_clicks"),
     Input("screener-click-ticker","data"),
+    Input("url",                  "pathname"),
     State("ticker-input",         "value"),
     State("screener-viewed-store","data"),
-    prevent_initial_call=True
+    prevent_initial_call=False
 )
-def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
+def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_list):
     """
     Single callback: fetch + score + render.
     Because analysis-content is a child of dcc.Loading(id='analysis-loading'),
     Dash shows the spinner for the entire duration of this callback.
     """
     triggered = dash.ctx.triggered_id
+    route_ticker = _ticker_from_analyze_path(pathname)
     if triggered == "screener-click-ticker" and clicked_ticker:
         ticker = clicked_ticker
+    elif triggered in ("url", None) and route_ticker:
+        ticker = route_ticker
     else:
         ticker = ticker_input_value
+    if triggered in ("url", None) and not route_ticker:
+        raise PreventUpdate
     if not ticker or not ticker.strip():
         return dash.no_update, [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update
     symbol = ticker.strip().upper()
@@ -85,7 +152,7 @@ def run_analysis(n_clicks, clicked_ticker, ticker_input_value, viewed_list):
         consumed = permissions.consume_analysis_if_allowed(user_id, ticker=symbol)
         usage_msg = f" · {consumed.remaining} free analyses remaining"
     return (
-        f"/analyze/{symbol}/{_time.strftime('%Y%m%d')}",
+        dash.no_update if triggered in ("url", None) else f"/analyze/{symbol}/{_time.strftime('%Y%m%d')}",
         content,
         result,
         f"✅ {result['name']} ({symbol}) — Analysis complete{usage_msg}",

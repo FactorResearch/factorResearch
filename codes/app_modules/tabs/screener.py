@@ -10,7 +10,7 @@ from dash import Input, Output, State, callback, html
 from codes.engine import screener
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.config import (
-    AMBER, BLUE, GREEN, MUTED, PAGE_SIZE,
+    AMBER, BLUE, GREEN, MUTED, RED, PAGE_SIZE,
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
@@ -166,10 +166,10 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
             return (
                 html.Div([
                     html.Div("⚡ Loading in background…",
-                             style={"color": BLUE, "fontWeight": "600", "marginBottom": "6px"}),
+                             className="clr-blue fw-600 mb-8"),
                     html.Div("Table will appear automatically when loading finishes.",
-                             style={"color": MUTED, "fontSize": "13px"}),
-                ], style={"textAlign": "center", "padding": "40px"}),
+                             className="clr-muted fs-13"),
+                ], className="tac p-40"),
                 sector_options,
                 page_reset,
             )
@@ -201,7 +201,8 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
     ]
     header_cells = []
     for label, sort_key, tooltip in SORT_COLS:
-        th_style = {"cursor": "help", "borderBottom": f"1px dashed {MUTED}"} if tooltip else {}
+        th_class = "ch" if tooltip else ""
+        th_style = {"borderBottom": f"1px dashed {MUTED}"} if tooltip else {}
         if sort_key:
             header_cells.append(html.Th(
                 html.Button(
@@ -210,10 +211,10 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
                     className="sort-header-btn", n_clicks=0,
                     title=tooltip or "",
                 ),
-                title=tooltip or "", style=th_style,
+                title=tooltip or "", className=th_class, style=th_style,
             ))
         else:
-            header_cells.append(html.Th(label, title=tooltip or "", style=th_style))
+            header_cells.append(html.Th(label, title=tooltip or "", className=th_class, style=th_style))
     rows = []
     accordion_items = []
     # Pagination — show PAGE_SIZE rows for the current page
@@ -243,8 +244,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
-            badges.append(html.Span(f"💼 {pname}", style={
-                "fontSize": "10px", "color": AMBER,
+            badges.append(html.Span(f"💼 {pname}", className="fs-10 clr-amber", style={
                 "background": "#2a1e00", "border": f"1px solid {AMBER}55",
                 "borderRadius": "4px", "padding": "1px 5px",
             }))
@@ -252,16 +252,13 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         ticker_cell = html.Td(
             html.Div([
                 html.Span(sym, className="ticker-link-btn"),
-                html.Div(badges, style={"display": "flex", "gap": "4px",
-                                        "flexWrap": "wrap", "marginTop": "3px"})
+                html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
                 if badges else html.Div(),
             ]),
             id={"type": "screener-ticker-btn", "index": sym},
             n_clicks=0,
-            className="ticker-cell",
+            className="ticker-cell cp",
             style={
-                "cursor": "pointer",
-                "touchAction": "manipulation",
                 "WebkitTapHighlightColor": "rgba(0,0,0,0.08)",
                 "userSelect": "none",
                 "WebkitUserSelect": "none",
@@ -271,24 +268,30 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         gn    = r.get("graham_number")
         price = r.get("price")
         if gn:
-            gn_color = GREEN if (price and price <= gn) else MUTED
-            gn_cell = html.Td(
-                html.Span(f"${gn:.0f}", style={"color": gn_color, "fontWeight": "600"}),
-                title=f"Graham Number ${gn:.2f}" + (f" · Price ${price:.2f}" if price else "") +
-                      (" · Price below GN ✓" if (price and price <= gn) else " · Price above GN"),
-            )
+            intrinsic_score = min(105, max(0, int((gn or 0) / (price or 1) * 50))) if gn and price else 0
+            grade = "A" if intrinsic_score >= 80 else "B" if intrinsic_score >= 65 else "C" if intrinsic_score >= 50 else "D" if intrinsic_score >= 35 else "F"
+            grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED, "F": RED}.get(grade, MUTED)
+            grade_class = {"A": "clr-green", "B": "clr-blue", "C": "clr-amber", "D": "clr-red", "F": "clr-red"}.get(grade, "clr-muted")
+            gn_cell = html.Td([
+                html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
+                html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
+            ], title=f"Intrinsic Value Estimate · Graham #{intrinsic_score}/105")
         else:
             gn_cell = html.Td("—", className="text-xs text-muted",
-                              title="Run full analysis to calculate Graham Number")
-        # Buffett IV cell — populated after full analysis
+                              title="Run full analysis to calculate Intrinsic Value")
+        # Buffett IV / Moat cell — populated after full analysis
         biv = r.get("buffett_iv")
         if biv:
             biv_color = GREEN if (price and price <= biv) else MUTED
-            biv_cell = html.Td(
-                html.Span(f"${biv:.0f}", style={"color": biv_color, "fontWeight": "600"}),
-                title=f"Economic Moat Rating ${biv:.2f}" + (f" · Price ${price:.2f}" if price else "") +
-                      (" · Price below IV ✓" if (price and price <= biv) else " · Price above IV"),
-            )
+            biv_class = "clr-green" if (price and price <= biv) else "clr-muted"
+            biv_cell = html.Td([
+                html.Div(className="moat-tip ch d-inline-block", style={"borderBottom": "1px dashed #8899aa", "position": "relative"}, children=[
+                    html.Span([html.Span(f"${biv:.0f}", className=f"fw-600 {biv_class}"), html.Span(" · Moat", className="ml-4 fs-11 clr-muted")]),
+                    html.Span("Price below intrinsic value ✓" if (price and price <= biv) else "Price above intrinsic value",
+                              className="moat-tip-popup d-none fs-11 wsnw py-6 px-10",
+                              style={"position": "absolute", "bottom": "calc(100% + 8px)", "left": "50%", "transform": "translateX(-50%)", "background": "#e8eaf0", "color": "#111", "borderRadius": "4px", "zIndex": "50"}),
+                ]),
+            ], title=f"Economic Moat: ${biv:.2f}")
         else:
             biv_cell = html.Td("—", className="text-xs text-muted",
                                title="Run full analysis to calculate Intrinsic Value")
@@ -315,6 +318,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         # ── Accordion item (mobile) ─────────────────────────────────────
         acc_gn_color  = (GREEN if (price and gn  and price <= gn)  else MUTED) if gn  else MUTED
         acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
+        acc_biv_class = "clr-green" if (price and biv and price <= biv) else "clr-muted"
         acc_rows = [
             html.Div([html.Span("Company",   className="accordion-label"),
                       html.Span(r["name"],   className="accordion-value")], className="accordion-row"),
@@ -326,12 +330,12 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
                       html.Span(f"{r['composite_score']:.0f}",
                                 className=f"score-pill {get_score_class(r['composite_score'])}")],
                      className="accordion-row"),
-            html.Div([html.Span("GN Price",  className="accordion-label"),
-                      html.Span(f"${gn:.0f}"  if gn  else "—",
-                                className="accordion-value", style={"color": acc_gn_color})],  className="accordion-row"),
-            html.Div([html.Span("Buffett IV", className="accordion-label"),
+            html.Div([html.Span("Intrinsic",  className="accordion-label"),
+                      html.Span(f"{grade} {intrinsic_score}/{105}"  if gn  else "—",
+                                className="accordion-value")],  className="accordion-row"),
+            html.Div([html.Span("Moat", className="accordion-label"),
                       html.Span(f"${biv:.0f}" if biv else "—",
-                                className="accordion-value", style={"color": acc_biv_color})], className="accordion-row"),
+                                className="accordion-value " + acc_biv_class)], className="accordion-row"),
             html.Div([html.Span("Updated",   className="accordion-label"),
                       html.Span(_fmt_updated(r.get("updated_at")), className="accordion-value")], className="accordion-row"),
         ]
@@ -360,7 +364,7 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
         html.Span(f" · {n_analyzed} analyzed · {n_portfolio} in portfolio"
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
                   className="text-muted"),
-    ], style={"fontSize": "11px", "padding": "8px 4px", "fontStyle": "italic"})
+    ], className="fs-11 px-4 py-8 fsi")
     table = html.Table(className="screener-table", children=[
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
@@ -373,7 +377,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
             className="pagination-btn",
             n_clicks=0,
             disabled=(page <= 1),
-            style={"touchAction": "manipulation"},
         ),
         html.Span(
             f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
@@ -385,7 +388,6 @@ def render_screener_table(ready, n_load, sector_filter, sort_state, page_num, vi
             className="pagination-btn",
             n_clicks=0,
             disabled=(page >= total_pages),
-            style={"touchAction": "manipulation"},
         ),
     ])
     return html.Div([

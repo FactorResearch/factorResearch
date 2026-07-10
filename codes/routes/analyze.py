@@ -18,6 +18,13 @@ _TICKER_RE = re.compile(r"^[A-Z]{1,6}(\.[A-Z])?$")
 _DATE_RE = re.compile(r"^\d{8}$")
 
 
+def _dash_shell_response():
+    dash_view = flask.current_app.view_functions.get("/<path:path>")
+    if dash_view is None:
+        return None
+    return dash_view(flask.request.path.lstrip("/"))
+
+
 def _fmt(value, suffix: str = "") -> str:
     if value is None:
         return "N/A"
@@ -348,8 +355,17 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
         snapshot = get_snapshot(ticker, yyyymmdd)
     except ValueError:
         flask.abort(404)
+    except Exception as exc:
+        print(f"Analysis snapshot lookup failed for {ticker}/{yyyymmdd}: {type(exc).__name__}: {exc}")
+        fallback = _dash_shell_response()
+        if fallback is not None:
+            return fallback
+        flask.abort(404)
 
     if snapshot is None:
+        fallback = _dash_shell_response()
+        if fallback is not None:
+            return fallback
         flask.abort(404)
 
     compare_date = flask.request.args.get("compare", "").strip()

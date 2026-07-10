@@ -4,34 +4,35 @@ from dash import dcc, html
 
 from codes.engine import scorer
 
-from .config import BLUE, BORDER, CARD, MUTED, TEXT
+from .config import BLUE
+
+
+def _topbar():
+    return html.Div(id="topbar", className="topbar", children=[
+        html.Div(className="topbar-brand", children=[
+            html.Span("FR", className="topbar-logo"),
+            html.Span("FactorResearch", className="topbar-title"),
+        ]),
+        html.Div(className="topbar-nav", children=[
+            html.Button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", **{"data-tab": "screener"}),
+            html.Button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", **{"data-tab": "analyze"}),
+            html.Button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "portfolio"}),
+        ]),
+        html.Div(className="topbar-actions", children=[
+            html.Div(id="theme-toggle", className="theme-toggle", children=[
+                html.Button("☀", id="theme-light", className="theme-btn", **{"data-theme": "light"}),
+                html.Button("◐", id="theme-system", className="theme-btn active", **{"data-theme": "system"}),
+                html.Button("☾", id="theme-dark", className="theme-btn", **{"data-theme": "dark"}),
+            ]),
+            html.Div(id="theme-dummy", style={"display": "none"}),
+        ]),
+    ])
 
 
 def build_layout():
     return html.Div(className="app-container", children=[
         dcc.Location(id="url", refresh=False),
-        # Header
-        html.Div(className="app-header", children=[
-            html.Img(src="./assets/logo.png", className="app-header-icon"),
-            html.Div(className="app-header-content", children=[
-           
-                html.H1("FactorResearch"),
-            
-                html.P("Orthogonal factor score: Value, Quality, Momentum, Profitability, FCF Quality, Earnings Revisions, Capital Allocation, Growth Quality, Risk, and Altman."),
-                html.P(
-                    "Not financial advice. For informational purposes only. "
-                    "See Terms of Service and Privacy Policy.",
-                    style={"fontSize": "11px", "color": "#9e9e9e", "marginTop": "4px"}
-                ),
-            ])
-        ]),
-        # Tabs
-        html.Div(className="tab-bar", children=[
-            html.Button("📊 Screener",  id="tab-screener-btn",  className="tab-btn active"),
-            html.Button("🔍 Analyze",   id="tab-analyze-btn",   className="tab-btn"),
-            html.Button("💼 Portfolios", id="tab-portfolio-btn", className="tab-btn"),
-            html.Button("🧪 Factor Lab", id="tab-factorlab-btn", className="tab-btn"),
-        ]),
+        _topbar(),
         # ── Tab: Screener ────────────────────────────────────────────────────────
         html.Div(id="tab-screener", className="screener-content block", children=[
             html.Div(className="screener-toolbar", children=[
@@ -52,13 +53,8 @@ def build_layout():
                         options=[{"label": "All Sectors", "value": ""}],
                         value="",
                         clearable=False,
-                        style={
-                            "background": CARD,
-                            "border": f"1px solid {BORDER}",
-                            "borderRadius": "10px",
-                            "color": TEXT,
-                            "width": "200px"
-                        }
+                        className="bg-card br-10 clr-text",
+                        style={"width": "200px"}
                     ),
                 ]),
             ]),
@@ -76,34 +72,24 @@ def build_layout():
         ]),
         # ── Tab: Analyze ─────────────────────────────────────────────────────────
         html.Div(id="tab-analyze", className="main-content", children=[
-            html.Div(className="search-section", children=[
-                html.Div(className="search-container", children=[
-                    html.Div(className="search-input-wrapper", children=[
-                        dcc.Input(
-                            id="ticker-input",
-                            type="text",
-                            placeholder="Enter stock ticker (e.g. KO, JNJ, XOM)",
-                            debounce=False,
-                            className="ticker-input",
-                            disabled=False
-                        ),
-                        html.Button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False)
-                    ]),
-                    html.Div(id="status-msg", className="status-msg"),
+            html.Div(className="analyze-header", children=[
+                html.Div(className="analyze-ticker-input", children=[
+                    dcc.Input(
+                        id="ticker-input",
+                        type="text",
+                        placeholder="Enter stock ticker (e.g. KO, JNJ, XOM)",
+                        debounce=False,
+                        className="ticker-input",
+                        disabled=False
+                    ),
+                    html.Button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False)
                 ]),
+                html.Span(id="analyze-current", className="analyze-current"),
+                html.Div(id="status-msg", className="status-msg", style={"width": "100%"}),
             ]),
             html.Div(id="history-section", className="history-section"),
-        
-            dcc.Loading(
-                id="analysis-loading",
-                type="default",
-                color=BLUE,
-                children=[
-                    html.Div(id="analysis-content", children=[])
-                ]
-            ),
             # ── Add to Portfolio panel (shown after analysis completes) ──────────
-            html.Div(id="add-to-portfolio-panel",children=[
+            html.Div(id="add-to-portfolio-panel", style={"display": "none"}, children=[
                 html.Div(className="portfolio-add-panel", children=[
                     html.Div(className="portfolio-add-header", children=[
                         html.Span("💼", className="text-2xl"),
@@ -132,9 +118,19 @@ def build_layout():
                         ),
                         html.Button("Add", id="portfolio-add-btn", className="analyze-btn", n_clicks=0),
                     ]),
-                    html.Div(id="portfolio-add-msg", style={"fontSize": "13px", "marginTop": "6px"}),
+                    html.Div(id="portfolio-add-msg", className="fs-13 mt-6"),
                 ])
             ]),
+
+            dcc.Loading(
+                id="analysis-loading",
+                type="default",
+                color=BLUE,
+                children=[
+                    html.Div(id="analysis-content", children=[])
+                ]
+            ),
+            html.Div(id="analysis-anchor-scroll-trigger", style={"display": "none"}),
         ]),
         # ── Tab: Portfolios ──────────────────────────────────────────────────────
         html.Div(id="tab-portfolio", className="main-content", children=[
@@ -155,7 +151,7 @@ def build_layout():
                                 n_clicks=0),
                 ]),
                 html.Div(className="screener-controls", children=[
-                    html.Label("Compare:", style={"fontSize": "13px", "color": "#9e9e9e"}),
+                    html.Label("Compare:", className="fs-13 clr-muted"),
                     dcc.Dropdown(
                         id="portfolio-compare-dropdown",
                         placeholder="Add portfolio to compare…",
@@ -176,23 +172,23 @@ def build_layout():
                     html.Button("Cancel", id="portfolio-create-cancel-btn",
                                 className="load-btn", n_clicks=0),
                     html.Div(id="portfolio-create-msg",
-                             style={"fontSize": "13px", "color": "#ff1744"}),
+                             className="fs-13 clr-red"),
                 ])
             ]),
-            html.Div(id="portfolio-msg", style={"fontSize": "13px", "padding": "4px 0 8px"}),
+            html.Div(id="portfolio-msg", className="fs-13", style={"padding": "4px 0 8px"}),
             # Main portfolio content (holdings + run sim button)
             dcc.Loading(type="default", color="#448aff", children=[
                 html.Div(id="portfolio-content", children=[
                     html.Div("Select or create a portfolio to get started.",
-                             style={"textAlign": "center", "padding": "60px", "color": "#9e9e9e"})
+                             className="tac p-60 clr-muted")
                 ])
             ]),
             # Simulation results (charts)
             html.Div(id="portfolio-sim-results", children=[]),
         ]),
         # ── Tab: Factor Lab ─────────────────────────────────────────────────────
-        html.Div(id="tab-factorlab", className="main-content", style={"display": "none"}, children=[
-            html.Div(className="app-header", style={"marginBottom": "24px"}, children=[
+        html.Div(id="tab-factorlab", className="main-content d-none", children=[
+            html.Div(className="app-header mb-24", children=[
                 html.Div("🧪", className="app-header-icon"),
                 html.Div(className="app-header-content", children=[
                     html.H1("Factor Weight Lab"),
@@ -205,36 +201,34 @@ def build_layout():
             ]),
 
             html.Div(className="screener-toolbar", children=[
-                html.Div(className="screener-controls", style={"flexWrap": "wrap", "gap": "20px"}, children=[
+                html.Div(className="screener-controls flex-wrap gap-20", children=[
                     html.Div([
-                        html.Label("Top N stocks", style={"fontSize": "12px", "color": "#9e9e9e"}),
+                        html.Label("Top N stocks", className="fs-12 clr-muted"),
                         dcc.Slider(id="fb-top-n", min=3, max=20, step=1, value=10,
                                    marks={3: "3", 5: "5", 10: "10", 15: "15", 20: "20"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
                     ], style={"width": "200px"}),
                     html.Div([
-                        html.Label("Backtest years", style={"fontSize": "12px", "color": "#9e9e9e"}),
+                        html.Label("Backtest years", className="fs-12 clr-muted"),
                         dcc.Slider(id="fb-years", min=1, max=10, step=1, value=5,
                                    marks={1: "1", 3: "3", 5: "5", 7: "7", 10: "10"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
                     ], style={"width": "200px"}),
-                    html.Button("▶ Run Backtest", id="fb-run-btn", className="analyze-btn",
-                                n_clicks=0, style={"alignSelf": "flex-end"}),
-                    html.Div(id="fb-status", style={"alignSelf": "flex-end", "fontSize": "13px",
-                                                     "color": "#9e9e9e"}),
+                    html.Button("▶ Run Backtest", id="fb-run-btn", className="analyze-btn as-end",
+                                n_clicks=0),
+                    html.Div(id="fb-status", className="as-end fs-13 clr-muted"),
                 ]),
             ]),
 
-            html.Div(className="scorecard", style={"marginTop": "16px"}, children=[
+            html.Div(className="scorecard mt-16", children=[
                 html.Div("Factor Weights — drag sliders to reshape the model", className="scorecard-header"),
-                html.Div(style={"display": "grid",
-                                "gridTemplateColumns": "repeat(auto-fill, minmax(280px, 1fr))",
-                                "gap": "20px", "padding": "16px 18px"}, children=[
+                html.Div(className="d-grid gap-20",
+                         style={"gridTemplateColumns": "repeat(auto-fill, minmax(280px, 1fr))",
+                                "padding": "16px 18px"}, children=[
                     *[
                         html.Div([
-                            html.Div(style={"display": "flex", "justifyContent": "space-between",
-                                            "marginBottom": "4px"}, children=[
-                                html.Label(lbl, style={"fontSize": "13px", "fontWeight": "600"}),
+                            html.Div(className="d-flex jc-between mb-4", children=[
+                                html.Label(lbl, className="fs-13 fw-600"),
                             ]),
                             dcc.Slider(
                                 id=f"fb-w-{key}",
@@ -259,8 +253,8 @@ def build_layout():
                     ],
                 ]),
                 html.Div(id="fb-weight-sum-display",
-                         style={"padding": "8px 18px 14px", "fontSize": "12px",
-                                "color": "#9e9e9e", "fontStyle": "italic"},
+                         className="fs-12 clr-muted fsi",
+                         style={"padding": "8px 18px 14px"},
                          children="Weight sum: 100% ✓"),
             ]),
 
@@ -270,13 +264,11 @@ def build_layout():
         ]),
 
         # Legal footer (ISSUE_013) — routes are placeholders until ToS/Privacy pages exist.
-        html.Div(className="app-footer", style={
-            "textAlign": "center", "padding": "16px", "fontSize": "11px", "color": "#9e9e9e"
-        }, children=[
+        html.Div(className="app-footer tac p-16 fs-11 clr-muted", children=[
             html.Span("© Factor Research · "),
-            html.A("Terms of Service", href="/terms", style={"color": "#9e9e9e"}),
+            html.A("Terms of Service", href="/terms", className="clr-muted"),
             html.Span(" · "),
-            html.A("Privacy Policy", href="/privacy", style={"color": "#9e9e9e"}),
+            html.A("Privacy Policy", href="/privacy", className="clr-muted"),
             html.Span(" · Not financial advice."),
         ]),
 

@@ -2,10 +2,10 @@
 
 import re
 
-# ── Color Theme (CSS vars in style.css, keeping for reference) ────────────────
+# ── Color Theme ────────────────────────────────────────────────────────────────
 DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED ,WHITE= (
-    "#0f1117", "#1a1d27", "#2a2d3e", "#00c853", "#ff1744",
-    "#ffc107", "#448aff", "#e0e0e0", "#9e9e9e", "#ffffff"
+    "#0d1117", "#1e2a3a", "#1e2a3a", "#00e676", "#ff1744",
+    "#ffab00", "#1677ff", "#e8eaf0", "#4a5568", "#ffffff"
 )
 
 # SECURITY (ISSUE_010 / NEW-1 / NEW-5): allow-list validation at every

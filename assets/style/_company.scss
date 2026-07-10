@@ -1,0 +1,293 @@
+@use 'tokens' as *;
+@use 'helpers' as *;
+// ── Company Header ────────────────────────────────────────────────────────────
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 20px 24px;
+  border: 1px solid $border;
+  border-radius: 8px;
+  background: $card;
+  margin-bottom: 16px;
+
+  h2 {
+    font-family: $font-base;
+    font-size: 20px;
+    font-weight: 700;
+    color: $text;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+}
+
+.company-meta {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 14px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  border: 1px solid $border;
+  border-radius: 6px;
+  overflow: hidden;
+
+  .stat-item {
+    padding: 8px 16px;
+    border-right: 1px solid $border;
+    min-width: 90px;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+.stat-label {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 3px;
+}
+
+.stat-value {
+  font-family: $font-mono;
+  font-size: 15px;
+  font-weight: 500;
+  color: $text;
+}
+
+.grade-badge {
+  text-align: center;
+  padding: 12px 20px;
+  background: rgba($blue, 0.05);
+  border: 1px solid $border;
+  border-radius: 6px;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.grade-letter {
+  font-family: $font-base;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.grade-label {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 4px;
+}
+
+.grade-score {
+  font-family: $font-mono;
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-dim;
+}
+
+// ── Mockup-style Composite Banner ─────────────────────────────────────────────
+.composite-banner {
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 24px;
+  background: $surface;
+  margin-bottom: 24px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.composite-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.composite-score-wrap {
+  text-align: center;
+}
+
+.composite-score {
+  font-size: 64px;
+  font-weight: 800;
+  font-family: $font-mono;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: $text;
+}
+
+.composite-label {
+  font-size: 13px;
+  color: $text-dim;
+  margin-top: 4px;
+}
+
+.composite-verdict {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-top: 8px;
+
+  &.hc { background: $green-glow; color: $green; }
+  &.fav { background: rgba(0,188,212,0.12); color: $cyan; }
+  &.bal { background: $warning-bg; color: $warning; }
+  &.cau { background: rgba(255,109,0,0.12); color: #ff6d00; }
+  &.unfav { background: rgba(255,23,68,0.10); color: $red; }
+}
+
+.composite-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+
+.composite-stat-label {
+  font-size: 11px;
+  color: $text-dim;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.composite-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: $font-mono;
+  margin-top: 2px;
+  color: $text;
+}
+
+// ── Factor Grid (4-column, replacing detailed scorecards) ─────────────────────
+.factor-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.factor-card {
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 16px;
+  background: $card;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: $blue;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+  }
+}
+
+.factor-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.factor-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+}
+
+.factor-card-weight {
+  font-size: 11px;
+  color: $text-dim;
+  font-weight: 400;
+}
+
+.factor-card-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: $font-mono;
+
+  &.high { background: $green-glow; color: $green; }
+  &.med  { background: $warning-bg; color: $warning; }
+  &.low  { background: rgba(255,23,68,0.10); color: $red; }
+}
+
+.factor-card-metrics {
+  margin-bottom: 12px;
+}
+
+.factor-card-metric {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.factor-card-metric-label {
+  color: $text-dim;
+}
+
+.factor-card-metric-value {
+  font-family: $font-mono;
+  font-weight: 500;
+  color: $text;
+}
+
+.factor-card-desc {
+  font-size: 12px;
+  color: $text-dim;
+  line-height: 1.5;
+}
+
+// ── Factor circles (SVG, kept from mockup for future use) ─────────────────────
+.factor-circle-svg {
+  width: 46px;
+  height: 46px;
+  transform: rotate(-90deg);
+}
+
+.factor-circle-bg { fill: none; stroke: $border; stroke-width: 4; }
+.factor-circle-fill { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+.factor-circle-fill.green { stroke: $green; }
+.factor-circle-fill.amber { stroke: $amber; }
+.factor-circle-fill.red { stroke: $red; }
+
+// ── Chart placeholder ─────────────────────────────────────────────────────────
+.chart-section { margin-bottom: 24px; }
+.chart-section h3 { font-size: 16px; font-weight: 600; color: $text; margin-bottom: 16px; }
+
+.chart-placeholder {
+  border: 1px dashed $border;
+  border-radius: 8px;
+  padding: 48px 16px;
+  text-align: center;
+  color: $text-dim;
+  background: $surface;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.chart-placeholder-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
+.chart-placeholder h4 { font-size: 15px; color: $text; margin-bottom: 4px; }
+.chart-placeholder p { font-size: 13px; }

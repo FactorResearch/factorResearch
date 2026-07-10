@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap');
+
+// ── Brand Palette (Dark) ────────────────────────────────────────────────────
+$bg: #0d1117;
+$surface: #161d2a;
+$card: #1e2a3a;
+$card-raised: #1e2a3a;
+$border: #1e2a3a;
+$border-glow: #1e3a5f;
+
+$green: #00e676;
+$green-dim: #00c853;
+$green-glow: rgba(0, 230, 118, 0.15);
+$red: #ff1744;
+$red-dim: #d50000;
+$red-glow: rgba(255, 23, 68, 0.10);
+$amber: #ffab00;
+$amber-glow: rgba(255, 171, 0, 0.10);
+$warning: #ffab00;
+$warning-bg: rgba(255, 171, 0, 0.10);
+$positive: #00e676;
+$positive-bg: rgba(0, 230, 118, 0.12);
+$negative: #ff1744;
+$negative-bg: rgba(255, 23, 68, 0.10);
+$cyan: #00b8d4;
+$blue: #1677ff;
+$blue-bright: #448aff;
+$blue-glow: rgba(22, 119, 255, 0.2);
+$cyan: #00b8d4;
+
+$text: #e8eaf0;
+$text-dim: #8899aa;
+$text-muted: #4a5568;
+$white: #fff;
+
+$font-mono: 'DM Mono', 'Fira Code', monospace;
+$font-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$tablet: 1024px;
+$mobile: 768px;
+$small-mobile: 480px;
+
+// ── Light Theme (applied via .light class on body) ──────────────────────────
+$light-bg: #ffffff;
+$light-surface: #f7f8fa;
+$light-card: #ffffff;
+$light-border: #d9dee7;
+$light-text: #111111;
+$light-text-dim: #6b7280;
+$light-text-muted: #9ca3af;
+$light-positive: #00c853;
+$light-negative: #ff1744;
+$light-amber: #ffab00;
+$light-blue: #1677ff;

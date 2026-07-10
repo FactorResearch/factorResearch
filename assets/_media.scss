@@ -1,68 +1,17 @@
-//ipad mini
-@mixin tablet {
-    @media screen and (min-width: 767px) and (max-width: 1024px) {
-        @content;
-    }
-}
-//ipad air
-@mixin lg-tablet {
-    @media screen and (min-width:820px) and (max-width:1180px) {
-        @content;
-    }
-}
-//ipad pro
-@mixin xl-tablet{
-    @media screen and (min-width:1024px) and (max-width:1366px) {
-        @content;
-    }
-}
-//small laptop
-@mixin md-laptop{
-    @media screen and (min-width:1209px) and (max-width:1800px){
-        @content;
-    }
-}
-@mixin phones {
-    @media screen and (max-width:767px) {
-        @content;
-    }
-}
+// ── Responsive Media Query Mixins ────────────────────────────────────────────
 
-@mixin fourK {
-    @media screen and (min-width:2000px) {
-        @content;
-    }
+@mixin phones {
+  @media screen and (max-width: 767px) { @content; }
 }
 
 @mixin sm-phones {
-    @media screen and (max-width:400px) {
-        @content;
-    }
+  @media screen and (max-width: 400px) { @content; }
 }
 
-@mixin xs-phones {
-    @media screen and (max-width:320px) {
-        @content;
-    }
+@mixin tablet {
+  @media screen and (min-width: 767px) and (max-width: 1024px) { @content; }
 }
-@mixin orientation($direction) { 
 
-    $orientation-landscape: "(orientation:landscape)"; 
-    $orientation-portrait: "(orientation:portrait)";
-  
-    @if $direction == landscape {
-      @media #{$orientation-landscape} { @content; } 
-    }
-    @if $direction == portrait {
-      @media #{$orientation-portrait} { @content; } 
-    }
-  } 
-
-@mixin tablet-mobile($var...){
-    @include phones{
-       @content;
-    }
-    @include tablet{
-        @content;
-    }
+@mixin md-laptop {
+  @media screen and (min-width: 1024px) and (max-width: 1366px) { @content; }
 }

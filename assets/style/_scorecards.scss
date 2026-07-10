@@ -1,0 +1,287 @@
+@use 'tokens' as *;
+@use 'helpers' as *;
+@use '../media' as m;
+
+// ── Warning Banner ────────────────────────────────────────────────────────────
+.warning-banner {
+  @include mono(12px);
+  background: rgba($amber, 0.08);
+  border: 1px solid rgba($amber, 0.3);
+  border-left: 3px solid $amber;
+  border-radius: 6px;
+  color: $amber;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+
+// ── Scorecards ────────────────────────────────────────────────────────────────
+.scorecard {
+  @include card-raised;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.scorecard-header {
+  font-family: $font-base;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $text-dim;
+  padding: 12px 18px;
+  background: $card;
+  border-bottom: 1px solid $border;
+}
+
+.criterion-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba($border, 0.5);
+  transition: background 0.12s;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba($blue, 0.03);
+  }
+}
+
+.criterion-label {
+  @include mono(12px, 500);
+  color: $text;
+  margin-bottom: 3px;
+}
+
+.criterion-note {
+  @include mono(11px);
+  color: $text-dim;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.score-bar {
+  height: 3px;
+  background: rgba($border, 0.8);
+  border-radius: 2px;
+  overflow: hidden;
+  max-width: 340px;
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.criterion-pts {
+  @include mono(13px, 500);
+  white-space: nowrap;
+  min-width: 42px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+// ── Factor Circles (replacing bars) ───────────────────────────────────────────
+.factor-circles {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px 8px;
+  padding: 16px 18px;
+}
+.factor-circle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.factor-circle-progress {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.factor-circle-progress-inner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: $card;
+}
+.factor-circle-label {
+  font-family: $font-mono;
+  font-size: 9px;
+  color: $text-dim;
+  text-align: center;
+  max-width: 64px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.factor-circle-score {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+// ── Moat Tooltip ──────────────────────────────────────────────────────────────
+.moat-tip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dashed $text-dim;
+  display: inline-block;
+
+  &:hover .moat-tip-popup,
+  &:focus .moat-tip-popup {
+    display: block;
+  }
+}
+.moat-tip-popup {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: $text;
+  color: $bg;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 10px 14px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-family: $font-base;
+  font-weight: 400;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: $text;
+  }
+}
+
+// ── Charts Grid ───────────────────────────────────────────────────────────────
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  @include m.md-laptop {
+    display: flex;
+    flex-direction: row;
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: $tablet) {
+    grid-template-columns: 1fr;
+  }
+
+  .js-plotly-plot {
+    @include card;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+}
+
+// ── Empty Cards ───────────────────────────────────────────────────────────────
+.empty-card {
+  @include card;
+  padding: 40px;
+  text-align: center;
+
+  .empty-title {
+    font-family: $font-base;
+    font-size: 15px;
+    font-weight: 600;
+    color: $text-dim;
+    margin-bottom: 6px;
+  }
+
+  .empty-msg {
+    @include mono(12px);
+    color: $text-muted;
+  }
+}
+
+// ── Intrinsic Detail Card ─────────────────────────────────────────────────────
+.detail-card {
+  @include card-raised;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.card-header {
+  font-family: $font-base;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $text-dim;
+  padding: 12px 18px;
+  background: $card;
+  border-bottom: 1px solid $border;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba($border, 0.5);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba($blue, 0.03);
+  }
+}
+
+.detail-label {
+  font-family: $font-mono;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.detail-value {
+  @include mono(13px, 500);
+  color: $text;
+}
+
+// ── Dash Loading Overlay ──────────────────────────────────────────────────────
+.dash-graph {
+  width: 672px;
+  height: 500px;
+  max-width: 672px;
+  max-height: 500px;
+  margin-bottom: 2rem;
+
+  @include m.md-laptop {
+    width: 555px;
+    max-width: 555px;
+    flex: 1 1 50%;
+  }
+}
+
+._dash-loading-callback {
+  opacity: 0.6;
+}

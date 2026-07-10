@@ -193,7 +193,7 @@ No vague instructions allowed.
 
 ---
 
-## ISSUE_001:
+# ISSUE_001:
    
  Status:[x]
   title: "Sector dropdown is empty due to missing metadata layer (SEC facts not available at startup)"
@@ -255,8 +255,7 @@ No vague instructions allowed.
 ---
 
 ---
-
-## ISSUE_002:
+# ISSUE_002:
    
  Status:[x]
   title: complete postgress db migration
@@ -294,8 +293,7 @@ No vague instructions allowed.
 ---
 
 ---
-
-## ISSUE_003:
+# ISSUE_003:
 
   Status: [x]
 
@@ -354,8 +352,7 @@ No vague instructions allowed.
 
 ---
 ---
-
-## ISSUE_004:
+# ISSUE_004:
 
  Status:[~]
 
@@ -678,7 +675,7 @@ implementation_phases:
 
 
 
-  phase_3_data_moat:
+  phase_3_data_moat:[can't be completed until we launch, takes 4 months]
 
 
     estimated_time: 1-3 months
@@ -717,7 +714,7 @@ expected_result: >
 
 ---
 ---
-## ISSUE_012:
+# ISSUE_005:
 
 Status: [x]
 
@@ -831,8 +828,7 @@ acceptance_criteria:
     scoring engine.
 
 priority: High
-
-## ISSUE_013:
+# ISSUE_006:
 
 Status: [x]
 
@@ -1097,8 +1093,7 @@ future_extensions:
   maximizes cache efficiency, and enables scalable customization as the
   platform grows.
 ---
-
-## ISSUE_014:
+# ISSUE_007:
 
 Status: [x]
 
@@ -1150,8 +1145,7 @@ important_rules:
 - SEC 8-K sentiment must stay deterministic and auditable.
 
 ---
-
-# ISSUE_015
+# ISSUE_008
 Status: [x]
 **Objective:**
 
@@ -1555,7 +1549,75 @@ API + bulk research
 The architecture should support additional paid tiers without rewriting feature access logic.
 
 **TEST RULE**: Add minimal test `test_issue_XXX_*.py` when needed.
+---
+# ISSUE_009:
+Status: [fixed]
+psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "analysis_cache" does not exist
 
+getting to analyze tab from screener works but opening the links on it is own does not http://127.0.0.1:8050/analyze/NVDA/20260709
+
+risk_if_not_fixed: HIGH
+---
+# ISSUE_010:
+
+ Status:[x]
+  title: light mode and dark mode
+  category: style
+
+  files:
+    - codes/app.py
+    - assets
+
+
+  problem: >
+    app is currently only in dark mode
+
+
+  required_fix: >
+    - implement light mode, then allow users to switch between them, save user prefrences
+
+  acceptance_criteria:
+    - toggle to switch between each mode and save that into user profile
+
+  risk_if_not_fixed: LOW
+---
+# ISSUE_011:
+
+ Status:[]
+  title: analyze tab is too long
+  category: style
+
+  files:
+    - codes/analyze.py
+    - assets
+
+
+  problem: >
+    analyze tab is a large page that user have to scroll in one shot.
+
+  required_fix: >
+    - break the page into smaller section, each section is behind vertical carousel like section that allows people to get to.
+      on the left side are dots showing how many pages exist, hovering over those dots expand and show title for each section.
+      client can jump to each section by just clicking
+    - here is proposed structure
+      - the first slide shows, the company-header and composite banner
+      - second slide Intrinsic Value Estimate,Economic Moat Rating Details
+      - third slide Economic Moat Quality & Value,Momentum Analysis
+      - fourth slide Risk & Performance — 10yr History , Risk Score Breakdown
+      - fifth slide Moat Rating Analysis - Intrinsic Value Analysis
+      - sixth slide financial health and z score
+      - sevent slide, market regime and fcf quality
+      - eight capital allocation and growth
+      - nine slide alt data , factor momentum and opt signal
+      - 10 remaning graph
+      - add to portfolio should always be available in all slides
+
+  acceptance_criteria:
+    - smoth scrolling between slides, and functioning system in mobile and tablet.
+
+  risk_if_not_fixed: LOW
+
+---
 
 # AI EXECUTION PROTOCOL
 

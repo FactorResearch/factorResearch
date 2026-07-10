@@ -50,7 +50,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     try:
         check_rate_limit("backtest", calls=3, period_seconds=60)
     except RateLimited as rl:
-        return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger", style={"padding": "20px"})], "⏳ Rate limited"
+        return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger p-20")], "⏳ Rate limited"
 
     from codes.engine import strategy_cache, user_strategy
 
@@ -66,13 +66,12 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
             return [
                 html.Div([
                     html.Div(f"🔒 {access.message}", className="text-danger"),
-                    html.A("Unlock strategy validation", href=checkout, className="analyze-btn",
-                           style={"display": "inline-block", "marginTop": "12px", "textDecoration": "none"}),
-                ], style={"padding": "20px"})
+                    html.A("Unlock strategy validation", href=checkout, className="analyze-btn d-inline-block mt-12",
+                           style={"textDecoration": "none"}),
+                ], className="p-20")
             ], "🔒 Premium required"
     except Exception:
-        return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger",
-                         style={"padding": "20px"})], "🔒 Billing unavailable"
+        return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable"
 
     # Layer 4: cache-aware backtest, reused across identical configs
     result = strategy_cache.get_or_run_backtest(
@@ -82,8 +81,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
     )
 
     if result.get("error"):
-        return [html.Div(f"❌ {result['error']}", className="text-danger",
-                         style={"padding": "20px"})], "❌ Error"
+        return [html.Div(f"❌ {result['error']}", className="text-danger p-20")], "❌ Error"
 
     permissions.record_feature_usage(uid, permissions.Feature.BACKTEST)
     cache_note = " (cached)" if result.get("cache_hit") else ""
@@ -117,25 +115,25 @@ def _render_fb_results(r: dict) -> list:
     ]:
         cv, dv, sv = bt_c.get(ck), bt_d.get(ck), bt_s.get(ck)
         rows.append(html.Tr([
-            html.Td(label, style={"color": MUTED, "fontSize": "12px"}),
+            html.Td(label, className="clr-muted fs-12"),
             html.Td(_fmt(cv, fmt, sfx),
-                    style={"color": _cell_color(cv, dv), "fontWeight": "700", "fontSize": "13px"}),
-            html.Td(_fmt(dv, fmt, sfx), style={"fontSize": "13px"}),
-            html.Td(_fmt(sv, fmt, sfx), style={"fontSize": "13px", "color": MUTED}),
+                    className="fw-700 fs-13", style={"color": _cell_color(cv, dv)}),
+            html.Td(_fmt(dv, fmt, sfx), className="fs-13"),
+            html.Td(_fmt(sv, fmt, sfx), className="fs-13 clr-muted"),
         ]))
 
-    summary = html.Div(className="scorecard", style={"marginTop": "20px"}, children=[
+    summary = html.Div(className="scorecard mt-20", children=[
         html.Div("📊 Performance Comparison", className="scorecard-header"),
         html.Div(
             "Green = custom beats default. Equal-weight buy-and-hold on stocks in your analysis cache.",
-            style={"fontSize": "12px", "color": MUTED, "padding": "0 18px 10px", "fontStyle": "italic"},
+            style={"padding": "0 18px 10px"}, className="fs-12 clr-muted fsi",
         ),
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
                 html.Th("Metric"),
-                html.Th("Custom Weights", style={"color": BLUE}),
+                html.Th("Custom Weights", className="clr-blue"),
                 html.Th("Default Weights"),
-                html.Th("SPY", style={"color": MUTED}),
+                html.Th("SPY", className="clr-muted"),
             ])),
             html.Tbody(rows),
         ]),
@@ -174,15 +172,15 @@ def _render_fb_results(r: dict) -> list:
         delta = wc["delta"]
         d_color = GREEN if delta > 1 else RED if delta < -1 else MUTED
         wc_rows.append(html.Tr([
-            html.Td(wc["factor"].replace("_", " ").title(), style={"fontSize": "12px"}),
+            html.Td(wc["factor"].replace("_", " ").title(), className="fs-12"),
             html.Td(f"{wc['custom']:.1f}%",
-                    style={"fontWeight": "700", "color": BLUE, "fontSize": "13px"}),
-            html.Td(f"{wc['default']:.1f}%", style={"fontSize": "12px", "color": MUTED}),
+                    className="fw-700 clr-blue fs-13"),
+            html.Td(f"{wc['default']:.1f}%", className="fs-12 clr-muted"),
             html.Td(f"{delta:+.1f}pp",
-                    style={"fontWeight": "600", "color": d_color, "fontSize": "12px"}),
+                    className="fw-600 fs-12", style={"color": d_color}),
         ]))
 
-    weight_table = html.Div(className="scorecard", style={"marginTop": "16px"}, children=[
+    weight_table = html.Div(className="scorecard mt-16", children=[
         html.Div("⚖️ Weight Changes vs Default", className="scorecard-header"),
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([html.Th("Factor"), html.Th("Custom"), html.Th("Default"), html.Th("Δ pp")])),
@@ -200,17 +198,17 @@ def _render_fb_results(r: dict) -> list:
         d_color = GREEN if delta > 2 else RED if delta < -2 else MUTED
         stock_rows.append(html.Tr([
             html.Td(sym, className="font-semibold text-info"),
-            html.Td(s["name"][:22], style={"fontSize": "11px", "color": MUTED}),
+            html.Td(s["name"][:22], className="fs-11 clr-muted"),
             html.Td(f"{s['custom_score']:.1f}",
-                    style={"fontWeight": "700", "color": BLUE}),
+                    className="fw-700 clr-blue"),
             html.Td(f"{s['default_score']:.1f}"),
-            html.Td(f"{delta:+.1f}", style={"color": d_color, "fontWeight": "600"}),
-            html.Td("✅" if sym in custom_set  else "—", style={"textAlign": "center"}),
-            html.Td("✅" if sym in default_set else "—", style={"textAlign": "center"}),
+            html.Td(f"{delta:+.1f}", className="fw-600", style={"color": d_color}),
+            html.Td("✅" if sym in custom_set  else "—", className="tac"),
+            html.Td("✅" if sym in default_set else "—", className="tac"),
         ]))
 
     overlap = r.get("overlap", [])
-    stocks_table = html.Div(className="scorecard", style={"marginTop": "16px"}, children=[
+    stocks_table = html.Div(className="scorecard mt-16", children=[
         html.Div(
             f"🏆 Stock Rankings — Custom top-{r['top_n']}: "
             f"{', '.join(r['custom_top'][:6])}{'...' if len(r['custom_top']) > 6 else ''}",
@@ -219,12 +217,12 @@ def _render_fb_results(r: dict) -> list:
         html.Div(
             f"Portfolio overlap: {len(overlap)}/{r['top_n']} stocks in both — "
             f"{', '.join(overlap) if overlap else 'none in common'}",
-            style={"fontSize": "12px", "color": MUTED, "padding": "4px 18px 10px", "fontStyle": "italic"},
+            style={"padding": "4px 18px 10px"}, className="fs-12 clr-muted fsi",
         ),
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
                 html.Th("Ticker"), html.Th("Name"),
-                html.Th("Custom Score", style={"color": BLUE}),
+                html.Th("Custom Score", className="clr-blue"),
                 html.Th("Default Score"),
                 html.Th("Δ Score"),
                 html.Th("In Custom"),
@@ -238,6 +236,6 @@ def _render_fb_results(r: dict) -> list:
     for label, bt in [("Custom", bt_c), ("Default", bt_d), ("SPY", bt_s)]:
         if bt.get("error"):
             warns.append(html.Div(f"⚠️ {label}: {bt['error']}",
-                                  style={"color": AMBER, "fontSize": "12px", "padding": "4px 0"}))
+                                   className="clr-amber fs-12", style={"padding": "4px 0"}))
 
     return [summary, chart, weight_table, stocks_table] + warns

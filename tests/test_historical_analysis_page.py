@@ -39,6 +39,22 @@ def _client():
     return app.test_client()
 
 
+def test_historical_page_falls_back_to_dash_shell_when_snapshot_db_unavailable():
+    app = flask.Flask(__name__)
+    app.register_blueprint(analyze_pages)
+
+    def dash_shell(path):
+        return flask.Response(f"dash shell for {path}", mimetype="text/html")
+
+    app.add_url_rule("/<path:path>", endpoint="/<path:path>", view_func=dash_shell)
+
+    with patch("codes.routes.analyze.get_snapshot", side_effect=RuntimeError("database missing")):
+        response = app.test_client().get("/analyze/NVDA/20260709")
+
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "dash shell for analyze/NVDA/20260709"
+
+
 def test_historical_page_renders_compare_picker_and_history_links():
     current = _snapshot("20260708")
     previous = _snapshot("20260608", valuation=74, rating="BUY")
