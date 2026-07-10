@@ -2944,6 +2944,17 @@ usage.
 -   Future recommendation engines can leverage historical analytics
     data.
 
+
+
+
+# ISSUE_027:
+  **Status:** [ ]
+  title: recomendation labels
+
+  algorithim should never produce these word: BUY,SELL,HOLD. for legal reason we need to play around with the word, ENHANCED_VERDICTS from scorer.py is a good anchor, all 
+  buy and sell signal must get their information from there, this includes, option signal and any other signal in future
+
+
 # AI EXECUTION PROTOCOL
 
 When fixing an issue:

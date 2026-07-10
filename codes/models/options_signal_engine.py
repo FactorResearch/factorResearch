@@ -261,7 +261,7 @@ class OptionsSignalEngine:
             signal = "NO_TRADE"
         else:
             sig = _signal(edge_score)
-            signal = f"BUY_{bias}" if sig == "STRONG_EDGE" else sig
+            signal = f"{bias}" if sig == "STRONG_EDGE" else sig
 
         return {
             "ticker": self.ticker,

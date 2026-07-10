@@ -260,7 +260,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         ("Fair Value ↕",  "graham_number",    "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock."),
         ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock."),
         ("Updated",     "updated_at",       "Date this stock was last fully analyzed."),
-        ("Verdict",     None,               "Investment verdict based on composite score: STRONG BUY ≥75 · BUY ≥60 · WATCH ≥45 · HOLD ≥30 · AVOID <30. * = fundamentals only (momentum not yet loaded)."),
+        ("Verdict",     None,               "Investment verdict based on composite score: HIGH CONVICTION ≥75 · FAVORABLE ≥60 · BALANCED ≥45 · CAUTION ≥30 · UNFAVORABLE <30. * = fundamentals only (momentum not yet loaded)."),
     ]
     header_cells = []
     for label, sort_key, tooltip in SORT_COLS:
@@ -294,7 +294,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         verdict       = r["verdict"]
         verdict_label = r["verdict_label"]
         verdict       = r["verdict"]
-        verdict_label = r["verdict_label"]
+       
         if not r.get("analyzed"):
             verdict, verdict_label = "—", "pending"
         elif verdict == "PENDING":
@@ -338,7 +338,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             gn_cell = html.Td([
                 html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
                 html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
-            ], title=f"Intrinsic Value Estimate · Graham #{intrinsic_score}/105")
+            ], title=f"Intrinsic Value Estimate · #{intrinsic_score}/105")
         else:
             gn_cell = html.Td("—", className="text-xs text-muted",
                               title="Run full analysis to calculate Intrinsic Value")
