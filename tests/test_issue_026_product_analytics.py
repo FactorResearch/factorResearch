@@ -7,6 +7,7 @@ import flask
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from codes.app_modules import analysis as stock_analysis
 from codes.app_modules.tabs import analyze, factor_lab, pricing, screener
 from codes.data import analytics_db
 from codes.payments import webhooks
@@ -54,7 +55,11 @@ def test_analyze_success_tracks_started_completed_and_stock_view(monkeypatch):
     allow = PermissionResult(True, Feature.ANALYSIS, plan="trial", status="trialing", remaining=3)
     monkeypatch.setattr(analyze.permissions, "can_access_feature", lambda *_: allow)
     monkeypatch.setattr(analyze.permissions, "consume_analysis_if_allowed", lambda *args, **kwargs: allow)
-    monkeypatch.setattr(analyze, "analyze_stock", lambda symbol: {"symbol": symbol, "name": "Apple"})
+    monkeypatch.setattr(
+        analyze,
+        "analyze_stock",
+        lambda symbol: {"symbol": symbol, "name": "Apple", "cache_hit": True, "cache_source": "memory"},
+    )
     monkeypatch.setattr(analyze, "_build_analysis_content", lambda result: ["content"])
     monkeypatch.setattr(analyze.screener, "update_stock_after_analysis", lambda *args, **kwargs: None)
     monkeypatch.setattr(analyze.dash, "ctx", SimpleNamespace(triggered_id="analyze-btn"))
@@ -65,7 +70,29 @@ def test_analyze_success_tracks_started_completed_and_stock_view(monkeypatch):
 
     assert tracked.call_args_list[0].args[1] == "analysis_started"
     assert tracked.call_args_list[1].args[1] == "analysis_completed"
+    assert tracked.call_args_list[1].args[2]["cache_hit"] is True
+    assert tracked.call_args_list[1].args[2]["cache_source"] == "memory"
+    assert tracked.call_args_list[1].args[2]["duration_ms"] >= 0
     assert tracked.call_args_list[2].args[1] == "stock_viewed"
+
+
+def test_analyze_business_error_tracks_failure_class(monkeypatch):
+    monkeypatch.setattr(analyze, "check_rate_limit", lambda *args, **kwargs: None)
+    monkeypatch.setattr(analyze, "get_user_id", lambda: "u1")
+    allow = PermissionResult(True, Feature.ANALYSIS, plan="trial", status="trialing", remaining=3)
+    monkeypatch.setattr(analyze.permissions, "can_access_feature", lambda *_: allow)
+    monkeypatch.setattr(analyze, "analyze_stock", lambda symbol: {"error": "No data"})
+    monkeypatch.setattr(analyze.dash, "ctx", SimpleNamespace(triggered_id="analyze-btn"))
+    tracked = Mock()
+    monkeypatch.setattr(analyze.product_analytics, "track_event", tracked)
+
+    analyze.run_analysis(1, None, "/", "AAPL", [])
+
+    failed = tracked.call_args_list[1]
+    assert failed.args[1] == "analysis_failed"
+    assert failed.args[2]["failure_class"] == "business_error"
+    assert failed.args[2]["reason"] == "business_error"
+    assert failed.args[2]["duration_ms"] >= 0
 
 
 def test_factor_lab_tracks_backtest_started_and_completed(monkeypatch):
@@ -90,6 +117,28 @@ def test_factor_lab_tracks_backtest_started_and_completed(monkeypatch):
     names = [call.args[1] for call in factor_lab.product_analytics.track_event.call_args_list]
     assert names == ["algorithm_selected", "backtest_started", "backtest_completed"]
     assert factor_lab.product_analytics.track_event.call_args_list[0].args[2]["algorithm"] == "custom_weights"
+    assert factor_lab.product_analytics.track_event.call_args_list[2].args[2]["cache_hit"] is False
+    assert factor_lab.product_analytics.track_event.call_args_list[2].args[2]["duration_ms"] >= 0
+
+
+def test_factor_lab_business_error_tracks_failure_class(monkeypatch):
+    monkeypatch.setattr(factor_lab, "check_rate_limit", lambda *args, **kwargs: None)
+    monkeypatch.setattr(factor_lab, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(factor_lab.product_analytics, "track_event", Mock())
+    monkeypatch.setattr(factor_lab.permissions, "can_access_feature",
+                        lambda *_: PermissionResult(True, Feature.BACKTEST, plan="premium", status="active"))
+
+    from codes.engine import strategy_cache, user_strategy
+    monkeypatch.setattr(user_strategy, "set_user_weights", lambda *args, **kwargs: None)
+    monkeypatch.setattr(strategy_cache, "get_or_run_backtest", lambda **kwargs: {"error": "backtest failed"})
+
+    factor_lab.run_factor_backtest_cb(1, 10, 5, *([10] * 10))
+
+    failed = factor_lab.product_analytics.track_event.call_args_list[2]
+    assert failed.args[1] == "backtest_failed"
+    assert failed.args[2]["failure_class"] == "business_error"
+    assert failed.args[2]["reason"] == "result_error"
+    assert failed.args[2]["duration_ms"] >= 0
 
 
 def test_factor_lab_default_weights_track_default_algorithm(monkeypatch):
@@ -115,6 +164,41 @@ def test_factor_lab_default_weights_track_default_algorithm(monkeypatch):
     first = factor_lab.product_analytics.track_event.call_args_list[0]
     assert first.args[1] == "algorithm_selected"
     assert first.args[2]["algorithm"] == "default_weights"
+
+
+def test_analyze_stock_marks_cache_source(monkeypatch):
+    monkeypatch.setattr(analytics_db, "ensure_schema", lambda: None)
+    monkeypatch.setattr(stock_analysis.db, "get_analysis", lambda symbol: None)
+    monkeypatch.setattr(stock_analysis.sec_data, "get_financials", lambda symbol: {"name": "Apple", "sector": "Technology"})
+    monkeypatch.setattr(stock_analysis.quality, "score", lambda sec_facts: {"score": 1})
+    monkeypatch.setattr(stock_analysis.api_fetcher, "get_price", lambda symbol: None)
+    monkeypatch.setattr(stock_analysis.graham, "score", lambda price, sec_facts: {"market_cap": None})
+    monkeypatch.setattr(stock_analysis.scorer, "composite", lambda *args, **kwargs: {"score": 1})
+    monkeypatch.setattr(stock_analysis.piotroski, "score", lambda sec_facts: {})
+    monkeypatch.setattr(stock_analysis.altman, "score", lambda price, sec_facts: {})
+    monkeypatch.setattr(stock_analysis.greenblatt, "compute_single", lambda price, sec_facts: {})
+    monkeypatch.setattr(stock_analysis.buffett, "score", lambda price, sec_facts: {})
+    monkeypatch.setattr(stock_analysis.scorer, "enhanced_composite", lambda *args, **kwargs: {"composite_score": 1})
+    monkeypatch.setattr(stock_analysis.scorer, "apply_regime_overlay", lambda *args, **kwargs: {})
+    monkeypatch.setattr(stock_analysis.factor_engine, "persist_factor_scores", lambda *args, **kwargs: None)
+    monkeypatch.setattr(stock_analysis.db, "upsert_analysis", lambda *args, **kwargs: None)
+    monkeypatch.setattr(stock_analysis, "save_standard_snapshot", lambda *args, **kwargs: None)
+    monkeypatch.setattr(stock_analysis, "_get_market_fear_result", lambda: None)
+    monkeypatch.setattr(stock_analysis, "_analysis_cache", {})
+
+    fresh = stock_analysis.analyze_stock("AAPL")
+    assert fresh["cache_hit"] is False
+    assert fresh["cache_source"] == "fresh"
+
+    from_db = {"symbol": "MSFT", "name": "Microsoft", "sector": "Technology"}
+    monkeypatch.setattr(stock_analysis.db, "get_analysis", lambda symbol: from_db)
+    cached_db = stock_analysis.analyze_stock("MSFT")
+    assert cached_db["cache_hit"] is True
+    assert cached_db["cache_source"] == "database"
+
+    cached_memory = stock_analysis.analyze_stock("MSFT")
+    assert cached_memory["cache_hit"] is True
+    assert cached_memory["cache_source"] == "memory"
 
 
 def test_webhook_tracks_subscription_completed(monkeypatch):

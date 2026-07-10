@@ -2776,6 +2776,12 @@ behavior if analytics writes fail.
 -   page path, user id, anonymous id, timestamp, and metadata are stored
 -   usage-counter summaries for events are still maintained for quick
     aggregate counts
+-   analysis and backtest completion/failure events now include explicit
+    runtime metadata
+-   analysis and backtest completion events now include cache-hit
+    metadata where available
+-   analysis and backtest failure events now include normalized
+    `failure_class` metadata for reporting/debug queries
 
 ### Implemented instrumentation points
 
@@ -2802,8 +2808,6 @@ behavior if analytics writes fail.
 
 -   add missing domain events:
     -   `watchlist_added` (if/when watchlist exists)
--   add explicit runtime / cache metrics for analysis and backtest flows
--   add failure classification for analytics/debug reporting
 -   add opt-out controls beyond env-level disablement
 
 ### Database / reporting work still not done
@@ -2851,7 +2855,6 @@ top of the event stream.
 
 1. Add missing domain events:
    - `watchlist_added`
-   - explicit cache-hit/runtime events
 2. Decide whether to keep one event table or fan out into dedicated
    summary tables.
 3. Build a first internal analytics dashboard/report for:

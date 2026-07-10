@@ -163,20 +163,61 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
             return dash.no_update, [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
         access = None
     product_analytics.track_event(user_id, "analysis_started", {"symbol": symbol, "source": triggered or "direct"})
+    started_at = _time.perf_counter()
     try:
         result = analyze_stock(symbol)
     except Exception as e:
+        duration_ms = int((_time.perf_counter() - started_at) * 1000)
         if _is_rate_limit_error(e):
             message = getattr(e, "user_message", str(e))
-            product_analytics.track_event(user_id, "analysis_failed", {"symbol": symbol, "reason": "rate_limit"})
+            product_analytics.track_event(
+                user_id,
+                "analysis_failed",
+                {
+                    "symbol": symbol,
+                    "failure_class": "rate_limit",
+                    "reason": "rate_limit",
+                    "duration_ms": duration_ms,
+                },
+            )
             return dash.no_update, [], None, f"❌ {message}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
         print(f"run_analysis unexpected error: {type(e).__name__}: {e}")
-        product_analytics.track_event(user_id, "analysis_failed", {"symbol": symbol, "reason": type(e).__name__})
+        product_analytics.track_event(
+            user_id,
+            "analysis_failed",
+            {
+                "symbol": symbol,
+                "failure_class": "exception",
+                "reason": type(e).__name__,
+                "duration_ms": duration_ms,
+            },
+        )
         return dash.no_update, [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     if "error" in result:
-        product_analytics.track_event(user_id, "analysis_failed", {"symbol": symbol, "reason": "business_error"})
+        duration_ms = int((_time.perf_counter() - started_at) * 1000)
+        product_analytics.track_event(
+            user_id,
+            "analysis_failed",
+            {
+                "symbol": symbol,
+                "failure_class": "business_error",
+                "reason": "business_error",
+                "duration_ms": duration_ms,
+            },
+        )
         return dash.no_update, [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
-    product_analytics.track_event(user_id, "analysis_completed", {"symbol": symbol, "source": triggered or "direct"})
+    duration_ms = int((_time.perf_counter() - started_at) * 1000)
+    product_analytics.track_event(
+        user_id,
+        "analysis_completed",
+        {
+            "symbol": symbol,
+            "source": triggered or "direct",
+            "duration_ms": duration_ms,
+            "cache_hit": bool(result.get("cache_hit")),
+            "cache_source": result.get("cache_source", "unknown"),
+        },
+    )
     product_analytics.track_event(user_id, "stock_viewed", {"symbol": symbol, "source": "analysis"})
     viewed_updated = list(set((viewed_list or []) + [symbol]))
     content = _build_analysis_content(result)

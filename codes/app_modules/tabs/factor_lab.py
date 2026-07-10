@@ -1,6 +1,7 @@
 """Factor Lab tab callbacks."""
 
 from math import isclose
+import time as _time
 
 from dash import Input, Output, State, callback, dcc, html
 
@@ -106,18 +107,51 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         {"source": "factor_lab", "algorithm": _strategy_variant(custom_weights)},
     )
     product_analytics.track_event(uid, "backtest_started", {"source": "factor_lab", "top_n": top_n or 10, "years": years or 5})
-    result = strategy_cache.get_or_run_backtest(
-        weights=custom_weights,
-        top_n=top_n or 10,
-        years=years or 5,
-    )
+    started_at = _time.perf_counter()
+    try:
+        result = strategy_cache.get_or_run_backtest(
+            weights=custom_weights,
+            top_n=top_n or 10,
+            years=years or 5,
+        )
+    except Exception as e:
+        product_analytics.track_event(
+            uid,
+            "backtest_failed",
+            {
+                "source": "factor_lab",
+                "failure_class": "exception",
+                "reason": type(e).__name__,
+                "duration_ms": int((_time.perf_counter() - started_at) * 1000),
+            },
+        )
+        return [html.Div("❌ Internal backtest error", className="text-danger p-20")], "❌ Error", None
 
     if result.get("error"):
-        product_analytics.track_event(uid, "backtest_failed", {"source": "factor_lab"})
+        product_analytics.track_event(
+            uid,
+            "backtest_failed",
+            {
+                "source": "factor_lab",
+                "failure_class": "business_error",
+                "reason": "result_error",
+                "duration_ms": int((_time.perf_counter() - started_at) * 1000),
+            },
+        )
         return [html.Div(f"❌ {result['error']}", className="text-danger p-20")], "❌ Error", None
 
     permissions.record_feature_usage(uid, permissions.Feature.BACKTEST)
-    product_analytics.track_event(uid, "backtest_completed", {"source": "factor_lab", "top_n": result["top_n"], "years": result["years"]})
+    product_analytics.track_event(
+        uid,
+        "backtest_completed",
+        {
+            "source": "factor_lab",
+            "top_n": result["top_n"],
+            "years": result["years"],
+            "duration_ms": int((_time.perf_counter() - started_at) * 1000),
+            "cache_hit": bool(result.get("cache_hit")),
+        },
+    )
     cache_note = " (cached)" if result.get("cache_hit") else ""
     return _render_fb_results(result), (
         f"✅ {result['n_analysed']} stocks scored · "

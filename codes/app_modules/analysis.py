@@ -130,6 +130,15 @@ def _attach_market_fear(result: dict) -> dict:
 def is_production() -> bool:
     
     return os.environ.get("FLASK_ENV", "").lower() == "production"
+
+
+def _set_cache_metadata(result: dict, cache_hit: bool, cache_source: str) -> dict:
+    if isinstance(result, dict):
+        result["cache_hit"] = cache_hit
+        result["cache_source"] = cache_source
+    return result
+
+
 def analyze_stock(symbol: str) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
@@ -147,7 +156,7 @@ def analyze_stock(symbol: str) -> dict:
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
-            cached_memory = _analysis_cache[symbol]
+            cached_memory = _set_cache_metadata(_analysis_cache[symbol], True, "memory")
             _attach_market_fear(cached_memory)
             try:
                 save_standard_snapshot(cached_memory, analysis_type=AnalysisType.STANDARD)
@@ -158,6 +167,7 @@ def analyze_stock(symbol: str) -> dict:
     cached = db.get_analysis(symbol)
 
     if cached:
+        _set_cache_metadata(cached, True, "database")
         _attach_market_fear(cached)
         try:
             save_standard_snapshot(cached, analysis_type=AnalysisType.STANDARD)
@@ -442,6 +452,7 @@ def analyze_stock(symbol: str) -> dict:
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,
     }
+    _set_cache_metadata(result, False, "fresh")
     factor_engine.persist_factor_scores(symbol, {
         "graham": g, "quality": q, "momentum": m_result,
         "piotroski": piotroski_result, "risk": risk_result, "buffett": buffett_result,
