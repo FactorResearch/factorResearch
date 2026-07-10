@@ -2664,6 +2664,7 @@ The core entitlement checks from ISSUE_008 already exist. What remains is the co
 - There is no dedicated plan comparison / pricing page.
 - Upgrade prompts are plain text or inline links, not a consistent branded conversion component.
 - No visible analytics events are emitted for upgrade view/click/conversion steps.
+- one portfolio simulation for freemium users is allowed
 
 **Required Next Step**
 
@@ -2692,13 +2693,256 @@ Create a client-ready conversion flow that:
 - Upgrade view and click events are tracked.
 - Premium users continue to bypass the prompt and use features normally.
 
-# issue_025:
-  Status: [ ]
-  - one portfolio simulation for freemium users is allowed
-
-# issue_026
+# issue_025
   status[]
     - update the layout form and structure of Financial Health,Stability Score,Market Regime,FCF Quality,Capital Allocation,Growth Quality,Alternative Data,Options Signal,Factor Momentum to match other cards , so similar css applys , and their html and class codes improves.
+
+# ISSUE_026
+
+**Status:** [ ]
+
+**Title:** Implement Product Analytics Platform
+
+**Category:** analytics
+
+**Estimated effort:** 3--5 days (initial integration), ongoing expansion
+
+## Problem
+
+We currently have no visibility into how users interact with the
+platform. Product decisions are based on assumptions rather than real
+usage data.
+
+We do not know:
+
+-   Which stocks are viewed the most
+-   Which algorithms are used the most
+-   Which screener filters are popular
+-   Which pages convert visitors into subscribers
+-   Where users abandon the subscription funnel
+-   Which features provide the most value
+-   Which parts of the application are confusing or underused
+
+The goal is **not** to build a generic analytics platform from scratch.
+Existing products already solve that problem well. Our engineering
+effort should focus on collecting financial domain-specific analytics
+that are unique to FactorResearch.
+
+------------------------------------------------------------------------
+
+## Proposed Architecture
+
+    User Action
+          │
+          ▼
+    Application Event
+          │
+          ├── PostHog
+          │      ├─ Product analytics
+          │      ├─ Funnels
+          │      ├─ Feature usage
+          │      ├─ Retention
+          │      ├─ Dashboards
+          │      └─ A/B testing (future)
+          │
+          ├── Microsoft Clarity
+          │      ├─ Heatmaps
+          │      ├─ Session recordings
+          │      ├─ Scroll depth
+          │      └─ Rage/dead clicks
+          │
+          ├── Sentry
+          │      ├─ Backend exceptions
+          │      ├─ Frontend errors
+          │      └─ Performance monitoring
+          │
+          └── factorresearch_analytics (PostgreSQL)
+                 ├─ Stock views
+                 ├─ Analysis events
+                 ├─ Portfolio events
+                 ├─ Screener usage
+                 ├─ Recommendation analytics
+                 └─ Business intelligence
+
+------------------------------------------------------------------------
+
+## Phase 1 -- Third-Party Analytics
+
+Integrate:
+
+-   PostHog
+-   Microsoft Clarity
+-   Sentry
+
+These services should handle generic analytics instead of building our
+own.
+
+Capabilities include:
+
+-   Page views
+-   Sessions
+-   Funnels
+-   Retention
+-   User journeys
+-   Session recordings
+-   Heatmaps
+-   Feature flags (future)
+-   A/B testing (future)
+-   Error monitoring
+-   Performance monitoring
+
+------------------------------------------------------------------------
+
+## Phase 2 -- Domain-Specific Analytics
+
+Implement our own event system for financial workflows.
+
+Example events:
+
+-   stock_viewed
+-   analysis_started
+-   analysis_completed
+-   analysis_failed
+-   algorithm_selected
+-   screener_run
+-   screener_filter_changed
+-   portfolio_created
+-   portfolio_updated
+-   watchlist_added
+-   backtest_started
+-   backtest_completed
+-   pricing_page_viewed
+-   subscription_started
+-   subscription_completed
+
+------------------------------------------------------------------------
+
+## Database
+
+Create a dedicated analytics database.
+
+Database:
+
+-   factorresearch_analytics
+
+Suggested tables:
+
+-   analytics_events
+-   analytics_company_views
+-   analytics_analysis_runs
+-   analytics_portfolios
+-   analytics_searches
+-   analytics_subscriptions
+-   analytics_performance
+-   analytics_errors
+
+------------------------------------------------------------------------
+
+## Questions the System Should Answer
+
+### Company Analytics
+
+-   Most viewed companies
+-   Trending companies
+-   Most viewed sectors
+-   Geographic popularity
+
+### Analysis Analytics
+
+-   Most used algorithms
+-   Average runtime
+-   Cache hit ratio
+-   Failure rate
+
+### Screener Analytics
+
+-   Most common filters
+-   Most searched sectors
+-   Most searched industries
+-   Saved screeners
+
+### Portfolio Analytics
+
+-   Average portfolio size
+-   Most owned companies
+-   Most popular weighting method
+-   Most common factor combinations
+
+### Subscription Funnel
+
+Landing Page
+
+↓
+
+Company Page
+
+↓
+
+Analysis
+
+↓
+
+Paywall
+
+↓
+
+Pricing
+
+↓
+
+Checkout
+
+↓
+
+Subscription
+
+Measure:
+
+-   Conversion rate
+-   Drop-off rate
+-   Time between steps
+
+------------------------------------------------------------------------
+
+## Future Business Intelligence
+
+Weekly automated reports should summarize:
+
+-   Top viewed stocks
+-   Fastest growing sectors
+-   Highest converting landing pages
+-   Highest converting algorithms
+-   Most abandoned pages
+-   Most common searches
+-   Most active subscribers
+
+These reports should help prioritize future development based on real
+usage.
+
+------------------------------------------------------------------------
+
+## Privacy Requirements
+
+-   Anonymous tracking for guests
+-   User-linked events after login
+-   No selling user data
+-   GDPR/privacy compliance where applicable
+-   Analytics opt-out support
+-   Avoid storing unnecessary sensitive financial information
+
+------------------------------------------------------------------------
+
+## Acceptance Criteria
+
+-   Generic analytics are handled by third-party platforms.
+-   Domain-specific financial events are stored in our own analytics
+    database.
+-   Analytics collection is asynchronous and does not impact page
+    performance.
+-   Product dashboards provide actionable insights for product,
+    engineering, and business decisions.
+-   Future recommendation engines can leverage historical analytics
+    data.
 
 # AI EXECUTION PROTOCOL
 
