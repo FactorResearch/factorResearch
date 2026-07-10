@@ -13,6 +13,11 @@ from codes.app_modules.config import (
     validate_portfolio_name,
 )
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
+from codes.app_modules.rate_limit import RateLimited, check_rate_limit
+from codes.services import permissions
+
+PORTFOLIO_SIMULATION_CALLS = 3
+PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Portfolio callbacks
@@ -686,6 +691,22 @@ def run_simulation(n, active, compare):
     if not n or not active:
         return []
     uid = get_user_id()
+    access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
+    if not access.allowed:
+        return html.Div(f"🔒 {access.message} Upgrade to run portfolio simulations.",
+                        className="text-danger")
+    try:
+        check_rate_limit(
+            "portfolio_simulation",
+            calls=PORTFOLIO_SIMULATION_CALLS,
+            period_seconds=PORTFOLIO_SIMULATION_PERIOD_SECONDS,
+            key=uid,
+        )
+    except RateLimited as exc:
+        wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
+        return html.Div(f"⏳ Portfolio simulation rate limit reached.{wait}",
+                        className="text-danger")
+
     def _build_sim_charts(port_name: str, color: str) -> list:
         sim = portfolio_engine.run_simulation(uid, port_name)
         if sim.get("error"):
@@ -940,8 +961,16 @@ def run_simulation(n, active, compare):
                     className="clr-muted fs-13 py-8 px-4 mt-16"
                 ),
             ]
-        return _build_comparison_view(uid,active, compare, cmp_result, PALETTE)
-    return [
+        result = _build_comparison_view(uid,active, compare, cmp_result, PALETTE)
+        permissions.record_feature_usage(uid, permissions.Feature.BACKTEST,
+                                         usage_key=f"portfolio:{active}:{compare}")
+        return result
+    result = [
         html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
         *_build_sim_charts(active, PALETTE[0]),
     ]
+    if not any(getattr(component, "className", None) == "text-danger"
+               for component in result):
+        permissions.record_feature_usage(uid, permissions.Feature.BACKTEST,
+                                         usage_key=f"portfolio:{active}")
+    return result
