@@ -2700,7 +2700,7 @@ Create a client-ready conversion flow that:
 
 **Status:** [ ]
 
-## Problem
+**Problem**
     
 update the layout form and structure of Financial Health,Stability Score,Market Regime,FCF Quality,Capital Allocation,Growth Quality,Alternative Data,Options Signal,Factor Momentum to match other cards , so similar css applys , and their html and class codes improves.
 
@@ -2715,7 +2715,7 @@ update the layout form and structure of Financial Health,Stability Score,Market 
 
 **Estimated effort:** 3--5 days (initial integration), ongoing expansion
 
-## Problem
+**Problem**
 
 We currently have no visibility into how users interact with the
 platform. Product decisions are based on assumptions rather than real
