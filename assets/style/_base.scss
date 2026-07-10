@@ -1,4 +1,5 @@
 @use 'tokens' as *;
+
 // ── Reset & Base ─────────────────────────────────────────────────────────────
 *,
 *::before,
@@ -46,117 +47,649 @@ body.light {
     background: transparent;
   }
 
-  .app-header { border-bottom-color: $light-border; }
-  .tab-bar { border-bottom-color: $light-border; }
-  .tab-btn { color: $light-text-dim; &:hover { color: $light-text; } &.active { color: $light-blue; border-bottom-color: $light-blue; } }
-  .screener-toolbar { background: $light-surface; border-color: $light-border; border-left-color: $light-blue; }
-  .screener-table-wrap { background: $light-card; border-color: $light-border; }
-  .screener-country-tab { background: $light-surface; border-color: $light-border; color: $light-text-dim; &:hover, &.active { background: rgba($light-blue, 0.1); color: #16345f; } }
-  .screener-table thead tr { background: $light-surface; border-bottom-color: $light-border; }
-  .screener-table th { color: $light-text-dim; border-right-color: rgba($light-border, 0.5); }
-  .screener-table tbody tr { border-bottom-color: rgba($light-border, 0.6); &:hover { background: rgba($light-blue, 0.04); } }
-  .screener-table td { border-right-color: rgba($light-border, 0.3); color: $light-text; }
-  .ticker-link-btn { color: $light-blue; &:hover { color: #4798ff; } }
-  .company-header { background: $light-card; border-color: $light-border; }
-  .company-meta { color: $light-text-dim; }
-  .scorecard { background: $light-card; border-color: $light-border; }
-  .scorecard-header { background: $light-surface; border-bottom-color: $light-border; color: $light-text-dim; }
-  .criterion-row { border-bottom-color: rgba($light-border, 0.5); &:hover { background: rgba($light-blue, 0.03); } }
-  .criterion-label { color: $light-text; }
-  .criterion-note { color: $light-text-dim; }
-  .score-bar { background: rgba($light-border, 0.8); }
-  .criterion-pts { color: $light-text; }
-  .pillar-label { color: $light-text-dim; }
-  .stat-label { color: $light-text-dim; }
-  .stat-value { color: $light-text; }
-  .grade-badge { background: rgba($light-blue, 0.05); border-color: $light-border; }
-  .grade-label { color: $light-text-dim; }
-  .grade-score { color: $light-text-dim; }
-  .detail-row { border-bottom-color: rgba($light-border, 0.5); &:hover { background: rgba($light-blue, 0.03); } }
-  .detail-label { color: $light-text-dim; }
-  .detail-value { color: $light-text; }
-  .load-btn { background: $light-surface; border-color: $light-blue; color: $light-blue; }
-  .analyze-btn { background: $light-blue; color: $white; &:hover { background: #4798ff; } }
-  .ticker-input { background: $light-card; color: $light-text; border-color: $light-border; &::placeholder { color: $light-text-muted; } }
-  .search-input-wrapper { border-color: $light-border; &:focus-within { border-color: $light-blue; box-shadow: 0 0 0 3px rgba($light-blue, 0.12); } }
-  .stats-row { border-color: $light-border; }
-  .stat-item { border-right-color: $light-border; }
-  .score-pill { &.high { background: rgba($light-positive, 0.12); color: $light-positive; border-color: rgba($light-positive, 0.25); } &.medium { background: rgba($light-amber, 0.1); color: $light-amber; border-color: rgba($light-amber, 0.22); } &.low { background: rgba($light-negative, 0.1); color: $light-negative; border-color: rgba($light-negative, 0.22); } }
-  .verdict-pill { &.strong-buy { background: rgba($light-positive, 0.15); color: $light-positive; border-color: rgba($light-positive, 0.35); } &.buy { background: rgba($cyan, 0.12); color: $cyan; border-color: rgba($cyan, 0.3); } &.watch { background: rgba($light-amber, 0.1); color: $light-amber; border-color: rgba($light-amber, 0.25); } &.hold { background: rgba($light-text-muted, 0.1); color: $light-text-dim; border-color: rgba($light-text-muted, 0.2); } &.avoid { background: rgba($light-negative, 0.1); color: $light-negative; border-color: rgba($light-negative, 0.25); } }
-  .portfolio-stats-row { background: $light-surface; }
-  .portfolio-add-panel { background: $light-surface; border-color: $light-border; }
-  .pagination-btn { background: $light-card; border-color: $light-border; color: $light-text; &:hover:not(:disabled) { background: rgba($light-blue, 0.15); border-color: $light-blue; color: $light-blue; } }
-  .text-muted { color: $light-text-dim !important; }
+  .app-header {
+    border-bottom-color: $light-border;
+  }
+
+  .tab-bar {
+    border-bottom-color: $light-border;
+  }
+
+  .tab-btn {
+    color: $light-text-dim;
+
+    &:hover {
+      color: $light-text;
+    }
+
+    &.active {
+      color: $light-blue;
+      border-bottom-color: $light-blue;
+    }
+  }
+
+  .screener-toolbar {
+    background: $light-surface;
+    border-color: $light-border;
+    border-left-color: $light-blue;
+  }
+
+  .screener-table-wrap {
+    background: $light-card;
+    border-color: $light-border;
+  }
+  
+  .screener-country-tab {
+    background: $light-surface;
+    border-color: $light-border;
+    color: $light-text-dim;
+
+    &:hover,
+    &.active {
+      background: rgba($light-blue, 0.1);
+      color: #16345f;
+    }
+  }
+
+  .screener-table thead tr {
+    background: $light-surface;
+    border-bottom-color: $light-border;
+  }
+
+  .screener-table th {
+    color: $light-text-dim;
+    border-right-color: rgba($light-border, 0.5);
+  }
+
+  .screener-table tbody tr {
+    border-bottom-color: rgba($light-border, 0.6);
+
+    &:hover {
+      background: rgba($light-blue, 0.04);
+    }
+  }
+
+  .screener-table td {
+    border-right-color: rgba($light-border, 0.3);
+    color: $light-text;
+  }
+
+  .ticker-link-btn {
+    color: $light-blue;
+
+    &:hover {
+      color: #4798ff;
+    }
+  }
+
+  .company-header {
+    background: $light-card;
+    border-color: $light-border;
+  }
+
+  .company-meta {
+    color: $light-text-dim;
+  }
+
+  .scorecard {
+    background: $light-card;
+    border-color: $light-border !important;
+  }
+
+  .scorecard-header {
+    background: $light-surface;
+    border-bottom-color: $light-border;
+    color: $light-text-dim;
+  }
+
+  .criterion-row {
+    border-bottom-color: rgba($light-border, 0.5);
+
+    &:hover {
+      background: rgba($light-blue, 0.03);
+    }
+  }
+
+  .criterion-label {
+    color: $light-text;
+  }
+
+  .criterion-note {
+    color: $light-text-dim;
+  }
+
+  .score-bar {
+    background: rgba($light-border, 0.8);
+  }
+
+  .criterion-pts {
+    color: $light-text;
+  }
+
+  .pillar-label {
+    color: $light-text-dim;
+  }
+
+  .stat-label {
+    color: $light-text-dim;
+  }
+
+  .stat-value {
+    color: $light-text;
+  }
+
+  .grade-badge {
+    background: rgba($light-blue, 0.05);
+    border-color: $light-border;
+  }
+
+  .grade-label {
+    color: $light-text-dim;
+  }
+
+  .grade-score {
+    color: $light-text-dim;
+  }
+
+  .detail-row {
+    border-bottom-color: rgba($light-border, 0.5);
+
+    &:hover {
+      background: rgba($light-blue, 0.03);
+    }
+  }
+
+  .detail-label {
+    color: $light-text-dim;
+  }
+
+  .detail-value {
+    color: $light-text;
+  }
+
+  .load-btn {
+    background: $light-surface;
+    border-color: $light-blue;
+    color: $light-blue;
+  }
+
+  .analyze-btn {
+    background: $light-blue;
+    color: $white;
+
+    &:hover {
+      background: #4798ff;
+    }
+  }
+
+  .ticker-input {
+    background: $light-card;
+    color: $light-text;
+    border-color: $light-border;
+
+    &::placeholder {
+      color: $light-text-muted;
+    }
+  }
+
+  .search-input-wrapper {
+    border-color: $light-border;
+
+    &:focus-within {
+      border-color: $light-blue;
+      box-shadow: 0 0 0 3px rgba($light-blue, 0.12);
+    }
+  }
+
+  .stats-row {
+    border-color: $light-border;
+  }
+
+  .stat-item {
+    border-right-color: $light-border;
+  }
+
+  .score-pill {
+    &.high {
+      background: rgba($light-positive, 0.12);
+      color: $light-positive;
+      border-color: rgba($light-positive, 0.25);
+    }
+
+    &.medium {
+      background: rgba($light-amber, 0.1);
+      color: $light-amber;
+      border-color: rgba($light-amber, 0.22);
+    }
+
+    &.low {
+      background: rgba($light-negative, 0.1);
+      color: $light-negative;
+      border-color: rgba($light-negative, 0.22);
+    }
+  }
+
+  .verdict-pill {
+    &.strong-buy {
+      background: rgba($light-positive, 0.15);
+      color: $light-positive;
+      border-color: rgba($light-positive, 0.35);
+    }
+
+    &.buy {
+      background: rgba($cyan, 0.12);
+      color: $cyan;
+      border-color: rgba($cyan, 0.3);
+    }
+
+    &.watch {
+      background: rgba($light-amber, 0.1);
+      color: $light-amber;
+      border-color: rgba($light-amber, 0.25);
+    }
+
+    &.hold {
+      background: rgba($light-text-muted, 0.1);
+      color: $light-text-dim;
+      border-color: rgba($light-text-muted, 0.2);
+    }
+
+    &.avoid {
+      background: rgba($light-negative, 0.1);
+      color: $light-negative;
+      border-color: rgba($light-negative, 0.25);
+    }
+  }
+
+  .portfolio-stats-row {
+    background: $light-surface;
+  }
+
+  .portfolio-add-panel {
+    background: $light-surface;
+    border-color: $light-border;
+  }
+
+  .pagination-btn {
+    background: $light-card;
+    border-color: $light-border;
+    color: $light-text;
+
+    &:hover:not(:disabled) {
+      background: rgba($light-blue, 0.15);
+      border-color: $light-blue;
+      color: $light-blue;
+    }
+  }
+
+  .text-muted {
+    color: $light-text-dim !important;
+  }
+
   .text-primary,
-  .clr-text { color: inherit; }
+  .clr-text {
+    color: inherit;
+  }
+
   .clr-text,
-  .text-primary { color: $light-text !important; }
+  .text-primary {
+    color: $light-text !important;
+  }
+
   .clr-dim,
   .screener-info,
-  .composite-stat-label { color: $light-text-dim !important; }
+  .composite-stat-label {
+    color: $light-text-dim !important;
+  }
+
   .clr-muted,
   .text-muted,
   .company-name-cell,
-  .pagination-info { color: $light-text-dim !important; }
-  .status-msg { color: $light-text-dim; }
-  .app-footer { color: $light-text-muted !important; a { color: $light-text-muted !important; } }
-  .empty-card { .empty-title { color: $light-text-dim; } .empty-msg { color: $light-text-muted; } }
-  .warning-banner { border-color: rgba($light-amber, 0.3); }
-  .detail-card { background: $light-card; border-color: $light-border; }
-  .card-header { background: $light-surface; border-bottom-color: $light-border; color: $light-text-dim; }
-  .progress-container { .progress-info { .progress-label { color: $light-text; } .progress-percent { color: $light-text-dim; } } }
-  .progress-bar-wrapper { background: $light-border; }
-  .flag-badge--value-trap { background: rgba($light-negative, 0.15); color: $light-negative; border-color: rgba($light-negative, 0.3); }
-  .flag-badge--growth-stock { background: rgba($light-positive, 0.15); color: $light-positive; border-color: rgba($light-positive, 0.3); }
-  .flag-badge--dividend { background: rgba($light-amber, 0.15); color: $light-amber; border-color: rgba($light-amber, 0.3); }
-  .flag-badge--cyclical { background: rgba($light-amber, 0.1); color: $light-amber; border-color: rgba($light-amber, 0.3); }
-  .portfolio-badge { background: #fff8e1; color: $light-amber; border-color: rgba($light-amber, 0.33); }
-  .modal-content { background: $light-card; border-color: $light-border; }
-  .modal-button { background: $light-card; border-color: $light-border; color: $light-text; &.modal-button-primary { background: $light-blue; border-color: $light-blue; } }
-  .dash-slider-mark { color: $light-text-dim !important; }
-  .alert-success { background: rgba($light-positive, 0.1); border-left-color: $light-positive; color: $light-positive; }
-  .alert-error, .alert-danger { background: rgba($light-negative, 0.1); border-left-color: $light-negative; color: $light-negative; }
-  .alert-warning { background: rgba($light-amber, 0.1); border-left-color: $light-amber; color: $light-amber; }
-  .alert-info { background: rgba($light-blue, 0.1); border-left-color: $light-blue; color: $light-blue; }
-  .topbar { background: $light-bg; border-bottom-color: $light-border; }
-  .topbar-title { color: $light-text; }
+  .pagination-info {
+    color: $light-text-dim !important;
+  }
+
+  .status-msg {
+    color: $light-text-dim;
+  }
+
+  .app-footer {
+    color: $light-text-muted !important;
+
+    a {
+      color: $light-text-muted !important;
+    }
+  }
+
+  .empty-card {
+    .empty-title {
+      color: $light-text-dim;
+    }
+
+    .empty-msg {
+      color: $light-text-muted;
+    }
+  }
+
+  .warning-banner {
+    border-color: rgba($light-amber, 0.3);
+  }
+
+  .detail-card {
+    background: $light-card;
+    border-color: $light-border;
+  }
+
+  .card-header {
+    background: $light-surface;
+    border-bottom-color: $light-border;
+    color: $light-text-dim;
+  }
+
+  .progress-container {
+    .progress-info {
+      .progress-label {
+        color: $light-text;
+      }
+
+      .progress-percent {
+        color: $light-text-dim;
+      }
+    }
+  }
+
+  .progress-bar-wrapper {
+    background: $light-border;
+  }
+
+  .flag-badge--value-trap {
+    background: rgba($light-negative, 0.15);
+    color: $light-negative;
+    border-color: rgba($light-negative, 0.3);
+  }
+
+  .flag-badge--growth-stock {
+    background: rgba($light-positive, 0.15);
+    color: $light-positive;
+    border-color: rgba($light-positive, 0.3);
+  }
+
+  .flag-badge--dividend {
+    background: rgba($light-amber, 0.15);
+    color: $light-amber;
+    border-color: rgba($light-amber, 0.3);
+  }
+
+  .flag-badge--cyclical {
+    background: rgba($light-amber, 0.1);
+    color: $light-amber;
+    border-color: rgba($light-amber, 0.3);
+  }
+
+  .portfolio-badge {
+    background: #fff8e1;
+    color: $light-amber;
+    border-color: rgba($light-amber, 0.33);
+  }
+
+  .modal-content {
+    background: $light-card;
+    border-color: $light-border;
+  }
+
+  .modal-button {
+    background: $light-card;
+    border-color: $light-border;
+    color: $light-text;
+
+    &.modal-button-primary {
+      background: $light-blue;
+      border-color: $light-blue;
+    }
+  }
+
+  .dash-slider-mark {
+    color: $light-text-dim !important;
+  }
+
+  .alert-success {
+    background: rgba($light-positive, 0.1);
+    border-left-color: $light-positive;
+    color: $light-positive;
+  }
+
+  .alert-error,
+  .alert-danger {
+    background: rgba($light-negative, 0.1);
+    border-left-color: $light-negative;
+    color: $light-negative;
+  }
+
+  .alert-warning {
+    background: rgba($light-amber, 0.1);
+    border-left-color: $light-amber;
+    color: $light-amber;
+  }
+
+  .alert-info {
+    background: rgba($light-blue, 0.1);
+    border-left-color: $light-blue;
+    color: $light-blue;
+  }
+
+  .topbar {
+    background: $light-bg;
+    border-bottom-color: $light-border;
+  }
+
+  .topbar-title {
+    color: $light-text;
+  }
+
   .topbar-nav,
-  .theme-toggle { background: $light-surface; border-color: $light-border; }
-  .topbar-nav-btn { color: $light-text-dim; background: transparent; &:hover { color: $light-text; } &.active { color: #fff; background: $light-blue; } }
-  .theme-btn { color: $light-text-dim; &:hover { color: $light-text; } &.active { background: $light-card; color: $light-blue; } }
-  .analyze-ticker-input input { background: $light-card; color: $light-text; border-color: $light-border; &:focus { border-color: $light-blue; } }
-  .analyze-current { color: $light-text-dim; }
-  .composite-banner { background: $light-surface; border-color: $light-border; }
-  .composite-score { color: $light-text; }
-  .composite-label { color: $light-text-dim; }
-  .composite-stat-value { color: $light-text; }
-  .factor-card { background: $light-card; border-color: $light-border; &:hover { border-color: $light-blue; } }
-  .factor-card-name { color: $light-text; }
-  .factor-card-desc { color: $light-text-dim; }
-  .factor-card-metric-label { color: $light-text-dim; }
-  .factor-card-metric-value { color: $light-text; }
-  .factor-circle-bg { stroke: $light-border; }
-  .chart-section h3 { color: $light-text; }
-  .chart-placeholder { background: $light-surface; border-color: $light-border; color: $light-text-dim; }
-  .chart-placeholder h4 { color: $light-text; }
-  .factor-circle-progress-inner { background: $light-card; }
-  .factor-circle-label { color: $light-text-dim; }
-  .moat-tip { border-bottom-color: $light-text-dim; }
-  .moat-tip-popup { background: $light-text; color: $light-bg; &::after { border-top-color: $light-text; } }
-  .portfolio-summary-card { background: $light-card; border-color: $light-border; }
-  .portfolio-summary-value { color: $light-text; }
-  .portfolio-summary-label { color: $light-text-dim; }
-  .portfolio-table-wrap { background: $light-card; border-color: $light-border; }
-  .portfolio-table th { background: $light-surface; color: $light-text-dim; border-bottom-color: $light-border; }
-  .portfolio-table td { color: $light-text; border-bottom-color: rgba($light-border, 0.6); }
-  .portfolio-action-btn { color: $light-text-dim; border-color: $light-border; &:hover { color: $light-blue; border-color: $light-blue; } &.primary { background: $light-blue; color: #fff; border-color: $light-blue; } &.primary:hover { background: #4798ff; } }
-  .portfolio-empty h3 { color: $light-text; }
-  .portfolio-empty p { color: $light-text-dim; }
-  .portfolio-header h2 { color: $light-text; }
-  .shares-input { background: $light-card; border-color: $light-border; color: $light-text; }
-  .shares-save-btn { border-color: $light-border; color: $light-positive; }
+  .theme-toggle {
+    background: $light-surface;
+    border-color: $light-border;
+  }
+
+  .topbar-nav-btn {
+    color: $light-text-dim;
+    background: transparent;
+
+    &:hover {
+      color: $light-text;
+    }
+
+    &.active {
+      color: #fff;
+      background: $light-blue;
+    }
+  }
+
+  .theme-btn {
+    color: $light-text-dim;
+
+    &:hover {
+      color: $light-text;
+    }
+
+    &.active {
+      background: $light-card;
+      color: $light-blue;
+    }
+  }
+
+  .analyze-ticker-input input {
+    background: $light-card;
+    color: $light-text;
+    border-color: $light-border;
+
+    &:focus {
+      border-color: $light-blue;
+    }
+  }
+
+  .analyze-current {
+    color: $light-text-dim;
+  }
+
+  .composite-banner {
+    background: $light-surface;
+    border-color: $light-border;
+  }
+
+  .composite-score {
+    color: $light-text;
+  }
+
+  .composite-label {
+    color: $light-text-dim;
+  }
+
+  .composite-stat-value {
+    color: $light-text;
+  }
+
+  .factor-card {
+    background: $light-card;
+    border-color: $light-border;
+
+    &:hover {
+      border-color: $light-blue;
+    }
+  }
+
+  .factor-card-name {
+    color: $light-text;
+  }
+
+  .factor-card-desc {
+    color: $light-text-dim;
+  }
+
+  .factor-card-metric-label {
+    color: $light-text-dim;
+  }
+
+  .factor-card-metric-value {
+    color: $light-text;
+  }
+
+  .factor-circle-bg {
+    stroke: $light-border;
+  }
+
+  .chart-section h3 {
+    color: $light-text;
+  }
+
+  .chart-placeholder {
+    background: $light-surface;
+    border-color: $light-border;
+    color: $light-text-dim;
+  }
+
+  .chart-placeholder h4 {
+    color: $light-text;
+  }
+
+  .factor-circle-progress-inner {
+    background: $light-card;
+  }
+
+  .factor-circle-label {
+    color: $light-text-dim;
+  }
+
+  .moat-tip {
+    border-bottom-color: $light-text-dim;
+  }
+
+  .moat-tip-popup {
+    background: $light-text;
+    color: $light-bg;
+
+    &::after {
+      border-top-color: $light-text;
+    }
+  }
+
+  .portfolio-summary-card {
+    background: $light-card;
+    border-color: $light-border;
+  }
+
+  .portfolio-summary-value {
+    color: $light-text;
+  }
+
+  .portfolio-summary-label {
+    color: $light-text-dim;
+  }
+
+  .portfolio-table-wrap {
+    background: $light-card;
+    border-color: $light-border;
+  }
+
+  .portfolio-table th {
+    background: $light-surface;
+    color: $light-text-dim;
+    border-bottom-color: $light-border;
+  }
+
+  .portfolio-table td {
+    color: $light-text;
+    border-bottom-color: rgba($light-border, 0.6);
+  }
+
+  .portfolio-action-btn {
+    color: $light-text-dim;
+    border-color: $light-border;
+
+    &:hover {
+      color: $light-blue;
+      border-color: $light-blue;
+    }
+
+    &.primary {
+      background: $light-blue;
+      color: #fff;
+      border-color: $light-blue;
+    }
+
+    &.primary:hover {
+      background: #4798ff;
+    }
+  }
+
+  .portfolio-empty h3 {
+    color: $light-text;
+  }
+
+  .portfolio-empty p {
+    color: $light-text-dim;
+  }
+
+  .portfolio-header h2 {
+    color: $light-text;
+  }
+
+  .shares-input {
+    background: $light-card;
+    border-color: $light-border;
+    color: $light-text;
+  }
+
+  .shares-save-btn {
+    border-color: $light-border;
+    color: $light-positive;
+  }
+
   .bg-card,
-  .scorecard .bg-card { background: $light-card !important; }
+  .scorecard .bg-card {
+    background: $light-card !important;
+  }
 
   .scorecard,
   .detail-card,
@@ -182,19 +715,28 @@ body.light {
   .stability-zone--safe {
     background: rgba($light-positive, 0.08) !important;
     border-color: rgba($light-positive, 0.35) !important;
-    .stability-status { color: $light-positive !important; }
+
+    .stability-status {
+      color: $light-positive !important;
+    }
   }
 
   .stability-zone--grey {
     background: rgba($light-amber, 0.08) !important;
     border-color: rgba($light-amber, 0.35) !important;
-    .stability-status { color: $light-amber !important; }
+
+    .stability-status {
+      color: $light-amber !important;
+    }
   }
 
   .stability-zone--distress {
     background: rgba($light-negative, 0.07) !important;
     border-color: rgba($light-negative, 0.32) !important;
-    .stability-status { color: $light-negative !important; }
+
+    .stability-status {
+      color: $light-negative !important;
+    }
   }
 
   .stability-component-row {
@@ -206,27 +748,58 @@ body.light {
     color: $light-text !important;
   }
 
-  .risk-value--positive { color: $light-positive !important; }
-  .risk-value--danger { color: $light-negative !important; }
-  .risk-value--caution { color: $light-amber !important; }
-  .risk-value--neutral { color: $light-text-dim !important; }
+  .risk-value--positive {
+    color: $light-positive !important;
+  }
+
+  .risk-value--danger {
+    color: $light-negative !important;
+  }
+
+  .risk-value--caution {
+    color: $light-amber !important;
+  }
+
+  .risk-value--neutral {
+    color: $light-text-dim !important;
+  }
 
   // Dash inline colors are authored for the dark theme. Remap the shared
   // design tokens in light mode while preserving their semantic meaning.
   [style*="color: rgb(232, 234, 240)"],
-  [style*="color: #e8eaf0"] { color: $light-text !important; }
+  [style*="color: #e8eaf0"] {
+    color: $light-text !important;
+  }
+
   [style*="color: rgb(136, 153, 170)"],
-  [style*="color: #8899aa"] { color: $light-text-dim !important; }
+  [style*="color: #8899aa"] {
+    color: $light-text-dim !important;
+  }
+
   [style*="color: rgb(74, 85, 104)"],
-  [style*="color: #4a5568"] { color: $light-text-muted !important; }
+  [style*="color: #4a5568"] {
+    color: $light-text-muted !important;
+  }
+
   [style*="color: rgb(0, 230, 118)"],
-  [style*="color: #00e676"] { color: $light-positive !important; }
+  [style*="color: #00e676"] {
+    color: $light-positive !important;
+  }
+
   [style*="color: rgb(255, 171, 0)"],
-  [style*="color: #ffab00"] { color: $light-amber !important; }
+  [style*="color: #ffab00"] {
+    color: $light-amber !important;
+  }
+
   [style*="color: rgb(255, 23, 68)"],
-  [style*="color: #ff1744"] { color: $light-negative !important; }
+  [style*="color: #ff1744"] {
+    color: $light-negative !important;
+  }
+
   [style*="color: rgb(22, 119, 255)"],
-  [style*="color: #1677ff"] { color: $light-blue !important; }
+  [style*="color: #1677ff"] {
+    color: $light-blue !important;
+  }
 
   .scorecard [style*="#1e2a3a"],
   .scorecard [style*="rgb(30, 42, 58)"],
@@ -280,7 +853,7 @@ body.light {
   .Select-control,
   .Select-placeholder,
   .Select-input,
-  .Select-input > input {
+  .Select-input>input {
     background: $light-card !important;
     color: $light-text !important;
   }
@@ -290,8 +863,8 @@ body.light {
     box-shadow: none !important;
   }
 
-  .is-focused:not(.is-open) > .Select-control,
-  .Select.is-focused > .Select-control {
+  .is-focused:not(.is-open)>.Select-control,
+  .Select.is-focused>.Select-control {
     border-color: $light-blue !important;
     box-shadow: 0 0 0 3px rgba($light-blue, 0.12) !important;
   }
@@ -305,7 +878,12 @@ body.light {
   .Select-option {
     background: $light-card !important;
     color: $light-text-dim !important;
-    &:hover, &.is-focused { background: rgba($light-blue, 0.08) !important; color: $light-text !important; }
+
+    &:hover,
+    &.is-focused {
+      background: rgba($light-blue, 0.08) !important;
+      color: $light-text !important;
+    }
   }
 
   .Select-value,

@@ -2692,6 +2692,14 @@ Create a client-ready conversion flow that:
 - Upgrade view and click events are tracked.
 - Premium users continue to bypass the prompt and use features normally.
 
+# issue_025:
+  Status: [ ]
+  - one portfolio simulation for freemium users is allowed
+
+# issue_026
+  status[]
+    - update the layout form and structure of Financial Health,Stability Score,Market Regime,FCF Quality,Capital Allocation,Growth Quality,Alternative Data,Options Signal,Factor Momentum to match other cards , so similar css applys , and their html and class codes improves.
+
 # AI EXECUTION PROTOCOL
 
 When fixing an issue:
