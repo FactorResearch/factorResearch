@@ -4,7 +4,7 @@ from unittest.mock import patch
 import flask
 
 from codes.models.analysis_snapshot import AnalysisSnapshot, CustomAnalysisSnapshot
-from codes.routes.analyze import analyze_pages
+from codes.routes.analyze import _theme_for, analyze_pages
 from codes.app_modules.tabs.analyze import _ticker_from_analyze_path
 from codes.services.permissions import Feature, PermissionResult
 
@@ -99,12 +99,24 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
 
     body = response.get_data(as_text=True)
     assert response.status_code == 200
-    assert "Apple Inc. (AAPL)" in body
+    assert "Apple Inc." in body and "(AAPL)" in body
     assert "FactorResearch History" in body
     assert "/analyze/apple/2026-07-09" in body
     assert "Sign in and upgrade" in body
     assert 'rel="canonical" href="http://localhost/analyze/apple"' in body
+    assert "FactorResearch company dossier" in body
+    assert "Company Research" in body
+    assert "non-proprietary design elements" in body
     custom.assert_not_called()
+
+
+def test_company_visual_tokens_are_distinct_without_logo_assets():
+    apple = _official()
+    meta = AnalysisSnapshot(
+        **{**apple.__dict__, "ticker": "META", "company_name": "Meta Platforms Inc."}
+    )
+    assert _theme_for(apple) != _theme_for(meta)
+    assert _theme_for(meta)["motif"] == "network"
 
 
 def test_eligible_owner_sees_only_their_custom_history():

@@ -31,17 +31,22 @@ def _date_key(value: str) -> str:
     return value.replace("-", "")
 
 
-def _theme_for(snapshot) -> tuple[str, str]:
+def _theme_for(snapshot) -> dict[str, str]:
     approved = {
-        "apple": ("#f5f5f7", "#1d1d1f"),
-        "nvidia": ("#eef4ed", "#4f7f00"),
-        "coca-cola": ("#fff5f5", "#d71920"),
-        "jpmorgan-chase": ("#f1f6fb", "#0b5fa5"),
-        "tesla": ("#f5f5f5", "#c71920"),
-        "microsoft": ("#f5f7fa", "#0067b8"),
-        "alphabet": ("#f7f9ff", "#4285f4"),
+        "apple": ("#a7b0bc", "#f4f5f7", "precision"),
+        "nvidia": ("#76b900", "#b5e853", "compute"),
+        "coca-cola": ("#e43b3b", "#ff9c78", "consumer"),
+        "jpmorgan-chase": ("#2674b8", "#76b8e8", "finance"),
+        "tesla": ("#e82127", "#f17b7f", "mobility"),
+        "microsoft": ("#1688d4", "#45c4a0", "platform"),
+        "alphabet": ("#4285f4", "#a66ee5", "network"),
+        "meta-platforms": ("#1687f8", "#8b5cf6", "network"),
     }
-    return approved.get(company_slug(snapshot.company_name), ("#f7f8fb", "#2563eb"))
+    accent, accent_2, motif = approved.get(
+        company_slug(snapshot.company_name),
+        ("#448aff", "#00b8d4", "research"),
+    )
+    return {"accent": accent, "accent_2": accent_2, "motif": motif}
 
 
 def _official_history_cards(history) -> str:
@@ -60,8 +65,10 @@ def _official_history_cards(history) -> str:
             price_change = (current_price / item.market_price - 1) * 100
         cards.append(
             '<article class="history-card">'
-            f'<time datetime="{item.analysis_date.isoformat()}">{item.analysis_date.isoformat()}</time>'
-            f'<h3>{html.escape(item.final_rating)} · {_fmt(item.valuation_score, "/100")}</h3>'
+            '<div class="history-card-head">'
+            f'<div><span class="official-kicker">FactorResearch official</span><time datetime="{item.analysis_date.isoformat()}">{item.analysis_date.isoformat()}</time></div>'
+            f'<span class="score-chip">{_fmt(item.valuation_score, "/100")}</span></div>'
+            f'<h3>{html.escape(item.final_rating)}</h3>'
             f'<p>Score change: {_fmt_delta(score_change)} · Price at analysis: ${_fmt(item.market_price)} · Current-price change: {_fmt_delta(price_change, "%")}</p>'
             '<div class="mini-grid">'
             f'<span>Graham {_fmt(metrics.get("graham_score"))}</span><span>Piotroski {_fmt(metrics.get("piotroski_f_score"))}</span>'
@@ -84,7 +91,7 @@ def _custom_history_column(user_id: str | None, ticker: str) -> str:
         return f'<div class="upgrade"><h2>My Custom Models</h2><p>{html.escape(access.message)}</p></div>'
     custom = list_custom_snapshots(user_id, ticker, limit=12)
     if not custom:
-        return '<section><h2>My Custom Models</h2><p>No custom analyses saved for this company.</p></section>'
+        return '<section class="section-shell"><h2>My Custom Models</h2><p>No custom analyses saved for this company.</p></section>'
     cards = []
     for item in custom:
         cards.append(
@@ -94,7 +101,7 @@ def _custom_history_column(user_id: str | None, ticker: str) -> str:
             f'<a rel="nofollow" href="{html.escape(item.private_path)}">Open private analysis</a>'
             '</article>'
         )
-    return '<section><h2>My Custom Models</h2>' + "".join(cards) + '</section>'
+    return '<section class="section-shell"><h2>My Custom Models</h2>' + "".join(cards) + '</section>'
 
 
 @analyze_pages.route("/analyze/<slug>", strict_slashes=False)
@@ -132,7 +139,10 @@ def company_analysis_page(slug: str):
     latest = history[0]
     if not ticker and company_slug(latest.company_name) != slug:
         flask.abort(404)
-    bg, accent = _theme_for(latest)
+    theme = _theme_for(latest)
+    accent = theme["accent"]
+    accent_2 = theme["accent_2"]
+    motif = theme["motif"]
     canonical = _absolute_url(latest.company_path)
     title = f"{latest.company_name} Stock Analysis, Valuation and Historical Scores | FactorResearch"
     description = (
@@ -165,9 +175,12 @@ def company_analysis_page(slug: str):
 <meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(description)}">
 <meta property="og:url" content="{html.escape(canonical)}"><link rel="canonical" href="{html.escape(canonical)}">
 <script type="application/ld+json">{landing_schema}</script>
-<style>:root{{--company-bg:{bg};--company-accent:{accent}}}body{{margin:0;background:var(--company-bg);color:#172033;font:16px Arial,sans-serif}}main{{max-width:1180px;margin:auto;padding:36px 20px}}header{{border-left:6px solid var(--company-accent);padding-left:18px}}.columns{{display:grid;grid-template-columns:minmax(0,3fr) minmax(300px,2fr);gap:24px;margin-top:24px}}section,.upgrade,.history-card{{background:#fff;border:1px solid #d9dee8;border-radius:10px;padding:18px}}.history-card{{margin:12px 0}}.history-card h3{{margin:8px 0}}.history-card a{{color:#0756a3;font-weight:700}}.mini-grid{{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}}.tabs{{display:none}}@media(max-width:760px){{.columns{{display:block}}.columns>section,.columns>div{{margin-bottom:18px}}.tabs{{display:block;font-weight:700;margin-top:20px}}}}</style></head>
-<body><main><header><p><a href="/?tab=screener&amp;sector={html.escape(latest.sector)}">{html.escape(latest.sector or 'Public company')}</a></p><h1>{html.escape(latest.company_name)} ({html.escape(latest.ticker)})</h1><p>{html.escape(description)}</p></header>
-<nav class="tabs" aria-label="Analysis sections">FactorResearch History | My Custom Models</nav><div class="columns"><section><h2>FactorResearch History</h2>{_official_history_cards(history)}{pagination}</section><div>{custom_column}</div></div></main></body></html>"""
+<style>
+:root{{--accent:{accent};--accent-2:{accent_2};--bg:#0d1117;--surface:#161d2a;--card:#1e2a3a;--border:#29384b;--text:#e8eaf0;--dim:#8899aa;--green:#00e676;--red:#ff1744;--amber:#ffab00}}
+*{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}a{{color:inherit}}.topbar{{height:64px;border-bottom:1px solid #1e2a3a;display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,calc((100vw - 1360px)/2));background:rgba(13,17,23,.96)}}.brand{{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;text-decoration:none}}.brand-mark{{width:32px;height:32px;border-radius:7px;display:grid;place-items:center;background:rgba(22,119,255,.14);color:#448aff}}.topnav{{display:flex;gap:6px;padding:4px;background:#161d2a;border:1px solid #1e2a3a;border-radius:8px}}.topnav a{{padding:7px 13px;color:var(--dim);text-decoration:none;border-radius:6px;font-size:13px}}.topnav a.active{{background:#1677ff;color:white}}main{{max-width:1360px;margin:auto;padding:24px 20px 64px}}.hero{{position:relative;overflow:hidden;min-height:260px;padding:34px;border:1px solid color-mix(in srgb,var(--accent) 38%,#29384b);border-radius:12px;background:linear-gradient(120deg,#161d2a 0%,#121a26 62%,color-mix(in srgb,var(--accent) 13%,#121a26));display:flex;align-items:flex-end}}.hero:before,.hero:after{{content:"";position:absolute;border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);border-radius:50%;pointer-events:none}}.hero:before{{width:360px;height:360px;right:-80px;top:-190px;box-shadow:0 0 90px color-mix(in srgb,var(--accent) 18%,transparent)}}.hero:after{{width:210px;height:210px;right:155px;bottom:-145px;border-color:color-mix(in srgb,var(--accent-2) 35%,transparent)}}.hero-content{{position:relative;z-index:1;display:flex;align-items:center;gap:24px}}.monogram{{width:96px;height:96px;display:grid;place-items:center;border-radius:24px;background:linear-gradient(145deg,var(--accent),var(--accent-2));color:white;font-size:31px;font-weight:800;letter-spacing:-.04em;box-shadow:0 16px 40px color-mix(in srgb,var(--accent) 24%,transparent)}}.eyebrow,.official-kicker{{font:600 10px/1.4 "DM Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}}h1{{font-size:36px;line-height:1.12;margin:7px 0 8px;letter-spacing:-.03em}}.hero p{{max-width:720px;color:var(--dim);margin:0}}.hero-meta{{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}}.hero-meta span,.hero-meta a{{border:1px solid #304158;background:rgba(13,17,23,.55);border-radius:999px;padding:5px 10px;color:#b8c4d2;text-decoration:none;font-size:12px}}.columns{{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr);gap:20px;margin-top:20px}}.section-shell,.upgrade{{background:var(--surface);border:1px solid #1e2a3a;border-radius:10px;padding:20px}}.section-title{{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #263447;padding-bottom:14px;margin-bottom:14px}}h2{{font-size:17px;margin:0}}.section-title p{{margin:2px 0 0;color:var(--dim);font-size:12px}}.history-card{{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:16px;margin:12px 0;transition:.18s ease}}.history-card:hover{{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 60%,#29384b)}}.history-card-head{{display:flex;justify-content:space-between;gap:12px}}time{{display:block;color:var(--dim);font:500 11px "DM Mono",monospace;margin-top:3px}}.score-chip{{font:600 13px "DM Mono",monospace;color:var(--green);background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);border-radius:999px;padding:5px 9px;height:max-content}}.history-card h3{{font-size:18px;margin:12px 0 4px}}.history-card p{{color:var(--dim);font-size:12px}}.history-card>a{{display:inline-block;color:#69a7ff;font-weight:650;text-decoration:none;margin-top:12px}}.mini-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#2a394c;border:1px solid #2a394c;border-radius:6px;overflow:hidden;margin-top:12px}}.mini-grid span{{background:#172231;padding:8px;color:#aebccc;font:500 10px "DM Mono",monospace}}.private{{border-left-color:var(--accent-2)}}.upgrade{{border-style:dashed;color:var(--dim)}}.upgrade h2{{color:var(--text);margin-bottom:8px}}.tabs{{display:none}}nav[aria-label="History pages"] a{{display:inline-block;margin-top:12px;color:#69a7ff}}.footer{{max-width:1360px;margin:auto;padding:20px;border-top:1px solid #1e2a3a;color:#526173;font-size:11px}}@media(max-width:760px){{.topnav{{display:none}}main{{padding:14px 12px 40px}}.hero{{min-height:310px;padding:24px}}.hero-content{{align-items:flex-start;flex-direction:column}}.monogram{{width:72px;height:72px;border-radius:18px}}h1{{font-size:29px}}.columns{{display:block}}.columns>section,.columns>div{{margin-bottom:14px}}.tabs{{display:block;color:var(--dim);font-size:12px;margin:14px 2px}}.mini-grid{{grid-template-columns:repeat(2,1fr)}}}}
+</style></head>
+<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">FactorResearch company dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span style="color:var(--dim)">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?tab=screener&amp;sector={html.escape(latest.sector)}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
+<nav class="tabs" aria-label="Analysis sections">FactorResearch History&nbsp;&nbsp;·&nbsp;&nbsp;My Custom Models</nav><div class="columns"><section class="section-shell"><div class="section-title"><div><h2>FactorResearch History</h2><p>Immutable results from the official methodology</p></div></div>{_official_history_cards(history)}{pagination}</section><div>{custom_column}</div></div></main><footer class="footer">© FactorResearch · Independent financial research · Company-inspired visuals use abstract, non-proprietary design elements.</footer></body></html>"""
     response = flask.Response(body, mimetype="text/html")
     response.headers["Cache-Control"] = "private, no-store" if user_id else "public, max-age=300"
     return response
