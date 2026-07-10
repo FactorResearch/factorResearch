@@ -118,6 +118,16 @@ def test_company_visual_tokens_are_distinct_without_logo_assets():
     assert _theme_for(apple) != _theme_for(meta)
     assert _theme_for(meta)["motif"] == "network"
 
+    bank = AnalysisSnapshot(
+        **{**apple.__dict__, "ticker": "ZZBK", "company_name": "Example Holdings", "sector": "Financial Services"}
+    )
+    software = AnalysisSnapshot(
+        **{**apple.__dict__, "ticker": "ZZSW", "company_name": "Example Systems", "sector": "Software"}
+    )
+    assert _theme_for(bank)["motif"] == "finance"
+    assert _theme_for(software)["motif"] == "platform"
+    assert _theme_for(bank)["accent"] != _theme_for(software)["accent"]
+
 
 def test_eligible_owner_sees_only_their_custom_history():
     allow = PermissionResult(True, Feature.BACKTEST, plan="premium", status="active")
