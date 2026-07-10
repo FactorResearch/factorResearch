@@ -2697,8 +2697,10 @@ Create a client-ready conversion flow that:
 ---
 
 # issue_025
-  status[]
-    - update the layout form and structure of Financial Health,Stability Score,Market Regime,FCF Quality,Capital Allocation,Growth Quality,Alternative Data,Options Signal,Factor Momentum to match other cards , so similar css applys , and their html and class codes improves.
+  
+  **status[]
+  ## Problem
+    update the layout form and structure of Financial Health,Stability Score,Market Regime,FCF Quality,Capital Allocation,Growth Quality,Alternative Data,Options Signal,Factor Momentum to match other cards , so similar css applys , and their html and class codes improves.
 ---
 ---
 # ISSUE_026
