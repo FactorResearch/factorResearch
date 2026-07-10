@@ -29,8 +29,8 @@ def _make_analysis(symbol="AAPL", market_cap=None, graham_market_cap=None,
                       "market_cap": graham_market_cap},
         "quality":   {"total_score": 70, "total_max": 100},
         "buffett":   {"intrinsic_value": 180.0},
-        "enhanced":  {"composite_score": composite_score, "verdict": "BUY",
-                      "verdict_label": "buy", "graham_pct": 60.0,
+        "enhanced":  {"composite_score": composite_score, "verdict": "FAVORABLE",
+                      "verdict_label": "favorable", "graham_pct": 60.0,
                       "quality_pct": 70.0},
         "composite": {},
     }
@@ -87,7 +87,7 @@ class TestUpdateStockAfterAnalysisMarketCap:
             )
         kwargs = mock_upsert.call_args.kwargs
         assert kwargs["composite_score"] == 65.0
-        assert kwargs["verdict"] == "BUY"
+        assert kwargs["verdict"] == "FAVORABLE"
         assert kwargs["graham_number"] == 120.0
         assert kwargs["buffett_iv"] == 180.0
 

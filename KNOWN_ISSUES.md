@@ -2645,7 +2645,6 @@ API + bulk research
 The architecture should support additional paid tiers without rewriting feature access logic.
 
 ---
-
 # ISSUE_024
 Status: [x]
 **Objective:**
@@ -2695,7 +2694,6 @@ Create a client-ready conversion flow that:
 - Premium users continue to bypass the prompt and use features normally.
 
 ---
-
 # issue_025
 
 **Status:** [x]
@@ -2834,7 +2832,7 @@ expansion for ISSUE_026 has been moved to `Publish.md` under
 
 ---
 # ISSUE_027:
-  **Status:** [ ]
+  **Status:** [x]
   title: recomendation labels
 
   algorithim should never produce these word: BUY,SELL,HOLD. for legal reason we need to play around with the word, ENHANCED_VERDICTS from scorer.py is a good anchor, all 

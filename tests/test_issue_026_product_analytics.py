@@ -322,7 +322,7 @@ def test_screener_tracks_screener_run(monkeypatch):
         "buffett_iv": 190,
         "updated_at": "2026-07-10",
         "verdict": "HIGH CONVICTION",
-        "verdict_label": "strong-buy",
+        "verdict_label": "high-conviction",
         "analyzed": True,
         "price": 170,
     }])

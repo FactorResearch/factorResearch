@@ -90,9 +90,11 @@ def _composite_banner(data: dict) -> html.Div:
     # Map verdict labels to mockup CSS classes
     vcls_map = {
         "strong-buy": "hc", "admirable": "hc",
+        "high-conviction": "hc",
         "buy": "fav", "favorable": "fav",
         "watch": "bal", "balanced": "bal",
         "hold": "cau", "cautious": "cau",
+        "caution": "cau",
         "avoid": "unfav", "unfavorable": "unfav",
         "pending": "bal",
     }
@@ -262,7 +264,10 @@ def _options_signal_card(data: dict) -> html.Div:
     bias_color = {"CALL": GREEN, "PUT": RED, "NEUTRAL": MUTED}.get(bias, MUTED)
     sig_color = {
         "BUY_CALL": GREEN, "BUY_PUT": GREEN,
+        "HIGH_CONVICTION_CALL": GREEN, "HIGH_CONVICTION_PUT": GREEN,
+        "FAVORABLE_CALL": GREEN, "FAVORABLE_PUT": GREEN,
         "WATCH": AMBER, "AVOID": RED, "NO_TRADE": MUTED,
+        "BALANCED": AMBER, "CAUTION": AMBER, "UNFAVORABLE": RED,
     }.get(signal, MUTED)
 
     def _fmt(v, fmt=".2f", prefix="", suffix=""):
@@ -1254,10 +1259,15 @@ def _fmt_updated(v) -> str:
 def _verdict_color(label: str) -> str:
     return {
         "strong-buy": GREEN,
+        "high-conviction": GREEN,
         "buy": BLUE,
+        "favorable": BLUE,
         "watch": AMBER,
+        "balanced": AMBER,
         "hold": MUTED,
+        "caution": MUTED,
         "avoid": RED,
+        "unfavorable": RED,
         "pending": MUTED,
     }.get(label, MUTED)
 

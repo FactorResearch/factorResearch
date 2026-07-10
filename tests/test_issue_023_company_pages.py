@@ -156,7 +156,7 @@ def test_snapshot_uses_exact_enhanced_verdict_and_factor_values():
         "enhanced": {
             "composite_score": 35,
             "verdict": "CAUTION",
-            "verdict_label": "hold",
+            "verdict_label": "caution",
             "verdict_desc": "Several important metrics warrant closer examination.",
             "graham_pct": 41,
             "quality_pct": 72,

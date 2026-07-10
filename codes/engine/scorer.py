@@ -2,11 +2,11 @@
 Composite scorer: Graham 40% + Quality 35% + Momentum 25%.
 
 Verdicts:
-  >= 70  STRONG BUY   — all pillars aligned
-  55-70  BUY          — mostly positive signals
-  40-55  WATCH        — mixed signals, monitor
-  25-40  HOLD/WEAK    — significant concerns
-  < 25   AVOID        — fails on multiple pillars
+  >= 70  HIGH CONVICTION — all pillars aligned
+  55-70  FAVORABLE      — mostly positive signals
+  40-55  BALANCED       — mixed signals, monitor
+  25-40  CAUTION        — significant concerns
+  < 25   UNFAVORABLE    — fails on multiple pillars
 """
 
 WEIGHTS = {
@@ -16,11 +16,11 @@ WEIGHTS = {
 }
 
 VERDICTS = [
-    (70, "STRONG BUY",  "strong-buy",  "All three pillars aligned — rare Graham+Quality+Momentum signal"),
-    (55, "BUY",         "buy",         "Mostly positive — good value with quality confirmation"),
-    (40, "WATCH",       "watch",       "Mixed signals — monitor for entry point"),
-    (25, "HOLD/WEAK",   "hold",        "Significant concerns — not a high-conviction idea"),
-    (0,  "AVOID",       "avoid",       "Fails on multiple pillars — skip"),
+    (70, "HIGH CONVICTION", "high-conviction", "All three pillars aligned — rare Graham+Quality+Momentum signal"),
+    (55, "FAVORABLE",       "favorable",       "Mostly positive — good value with quality confirmation"),
+    (40, "BALANCED",        "balanced",        "Mixed signals — monitor for entry point"),
+    (25, "CAUTION",         "caution",         "Significant concerns — not a high-conviction idea"),
+    (0,  "UNFAVORABLE",     "unfavorable",     "Fails on multiple pillars — skip"),
 ]
 
 
@@ -135,12 +135,20 @@ ENHANCED_WEIGHTS = {
 }
 
 ENHANCED_VERDICTS = [
-    (75, "HIGH CONVICTION",   "strong", "Exceptional alignment across quality, valuation, and financial strength metrics."),
-    (60, "FAVORABLE",         "buy",    "Strong overall fundamentals with relatively few areas of concern."),
-    (45, "BALANCED",          "watch",  "Mixed results across evaluation criteria with no clear overall bias."),
-    (30, "CAUTION",           "hold",   "Several important metrics warrant closer examination."),
-    (0,  "UNFAVORABLE",       "avoid",  "Weak performance across multiple core evaluation pillars."),
+    (75, "HIGH CONVICTION",   "high-conviction", "Exceptional alignment across quality, valuation, and financial strength metrics."),
+    (60, "FAVORABLE",         "favorable",       "Strong overall fundamentals with relatively few areas of concern."),
+    (45, "BALANCED",          "balanced",        "Mixed results across evaluation criteria with no clear overall bias."),
+    (30, "CAUTION",           "caution",         "Several important metrics warrant closer examination."),
+    (0,  "UNFAVORABLE",       "unfavorable",     "Weak performance across multiple core evaluation pillars."),
 ]
+
+
+def verdict_for_score(score: float, *, enhanced: bool = True) -> tuple[str, str, str]:
+    thresholds = ENHANCED_VERDICTS if enhanced else VERDICTS
+    for threshold, verdict, label, description in thresholds:
+        if score >= threshold:
+            return verdict, label, description
+    return thresholds[-1][1], thresholds[-1][2], thresholds[-1][3]
 
 
 # ── ISSUE-008 resolution: Greenblatt Earnings Yield in composite scoring ──────
@@ -265,8 +273,8 @@ def enhanced_composite(
 
     # ── ISSUE-001: Margin of Safety guard ─────────────────────────────────────
     # Negative MoS means price > intrinsic value estimate.
-    # Both negative  → hard cap at HOLD/WEAK (≤ 44.9), dual_mos_warning=True
-    # One negative   → cap at WATCH (≤ 59.9),           partial_mos_warning set
+    # Both negative  → hard cap at BALANCED (≤ 44.9), dual_mos_warning=True
+    # One negative   → cap at FAVORABLE threshold (≤ 59.9), partial_mos_warning set
     # None (no data) → treated as not negative; no cap applied
     g_mos = graham_result.get("margin_of_safety")
     b_mos = (buffett_result or {}).get("margin_of_safety")

@@ -25,14 +25,9 @@ import math
 import numpy as np
 import pandas as pd
 
+from codes.engine.scorer import verdict_for_score
+
 MONTHS_PER_YEAR = 12
-
-SIGNAL_THRESHOLDS = [
-    (60, "STRONG_EDGE"),
-    (40, "WATCH"),
-    (0,  "AVOID"),
-]
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Pure helpers
@@ -75,10 +70,8 @@ def calc_monthly_volatility(price_hist: pd.DataFrame | None) -> float | None:
 
 
 def _signal(score: float) -> str:
-    for threshold, sig in SIGNAL_THRESHOLDS:
-        if score >= threshold:
-            return sig
-    return "AVOID"
+    verdict, label, _description = verdict_for_score(score, enhanced=True)
+    return f"{verdict}|{label}"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -260,8 +253,11 @@ class OptionsSignalEngine:
         if bias == "NEUTRAL":
             signal = "NO_TRADE"
         else:
-            sig = _signal(edge_score)
-            signal = f"{bias}" if sig == "STRONG_EDGE" else sig
+            verdict, label = _signal(edge_score).split("|", 1)
+            if label in {"high-conviction", "favorable"}:
+                signal = f"{label.upper().replace('-', '_')}_{bias}"
+            else:
+                signal = verdict
 
         return {
             "ticker": self.ticker,

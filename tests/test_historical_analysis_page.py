@@ -9,7 +9,7 @@ from codes.models.analysis_snapshot import AnalysisSnapshot
 from codes.routes.analyze import analyze_pages
 
 
-def _snapshot(yyyymmdd, *, ticker="AAPL", name="Apple Inc.", valuation=80, rating="STRONG BUY", sector="Technology"):
+def _snapshot(yyyymmdd, *, ticker="AAPL", name="Apple Inc.", valuation=80, rating="HIGH CONVICTION", sector="Technology"):
     analysis_date = date(
         int(yyyymmdd[:4]),
         int(yyyymmdd[4:6]),
@@ -57,7 +57,7 @@ def test_historical_page_falls_back_to_dash_shell_when_snapshot_db_unavailable()
 
 def test_historical_page_renders_compare_picker_and_history_links():
     current = _snapshot("20260708")
-    previous = _snapshot("20260608", valuation=74, rating="BUY")
+    previous = _snapshot("20260608", valuation=74, rating="FAVORABLE")
 
     with patch("codes.routes.analyze.get_snapshot", return_value=current), \
          patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current, previous]), \
@@ -68,14 +68,14 @@ def test_historical_page_renders_compare_picker_and_history_links():
     body = response.get_data(as_text=True)
     assert "Compare Previous Analysis" in body
     assert 'name="compare"' in body
-    assert "2026-06-08 - BUY" in body
+    assert "2026-06-08 - FAVORABLE" in body
     assert 'href="/analyze/AAPL/20260608"' in body
     assert "/analyze/AAPL/20260708?compare=20260608" in body
 
 
 def test_historical_page_renders_selected_comparison_deltas():
-    current = _snapshot("20260708", valuation=82, rating="STRONG BUY")
-    previous = _snapshot("20260608", valuation=74, rating="BUY")
+    current = _snapshot("20260708", valuation=82, rating="HIGH CONVICTION")
+    previous = _snapshot("20260608", valuation=74, rating="FAVORABLE")
 
     with patch("codes.routes.analyze.get_snapshot", side_effect=[current, previous]), \
          patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current, previous]), \
@@ -87,7 +87,7 @@ def test_historical_page_renders_selected_comparison_deltas():
     assert "Historical Comparison" in body
     assert "Comparing 2026-07-08 against 2026-06-08." in body
     assert "+8.00/100" in body
-    assert "BUY to STRONG BUY" in body
+    assert "FAVORABLE to HIGH CONVICTION" in body
 
 
 def test_historical_page_rejects_invalid_compare_date():
@@ -123,7 +123,7 @@ def test_historical_page_renders_related_internal_links():
     assert "Related Market Sectors" in body
     assert 'href="/analyze/MSFT/20260708"' in body
     assert 'href="/analyze/GOOGL/20260708"' in body
-    assert "Finance · STRONG BUY" in body
+    assert "Finance · HIGH CONVICTION" in body
 
 
 def test_historical_page_renders_schema_org_json_ld():

@@ -2,10 +2,10 @@
 Tests for ISSUE-001: Margin of Safety guard in enhanced_composite.
 
 Verifies:
-1. Both Graham + Buffett MoS negative → composite capped at 44.9 → max HOLD/WEAK
-2. Only Graham MoS negative → composite capped at 59.9 → no BUY, warning="graham"
-3. Only Buffett MoS negative → composite capped at 59.9 → no BUY, warning="buffett"
-4. Both positive → no cap, verdict can reach BUY
+1. Both Graham + Buffett MoS negative → composite capped at 44.9 → max BALANCED
+2. Only Graham MoS negative → composite capped at 59.9 → no FAVORABLE/HIGH CONVICTION, warning="graham"
+3. Only Buffett MoS negative → composite capped at 59.9 → no FAVORABLE/HIGH CONVICTION, warning="buffett"
+4. Both positive → no cap, verdict can reach FAVORABLE/HIGH CONVICTION
 5. Both None (no price data) → no cap applied
 6. One None + one negative → partial cap applies
 """
@@ -38,8 +38,8 @@ def _base_args(**overrides):
 # ══════════════════════════════════════════════════════════════════════════════
 
 class TestBothMosNegative:
-    def test_score_capped_at_hold_weak(self):
-        """Both negative MoS → composite ≤ 44.9 → HOLD/WEAK at most."""
+    def test_score_capped_at_balanced(self):
+        """Both negative MoS → composite ≤ 44.9 → BALANCED at most."""
         args = _base_args(
             graham_result  = {"total_score": 80, "total_max": 100, "margin_of_safety": -10.0},
             buffett_result = {"total_score": 80, "total_max": 100, "margin_of_safety": -15.0},
@@ -55,8 +55,8 @@ class TestBothMosNegative:
             buffett_result = {"total_score": 80, "total_max": 100, "margin_of_safety": -5.0},
         )
         result = scorer.enhanced_composite(**args)
-        assert result["verdict_label"] not in ("buy", "strong-buy"), (
-            f"Both negative MoS must not produce BUY/STRONG BUY: got {result['verdict_label']}"
+        assert result["verdict_label"] not in ("favorable", "high-conviction"), (
+            f"Both negative MoS must not produce FAVORABLE/HIGH CONVICTION: got {result['verdict_label']}"
         )
 
     def test_dual_mos_warning_true(self):
@@ -95,7 +95,7 @@ class TestOnlyGrahamMosNegative:
             buffett_result = {"total_score": 80, "total_max": 100, "margin_of_safety":  15.0},
         )
         result = scorer.enhanced_composite(**args)
-        assert result["verdict_label"] not in ("buy", "strong-buy")
+        assert result["verdict_label"] not in ("favorable", "high-conviction")
 
     def test_partial_mos_warning_is_graham(self):
         args = _base_args(
@@ -144,14 +144,14 @@ class TestBothMosPositive:
         assert result["dual_mos_warning"] is False
         assert result["partial_mos_warning"] is None
 
-    def test_verdict_can_be_buy(self):
-        """High-quality stock with positive MoS on both → BUY is reachable."""
+    def test_verdict_can_be_favorable(self):
+        """High-quality stock with positive MoS on both → favorable verdict is reachable."""
         args = _base_args(
             graham_result  = {"total_score": 80, "total_max": 100, "margin_of_safety": 20.0},
             buffett_result = {"total_score": 80, "total_max": 100, "margin_of_safety": 15.0},
         )
         result = scorer.enhanced_composite(**args)
-        assert result["verdict_label"] in ("buy", "strong-buy")
+        assert result["verdict_label"] in ("favorable", "high-conviction")
 
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -105,17 +105,17 @@ class TestCalcMonthlyVolatility:
 
 
 class TestSignalThresholds:
-    def test_strong_edge_at_60(self):
-        assert _signal(60) == "STRONG_EDGE"
-        assert _signal(100) == "STRONG_EDGE"
+    def test_high_conviction_at_75(self):
+        assert _signal(75) == "HIGH CONVICTION|high-conviction"
+        assert _signal(100) == "HIGH CONVICTION|high-conviction"
 
-    def test_watch_at_40(self):
-        assert _signal(40) == "WATCH"
-        assert _signal(59.9) == "WATCH"
+    def test_balanced_midrange(self):
+        assert _signal(45) == "BALANCED|balanced"
+        assert _signal(59.9) == "BALANCED|balanced"
 
-    def test_avoid_below_40(self):
-        assert _signal(0) == "AVOID"
-        assert _signal(39.9) == "AVOID"
+    def test_unfavorable_below_30(self):
+        assert _signal(0) == "UNFAVORABLE|unfavorable"
+        assert _signal(29.9) == "UNFAVORABLE|unfavorable"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -364,7 +364,7 @@ class TestGetOptionsSignal:
         assert out["bias"] == "NEUTRAL"
         assert out["signal"] == "NO_TRADE"
 
-    def test_strong_bullish_low_iv_gives_buy_call(self):
+    def test_strong_bullish_low_iv_gives_high_conviction_call(self):
         eng = OptionsSignalEngine(
             "TEST", price_hist=_hist(_rising(6, pct=1.05)),
             regime_result={"market_trend_score": 90, "volatility_percentile": 10,
@@ -373,9 +373,9 @@ class TestGetOptionsSignal:
         )
         out = eng.get_options_signal()
         assert out["bias"] == "CALL"
-        assert out["signal"] == "BUY_CALL"
+        assert out["signal"] == "HIGH_CONVICTION_CALL"
 
-    def test_strong_bearish_gives_put_bias(self):
+    def test_strong_bearish_gives_high_conviction_put(self):
         eng = OptionsSignalEngine(
             "TEST", price_hist=_hist(_falling(6, pct=0.95)),
             regime_result={"market_trend_score": 10, "volatility_percentile": 10,
@@ -384,7 +384,7 @@ class TestGetOptionsSignal:
         )
         out = eng.get_options_signal()
         assert out["bias"] == "PUT"
-        assert out["signal"] == "BUY_PUT"
+        assert out["signal"] == "HIGH_CONVICTION_PUT"
 
     def test_total_score_equals_edge_score(self):
         eng = OptionsSignalEngine("TEST")

@@ -41,8 +41,8 @@ def _make_analysis(symbol="AAPL"):
                       "margin_of_safety": 20.0},
         "quality":   {"total_score": 70, "total_max": 100},
         "buffett":   {"intrinsic_value": 180.0},
-        "enhanced":  {"composite_score": 65.0, "verdict": "BUY",
-                      "verdict_label": "buy", "graham_pct": 60.0,
+        "enhanced":  {"composite_score": 65.0, "verdict": "FAVORABLE",
+                      "verdict_label": "favorable", "graham_pct": 60.0,
                       "quality_pct": 70.0},
         "composite": {},
     }

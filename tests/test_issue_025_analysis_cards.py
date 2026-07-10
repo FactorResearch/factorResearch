@@ -69,7 +69,7 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
             }
         }),
         analysis_ui._options_signal_card({
-            "options_signal": {"bias": "CALL", "signal": "BUY_CALL", "edge_score": 65, "risk_score": 40}
+            "options_signal": {"bias": "CALL", "signal": "FAVORABLE_CALL", "edge_score": 65, "risk_score": 40}
         }),
         analysis_ui._regime_card({
             "regime": {

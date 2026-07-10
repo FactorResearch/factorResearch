@@ -8,6 +8,7 @@ import dash
 from dash import Input, Output, State, callback, html
 
 from codes.engine import screener
+from codes.engine.scorer import verdict_for_score
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.config import (
     AMBER, BLUE, GREEN, MUTED, RED, PAGE_SIZE,
@@ -325,11 +326,8 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             verdict, verdict_label = "—", "pending"
         elif verdict == "PENDING":
             score = r["composite_score"]
-            if score >= 70:   verdict, verdict_label = "STRONG BUY*", "strong-buy"
-            elif score >= 55: verdict, verdict_label = "BUY*",        "buy"
-            elif score >= 40: verdict, verdict_label = "WATCH*",      "watch"
-            elif score >= 25: verdict, verdict_label = "WEAK*",       "hold"
-            else:             verdict, verdict_label = "AVOID*",      "avoid"
+            verdict, verdict_label, _ = verdict_for_score(score, enhanced=False)
+            verdict = f"{verdict}*"
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
