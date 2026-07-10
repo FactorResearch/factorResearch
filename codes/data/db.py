@@ -1,10 +1,11 @@
 """
-Persistent value metrics store — Postgres only (market DB).
+Persistent value metrics store — Postgres only.
 
-Per KNOWN_ISSUES ISSUE_002: this module owns the `factorresearch_market`
-database exclusively. SQLite has been fully removed — there is no
-fallback path anymore. DATABASE_MARKET_URL must be set or the app/worker
-will fail to start.
+Per KNOWN_ISSUES ISSUE_002, market/company data stays in the
+`factorresearch_market` database. User/account state such as
+subscriptions, usage counters, and user weights may live in a dedicated
+`factorresearch_users` database via DATABASE_USERS_URL /
+FACTORRESEARCH_USERS_DATABASE_URL. SQLite has been fully removed.
 
 Table: value_metrics
   ticker          TEXT PRIMARY KEY
@@ -37,9 +38,10 @@ except ImportError:  # pragma: no cover
     dict_row = None
 
 
-_initialized = False
+_market_initialized = False
+_users_initialized = False
 
-_CREATE_TABLE = """
+_CREATE_MARKET_TABLES = """
 CREATE TABLE IF NOT EXISTS sec_facts_meta (
     ticker        TEXT PRIMARY KEY,
     cik           TEXT,
@@ -100,17 +102,32 @@ CREATE TABLE IF NOT EXISTS factor_scores (
     computed_at  TEXT NOT NULL,
     PRIMARY KEY (ticker, factor_name)
 );
+CREATE TABLE IF NOT EXISTS strategy_backtest_cache (
+    cache_key   TEXT PRIMARY KEY,
+    result_json TEXT NOT NULL,
+    computed_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS factor_score_snapshots (
+    ticker         TEXT NOT NULL,
+    factor_name    TEXT NOT NULL,
+    snapshot_date  TEXT NOT NULL,   -- YYYY-MM-DD, the rebalance date this reflects
+    score          REAL,
+    max_score      REAL,
+    recorded_at    TEXT NOT NULL,
+    PRIMARY KEY (ticker, factor_name, snapshot_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_factor_snapshots_ticker_date
+    ON factor_score_snapshots(ticker, snapshot_date);
+
+"""
+_CREATE_USER_TABLES = """
 CREATE TABLE IF NOT EXISTS user_weights (
     user_id      TEXT NOT NULL,
     factor_name  TEXT NOT NULL,
     weight       REAL NOT NULL,
     updated_at   TEXT NOT NULL,
     PRIMARY KEY (user_id, factor_name)
-);
-CREATE TABLE IF NOT EXISTS strategy_backtest_cache (
-    cache_key   TEXT PRIMARY KEY,
-    result_json TEXT NOT NULL,
-    computed_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS subscriptions (
     id                     BIGSERIAL PRIMARY KEY,
@@ -139,19 +156,6 @@ CREATE TABLE IF NOT EXISTS user_usage (
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id, period_start, feature_name)
 );
-CREATE TABLE IF NOT EXISTS factor_score_snapshots (
-    ticker         TEXT NOT NULL,
-    factor_name    TEXT NOT NULL,
-    snapshot_date  TEXT NOT NULL,   -- YYYY-MM-DD, the rebalance date this reflects
-    score          REAL,
-    max_score      REAL,
-    recorded_at    TEXT NOT NULL,
-    PRIMARY KEY (ticker, factor_name, snapshot_date)
-);
-
-CREATE INDEX IF NOT EXISTS idx_factor_snapshots_ticker_date
-    ON factor_score_snapshots(ticker, snapshot_date);
-
 """
 _UPSERT_VALUE_METRICS = """
 INSERT INTO value_metrics
@@ -440,9 +444,9 @@ _DELETE_USER_WEIGHTS = "DELETE FROM user_weights WHERE user_id = %(user_id)s"
 def set_user_weights(user_id: str, weights: dict[str, float]) -> None:
     """Persist a user's factor weight config. Only the weights — never
     company data — are duplicated per user (ISSUE_012 Layer 3)."""
-    _ensure_init()
+    _ensure_user_init()
     now = datetime.datetime.utcnow().isoformat()
-    with _conn() as con:
+    with _users_conn() as con:
         con.execute(_DELETE_USER_WEIGHTS, {"user_id": user_id})
         for factor_name, weight in weights.items():
             con.execute(_UPSERT_USER_WEIGHT, {
@@ -452,8 +456,8 @@ def set_user_weights(user_id: str, weights: dict[str, float]) -> None:
 
 
 def get_user_weights(user_id: str) -> dict[str, float]:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_USER_WEIGHTS, {"user_id": user_id}).fetchall()
     return {r["factor_name"]: r["weight"] for r in rows}
@@ -566,16 +570,16 @@ def invalidate_strategy_cache(data_version_prefix: str) -> None:
 
 
 def get_subscription(user_id: str) -> dict | None:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         con.row_factory = dict_row
         row = con.execute(_SELECT_SUBSCRIPTION, {"user_id": user_id}).fetchone()
     return dict(row) if row else None
 
 
 def get_subscription_by_customer(stripe_customer_id: str) -> dict | None:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         con.row_factory = dict_row
         row = con.execute(
             _SELECT_SUBSCRIPTION_BY_CUSTOMER,
@@ -585,8 +589,8 @@ def get_subscription_by_customer(stripe_customer_id: str) -> dict | None:
 
 
 def get_subscription_by_stripe_id(stripe_subscription_id: str) -> dict | None:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         con.row_factory = dict_row
         row = con.execute(
             _SELECT_SUBSCRIPTION_BY_STRIPE_ID,
@@ -605,8 +609,8 @@ def upsert_subscription(
     stripe_customer_id: str | None = None,
     stripe_subscription_id: str | None = None,
 ) -> dict:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         con.row_factory = dict_row
         con.execute(_UPSERT_SUBSCRIPTION, {
             "user_id": user_id,
@@ -622,8 +626,8 @@ def upsert_subscription(
 
 
 def get_usage(user_id: str, feature_name: str) -> dict:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         con.row_factory = dict_row
         row = con.execute(_SELECT_USAGE, {
             "user_id": user_id,
@@ -637,8 +641,8 @@ def get_usage(user_id: str, feature_name: str) -> dict:
 
 
 def get_total_usage(user_id: str, feature_name: str) -> int:
-    _ensure_init()
-    with _conn() as con:
+    _ensure_user_init()
+    with _users_conn() as con:
         row = con.execute(_SELECT_TOTAL_USAGE, {
             "user_id": user_id,
             "feature_name": feature_name,
@@ -647,14 +651,14 @@ def get_total_usage(user_id: str, feature_name: str) -> int:
 
 
 def increment_usage(user_id: str, feature_name: str, usage_key: str | None = None) -> dict:
-    _ensure_init()
+    _ensure_user_init()
     now = datetime.datetime.utcnow()
     period_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     if period_start.month == 12:
         period_end = period_start.replace(year=period_start.year + 1, month=1)
     else:
         period_end = period_start.replace(month=period_start.month + 1)
-    with _conn() as con:
+    with _users_conn() as con:
         con.row_factory = dict_row
         row = con.execute(_INCREMENT_USAGE, {
             "user_id": user_id,
@@ -730,9 +734,22 @@ def _db_url() -> str:
     return url
 
 
+def _users_db_url() -> str:
+    return (
+        os.environ.get("DATABASE_USERS_URL")
+        or os.environ.get("FACTORRESEARCH_USERS_DATABASE_URL")
+        or _db_url()
+    )
+
+
 def _pg_conn():
     import psycopg
     return psycopg.connect(_db_url())
+
+
+def _users_pg_conn():
+    import psycopg
+    return psycopg.connect(_users_db_url())
 
 
 @contextmanager
@@ -742,17 +759,35 @@ def _conn():
         yield con
 
 
+@contextmanager
+def _users_conn():
+    """Yield a Postgres connection for user/account state."""
+    with _users_pg_conn() as con:
+        yield con
+
+
 def init_db() -> None:
     with _conn() as con:
-        con.execute(_CREATE_TABLE)
-        # con.execute(_CREATE_SEC_FACTS_TABLE)
+        con.execute(_CREATE_MARKET_TABLES)
+
+
+def init_user_db() -> None:
+    with _users_conn() as con:
+        con.execute(_CREATE_USER_TABLES)
 
 
 def _ensure_init() -> None:
-    global _initialized
-    if not _initialized:
+    global _market_initialized
+    if not _market_initialized:
         init_db()
-        _initialized = True
+        _market_initialized = True
+
+
+def _ensure_user_init() -> None:
+    global _users_initialized
+    if not _users_initialized:
+        init_user_db()
+        _users_initialized = True
 
 
 def upsert(
