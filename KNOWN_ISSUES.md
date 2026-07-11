@@ -3054,6 +3054,21 @@ Align Stripe with 2-tier system:
 - Permissions reflect plan instantly
 - No mismatch between billing + access
 
+
+# ISSUE_032 - UI BUG:
+Status: []
+category: UI
+
+ISSUE : footer shows up in middle of the page, and it has a white background
+
+# ISSUE_032- engine contract
+status:[]
+category: engine
+files:
+engine_contarct.py,app.py,billing.py, or any other files that will make this issue work
+
+ISSUE: wire engine contract to all and allow an ability to easily set flag,add a small file so we can switch flags in that file, maybe a json file, so when flag is set to INTERNAL all billing checks turns off, we just run the app at full,but do add an ability in git so we never be allowed to push to git main branch when flag INTERNAL or BETA are set.
+
 # AI EXECUTION PROTOCOL
 
 When fixing an issue:
@@ -3063,8 +3078,9 @@ When fixing an issue:
 3. Confirm root cause
 4. Apply minimal patch
 5. Add or update tests
-6. push to git
-7. STOP
+6. known issues are always in main branch, so they must be tested before they are pushed to git
+7. once an issue has been fixed and pushed to main, other branches start downloading the correct files, if it is shared among them, this way we do not have confilict merge
+8. STOP
 
 ---
 
