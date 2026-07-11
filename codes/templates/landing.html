@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research Factor — Smarter Investment Research</title>
+  <link rel="stylesheet" href="/assets/landing.css">
+</head>
+<body class="landing {{ style }}">
+  <header class="site-header">
+    <a class="brand" href="/landing/{{ variant }}"><span class="brand-mark">FR</span><span>RESEARCH<br>FACTOR</span></a>
+    {% if phase == 'post' %}
+    <nav><a href="#tools">Features</a><a href="#how-it-works">How it works</a><a href="/pricing">Pricing</a><a href="#resources">Resources</a></nav>
+    {% endif %}
+    <div class="header-actions"><a href="/">{{ 'Sign in' if phase == 'pre' else 'Log in' }}</a>{% if phase == 'post' %}<a class="button button-light" href="/">Start Free</a>{% endif %}</div>
+  </header>
+
+  {% if phase == 'pre' %}
+  <main class="pre-main">
+    <section class="pre-hero">
+      <div class="hero-copy">
+        <span class="eyebrow">✦ Coming soon</span>
+        <h1>Smarter investing<br>starts with better research.</h1>
+        <p>Research Factor combines timeless value principles with quantitative models to help you find what others miss.</p>
+        <form class="waitlist" action="#" onsubmit="return false">
+          <h2>Be the first to know{% if style == 'pre-b' %} when we launch{% endif %}.</h2>
+          <p>Get early access, launch updates, and exclusive insights.</p>
+          <div><input aria-label="Email address" type="email" placeholder="Enter your email address"><button>Join Waitlist <span>→</span></button></div>
+          <small>✓ No spam &nbsp;&nbsp; ✓ Early access &nbsp;&nbsp; ✓ Launch discounts</small>
+        </form>
+      </div>
+      {% if style == 'pre-b' %}
+      <aside class="product-preview"><div class="preview-nav">⌕&nbsp; Search any stock (e.g. AAPL, MSFT...)</div><h2>AAPL <small>Apple Inc.</small></h2><div class="preview-grid"><strong>Overall Score<br><b>72</b> /100</strong><div class="radar">◇</div><strong>Intrinsic Value<br><b>$198.45</b><em>+13.2%</em></strong></div><div class="preview-stats">Market Cap <b>$2.85T</b> &nbsp; P/E Ratio <b>28.4</b> &nbsp; ROE <b>26.1%</b></div></aside>
+      {% endif %}
+    </section>
+    {% if style == 'pre-a' %}
+    <section class="benefits"><article>✉<b>Launch Updates</b><span>Get notified as soon as we go live.</span></article><article>⌕<b>Early Access</b><span>Be among the first to try Research Factor.</span></article><article>▣<b>Exclusive Insights</b><span>Receive original research and market perspectives.</span></article><article>✓<b>Built for Investors</b><span>Designed by investors, for investors.</span></article></section>
+    <blockquote>“ The goal of investing is not to beat others at their game.<br>The goal is to control yourself at your own game. ”<cite>— Benjamin Graham</cite></blockquote>
+    {% else %}
+    <aside class="expect"><h2>What you<br>can expect</h2><p>⌁ &nbsp;20+ Proven Analysis Models</p><p>☷ &nbsp;Custom Weights & Backtesting</p><p>◴ &nbsp;Portfolio Management</p><p>⌁ &nbsp;Historical Analysis & Tracking</p><p>♢ &nbsp;Clear Explanations You Can Trust</p></aside>
+    {% endif %}
+  </main>
+  {% else %}
+  <main>
+    <section class="post-hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Data-driven. Value-focused. Built for investors.</span>
+        <h1>{% if style == 'post-b' %}Know if a stock is<br>worth buying.{% else %}Make better investment<br>decisions with confidence.{% endif %}</h1>
+        <p>{% if style == 'post-b' %}Advanced fundamental analysis powered by Benjamin Graham, Warren Buffett principles, and quantitative models.{% else %}Research Factor analyzes companies using Graham, Buffett, and quantitative models to reveal what's undervalued — and why.{% endif %}</p>
+        <form class="stock-search" action="/" method="get"><input name="ticker" placeholder="Search any stock (e.g. AAPL, MSFT, AMZN)" aria-label="Stock ticker"><button>Analyze{% if style == 'post-b' %} Now →{% endif %}</button></form>
+        {% if style == 'post-b' %}<p class="trust">★★★<b>★★</b> &nbsp; 4.9/5 &nbsp; Trusted by thousands of investors</p>{% else %}<p class="micro-proof">◉ Graham + Buffett + Quant &nbsp;&nbsp; ◉ Explainable Scores &nbsp;&nbsp; ◉ Backtest Your Strategy</p>{% endif %}
+      </div>
+      <aside class="analysis-preview"><div class="preview-side">FR<br><small>Overview<br><br>Analysis<br><br>Financials<br><br>Scores<br><br>Charts</small></div><div class="analysis-body"><small>Home › Analyze › AAPL</small><h2>AAPL <small>Apple Inc.</small><i>$175.30 <em>+1.25%</em></i></h2><div class="score-row"><strong>Intrinsic Value<b>$198.45</b><em>+13.2%</em></strong><strong>Overall Score<b>72</b>/100</strong><div class="radar">◇</div><div class="score-bars">Value ━━━<br>Quality ━━━━<br>Momentum ━━━<br>Profitability ━━━━</div></div><div class="chart">╱╲╱╲╱╲╱╲╱╲╱╲</div></div></aside>
+    </section>
+    <section id="tools" class="tool-strip"><article>▥<div><b>20+ Proven Models</b><span>Value, quality, momentum and more.</span></div></article><article>⌁<div><b>Backtest Your Strategy</b><span>Run your custom strategy against history.</span></div></article><article>◔<div><b>Portfolio Tools</b><span>Track performance, risk and allocation.</span></div></article><article>✓<div><b>Clear Explanations</b><span>Understand the why behind the score.</span></div></article></section>
+    {% if style == 'post-a' %}<section class="tool-cards"><h2>Powerful tools for serious investors</h2><article>⌕<b>Stock Analysis</b><span>In-depth analysis using 19+ valuation and quality models.</span></article><article>☷<b>Custom Strategies</b><span>Adjust factor weights and build your strategy.</span></article><article>⌁<b>Backtesting</b><span>Test your strategy against 10+ years of historical data.</span></article><article>◴<b>Portfolio Tools</b><span>Build, analyze, and optimize your investment portfolio.</span></article></section>{% endif %}
+    <section class="cta"><h2>Validate your strategy.<br>Invest with confidence.</h2><p>Backtest your ideas and see how they perform before you invest.</p><a class="button button-light" href="/">Start Your Free Analysis</a></section>
+  </main>
+  {% endif %}
+  <footer><a class="brand" href="/"><span class="brand-mark">FR</span><span>RESEARCH<br>FACTOR</span></a><span>Data, Models, Insight. Confidence.</span><span>© 2024 Research Factor. All rights reserved.</span><span><a href="/privacy">Privacy Policy</a> &nbsp; <a href="/terms">Terms of Service</a></span></footer>
+</body>
+</html>

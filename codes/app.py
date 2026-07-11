@@ -26,6 +26,7 @@ from flask import render_template
 from codes.data import sec_data
 from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
+from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
@@ -58,6 +59,7 @@ except Exception as e:
 
 auth.init_auth(server)
 billing.init_billing(server)
+register_landing_pages(server)
 @server.route("/account/delete", methods=["POST"])
 def delete_account():
     user_id = get_user_id()
