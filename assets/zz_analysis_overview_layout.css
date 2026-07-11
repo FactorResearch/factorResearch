@@ -33,8 +33,8 @@
 
 .composite-stats {
   display: grid !important;
-  grid-template-columns: repeat(2, minmax(120px, 1fr));
-  gap: 16px 22px !important;
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  gap: 14px 18px !important;
   padding: 12px 0 12px 24px !important;
   border-left: 1px solid rgba(126, 157, 194, 0.28);
 }
@@ -49,6 +49,7 @@
     border-left: 0;
     border-top: 1px solid rgba(126, 157, 194, 0.28);
     padding: 16px 0 0 !important;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
   }
 }
 

@@ -170,6 +170,10 @@ def _composite_banner(data: dict) -> html.Div:
     comp     = data.get("composite") or {}
     g        = data.get("graham") or {}
     b        = data.get("buffett") or {}
+    q        = data.get("quality") or {}
+    r        = data.get("risk") or {}
+    p        = data.get("piotroski") or {}
+    er       = data.get("earnings_revision") or {}
     has_enh  = bool(enhanced.get("composite_score") is not None)
     src      = enhanced if has_enh else comp
     verdict       = src.get("verdict",      "N/A")
@@ -226,23 +230,24 @@ def _composite_banner(data: dict) -> html.Div:
     moat_str = f"{moat_grade} — {moat_label}" if moat_label else moat_grade
     price_str = f"${price:.2f}" if price else "N/A"
 
+    stat_values = [
+        ("Market Cap", mcap_str), ("Price", price_str),
+        ("Intrinsic", intrinsic_str), ("Buffett Moat", moat_str),
+        ("P/E", f"{g.get('pe'):.1f}×" if g.get("pe") is not None else "N/A"),
+        ("P/B", f"{g.get('pb'):.2f}×" if g.get("pb") is not None else "N/A"),
+        ("ROE", f"{q.get('roe'):.1f}%" if q.get("roe") is not None else "N/A"),
+        ("Op. Margin", f"{q.get('op_margin'):.1f}%" if q.get("op_margin") is not None else "N/A"),
+        ("Sharpe", f"{r.get('sharpe'):.2f}" if r.get("sharpe") is not None else "N/A"),
+        ("Beta", f"{r.get('beta'):.2f}" if r.get("beta") is not None else "N/A"),
+        ("F-Score", f"{p.get('f_score')}/9" if p.get("f_score") is not None else "N/A"),
+        ("E. Revision", f"{er.get('total_score'):.0f}/100" if er.get("total_score") is not None else "N/A"),
+    ]
     stats = html.Div(className="composite-stats", children=[
         html.Div(className="composite-stat", children=[
-            html.Div("Market Cap", className="composite-stat-label"),
-            html.Div(mcap_str, className="composite-stat-value"),
-        ]),
-        html.Div(className="composite-stat", children=[
-            html.Div("Intrinsic Estimate", className="composite-stat-label"),
-            html.Div(intrinsic_str, className="composite-stat-value"),
-        ]),
-        html.Div(className="composite-stat", children=[
-            html.Div("Buffett Moat", className="composite-stat-label"),
-            html.Div(moat_str, className="composite-stat-value"),
-        ]),
-        html.Div(className="composite-stat", children=[
-            html.Div("Price", className="composite-stat-label"),
-            html.Div(price_str, className="composite-stat-value"),
-        ]),
+            html.Div(label, className="composite-stat-label"),
+            html.Div(value, className="composite-stat-value"),
+        ])
+        for label, value in stat_values
     ])
 
     # Flags row
