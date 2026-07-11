@@ -272,6 +272,7 @@ def test_analyze_stock_marks_cache_source(monkeypatch):
     monkeypatch.setattr(stock_analysis.scorer, "enhanced_composite", lambda *args, **kwargs: {"composite_score": 1})
     monkeypatch.setattr(stock_analysis.scorer, "apply_regime_overlay", lambda *args, **kwargs: {})
     monkeypatch.setattr(stock_analysis.factor_engine, "persist_factor_scores", lambda *args, **kwargs: None)
+    monkeypatch.setattr(stock_analysis.db, "record_composite_score_snapshot", lambda *args, **kwargs: None)
     monkeypatch.setattr(stock_analysis.db, "upsert_analysis", lambda *args, **kwargs: None)
     monkeypatch.setattr(stock_analysis, "save_standard_snapshot", lambda *args, **kwargs: None)
     monkeypatch.setattr(stock_analysis, "_get_market_fear_result", lambda: None)

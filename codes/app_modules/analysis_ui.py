@@ -5,6 +5,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from urllib.parse import quote
 
+from codes.data import db
+
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
@@ -35,6 +37,8 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
         f"{center + radius * value / 100 * math.cos(angle):.1f},{center + radius * value / 100 * math.sin(angle):.1f}"
         for value, angle in zip(values, angles)
     )
+
+
     grid = "".join(
         f'<polygon points="{points(scale)}" fill="none" stroke="#4173a7" stroke-opacity="{0.32 + scale * 0.28:.2f}" stroke-width="{1.1 if scale < 1 else 1.7}" />'
         for scale in (0.2, 0.4, 0.6, 0.8, 1)
@@ -64,6 +68,36 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
         className="factor-hexagon",
         children=[html.Img(src=f"data:image/svg+xml,{quote(svg)}", alt=f"Six-factor score profile: {description}")],
     )
+
+
+def _composite_trend_chart(symbol: str, color: str):
+    try:
+        history = db.list_composite_score_history(symbol)
+    except Exception:
+        history = []
+    if len(history) < 2:
+        return html.Div("Composite trend will appear after the next score update.", className="composite-trend-empty")
+
+    scores = [row["composite_score"] for row in history]
+    dates = [row["snapshot_date"] for row in history]
+    change = scores[-1] - scores[0]
+    direction = "↑" if change > 0 else "↓" if change < 0 else "→"
+    figure = go.Figure(go.Scatter(
+        x=dates, y=scores, mode="lines+markers",
+        line={"color": color, "width": 2.5}, marker={"color": color, "size": 5},
+        hovertemplate="%{x}<br>Composite %{y:.1f}<extra></extra>",
+    ))
+    figure.update_layout(
+        height=128, margin={"l": 4, "r": 4, "t": 4, "b": 4},
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False, hovermode="x unified",
+        xaxis={"showgrid": False, "showticklabels": False, "zeroline": False},
+        yaxis={"range": [0, 100], "showgrid": True, "gridcolor": "rgba(126, 157, 194, 0.18)", "showticklabels": False, "zeroline": False},
+    )
+    return html.Div(className="composite-trend", children=[
+        html.Div(f"Score trend {direction} {abs(change):.1f} pts", className="composite-trend-label"),
+        dcc.Graph(figure=figure, config={"displayModeBar": False, "responsive": True}, className="composite-trend-graph"),
+    ])
 
 
 def _metric_data_row(label, value) -> html.Div:
@@ -177,7 +211,9 @@ def _composite_banner(data: dict) -> html.Div:
             ("Profit.",  comp.get("profitability_pct", 0)),
         ]
     verdict_colors = {"hc": GREEN, "fav": BLUE, "bal": AMBER, "cau": "#ff6d00", "unfav": RED}
-    hexagon = _factor_hexagon(factor_data, verdict_colors[vcls])
+    verdict_color = verdict_colors[vcls]
+    hexagon = _factor_hexagon(factor_data, verdict_color)
+    trend = _composite_trend_chart(data.get("symbol", ""), verdict_color)
 
     # Stats row (matching mockup)
     market_cap = g.get("market_cap")
@@ -239,6 +275,7 @@ def _composite_banner(data: dict) -> html.Div:
                 html.Div("Composite Score", className="composite-label"),
                 html.Div(verdict.upper(), className=f"composite-verdict {vcls}",
                          title=verdict_desc),
+                trend,
             ]),
             html.Div(style={"flex": "1", "minWidth": "260px"}, children=[hexagon]),
             stats,

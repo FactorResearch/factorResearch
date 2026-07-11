@@ -120,6 +120,19 @@ CREATE TABLE IF NOT EXISTS factor_score_snapshots (
 CREATE INDEX IF NOT EXISTS idx_factor_snapshots_ticker_date
     ON factor_score_snapshots(ticker, snapshot_date);
 
+CREATE TABLE IF NOT EXISTS composite_score_snapshots (
+    ticker            TEXT NOT NULL,
+    snapshot_date     DATE NOT NULL,
+    algorithm_version TEXT NOT NULL DEFAULT 'enhanced-v1',
+    composite_score   REAL NOT NULL,
+    verdict           TEXT,
+    recorded_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (ticker, snapshot_date, algorithm_version)
+);
+
+CREATE INDEX IF NOT EXISTS idx_composite_snapshots_ticker_date
+    ON composite_score_snapshots(ticker, snapshot_date DESC);
+
 """
 _CREATE_USER_TABLES = """
 CREATE TABLE IF NOT EXISTS user_weights (
@@ -755,6 +768,23 @@ ORDER BY snapshot_date DESC
 LIMIT 1
 """
 _SELECT_SNAPSHOT_DATES = "SELECT DISTINCT snapshot_date FROM factor_score_snapshots WHERE ticker = %(ticker)s ORDER BY snapshot_date"
+_UPSERT_COMPOSITE_SNAPSHOT = """
+INSERT INTO composite_score_snapshots (
+    ticker, snapshot_date, algorithm_version, composite_score, verdict, recorded_at
+)
+VALUES (%(ticker)s, %(snapshot_date)s, %(algorithm_version)s, %(composite_score)s, %(verdict)s, NOW())
+ON CONFLICT (ticker, snapshot_date, algorithm_version) DO UPDATE SET
+    composite_score = excluded.composite_score,
+    verdict = excluded.verdict,
+    recorded_at = NOW()
+"""
+_SELECT_COMPOSITE_SNAPSHOTS = """
+SELECT snapshot_date, composite_score, verdict
+FROM composite_score_snapshots
+WHERE ticker = %(ticker)s
+ORDER BY snapshot_date DESC
+LIMIT %(limit)s
+"""
 
 
 def record_factor_snapshot(ticker: str, snapshot_date: str,
@@ -792,6 +822,36 @@ def list_snapshot_dates(ticker: str) -> list[str]:
     with _conn() as con:
         rows = con.execute(_SELECT_SNAPSHOT_DATES, {"ticker": ticker.upper()}).fetchall()
     return [r[0] for r in rows]
+
+
+def record_composite_score_snapshot(
+    ticker: str,
+    composite_score: float,
+    verdict: str | None,
+    snapshot_date: datetime.date | None = None,
+    algorithm_version: str = "enhanced-v1",
+) -> None:
+    """Store one current composite observation per ticker and day."""
+    _ensure_init()
+    with _conn() as con:
+        con.execute(_UPSERT_COMPOSITE_SNAPSHOT, {
+            "ticker": ticker.upper(),
+            "snapshot_date": snapshot_date or datetime.date.today(),
+            "algorithm_version": algorithm_version,
+            "composite_score": float(composite_score),
+            "verdict": verdict,
+        })
+
+
+def list_composite_score_history(ticker: str, limit: int = 90) -> list[dict]:
+    """Return oldest-first daily composite observations for charting."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_COMPOSITE_SNAPSHOTS, {
+            "ticker": ticker.upper(), "limit": max(1, min(int(limit), 365)),
+        }).fetchall()
+    return [dict(row) for row in reversed(rows)]
 
 def _db_url() -> str:
     url = os.environ.get("DATABASE_MARKET_URL")

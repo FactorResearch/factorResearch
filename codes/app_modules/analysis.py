@@ -461,6 +461,12 @@ def analyze_stock(symbol: str) -> dict:
         "fcf_quality": fcf_quality_result, "capital_allocation": capital_allocation_result,
         "growth_quality": growth_quality_result,
     })
+    composite_source = enhanced if enhanced.get("composite_score") is not None else comp
+    db.record_composite_score_snapshot(
+        symbol,
+        composite_source.get("composite_score", 0),
+        composite_source.get("verdict"),
+    )
     db.upsert_analysis(symbol, result)
     try:
         save_standard_snapshot(result, analysis_type=AnalysisType.STANDARD)
