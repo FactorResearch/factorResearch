@@ -27,7 +27,7 @@ def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
 def _topbar():
     return html.Div(id="topbar", className="topbar", children=[
         html.Div(className="topbar-brand", children=[
-            html.Span("FR", className="topbar-logo"),
+            html.Img(src="/assets/logo.svg", alt="Research Factor", className="topbar-logo"),
             html.Span("FactorResearch", className="topbar-title"),
         ]),
         html.Div(className="topbar-nav", children=[
