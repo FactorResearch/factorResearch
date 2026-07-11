@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-
+from codes.core import app_flags
 from codes import auth
 from codes.data import db
 from codes.services.pricing import FREE, PLANS, PREMIUM, normalize_plan
@@ -83,6 +83,8 @@ def get_feature_usage_total(user_id: str, feature: Feature | str) -> int:
 
 def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult:
     feature = normalize_feature(feature)
+    if app_flags.billing_checks_disabled():
+        return PermissionResult(True, feature, plan=PREMIUM, status="internal")
     subscription = get_or_create_subscription(user_id)
     plan = normalize_plan(subscription.get("plan"))
     status = str(subscription.get("status") or "trialing").lower()

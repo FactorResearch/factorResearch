@@ -3062,7 +3062,7 @@ category: UI
 ISSUE : footer shows up in middle of the page, and it has a white background
 
 # ISSUE_032- engine contract
-status:[]
+status:[x]
 category: engine
 files:
 engine_contarct.py,app.py,billing.py, or any other files that will make this issue work

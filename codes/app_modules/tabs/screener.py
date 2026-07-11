@@ -181,7 +181,7 @@ def update_progress_bar(n):
             html.Span(f"({pct}%) {eta_text}", className="text-xs text-muted")
         ], className="flex justify-between mb-lg"),
         html.Div(className="progress-bar-wrapper", children=[
-            html.Progress(value=pct, max=100, className="progress-bar-fill")
+            html.Progress(value=str(pct), max="100", className="progress-bar-fill")
         ])
     ])
 

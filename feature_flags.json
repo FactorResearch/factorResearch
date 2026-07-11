@@ -1,0 +1,4 @@
+{
+  "flag": "INTERNAL",
+  "_comment": "INTERNAL | BETA | V1 | V2 | ENTERPRISE. INTERNAL disables all billing checks (full access). NEVER push to main with flag=INTERNAL or flag=BETA — .githooks/pre-push blocks it."
+}

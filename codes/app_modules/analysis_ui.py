@@ -57,7 +57,7 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
         for (label, _), value, angle in zip(factors, values, angles)
     )
     svg = (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 330" role="img">'
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 350" role="img">'
         '<defs><filter id="hex-glow" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
         f'<linearGradient id="hex-fill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{color}" stop-opacity="0.42"/><stop offset="1" stop-color="{color}" stop-opacity="0.10"/></linearGradient></defs>'
         f'<g>{grid}{axes}<line x1="80" y1="180" x2="280" y2="180" stroke="#4f80b2" stroke-opacity="0.72" stroke-width="1.2" />'
@@ -1329,7 +1329,7 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
                 html.Div(c["label"], className="criterion-label"),
                 html.Div(c.get("note", ""), className="criterion-note"),
                 html.Div(className="score-bar", children=[
-                    html.Progress(value=pct, max=100, className=f"score-bar-fill {tone_class(color)}")
+                    html.Progress(value=str(pct), max="100", className=f"score-bar-fill {tone_class(color)}")
                 ]),
             ]),
             html.Div(f"{score}/{max_s}", className=f"criterion-pts {tone_class(color)}"),
