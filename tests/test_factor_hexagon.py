@@ -12,5 +12,5 @@ def test_factor_hexagon_has_six_labeled_axes_and_accessible_summary():
     assert image.src.startswith("data:image/svg+xml,")
     svg = unquote(image.src.split(",", 1)[1])
     assert 'filter id="hex-glow"' in svg
-    assert 'x1="58" y1="150" x2="242" y2="150"' in svg
+    assert 'x1="80" y1="180" x2="280" y2="180"' in svg
     assert 'paint-order="stroke"' in svg

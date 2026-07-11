@@ -1,5 +1,5 @@
 .factor-hexagon {
-  width: min(300px, 100%);
+  width: min(360px, 100%);
   margin: 0 auto;
 }
 
@@ -7,7 +7,7 @@
   display: block;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.32));
+  filter: drop-shadow(0 8px 14px rgba(23, 78, 141, 0.22));
 }
 
 .factor-hex-grid { fill: none; stroke: rgba(132, 157, 194, 0.28); stroke-width: 1; }

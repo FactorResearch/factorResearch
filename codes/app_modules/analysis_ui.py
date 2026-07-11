@@ -21,7 +21,7 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
     """Render a six-axis score profile; outward always means stronger."""
     import math
 
-    center, radius = 150, 92
+    center, radius = 180, 100
     angles = [math.radians(-90 + index * 60) for index in range(6)]
 
     def points(scale: float) -> str:
@@ -36,28 +36,27 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
         for value, angle in zip(values, angles)
     )
     grid = "".join(
-        f'<polygon points="{points(scale)}" class="factor-hex-grid" />'
+        f'<polygon points="{points(scale)}" fill="none" stroke="#4173a7" stroke-opacity="{0.32 + scale * 0.28:.2f}" stroke-width="{1.1 if scale < 1 else 1.7}" />'
         for scale in (0.2, 0.4, 0.6, 0.8, 1)
     )
     axes = "".join(
-        f'<line x1="{center}" y1="{center}" x2="{center + radius * math.cos(angle):.1f}" y2="{center + radius * math.sin(angle):.1f}" stroke="#6f98bf" stroke-opacity="0.78" stroke-width="1.3" />'
+        f'<line x1="{center}" y1="{center}" x2="{center + radius * math.cos(angle):.1f}" y2="{center + radius * math.sin(angle):.1f}" stroke="#4f80b2" stroke-opacity="0.72" stroke-width="1.2" />'
         for angle in angles
     )
     vertices = "".join(
-        f'<circle cx="{center + radius * value / 100 * math.cos(angle):.1f}" cy="{center + radius * value / 100 * math.sin(angle):.1f}" r="3.5" fill="{color}" stroke="#f4f8ff" stroke-width="1.2" />'
+        f'<circle cx="{center + radius * value / 100 * math.cos(angle):.1f}" cy="{center + radius * value / 100 * math.sin(angle):.1f}" r="3.8" fill="{color}" stroke="#dcecff" stroke-width="1.3" />'
         for value, angle in zip(values, angles)
     )
     labels = "".join(
-        f'<text x="{center + 125 * math.cos(angle):.1f}" y="{center + 125 * math.sin(angle):.1f}" fill="#f4f8ff" stroke="#061426" stroke-width="3" paint-order="stroke" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="700" text-anchor="middle">{label}<tspan x="{center + 125 * math.cos(angle):.1f}" dy="15" fill="{color}" font-size="13" font-weight="800">{value:.0f}</tspan></text>'
+        f'<text x="{center + 138 * math.cos(angle):.1f}" y="{center + 138 * math.sin(angle):.1f}" fill="#f5f9ff" stroke="#07182e" stroke-width="2.2" paint-order="stroke" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle">{label}<tspan x="{center + 138 * math.cos(angle):.1f}" dy="16" fill="{color}" font-size="14" font-weight="800">{value:.0f}</tspan></text>'
         for (label, _), value, angle in zip(factors, values, angles)
     )
     svg = (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img">'
-        '<defs><filter id="hex-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
-        f'<linearGradient id="hex-fill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{color}" stop-opacity="0.55"/><stop offset="1" stop-color="{color}" stop-opacity="0.08"/></linearGradient></defs>'
-        f'<polygon points="{points(1)}" transform="translate(7 9)" fill="#061426" fill-opacity="0.82" stroke="#1c4267" stroke-width="2" />'
-        f'<g>{grid}{axes}<line x1="58" y1="150" x2="242" y2="150" stroke="#86a9c9" stroke-opacity="0.7" stroke-width="1.4" />'
-        f'<polygon points="{profile_points}" fill="url(#hex-fill)" stroke="{color}" stroke-width="3.2" filter="url(#hex-glow)" />{vertices}{labels}</g>'
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 330" role="img">'
+        '<defs><filter id="hex-glow" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+        f'<linearGradient id="hex-fill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{color}" stop-opacity="0.42"/><stop offset="1" stop-color="{color}" stop-opacity="0.10"/></linearGradient></defs>'
+        f'<g>{grid}{axes}<line x1="80" y1="180" x2="280" y2="180" stroke="#4f80b2" stroke-opacity="0.72" stroke-width="1.2" />'
+        f'<polygon points="{profile_points}" fill="url(#hex-fill)" stroke="{color}" stroke-width="2.6" filter="url(#hex-glow)" />{vertices}{labels}</g>'
         '</svg>'
     )
     description = ", ".join(f"{label} {value:.0f}" for (label, _), value in zip(factors, values))
