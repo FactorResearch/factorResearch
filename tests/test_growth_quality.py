@@ -383,6 +383,7 @@ class TestIncrementalROIC:
 REQUIRED_KEYS = {
     "ticker", "rev_cagr_10y", "eps_cagr_10y", "fcf_cagr_10y",
     "margin_stability", "incremental_roic",
+    "reinvestment_efficiency", "organic_revenue_cagr_10y", "acquisition_driven_growth",
     "growth_quality_score", "signal", "total_score", "total_max",
 }
 

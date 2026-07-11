@@ -23,6 +23,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from codes.core import financial_math as fm
+
 MONTHS_PER_YEAR = 12
 
 
@@ -57,7 +59,8 @@ def _normalise(prices: np.ndarray) -> list[float]:
 def _cagr(prices: np.ndarray, n_years: float) -> float | None:
     if len(prices) < 2 or prices[0] <= 0 or n_years <= 0:
         return None
-    return (math.pow(prices[-1] / prices[0], 1 / n_years) - 1) * 100
+    result = fm.cagr(prices[0], prices[-1], n_years)
+    return result * 100 if result is not None else None
 
 
 def _beta_alpha(target_rets: np.ndarray, spy_rets: np.ndarray,
@@ -66,17 +69,18 @@ def _beta_alpha(target_rets: np.ndarray, spy_rets: np.ndarray,
     """Beta via covariance/variance; annualised Jensen's alpha vs CAPM."""
     if len(target_rets) < 2 or len(spy_rets) < 2:
         return None, None
-    var_spy = float(np.var(spy_rets, ddof=1))
-    if var_spy <= 0:
+    beta = fm.beta(target_rets, spy_rets)
+    if beta is None:
         return None, None
-    cov = float(np.cov(target_rets, spy_rets)[0, 1])
-    beta = cov / var_spy
     if cagr_target is None or cagr_spy is None:
         return beta, None
-    alpha = (cagr_target / 100) - (
-        risk_free_rate + beta * (cagr_spy / 100 - risk_free_rate)
+    alpha = fm.alpha(
+        cagr_target / 100,
+        cagr_spy / 100,
+        beta,
+        risk_free_rate=risk_free_rate,
     )
-    return beta, alpha * 100  # alpha as annualised %
+    return beta, alpha * 100 if alpha is not None else None  # alpha as annualised %
 
 
 def _bootstrap_probability_outperform(

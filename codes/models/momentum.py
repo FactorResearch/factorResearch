@@ -11,6 +11,8 @@ Criteria:
 import pandas as pd
 import numpy as np
 
+from codes.core import financial_math as fm
+
 
 def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
           sector_avg_return_12m: float | None = None) -> dict:
@@ -94,10 +96,10 @@ def score(price_hist: pd.DataFrame, spy_hist: pd.DataFrame, symbol: str,
     vol_scaled_momentum = None
     if return_12m is not None and len(hist) >= 13:
         window_closes = hist["Close"].tail(13).values
-        log_rets = np.diff(np.log(window_closes))
+        log_rets = fm.log_returns(window_closes)
         if len(log_rets) >= 2:
-            vol_monthly = np.std(log_rets, ddof=1)
-            vol_annual_pct = vol_monthly * np.sqrt(12) * 100
+            vol_annual = fm.volatility(log_rets, periods_per_year=12)
+            vol_annual_pct = vol_annual * 100 if vol_annual is not None else 0.0
             if vol_annual_pct > 0:
                 vol_scaled_momentum = return_12m / vol_annual_pct
 

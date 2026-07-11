@@ -68,7 +68,7 @@ class TestOutputSchema:
         "market_trend_score", "volatility_percentile", "drawdown_depth",
         "regime", "risk_level", "risk_alert", "max_equity_exposure",
         "regime_multiplier", "sma_50", "sma_200", "current_price",
-        "vol_20d", "vol_60d", "error",
+        "vol_20d", "vol_60d", "comomentum_percentile", "error",
     }
 
     def test_all_required_keys_present(self):

@@ -40,15 +40,13 @@ depress the Z-score.  The available_fraction is logged in the return dict.
 
 import math
 
+from codes.core import model_utils as mu
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _first(records: list) -> float | None:

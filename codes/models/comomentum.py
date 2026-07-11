@@ -16,6 +16,8 @@ Reference:
 import numpy as np
 import pandas as pd
 
+from codes.core import financial_math as fm
+
 HISTORY_MONTHS = 36  # rolling window for percentile ranking
 
 
@@ -97,9 +99,7 @@ def calc_comomentum(
         return _neutral("Could not compute pairwise correlations")
 
     current = history_scores[-1]
-    percentile = round(
-        float(np.sum(np.array(history_scores) <= current) / len(history_scores) * 100), 2
-    )
+    percentile = round(fm.percentile_rank(history_scores, current) or 50.0, 2)
 
     if percentile >= 75:
         signal = "HIGH"

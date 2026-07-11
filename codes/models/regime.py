@@ -45,6 +45,9 @@ import numpy as np
 import pandas as pd
 from typing import Any
 
+from codes.core import financial_math as fm
+from codes.core import model_utils as mu
+
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -94,11 +97,7 @@ _REGIME_MULTIPLIER = {
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val: Any) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _sma(prices: np.ndarray, window: int) -> float | None:
@@ -113,7 +112,10 @@ def _realized_vol(log_returns: np.ndarray, window: int) -> float | None:
     if len(log_returns) < window:
         return None
     subset = log_returns[-window:]
-    return float(np.std(subset, ddof=1)) * math.sqrt(12) * 100  # annualised %
+    if window == 1 and len(subset) == 1:
+        return abs(float(subset[0])) * math.sqrt(12) * 100
+    vol = fm.volatility(subset, periods_per_year=12)
+    return vol * 100 if vol is not None else None  # annualised %
 
 
 def _vol_percentile(log_returns: np.ndarray, current_vol: float,
@@ -131,8 +133,8 @@ def _vol_percentile(log_returns: np.ndarray, current_vol: float,
     if len(abs_rets) == 0:
         return 50.0
 
-    pct = float(np.sum(abs_rets < (current_vol / 100 / math.sqrt(12))) / len(abs_rets) * 100)
-    return round(max(0.0, min(100.0, pct)), 2)
+    pct = fm.percentile_rank(abs_rets, current_vol / 100 / math.sqrt(12), inclusive=False)
+    return round(mu.clamp(pct if pct is not None else 50.0), 2)
 
 
 def _drawdown_from_peak(prices: np.ndarray, lookback: int = _BARS_252D) -> float:
@@ -271,6 +273,7 @@ def score(price_hist: pd.DataFrame, comomentum_result: dict | None = None) -> di
 
     # ── Fast deterioration alert ──────────────────────────────────────────────
     risk_alert = False
+    ret_1m = None
     # 1. 5D return <= -7% (1 bar proxy)
     if len(prices) >= 2:
         ret_1m = (prices[-1] / prices[-2] - 1) * 100
@@ -282,7 +285,7 @@ def score(price_hist: pd.DataFrame, comomentum_result: dict | None = None) -> di
         old_vol_raw = _realized_vol(log_rets[:-2], _BARS_60D)
         if old_vol_raw is not None:
             old_vol_pct = _vol_percentile(log_rets[:-2], old_vol_raw)
-            if (vol_pct - old_vol_pct) >= 30.0:
+            if (ret_1m is not None and ret_1m <= -5.0 and (vol_pct - old_vol_pct) >= 30.0):
                 risk_alert = True
 
     # 3. Drawdown worsens ≥5% over 10 trading days (2 bars proxy)

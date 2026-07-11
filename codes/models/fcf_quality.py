@@ -50,15 +50,14 @@ import math
 import statistics
 from typing import Any
 
+from codes.core import financial_math as fm
+from codes.core import model_utils as mu
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val: Any) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _first(records: list) -> float | None:
@@ -82,7 +81,7 @@ def _values(records: list, n: int = 10) -> list[float]:
 
 
 def _clamp(v: float, lo: float, hi: float) -> float:
-    return max(lo, min(hi, v))
+    return mu.clamp(v, lo, hi)
 
 
 # ── Signal mapping ────────────────────────────────────────────────────────────
@@ -330,7 +329,8 @@ class FCFQualityAnalyzer:
         if start_fcf <= 0 or end_fcf <= 0:
             return None
 
-        return (math.pow(end_fcf / start_fcf, 1 / 5) - 1) * 100
+        result = fm.cagr(start_fcf, end_fcf, 5)
+        return result * 100 if result is not None else None
 
     # ── Composite score ───────────────────────────────────────────────────────
 

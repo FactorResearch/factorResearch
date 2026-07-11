@@ -10,6 +10,8 @@ import math
 from statistics import mean, stdev
 from typing import Iterable
 
+from codes.core import model_utils as mu
+
 
 VERY_LOW_FEAR = "VERY_LOW_FEAR"
 NORMAL = "NORMAL"
@@ -71,11 +73,8 @@ _REGIME_META = {
 
 
 def _safe_float(value) -> float | None:
-    try:
-        v = float(value)
-    except (TypeError, ValueError):
-        return None
-    return v if math.isfinite(v) and v > 0 else None
+    v = mu.safe_float(value)
+    return v if v is not None and v > 0 else None
 
 
 def _spread_stats(spread_history: Iterable[float] | None) -> tuple[float | None, float | None]:

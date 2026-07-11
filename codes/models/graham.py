@@ -17,6 +17,7 @@ Scoring breakdown (100 points total):
 import math
 import numpy as np
 from .piotroski import DILUTION_TOLERANCE
+from codes.core import model_utils as mu
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -26,11 +27,7 @@ def _first(records: list, field="value"):
 
 
 def _safe(val, fallback=None):
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else fallback
-    except (TypeError, ValueError):
-        return fallback
+    return mu.safe_float(val, fallback)
 
 
 # ── Main scoring function ─────────────────────────────────────────────────────

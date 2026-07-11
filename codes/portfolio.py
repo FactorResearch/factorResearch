@@ -31,6 +31,7 @@ import datetime
 import hashlib
 import numpy as np
 import pandas as pd
+from codes.core import financial_math as fm
 from .data import cache
 from .data import api_fetcher
 
@@ -366,13 +367,10 @@ def run_backtest(portfolio: dict) -> dict:
     last_date  = wide["Date"].iloc[-1]
     n_years    = max((last_date - first_date).days / 365.25, 1 / 12)
 
-    def _cagr(start, end, years):
-        if start <= 0 or end <= 0 or years <= 0:
-            return 0.0
-        return (math.pow(end / start, 1 / years) - 1) * 100
-
-    port_cagr = _cagr(port_values[0], port_values[-1], n_years)
-    spy_cagr  = _cagr(spy_values[0],  spy_values[-1],  n_years)
+    port_cagr_raw = fm.cagr(port_values[0], port_values[-1], n_years)
+    spy_cagr_raw = fm.cagr(spy_values[0], spy_values[-1], n_years)
+    port_cagr = port_cagr_raw * 100 if port_cagr_raw is not None else 0.0
+    spy_cagr = spy_cagr_raw * 100 if spy_cagr_raw is not None else 0.0
 
     # Per-holding detail — shares and current_value use fully split-adjusted count.
     last_row  = wide.iloc[-1]
@@ -470,7 +468,9 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
     valid_syms = [s for s in symbols if len(ret_series[s]) > 1]
     if len(valid_syms) >= 2:
         ret_df = pd.concat([ret_series[s].rename(s) for s in valid_syms], axis=1).dropna()
-        corr_mat = ret_df.corr().values  # correlation matrix (symmetric)
+        corr_mat = fm.correlation_matrix(ret_df.values)
+        if corr_mat is None:
+            corr_mat = ret_df.corr().values  # fallback for degenerate inputs
         stds = ret_df.std().values
         cov_mat = np.diag(stds) @ corr_mat @ np.diag(stds)  # full covariance
     else:
@@ -550,7 +550,7 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
     spy_paths = _simulate(spy_start, spy_geo_mean, spy_std)
 
     def _percentile_paths(paths: np.ndarray, pct: int) -> list[float]:
-        return [round(float(np.percentile(paths[:, t], pct)), 2)
+        return [round(float(fm.percentile(paths[:, t], pct) or 0.0), 2)
                 for t in range(MC_MONTHS + 1)]
 
     return {
@@ -718,7 +718,8 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
         ep = float(entry_row[sym])
         cp = float(exit_row[sym])
         stock_total_return = (cp / ep - 1) if ep > 0 else 0.0
-        stock_cagr = (math.pow(1 + stock_total_return, 1 / n_years) - 1) * 100 if n_years > 0 else 0.0
+        stock_cagr_raw = fm.cagr(1.0, 1.0 + stock_total_return, n_years)
+        stock_cagr = stock_cagr_raw * 100 if stock_cagr_raw is not None else 0.0
 
         cagr_vs_spy = stock_cagr - spy_cagr
         # Weighted drag: how many bps this stock cost relative to SPY

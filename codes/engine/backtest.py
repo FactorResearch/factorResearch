@@ -42,6 +42,7 @@ from . import factor_snapshot
 import numpy as np
 import pandas as pd
 
+from codes.core import financial_math as fm
 from ..data import api_fetcher, db
 
 MIN_STOCKS     = 3
@@ -100,26 +101,23 @@ def _compute_risk_metrics(values: list[float], spy_values: list[float] | None = 
     n_months = len(rets)
     n_years = n_months / MONTHS_PER_YEAR
     total_return = arr[-1] / arr[0] - 1
-    cagr = (math.pow(1 + total_return, 1 / n_years) - 1) if n_years > 0 else 0.0
+    cagr = fm.cagr(1.0, 1.0 + total_return, n_years) or 0.0
 
-    rf_monthly = RISK_FREE_RATE / MONTHS_PER_YEAR
-    excess = rets - rf_monthly
-    vol = float(np.std(excess, ddof=1)) if n_months > 1 else 0.0
-    sharpe = (float(np.mean(excess)) / vol * math.sqrt(MONTHS_PER_YEAR)) if vol > 0 else None
+    sharpe = fm.sharpe_ratio(
+        rets,
+        risk_free_rate=RISK_FREE_RATE,
+        periods_per_year=MONTHS_PER_YEAR,
+    )
 
-    downside_sq = np.minimum(rets - rf_monthly, 0.0) ** 2
-    down_var = float(np.sum(downside_sq) / n_months) if n_months > 0 else 0.0
-    if down_var > 0:
-        down_std = math.sqrt(down_var) * math.sqrt(MONTHS_PER_YEAR)
-        sortino = (cagr - RISK_FREE_RATE) / down_std
-    else:
-        sortino = None
+    sortino = fm.sortino_ratio(
+        rets,
+        annual_return=cagr,
+        risk_free_rate=RISK_FREE_RATE,
+        periods_per_year=MONTHS_PER_YEAR,
+    )
 
-    peak = np.maximum.accumulate(arr)
-    with np.errstate(divide="ignore", invalid="ignore"):
-        dd = np.where(peak != 0, (arr - peak) / peak, 0.0)
-    max_dd = float(np.min(dd))
-    calmar = (cagr / abs(max_dd)) if max_dd < -0.001 else None
+    max_dd = fm.max_drawdown(arr) or 0.0
+    calmar = fm.calmar_ratio(cagr, max_dd)
 
     win_rate = float(np.mean(rets > 0)) if n_months > 0 else None
 
@@ -129,13 +127,11 @@ def _compute_risk_metrics(values: list[float], spy_values: list[float] | None = 
         if spy_arr[0] > 0:
             spy_rets = np.diff(spy_arr) / spy_arr[:-1]
             if len(spy_rets) == n_months and n_months > 1:
-                var_spy = float(np.var(spy_rets, ddof=1))
-                if var_spy > 0:
-                    cov = float(np.cov(rets, spy_rets)[0, 1])
-                    beta = cov / var_spy
+                beta = fm.beta(rets, spy_rets)
+                if beta is not None:
                     spy_total = spy_arr[-1] / spy_arr[0] - 1
-                    spy_cagr = (math.pow(1 + spy_total, 1 / n_years) - 1) if n_years > 0 else 0.0
-                    alpha = cagr - (RISK_FREE_RATE + beta * (spy_cagr - RISK_FREE_RATE))
+                    spy_cagr = fm.cagr(1.0, 1.0 + spy_total, n_years) or 0.0
+                    alpha = fm.alpha(cagr, spy_cagr, beta, risk_free_rate=RISK_FREE_RATE)
 
     return {
         "cagr":         round(cagr * 100, 2),

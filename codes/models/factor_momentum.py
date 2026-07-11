@@ -42,15 +42,13 @@ from typing import Any
 
 import pandas as pd
 
+from codes.core import model_utils as mu
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val: Any) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _values(records: list, n: int = 10) -> list[float]:
@@ -66,7 +64,7 @@ def _values(records: list, n: int = 10) -> list[float]:
 
 
 def _clamp(v: float, lo: float, hi: float) -> float:
-    return max(lo, min(hi, v))
+    return mu.clamp(v, lo, hi)
 
 
 def _linear_slope(values: list) -> float | None:
@@ -74,18 +72,7 @@ def _linear_slope(values: list) -> float | None:
     OLS slope of a chronological (oldest→newest) sequence, normalised by |mean|.
     Returns % change per period; positive = rising trend.
     """
-    n = len(values)
-    if n < 2:
-        return None
-    mean_v = sum(values) / n
-    if abs(mean_v) < 1e-10:
-        return None
-    x_mean = (n - 1) / 2.0
-    num = sum((i - x_mean) * (v - mean_v) for i, v in enumerate(values))
-    den = sum((i - x_mean) ** 2 for i in range(n))
-    if den < 1e-10:
-        return None
-    return (num / den) / abs(mean_v) * 100.0
+    return mu.linear_slope_percent(values)
 
 
 # ── Signal mapping ────────────────────────────────────────────────────────────

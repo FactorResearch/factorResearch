@@ -25,6 +25,8 @@ import math
 import numpy as np
 import pandas as pd
 
+from codes.core import financial_math as fm
+from codes.core import model_utils as mu
 from codes.engine.scorer import verdict_for_score
 
 MONTHS_PER_YEAR = 12
@@ -34,7 +36,7 @@ MONTHS_PER_YEAR = 12
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _clip(v, lo=0.0, hi=100.0):
-    return max(lo, min(hi, v))
+    return mu.clamp(v, lo, hi)
 
 
 def _norm_momentum(ret_pct: float | None) -> float | None:
@@ -66,7 +68,8 @@ def calc_monthly_volatility(price_hist: pd.DataFrame | None) -> float | None:
     log_rets = np.log(closes / closes.shift(1)).dropna().values
     if len(log_rets) < 2:
         return None
-    return float(np.std(log_rets, ddof=1))
+    annual_vol = fm.volatility(log_rets, periods_per_year=MONTHS_PER_YEAR)
+    return annual_vol / math.sqrt(MONTHS_PER_YEAR) if annual_vol is not None else None
 
 
 def _signal(score: float) -> str:
