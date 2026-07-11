@@ -1,0 +1,8 @@
+.waitlist-result {
+  margin: 12px 0 0 !important;
+  font-size: 12px !important;
+  font-weight: 600;
+}
+
+.waitlist-result.success { color: #087f3f; }
+.waitlist-result.error { color: #b42318; }

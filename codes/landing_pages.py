@@ -7,6 +7,7 @@ import random
 import flask
 
 from codes.services import product_analytics
+from codes.services import waitlist
 
 
 VARIANTS = {
@@ -18,6 +19,18 @@ VARIANTS = {
 
 
 def register_landing_pages(server: flask.Flask) -> None:
+    @server.route("/landing/waitlist", methods=["POST"])
+    def landing_waitlist():
+        variant = flask.request.form.get("variant", "pre-a")
+        if variant not in VARIANTS or VARIANTS[variant]["phase"] != "pre":
+            flask.abort(400)
+        try:
+            result = waitlist.subscribe(flask.request.form.get("email", ""), variant)
+        except waitlist.WaitlistEmailError:
+            result = "email_unavailable"
+        product_analytics.track_event("", "waitlist_submission", {"variant": variant, "result": result})
+        return flask.redirect(flask.url_for("landing_variant", variant=variant, waitlist=result))
+
     @server.route("/landing")
     def landing_ab():
         phase = flask.request.args.get("phase", "post").lower()

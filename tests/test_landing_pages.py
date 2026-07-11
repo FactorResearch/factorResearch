@@ -29,3 +29,19 @@ def test_ab_entry_assigns_and_persists_a_post_launch_variant(monkeypatch):
     assert first.status_code == second.status_code == 302
     assert first.headers["Location"] == second.headers["Location"]
     assert first.headers["Location"].endswith(("post-a", "post-b"))
+
+
+def test_waitlist_submission_captures_email_and_variant(monkeypatch):
+    client = _client(monkeypatch)
+    captured = {}
+
+    def subscribe(email, source):
+        captured.update(email=email, source=source)
+        return "confirmed"
+
+    monkeypatch.setattr("codes.landing_pages.waitlist.subscribe", subscribe)
+    response = client.post("/landing/waitlist", data={"email": "investor@example.com", "variant": "pre-b"})
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/landing/pre-b?waitlist=confirmed")
+    assert captured == {"email": "investor@example.com", "source": "pre-b"}

@@ -156,6 +156,12 @@ CREATE TABLE IF NOT EXISTS user_usage (
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id, period_start, feature_name)
 );
+CREATE TABLE IF NOT EXISTS waitlist_signups (
+    email                TEXT PRIMARY KEY,
+    source               TEXT NOT NULL,
+    created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    confirmation_sent_at TIMESTAMPTZ
+);
 """
 _UPSERT_VALUE_METRICS = """
 INSERT INTO value_metrics
@@ -536,6 +542,18 @@ ON CONFLICT (user_id, period_start, feature_name) DO UPDATE SET
     updated_at = NOW()
 RETURNING usage_count, feature_usage, period_start, period_end
 """
+_UPSERT_WAITLIST_SIGNUP = """
+INSERT INTO waitlist_signups (email, source)
+VALUES (%(email)s, %(source)s)
+ON CONFLICT (email) DO UPDATE SET source = excluded.source
+WHERE waitlist_signups.confirmation_sent_at IS NULL
+RETURNING email
+"""
+_MARK_WAITLIST_CONFIRMED = """
+UPDATE waitlist_signups
+SET confirmation_sent_at = NOW()
+WHERE email = %(email)s
+"""
 
 
 def get_strategy_backtest(cache_key: str) -> dict | None:
@@ -708,6 +726,20 @@ def consume_limited_usage(
     result = dict(row)
     result["feature_usage"] = result.get("feature_usage") or {}
     return result
+
+
+def create_waitlist_signup(email: str, source: str) -> bool:
+    """Store a waitlist email and return whether it still needs confirmation."""
+    _ensure_user_init()
+    with _users_conn() as con:
+        row = con.execute(_UPSERT_WAITLIST_SIGNUP, {"email": email, "source": source}).fetchone()
+    return bool(row)
+
+
+def mark_waitlist_confirmation_sent(email: str) -> None:
+    _ensure_user_init()
+    with _users_conn() as con:
+        con.execute(_MARK_WAITLIST_CONFIRMED, {"email": email})
 
 _UPSERT_FACTOR_SNAPSHOT = """
 INSERT INTO factor_score_snapshots (ticker, factor_name, snapshot_date, score, max_score, recorded_at)

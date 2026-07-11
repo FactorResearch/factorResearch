@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Research Factor — Smarter Investment Research</title>
   <link rel="stylesheet" href="/assets/landing.css">
+  <link rel="stylesheet" href="/assets/waitlist.css">
 </head>
 <body class="landing {{ style }}">
   <header class="site-header">
@@ -22,11 +23,16 @@
         <span class="eyebrow">✦ Coming soon</span>
         <h1>Smarter investing<br>starts with better research.</h1>
         <p>Research Factor combines timeless value principles with quantitative models to help you find what others miss.</p>
-        <form class="waitlist" action="#" onsubmit="return false">
+        <form class="waitlist" action="/landing/waitlist" method="post">
           <h2>Be the first to know{% if style == 'pre-b' %} when we launch{% endif %}.</h2>
           <p>Get early access, launch updates, and exclusive insights.</p>
-          <div><input aria-label="Email address" type="email" placeholder="Enter your email address"><button>Join Waitlist <span>→</span></button></div>
+          <input type="hidden" name="variant" value="{{ variant }}">
+          <div><input aria-label="Email address" name="email" type="email" placeholder="Enter your email address" required autocomplete="email"><button>Join Waitlist <span>→</span></button></div>
           <small>✓ No spam &nbsp;&nbsp; ✓ Early access &nbsp;&nbsp; ✓ Launch discounts</small>
+          {% if request.args.get('waitlist') == 'confirmed' %}<p class="waitlist-result success">You're on the list — check your inbox for confirmation.</p>{% endif %}
+          {% if request.args.get('waitlist') == 'already_confirmed' %}<p class="waitlist-result">You're already on the waitlist.</p>{% endif %}
+          {% if request.args.get('waitlist') == 'invalid' %}<p class="waitlist-result error">Enter a valid email address.</p>{% endif %}
+          {% if request.args.get('waitlist') == 'email_unavailable' %}<p class="waitlist-result error">We couldn't send confirmation right now. Please try again shortly.</p>{% endif %}
         </form>
       </div>
       {% if style == 'pre-b' %}
