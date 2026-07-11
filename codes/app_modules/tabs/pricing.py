@@ -58,8 +58,7 @@ def build_upgrade_prompt(*, title: str, body: str, source: str, feature: str) ->
                                     source=source,
                                     feature=feature,
                                 ),
-                                className="load-btn",
-                                style={"textDecoration": "none"},
+                                className="load-btn link-reset",
                             ),
                         ],
                     ),
@@ -82,13 +81,11 @@ def build_pricing_tab(context: dict | None = None) -> html.Div:
             cta = html.A(
                 f"Choose {plan['name']}",
                 href=plan["cta"],
-                className="analyze-btn d-inline-block mt-12",
-                style={"textDecoration": "none"},
+                className="analyze-btn d-inline-block mt-12 link-reset",
             )
         cards.append(
             html.Div(
-                className="scorecard",
-                style={"height": "100%"},
+                className="scorecard pricing-card-fill",
                 children=[
                     html.Div(plan["name"], className="scorecard-header"),
                     html.Div(
@@ -127,8 +124,7 @@ def build_pricing_tab(context: dict | None = None) -> html.Div:
                 feature=context.get("feature") or "subscription",
             ),
             html.Div(
-                className="d-grid gap-20 mt-20",
-                style={"gridTemplateColumns": "repeat(auto-fit, minmax(240px, 1fr))"},
+                className="pricing-card-grid d-grid gap-20 mt-20",
                 children=cards,
             ),
         ],

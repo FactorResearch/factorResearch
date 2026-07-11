@@ -181,7 +181,7 @@ def update_progress_bar(n):
             html.Span(f"({pct}%) {eta_text}", className="text-xs text-muted")
         ], className="flex justify-between mb-lg"),
         html.Div(className="progress-bar-wrapper", children=[
-            html.Div(className="progress-bar-fill", style={"width": f"{pct}%"})
+            html.Progress(value=pct, max=100, className="progress-bar-fill")
         ])
     ])
 
@@ -292,7 +292,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
     header_cells = []
     for label, sort_key, tooltip in SORT_COLS:
         th_class = "ch" if tooltip else ""
-        th_style = {"borderBottom": f"1px dashed {MUTED}"} if tooltip else {}
+        th_class = f"{th_class} table-tooltip" if tooltip else th_class
         if sort_key:
             header_cells.append(html.Th(
                 html.Button(
@@ -301,10 +301,10 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
                     className="sort-header-btn", n_clicks=0,
                     title=tooltip or "",
                 ),
-                title=tooltip or "", className=th_class, style=th_style,
+                title=tooltip or "", className=th_class,
             ))
         else:
-            header_cells.append(html.Th(label, title=tooltip or "", className=th_class, style=th_style))
+            header_cells.append(html.Th(label, title=tooltip or "", className=th_class))
     rows = []
     accordion_items = []
     # Pagination — show PAGE_SIZE rows for the current page
@@ -331,10 +331,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
-            badges.append(html.Span(f"💼 {pname}", className="fs-10 clr-amber", style={
-                "background": "#2a1e00", "border": f"1px solid {AMBER}55",
-                "borderRadius": "4px", "padding": "1px 5px",
-            }))
+            badges.append(html.Span(f"💼 {pname}", className="portfolio-name-badge fs-10 clr-amber"))
         # n_clicks on <td> not <button> — iOS Safari drops touch on <button> inside <table>
         ticker_cell = html.Td(
             html.Div([
@@ -344,12 +341,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             ]),
             id={"type": "screener-ticker-btn", "index": sym},
             n_clicks=0,
-            className="ticker-cell cp",
-            style={
-                "WebkitTapHighlightColor": "rgba(0,0,0,0.08)",
-                "userSelect": "none",
-                "WebkitUserSelect": "none",
-            }
+            className="ticker-cell ticker-cell-touch cp",
         )
         # Graham Number cell — populated after full analysis
         gn    = r.get("graham_number")
@@ -372,21 +364,18 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             biv_color = GREEN if (price and price <= biv) else MUTED
             biv_class = "clr-green" if (price and price <= biv) else "clr-muted"
             biv_cell = html.Td([
-                html.Div(className="moat-tip ch d-inline-block", style={"borderBottom": "1px dashed #8899aa", "position": "relative"}, children=[
+                html.Div(className="moat-tip moat-tip-anchor ch d-inline-block", children=[
                     html.Span([html.Span(f"${biv:.0f}", className=f"fw-600 {biv_class}"), html.Span(" · Moat", className="ml-4 fs-11 clr-muted")]),
                     html.Span("Price below intrinsic value ✓" if (price and price <= biv) else "Price above intrinsic value",
-                              className="moat-tip-popup d-none fs-11 wsnw py-6 px-10",
-                              style={"position": "absolute", "bottom": "calc(100% + 8px)", "left": "50%", "transform": "translateX(-50%)", "background": "#e8eaf0", "color": "#111", "borderRadius": "4px", "zIndex": "50"}),
+                              className="moat-tip-popup d-none fs-11 wsnw py-6 px-10"),
                 ]),
             ], title=f"Economic Moat: ${biv:.2f}")
         else:
             biv_cell = html.Td("—", className="text-xs text-muted",
                                title="Run full analysis to calculate Intrinsic Value")
-        row_style = {}
-        if in_port:  row_style = {"borderLeft": f"3px solid {AMBER}"}
-        elif viewed: row_style = {"borderLeft": f"3px solid {GREEN}44"}
+        row_class = "screener-row--portfolio" if in_port else "screener-row--viewed" if viewed else ""
         
-        rows.append(html.Tr(style=row_style, children=[
+        rows.append(html.Tr(className=row_class, children=[
             html.Td(str(i), className="rank-num"),
             ticker_cell,
             html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),

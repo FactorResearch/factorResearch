@@ -13,6 +13,7 @@ from codes.engine import scorer
 from codes.services import permissions
 from codes.services import product_analytics
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
+from codes.app_modules.css_classes import tone_class
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
 
 # ── Factor Lab callbacks ─────────────────────────────────────────────────────
@@ -179,7 +180,7 @@ def _render_fb_results(r: dict) -> list:
         rows.append(html.Tr([
             html.Td(label, className="clr-muted fs-12"),
             html.Td(_fmt(cv, fmt, sfx),
-                    className="fw-700 fs-13", style={"color": _cell_color(cv, dv)}),
+                    className=f"fw-700 fs-13 {tone_class(_cell_color(cv, dv))}"),
             html.Td(_fmt(dv, fmt, sfx), className="fs-13"),
             html.Td(_fmt(sv, fmt, sfx), className="fs-13 clr-muted"),
         ]))
@@ -188,7 +189,7 @@ def _render_fb_results(r: dict) -> list:
         html.Div("📊 Performance Comparison", className="scorecard-header"),
         html.Div(
             "Green = custom beats default. Equal-weight buy-and-hold on stocks in your analysis cache.",
-            style={"padding": "0 18px 10px"}, className="fs-12 clr-muted fsi",
+            className="factor-lab-summary-note fs-12 clr-muted fsi",
         ),
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
@@ -239,7 +240,7 @@ def _render_fb_results(r: dict) -> list:
                     className="fw-700 clr-blue fs-13"),
             html.Td(f"{wc['default']:.1f}%", className="fs-12 clr-muted"),
             html.Td(f"{delta:+.1f}pp",
-                    className="fw-600 fs-12", style={"color": d_color}),
+                    className=f"fw-600 fs-12 {tone_class(d_color)}"),
         ]))
 
     weight_table = html.Div(className="scorecard mt-16", children=[
@@ -264,7 +265,7 @@ def _render_fb_results(r: dict) -> list:
             html.Td(f"{s['custom_score']:.1f}",
                     className="fw-700 clr-blue"),
             html.Td(f"{s['default_score']:.1f}"),
-            html.Td(f"{delta:+.1f}", className="fw-600", style={"color": d_color}),
+            html.Td(f"{delta:+.1f}", className=f"fw-600 {tone_class(d_color)}"),
             html.Td("✅" if sym in custom_set  else "—", className="tac"),
             html.Td("✅" if sym in default_set else "—", className="tac"),
         ]))
@@ -279,7 +280,7 @@ def _render_fb_results(r: dict) -> list:
         html.Div(
             f"Portfolio overlap: {len(overlap)}/{r['top_n']} stocks in both — "
             f"{', '.join(overlap) if overlap else 'none in common'}",
-            style={"padding": "4px 18px 10px"}, className="fs-12 clr-muted fsi",
+            className="factor-lab-overlap-note fs-12 clr-muted fsi",
         ),
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
@@ -298,6 +299,6 @@ def _render_fb_results(r: dict) -> list:
     for label, bt in [("Custom", bt_c), ("Default", bt_d), ("SPY", bt_s)]:
         if bt.get("error"):
             warns.append(html.Div(f"⚠️ {label}: {bt['error']}",
-                                   className="clr-amber fs-12", style={"padding": "4px 0"}))
+                                   className="factor-lab-warning clr-amber fs-12"))
 
     return [summary, chart, weight_table, stocks_table] + warns

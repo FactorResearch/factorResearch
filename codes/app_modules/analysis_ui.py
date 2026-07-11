@@ -8,6 +8,7 @@ from urllib.parse import quote
 from codes.data import db
 
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
+from .css_classes import tone_class
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
 
@@ -102,8 +103,7 @@ def _composite_trend_chart(symbol: str, color: str):
 
 def _metric_data_row(label, value) -> html.Div:
     return html.Div(
-        className="analysis-metric-row d-flex jc-between gap-12 py-4 fs-12",
-        style={"borderBottom": f"1px solid {_ANALYSIS_ROW_DIVIDER}"},
+        className="analysis-metric-row analysis-divider d-flex jc-between gap-12 py-4 fs-12",
         children=[
             html.Span(label, className="analysis-metric-label text-muted"),
             value if not isinstance(value, str) else html.Span(value, className="analysis-metric-value clr-text fw-600"),
@@ -127,11 +127,11 @@ def _metric_scorecard(
     ]
     if score_text is not None:
         header_children.append(
-            html.Span(score_text, className="fs-22 fw-800", style={"color": score_color})
+            html.Span(score_text, className=f"fs-22 fw-800 {tone_class(score_color)}")
         )
     if status_text:
         header_children.append(
-            html.Span(status_text, className="fs-13", style={"color": status_color or score_color})
+            html.Span(status_text, className=f"fs-13 {tone_class(status_color or score_color)}")
         )
 
     body = []
@@ -139,8 +139,7 @@ def _metric_scorecard(
         body.append(
             html.Div(
                 subtitle,
-                className="analysis-card-subtitle fs-11 clr-muted fsi",
-                style={"padding": "0 18px 8px"},
+                className="analysis-card-subtitle analysis-subtitle fs-11 clr-muted fsi",
             )
         )
     body.extend(body_children or [])
@@ -254,24 +253,16 @@ def _composite_banner(data: dict) -> html.Div:
     flags = []
     if enhanced.get("value_trap_warning") or comp.get("value_trap_warning"):
         flags.append(html.Span("⚠️ Value Trap Risk",
-                               className="br-6 fs-12 fw-600",
-                               style={"background": "#3a2800", "color": AMBER,
-                                      "padding": "3px 10px"}))
+                               className="analysis-flag analysis-flag--value-trap br-6 fs-12 fw-600"))
     if enhanced.get("compounder_flag"):
         flags.append(html.Span("🚀 Compounder Signal",
-                               className="br-6 fs-12 fw-600",
-                               style={"background": "#003a1a", "color": GREEN,
-                                      "padding": "3px 10px"}))
+                               className="analysis-flag analysis-flag--compounder br-6 fs-12 fw-600"))
     if enhanced.get("altman_cap_applied"):
         flags.append(html.Span("🔴 Altman Distress Cap Active",
-                               className="br-6 fs-12 fw-600",
-                               style={"background": "#3a0000", "color": RED,
-                                      "padding": "3px 10px"}))
+                               className="analysis-flag analysis-flag--distress br-6 fs-12 fw-600"))
     if (data.get("growth_quality") or {}).get("acquisition_driven_growth"):
         flags.append(html.Span("🟠 Acquisition-Driven Growth",
-                               className="br-6 fs-12 fw-600",
-                               style={"background": "#3a2000", "color": AMBER,
-                                      "padding": "3px 10px"}))
+                               className="analysis-flag analysis-flag--acquisition br-6 fs-12 fw-600"))
 
     return html.Div(className="composite-banner", children=[
         html.Div(className="composite-top", children=[
@@ -282,7 +273,7 @@ def _composite_banner(data: dict) -> html.Div:
                          title=verdict_desc),
                 trend,
             ]),
-            html.Div(style={"flex": "1", "minWidth": "260px"}, children=[hexagon]),
+            html.Div(className="analysis-hexagon-wrap", children=[hexagon]),
             stats,
         ]),
         html.Div(flags, className="d-flex gap-8 flex-wrap") if flags else html.Div(),
@@ -367,7 +358,7 @@ def _options_signal_card(data: dict) -> html.Div:
             return "N/A"
 
     metrics = [
-        ("Bias",             html.Span(bias, className="fw-700", style={"color": bias_color})),
+        ("Bias",             html.Span(bias, className=f"fw-700 {tone_class(bias_color)}")),
         ("Confidence",       _fmt(os_data.get("bias_confidence"), ".0f", suffix="/100")),
         ("IV Level",         os_data.get("iv_level", "N/A")),
         ("IV Trend",         os_data.get("iv_trend", "N/A")),
@@ -425,7 +416,7 @@ def _capital_allocation_card(data: dict) -> html.Div:
     metrics = [
         ("ROIC",              _fmt(ca.get("roic"), ".1f", suffix="%")),
         ("ROIC Spread (−10%)", html.Span(_fmt(ca.get("roic_spread"), "+.1f", suffix="%"),
-                                          className="fw-600", style={"color": roic_spread_color})),
+                                          className=f"fw-600 {tone_class(roic_spread_color)}")),
         ("Incremental ROIC",  _fmt(ca.get("incremental_roic"), ".1f", suffix="%")),
         ("Reinvestment Rate", _fmt(ca.get("reinvestment_rate"), ".1%") if ca.get("reinvestment_rate") is not None else "N/A"),
         ("Reinvest Method",   ca.get("reinvestment_method", "N/A")),
@@ -433,9 +424,9 @@ def _capital_allocation_card(data: dict) -> html.Div:
         ("Dividend Yield",    _fmt(ca.get("dividend_yield_implied"), ".2f", suffix="%")),
         ("Shareholder Yield", _fmt(ca.get("shareholder_yield"), ".2f", suffix="%")),
         ("Dilution Rate",     html.Span(_fmt(ca.get("dilution_rate"), "+.2f", suffix="%"),
-                                         className="fw-600", style={"color": dilution_color})),
+                                         className=f"fw-600 {tone_class(dilution_color)}")),
         ("Debt Trend (Δ D/E)", html.Span(_fmt(ca.get("debt_trend"), "+.3f"),
-                                           className="fw-600", style={"color": debt_color})),
+                                           className=f"fw-600 {tone_class(debt_color)}")),
     ]
 
     metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
@@ -514,8 +505,7 @@ def _insider_activity_card(data: dict) -> html.Div:
         ("Distinct Buyers",     str(ia.get("n_distinct_buyers",   0))),
     ]
     rows = [
-        html.Div(className="d-flex jc-between py-4 fs-12",
-                 style={"borderBottom": f"1px solid {BORDER}"},
+        html.Div(className="metric-row-divider d-flex jc-between py-4 fs-12",
                  children=[
             html.Span(lbl, className="text-muted"),
             html.Span(val, className="clr-text fw-600"),
@@ -525,10 +515,8 @@ def _insider_activity_card(data: dict) -> html.Div:
     return html.Div(className="scorecard", children=[
         html.Div(className="d-flex ai-center gap-10 pt-14 px-18 pb-10", children=[
             html.Span("Insider Activity", className="fs-14 fw-700 clr-text"),
-            html.Span(f"{score:.0f}/100", className="fs-22 fw-800",
-                      style={"color": sig_color}),
-            html.Span(f"\u2014 {signal}", className="fs-13",
-                      style={"color": sig_color}),
+            html.Span(f"{score:.0f}/100", className=f"fs-22 fw-800 {tone_class(sig_color)}"),
+            html.Span(f"\u2014 {signal}", className=f"fs-13 {tone_class(sig_color)}"),
         ]),
         html.Div(rows, className="px-xl pb-2xl"),
     ])
@@ -589,15 +577,13 @@ def _alternative_data_card(data: dict) -> html.Div:
     signals = ad.get("signals") or []
 
     rows = [
-        html.Div(className="analysis-metric-row d-flex jc-between gap-12 fs-12 py-4",
-                 style={"borderBottom": f"1px solid {_ANALYSIS_ROW_DIVIDER}"},
+        html.Div(className="analysis-metric-row metric-row-divider--analysis d-flex jc-between gap-12 fs-12 py-4",
                  children=[
             html.Div([
                 html.Div(s.get("label", s.get("name", "Signal")),
                          className="clr-text fw-600"),
                 html.Div(s.get("description", ""),
-                         className="clr-muted fs-11",
-                         style={"marginTop": "1px"}),
+                         className="clr-muted fs-11 metric-note-tight"),
             ]),
             html.Span(s.get("status", status),
                       className="clr-muted fw-700 wsnw"),
@@ -634,24 +620,19 @@ def _piotroski_card(data: dict) -> html.Div:
         rows = []
         for s in sigs:
             on = s["signal"] == 1
-            rows.append(html.Div(className="d-flex gap-10 ai-start py-6",
-                                 style={"borderBottom": f"1px solid {_ANALYSIS_ROW_DIVIDER}"},
+            rows.append(html.Div(className="analysis-divider d-flex gap-10 ai-start py-6",
                                  children=[
-                html.Span("✅" if on else "❌",
-                          style={"fontSize": "15px", "minWidth": "20px", "marginTop": "1px"}),
+                html.Span("✅" if on else "❌", className="piotroski-icon"),
                 html.Div([
                     html.Div(f"{s['id']}: {s['label']}",
-                             className="fs-13 fw-600",
-                             style={"color": TEXT if on else MUTED}),
+                             className=f"fs-13 fw-600 {tone_class(TEXT if on else MUTED)}"),
                     html.Div(s["note"],
-                             className="fs-11 clr-muted",
-                             style={"marginTop": "2px"}),
+                             className="fs-11 clr-muted piotroski-copy"),
                 ]),
             ]))
         cat_blocks.append(html.Div(className="flex-1 min-w-240", children=[
             html.Div(cat_name.upper(),
-                     className="fs-10 fw-700 clr-muted ls-008 mb-6 pb-4",
-                     style={"borderBottom": f"2px solid {_ANALYSIS_ROW_DIVIDER}"}),
+                     className="piotroski-category fs-10 fw-700 clr-muted ls-008 mb-6 pb-4"),
             *rows,
         ]))
     return _metric_scorecard(
@@ -660,7 +641,7 @@ def _piotroski_card(data: dict) -> html.Div:
         score_color=lc,
         status_text=f"— {label.title()}",
         body_children=[
-            html.Div(interp, className="fs-12 clr-muted fsi", style={"paddingBottom": "12px"}),
+            html.Div(interp, className="piotroski-interpretation fs-12 clr-muted fsi"),
             html.Div(cat_blocks, className="d-flex gap-20 flex-wrap"),
         ],
     )
@@ -695,8 +676,7 @@ def _altman_card(data: dict) -> html.Div:
                 lbl,
                 html.Span(
                     f"{v:.3f}" if v is not None else "N/A",
-                    className="stability-component-value fw-600",
-                    style={"color": TEXT if v is not None else MUTED},
+                    className=f"stability-component-value fw-600 {tone_class(TEXT if v is not None else MUTED)}",
                 ),
             )
         )
@@ -704,12 +684,11 @@ def _altman_card(data: dict) -> html.Div:
         title="Stability Score (Bankruptcy Risk)",
         card_class="stability-card",
         body_children=[
-            html.Div(className=f"stability-zone stability-zone--{zone} br-10 mb-14 p-14",
-                     style={"background": zbg, "border": f"1px solid {zc}33"}, children=[
+            html.Div(className=f"stability-zone stability-zone--{zone} br-10 mb-14 p-14", children=[
                 html.Div(f"Z = {z_score:.2f}" if z_score is not None else "N/A",
-                         className="stability-status fs-34 fw-800", style={"color": zc}),
+                         className=f"stability-status fs-34 fw-800 {tone_class(zc)}"),
                 html.Div(zone_label,
-                         className="stability-status fs-16 fw-700 mt-2", style={"color": zc}),
+                         className=f"stability-status fs-16 fw-700 mt-2 {tone_class(zc)}"),
                 html.Div(note, className="fs-11 clr-muted mt-6"),
                 html.Div(f"Model: {model} · {n_avail}/5 components",
                          className="fs-10 clr-muted mt-3"),
@@ -770,8 +749,7 @@ def _risk_card(data: dict) -> html.Div:
     metric_cells = [
         html.Div(className="risk-metric-cell", children=[
             html.P(lbl, className="clr-muted fs-12 m-0"),
-            html.P(val, className=f"risk-value {_risk_value_class(col)} fw-600 m-0",
-                   style={"color": col}),
+            html.P(val, className=f"risk-value {_risk_value_class(col)} fw-600 m-0 {tone_class(col)}"),
         ])
         for lbl, val, col in metrics
     ]
@@ -834,17 +812,13 @@ def _regime_card(data: dict) -> html.Div:
     ]
 
     metric_rows = [
-        _metric_data_row(lbl, html.Span(val, className="fw-600", style={"color": col}))
+        _metric_data_row(lbl, html.Span(val, className=f"fw-600 {tone_class(col)}"))
         for lbl, val, col in metrics
     ]
 
     alert_banner = html.Div(
         "⚡ Fast Deterioration Alert — reduce position sizes",
-        className="br-6 px-12 py-6 fs-12 fw-700",
-        style={
-            "background": "#3a0000", "color": RED,
-            "margin": "0 0 10px 0", "border": f"1px solid {RED}",
-        }
+        className="alert-deterioration br-6 px-12 py-6 fs-12 fw-700",
     ) if risk_alert else html.Div()
 
     return _metric_scorecard(
@@ -859,8 +833,7 @@ def _regime_card(data: dict) -> html.Div:
             html.Div(
                 "Regime multiplier adjusts final score; max equity exposure governs position sizing. "
                 "Based on SPY price history.",
-                className="fs-11 clr-muted mt-8 fsi",
-                style={"lineHeight": "1.5"},
+                className="analysis-copy-leading fs-11 clr-muted mt-8 fsi",
             ),
         ],
     )
@@ -893,8 +866,7 @@ def _market_fear_card(data: dict) -> html.Div:
         ("Fear Score", _fmt(fear.get("market_fear_score"), "/100", 0)),
     ]
     metric_rows = [
-        html.Div(className="d-flex jc-between py-4 fs-12",
-                 style={"borderBottom": f"1px solid {BORDER}"},
+        html.Div(className="metric-row-divider d-flex jc-between py-4 fs-12",
                  children=[
             html.Span(label, className="text-muted"),
             html.Span(value, className="clr-text fw-600"),
@@ -906,20 +878,18 @@ def _market_fear_card(data: dict) -> html.Div:
         html.Div(className="d-flex ai-center gap-10 pt-14 px-18 pb-10 flex-wrap", children=[
             html.Span("Market Fear Gauge", className="fs-14 fw-700 clr-text"),
             html.Span(fear.get("badge", "Market Conditions"),
-                      className="fs-18 fw-800", style={"color": accent}),
+                      className=f"fs-18 fw-800 {tone_class(accent)}"),
         ]),
-        html.Div(style={"padding": "0 18px 14px"}, children=[
+        html.Div(className="market-fear-body", children=[
             *metric_rows,
             html.P(
                 fear.get("interpretation"),
-                style={"fontSize": "12px", "color": TEXT, "lineHeight": "1.5",
-                       "margin": "10px 0 0"},
+                className="market-fear-interpretation",
             ),
             html.Div(
                 "Informational only. Intrinsic value, quality scores, rankings, "
                 "and portfolio sizing are unchanged by market fear.",
-                className="fs-11 clr-muted mt-8 fsi",
-                style={"lineHeight": "1.5"},
+                className="analysis-copy-leading fs-11 clr-muted mt-8 fsi",
             ),
         ]),
     ])
@@ -980,7 +950,7 @@ def _build_analysis_content(data: dict) -> list:
         er_color = color_map.get(er_signal, MUTED)
     er_display = html.Span(
         f"{er.get('total_score', 0):.0f}/100 ({er_signal.replace('_', ' ')})",
-        className="fw-700", style={"color": er_color}
+        className=f"fw-700 {tone_class(er_color)}"
     )
     # ── Extra stat row items ──────────────────────────────────────────────────
     p_data = data.get("piotroski") or {}
@@ -1001,6 +971,15 @@ def _build_analysis_content(data: dict) -> list:
         or data.get("composite", {}).get("verdict")
         or "N/A"
     ).replace("_", " ")
+    composite_tone = tone_class(_verdict_color(
+        data.get("enhanced", {}).get("verdict_label")
+        or data.get("composite", {}).get("verdict_label", "pending")
+    ))
+    intrinsic_tone = tone_class(
+        GREEN if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
+        else RED if b_data.get("intrinsic_value") else MUTED
+    )
+    moat_tone = tone_class({"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(b_data.get("grade", ""), MUTED))
     header = html.Div(
         className="company-header company-identity-header",
         children=[
@@ -1030,7 +1009,7 @@ def _build_analysis_content(data: dict) -> list:
     "P/E",
     html.Span(
         f"{g.get('pe') or 0:.1f}×",
-        style={"color": _score_color(g.get("pe"), RULES["pe"])}
+        className=tone_class(_score_color(g.get("pe"), RULES["pe"]))
     ),
     "Price-to-Earnings (P/E) Ratio. Compares share price to earnings per share. Lower values generally indicate a lower valuation. Traditional value investing often uses 15× as a reference threshold."
 ),
@@ -1038,7 +1017,7 @@ _stat(
     "P/B",
     html.Span(
         f"{g.get('pb') or 0:.2f}×",
-        style={"color": _score_color(g.get("pb"), RULES["pb"])}
+        className=tone_class(_score_color(g.get("pb"), RULES["pb"]))
     ),
     "Price-to-Book (P/B) Ratio. Compares market price to book value per share. Lower values generally indicate a lower valuation. Traditional value investing often uses 1.5× as a reference threshold."
 ),
@@ -1046,7 +1025,7 @@ _stat(
     "ROE",
     html.Span(
         f"{q.get('roe') or 0:.1f}%",
-        style={"color": _score_color(q.get("roe"), RULES["roe"])}
+        className=tone_class(_score_color(q.get("roe"), RULES["roe"]))
     ),
     "Return on Equity. Target: ≥15%."
 ),
@@ -1054,7 +1033,7 @@ _stat(
     "Op Margin",
     html.Span(
         f"{q.get('op_margin') or 0:.1f}%",
-        style={"color": _score_color(q.get("op_margin"), RULES["op_margin"])}
+        className=tone_class(_score_color(q.get("op_margin"), RULES["op_margin"]))
     ),
     "Operating Margin. Target: ≥15%."
 ),
@@ -1062,7 +1041,7 @@ _stat(
     "Sharpe",
     html.Span(
         f"{r_data.get('sharpe') or 0:.2f}",
-        style={"color": _score_color(r_data.get('sharpe'), RULES["sharpe"])}
+        className=tone_class(_score_color(r_data.get('sharpe'), RULES["sharpe"]))
     ),
     "Sharpe Ratio. ≥1.0 = good, ≥1.5 = excellent."
 ),
@@ -1070,7 +1049,7 @@ _stat(
     "Beta",
     html.Span(
         f"{r_data.get('beta') or 0:.2f}",
-        style={"color": _score_color(r_data.get('beta'), RULES["beta"])}
+        className=tone_class(_score_color(r_data.get('beta'), RULES["beta"]))
     ),
     "Beta vs SPY. <1.0 = defensive, >1.0 = more volatile."
 ),
@@ -1078,7 +1057,7 @@ _stat(
     "F-Score",
     html.Span(
         f"{p_data.get('f_score') or 0}/9",
-        style={"color": _score_color(p_data.get('f_score'), RULES["f_score"])}
+        className=tone_class(_score_color(p_data.get('f_score'), RULES["f_score"]))
     ),
     "Piotroski F-Score. 8–9 = strong."
 ),
@@ -1087,11 +1066,10 @@ _stat(
                                 html.Span(
                                     f"${b_data.get('intrinsic_value'):.2f}"
                                     if b_data.get("intrinsic_value") else "N/A",
-                                    style={
-                                        "color": GREEN
-                                        if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
+                                    className=tone_class(
+                                        GREEN if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
                                         else RED if b_data.get("intrinsic_value") else MUTED
-                                    }
+                                    )
                                 ),
                                 "Intrinsic Value. Green = Price below IV (margin of safety)."
                             ),
@@ -1100,14 +1078,12 @@ _stat(
                                 html.Span(
                                     f"{b_data.get('grade')} ({b_data.get('grade_label', '')})"
                                     if b_data.get("grade") else "N/A",
-                                    style={
-                                        "color": {
+                                    className=tone_class({
                                             "A": GREEN,
                                             "B": BLUE,
                                             "C": AMBER,
                                             "D": RED
-                                        }.get(b_data.get("grade"), MUTED)
-                                    }
+                                        }.get(b_data.get("grade"), MUTED))
                                 ),
                                 "Economic Moat Rating: A=Wide Moat (best), D=Avoid."
                             ),
@@ -1115,13 +1091,7 @@ _stat(
                                 "Comp",
                                 html.Span(
                                     f"{comp:.0f}/100",
-                                    className="fw-700",
-                                    style={
-                                        "color": _verdict_color(
-                                            data.get("enhanced", {}).get("verdict_label")
-                                            or data.get("composite", {}).get("verdict_label", "pending")
-                                        )
-                                    }
+                                    className=f"fw-700 {composite_tone}"
                                 ),
                                 "Overall Composite Score (higher = better)."
                             ),
@@ -1142,8 +1112,7 @@ _stat(
                         children=[
                             html.Div(
                                 g["grade"],
-                                className="grade-letter",
-                                style={"color": _grade_color(g["grade"])}
+                                className=f"grade-letter {tone_class(_grade_color(g['grade']))}"
                             ),
                             html.Div("Intrinsic Value Estimate", className="grade-label"),
                             html.Div(
@@ -1153,36 +1122,18 @@ _stat(
                         ]
                     ),
                     html.Div(
-                        className="grade-badge",
-                        style={"borderLeft": f"1px solid {BORDER}"},
+                        className="grade-badge badge-divider",
                         children=[
                             html.Div(
                                 f"${b_data.get('intrinsic_value', 0):.0f}"
                                 if b_data.get("intrinsic_value") else "—",
-                                className="grade-letter fs-22",
-                                style={
-                                    "color": (
-                                        GREEN
-                                        if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
-                                        else RED if b_data.get("intrinsic_value") and price
-                                        else MUTED
-                                    ),
-                                },
+                                className=f"grade-letter fs-22 {intrinsic_tone}",
                             ),
                             html.Div("Economic Moat Rating", className="grade-label"),
                             html.Span(
                                 f"{b_data.get('grade')} — {b_data.get('grade_label')}"
                                 if b_data.get("grade") else "N/A",
-                                className="grade-score ch",
-                                style={
-                                    "color": {
-                                        "A": GREEN,
-                                        "B": BLUE,
-                                        "C": AMBER,
-                                        "D": RED
-                                    }.get(b_data.get("grade", ""), MUTED),
-                                    "borderBottom": f"1px dashed {MUTED}",
-                                },
+                                className=f"grade-score ch moat-grade-link {moat_tone}",
                                 title=_MOAT_TOOLTIPS.get(b_data.get("grade", ""), ""),
                             ),
                         ]
@@ -1309,9 +1260,8 @@ _stat(
 
 def _stat(label, value, tooltip=None):
     return html.Div([
-        html.Div(label, className="stat-label" + (" ch" if tooltip else ""),
-                 title=tooltip or "",
-                 style={"borderBottom": f"1px dashed {MUTED}"} if tooltip else {}),
+        html.Div(label, className="stat-label" + (" ch stat-label-tooltip" if tooltip else ""),
+                 title=tooltip or ""),
         html.Div(value, className="stat-value")
     ], className="stat-item")
 
@@ -1379,12 +1329,10 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
                 html.Div(c["label"], className="criterion-label"),
                 html.Div(c.get("note", ""), className="criterion-note"),
                 html.Div(className="score-bar", children=[
-                    html.Div(className="score-bar-fill",
-                             style={"width": f"{pct}%", "background": color})
+                    html.Progress(value=pct, max=100, className=f"score-bar-fill {tone_class(color)}")
                 ]),
             ]),
-            html.Div(f"{score}/{max_s}", className="criterion-pts",
-                     style={"color": color}),
+            html.Div(f"{score}/{max_s}", className=f"criterion-pts {tone_class(color)}"),
         ]))
     return html.Div(className="scorecard", children=[
         html.Div(title, className="scorecard-header"),
@@ -1504,8 +1452,7 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     detail_rows = [
         html.Div(className="detail-row", children=[
             html.Span(label, className="detail-label"),
-            html.Span(value, className="detail-value",
-                      style={"color": _row_color(label)}),
+            html.Span(value, className=f"detail-value {tone_class(_row_color(label))}"),
         ])
         for label, value in rows
     ]
@@ -1544,8 +1491,7 @@ def _buffett_details_card(data: dict) -> html.Div:
     detail_rows = [
         html.Div(className="detail-row", children=[
             html.Span(label, className="detail-label"),
-            html.Span(value, className="detail-value",
-                      style={"color": iv_color if label == "Margin of Safety" else TEXT}),
+            html.Span(value, className=f"detail-value {tone_class(iv_color if label == 'Margin of Safety' else TEXT)}"),
         ])
         for label, value in rows
     ]

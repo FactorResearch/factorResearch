@@ -43,7 +43,7 @@ def _topbar():
                 html.Button("◐", id="theme-system", className="theme-btn active", **{"data-theme": "system"}),
                 html.Button("☾", id="theme-dark", className="theme-btn", **{"data-theme": "dark"}),
             ]),
-            html.Div(id="theme-dummy", style={"display": "none"}),
+            html.Div(id="theme-dummy", className="d-none"),
         ]),
     ])
 
@@ -65,8 +65,7 @@ def build_layout():
                         options=[{"label": "All Sectors", "value": ""}],
                         value="",
                         clearable=False,
-                        className="bg-card br-10 clr-text",
-                        style={"width": "200px"}
+                        className="bg-card br-10 clr-text control-width-200",
                     ),
                 ]),
             ]),
@@ -105,7 +104,7 @@ def build_layout():
                     html.Button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False)
                 ]),
                 html.Span(id="analyze-current", className="analyze-current"),
-                html.Div(id="status-msg", className="status-msg", style={"width": "100%"}),
+                html.Div(id="status-msg", className="status-msg w-full"),
             ]),
             html.Div(id="history-section", className="history-section"),
 
@@ -118,7 +117,7 @@ def build_layout():
                 ]
             ),
             # ── Add to Portfolio panel (shown after analysis completes) ──────────
-            html.Div(id="add-to-portfolio-panel", style={"display": "none"}, children=[
+            html.Div(id="add-to-portfolio-panel", className="d-none", children=[
                 html.Div(className="portfolio-add-panel", children=[
                     html.Div(className="portfolio-add-header", children=[
                         html.Span("💼", className="text-2xl"),
@@ -150,7 +149,7 @@ def build_layout():
                     html.Div(id="portfolio-add-msg", className="fs-13 mt-6"),
                 ])
             ]),
-            html.Div(id="analysis-anchor-scroll-trigger", style={"display": "none"}),
+            html.Div(id="analysis-anchor-scroll-trigger", className="d-none"),
         ]),
         # ── Tab: Portfolios ──────────────────────────────────────────────────────
         html.Div(id="tab-portfolio", className="main-content", children=[
@@ -166,8 +165,7 @@ def build_layout():
                     html.Button("＋ New Portfolio", id="portfolio-new-btn",
                                 className="load-btn", n_clicks=0),
                     html.Button("🗑 Delete", id="portfolio-delete-btn",
-                                className="load-btn",
-                                style={"background": "#2a1a1a", "borderColor": "#ff1744"},
+                                className="load-btn portfolio-delete-btn",
                                 n_clicks=0),
                 ]),
                 html.Div(className="screener-controls", children=[
@@ -195,7 +193,7 @@ def build_layout():
                              className="fs-13 clr-red"),
                 ])
             ]),
-            html.Div(id="portfolio-msg", className="fs-13", style={"padding": "4px 0 8px"}),
+            html.Div(id="portfolio-msg", className="portfolio-message fs-13"),
             # Main portfolio content (holdings + run sim button)
             dcc.Loading(type="default", color="#448aff", children=[
                 html.Div(id="portfolio-content", children=[
@@ -227,13 +225,13 @@ def build_layout():
                         dcc.Slider(id="fb-top-n", min=3, max=20, step=1, value=10,
                                    marks={3: "3", 5: "5", 10: "10", 15: "15", 20: "20"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
-                    ], style={"width": "200px"}),
+                    ], className="control-width-200"),
                     html.Div([
                         html.Label("Backtest years", className="fs-12 clr-muted"),
                         dcc.Slider(id="fb-years", min=1, max=10, step=1, value=5,
                                    marks={1: "1", 3: "3", 5: "5", 7: "7", 10: "10"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
-                    ], style={"width": "200px"}),
+                    ], className="control-width-200"),
                     html.Button("▶ Run Backtest", id="fb-run-btn", className="analyze-btn as-end",
                                 n_clicks=0),
                     html.Div(id="fb-status", className="as-end fs-13 clr-muted"),
@@ -242,9 +240,7 @@ def build_layout():
 
             html.Div(className="scorecard mt-16", children=[
                 html.Div("Factor Weights — drag sliders to reshape the model", className="scorecard-header"),
-                html.Div(className="d-grid gap-20",
-                         style={"gridTemplateColumns": "repeat(auto-fill, minmax(280px, 1fr))",
-                                "padding": "16px 18px"}, children=[
+                html.Div(className="factor-weight-grid d-grid gap-20", children=[
                     *[
                         html.Div([
                             html.Div(className="d-flex jc-between mb-4", children=[
@@ -273,8 +269,7 @@ def build_layout():
                     ],
                 ]),
                 html.Div(id="fb-weight-sum-display",
-                         className="fs-12 clr-muted fsi",
-                         style={"padding": "8px 18px 14px"},
+                         className="factor-weight-summary fs-12 clr-muted fsi",
                          children="Weight sum: 100% ✓"),
             ]),
 

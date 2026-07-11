@@ -19,8 +19,7 @@ def FeatureLockedModal(*, feature: str, source: str) -> html.Div:
                     html.A(
                         "Unlock Premium",
                         href=billing.get_billing_entry_url(plan="premium", source=source, feature=feature),
-                        className="analyze-btn",
-                        style={"textDecoration": "none"},
+                        className="analyze-btn link-reset",
                     ),
                 ],
             ),

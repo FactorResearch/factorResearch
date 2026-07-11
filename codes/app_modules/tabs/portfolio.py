@@ -18,6 +18,7 @@ from codes.services import permissions
 from codes.services import product_analytics
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
+from codes.app_modules.css_classes import tone_class
 
 PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
@@ -363,12 +364,11 @@ def update_shares(n_clicks_list, values, ids, refresh):
 # ── Side-by-side portfolio comparison helpers ─────────────────────────────────
 def _two_col(left, right) -> html.Div:
     """Responsive 2-column flex row; stacks on narrow/mobile viewports."""
-    col_style = {"flex": "1 1 320px", "minWidth": "0"}
     return html.Div(
         className="d-flex gap-16 flex-wrap ai-start",
         children=[
-            html.Div(left,  style=col_style),
-            html.Div(right, style=col_style),
+            html.Div(left, className="portfolio-two-col"),
+            html.Div(right, className="portfolio-two-col"),
         ],
     )
 
@@ -490,22 +490,12 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
             f"⚠️  Weakest link: {ws} — "
             f"replacing it with SPY would have improved total returns "
             f"by +{wd['swap_delta_pct']:.2f}%",
-            className="br-6 px-14 py-8 mb-12 fs-13 fw-600",
-            style={
-                "background": "rgba(239,83,80,0.10)",
-                "border": f"1px solid {RED}",
-                "color": RED,
-            }
+            className="portfolio-weak-link-alert portfolio-weak-link-alert--danger br-6 px-14 py-8 mb-12 fs-13 fw-600"
         )
     else:
         banner = html.Div(
             "✅  No weak links — every holding beat SPY over the backtest period.",
-            className="br-6 px-14 py-8 mb-12 fs-13 fw-600",
-            style={
-                "background": "rgba(102,187,106,0.10)",
-                "border": f"1px solid {GREEN}",
-                "color": GREEN,
-            }
+            className="portfolio-weak-link-alert portfolio-weak-link-alert--safe br-6 px-14 py-8 mb-12 fs-13 fw-600"
         )
     wl_rows = []
     for sym in wl["ranking"]:
@@ -535,8 +525,7 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
         ]))
     return html.Div(className="scorecard", children=[
         html.Div("🔍 Weak Link Analysis", className="scorecard-header"),
-        html.Div(gap_text, className="fs-13 mb-14 px-4",
-                 style={"color": gap_col}),
+        html.Div(gap_text, className=f"fs-13 mb-14 px-4 {tone_class(gap_col)}"),
         banner,
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
@@ -551,8 +540,7 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
             "Drag (bps): weighted annualised underperformance vs SPY (negative = drag).  "
             "Swap Δ: total-return change if this stock were replaced with SPY "
             "(positive = stock was a drag; negative = stock beat SPY).",
-            className="fs-11 clr-muted mt-10 px-4",
-            style={"lineHeight": "1.6"},
+            className="analysis-copy-leading fs-11 clr-muted mt-10 px-4",
         ),
     ])
 
@@ -575,19 +563,16 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
         title, title_color = f"🏆 {winner} is stronger", GREEN
     else:
         title, title_color = "Both portfolios perform similarly.", MUTED
-    sections.append(html.Div(className="scorecard mt-24", style={
-        "border": f"1px solid {title_color}",
-    }, children=[
-        html.Div(title, className="fs-15 fw-700",
-                 style={"color": title_color, "padding": "14px 18px 6px"}),
+    sections.append(html.Div(className=f"scorecard mt-24 portfolio-comparison-summary {tone_class(title_color)}", children=[
+        html.Div(title, className="portfolio-comparison-title fs-15 fw-700"),
         html.Div([
             html.Span(f"{active}: {score_a:.1f}", className="mr-16"),
             html.Span(f"{compare}: {score_b:.1f}"),
-        ], className="fs-13 clr-muted", style={"padding": "0 18px 8px"}),
+        ], className="portfolio-comparison-copy fs-13 clr-muted"),
         html.Ul([
             html.Li(r, className="fs-12 clr-text")
             for r in reasons
-        ], className="m-0", style={"padding": "0 18px 14px 34px"}),
+        ], className="portfolio-comparison-reasons m-0"),
     ]))
 
     sim_a = cmp_result["portfolio_a"]
@@ -598,10 +583,8 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
 
     # ── Column headers ───────────────────────────────────────────────────
     sections.append(_two_col(
-        html.Div(f"📊 {active}", className="scorecard-header fs-16",
-                 style={"color": color_a}),
-        html.Div(f"📊 {compare}", className="scorecard-header fs-16",
-                 style={"color": color_b}),
+        html.Div(f"📊 {active}", className=f"scorecard-header fs-16 {tone_class(color_a)}"),
+        html.Div(f"📊 {compare}", className=f"scorecard-header fs-16 {tone_class(color_b)}"),
     ))
 
     # ── Side-by-side stats ───────────────────────────────────────────────
@@ -895,22 +878,12 @@ def run_simulation(n, active, compare):
                             f"⚠️  Weakest link: {ws} — "
                             f"replacing it with SPY would have improved total returns "
                             f"by +{wd['swap_delta_pct']:.2f}%",
-                            className="br-6 px-14 py-8 mb-12 fs-13 fw-600",
-                            style={
-                                "background": "rgba(239,83,80,0.10)",
-                                "border": f"1px solid {RED}",
-                                "color": RED,
-                            }
+                            className="portfolio-weak-link-alert portfolio-weak-link-alert--danger br-6 px-14 py-8 mb-12 fs-13 fw-600"
                         )
                     else:
                         banner = html.Div(
                             "✅  No weak links — every holding beat SPY over the backtest period.",
-                            className="br-6 px-14 py-8 mb-12 fs-13 fw-600",
-                            style={
-                                "background": "rgba(102,187,106,0.10)",
-                                "border": f"1px solid {GREEN}",
-                                "color": GREEN,
-                            }
+                            className="portfolio-weak-link-alert portfolio-weak-link-alert--safe br-6 px-14 py-8 mb-12 fs-13 fw-600"
                         )
                     # Per-holding rows — worst to best (ranking is worst-first)
                     wl_rows = []
@@ -944,8 +917,7 @@ def run_simulation(n, active, compare):
                         ]))
                     components.append(html.Div(className="scorecard", children=[
                         html.Div("🔍 Weak Link Analysis", className="scorecard-header"),
-                        html.Div(gap_text, className="fs-13 mb-14 px-4",
-                                 style={"color": gap_col}),
+                        html.Div(gap_text, className=f"fs-13 mb-14 px-4 {tone_class(gap_col)}"),
                         banner,
                         html.Table(className="screener-table", children=[
                             html.Thead(html.Tr([
@@ -964,8 +936,7 @@ def run_simulation(n, active, compare):
                             "Drag (bps): weighted annualised underperformance vs SPY (negative = drag).  "
                             "Swap Δ: total-return change if this stock were replaced with SPY "
                             "(positive = stock was a drag; negative = stock beat SPY).",
-                            className="fs-11 clr-muted mt-10 px-4",
-                            style={"lineHeight": "1.6"},
+                            className="analysis-copy-leading fs-11 clr-muted mt-10 px-4",
                         ),
                     ]))
         return components
