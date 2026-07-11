@@ -3,10 +3,60 @@
 from dash import dcc, html
 import pandas as pd
 import plotly.graph_objects as go
+from urllib.parse import quote
 
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
+
+
+def _clamp_pct(value) -> float:
+    try:
+        return min(max(float(value or 0), 0), 100)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure:
+    """Render a six-axis score profile; outward always means stronger."""
+    import math
+
+    center, radius = 150, 92
+    angles = [math.radians(-90 + index * 60) for index in range(6)]
+
+    def points(scale: float) -> str:
+        return " ".join(
+            f"{center + radius * scale * math.cos(angle):.1f},{center + radius * scale * math.sin(angle):.1f}"
+            for angle in angles
+        )
+
+    values = [_clamp_pct(value) for _, value in factors]
+    profile_points = " ".join(
+        f"{center + radius * value / 100 * math.cos(angle):.1f},{center + radius * value / 100 * math.sin(angle):.1f}"
+        for value, angle in zip(values, angles)
+    )
+    grid = "".join(
+        f'<polygon points="{points(scale)}" class="factor-hex-grid" />'
+        for scale in (0.2, 0.4, 0.6, 0.8, 1)
+    )
+    axes = "".join(
+        f'<line x1="{center}" y1="{center}" x2="{center + radius * math.cos(angle):.1f}" y2="{center + radius * math.sin(angle):.1f}" class="factor-hex-axis" />'
+        for angle in angles
+    )
+    labels = "".join(
+        f'<text x="{center + 123 * math.cos(angle):.1f}" y="{center + 123 * math.sin(angle):.1f}" class="factor-hex-label" text-anchor="middle">{label}<tspan x="{center + 123 * math.cos(angle):.1f}" dy="13">{value:.0f}</tspan></text>'
+        for (label, _), value, angle in zip(factors, values, angles)
+    )
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img">'
+        f'<g>{grid}{axes}<polygon points="{profile_points}" fill="{color}" fill-opacity="0.22" stroke="{color}" stroke-width="3" />{labels}</g>'
+        '</svg>'
+    )
+    description = ", ".join(f"{label} {value:.0f}" for (label, _), value in zip(factors, values))
+    return html.Figure(
+        className="factor-hexagon",
+        children=[html.Img(src=f"data:image/svg+xml,{quote(svg)}", alt=f"Six-factor score profile: {description}")],
+    )
 
 
 def _metric_data_row(label, value) -> html.Div:
@@ -100,36 +150,27 @@ def _composite_banner(data: dict) -> html.Div:
     }
     vcls = vcls_map.get(verdict_label, "bal")
 
-    # Factor circles (top 5)
+    # Six-axis profile: all axes are normalized so outward always means stronger.
     if has_enh:
         factor_data = [
+            ("Composite", score),
             ("Intrinsic",   enhanced.get("graham_pct", 0)),
             ("Quality",  enhanced.get("quality_pct", 0)),
             ("Momentum", enhanced.get("momentum_pct", 0)),
-            ("Risk",     enhanced.get("risk_pct", 0)),
+            ("Safety",   enhanced.get("risk_pct", 0)),
             ("Profit.",  enhanced.get("profitability_pct", 0)),
         ]
     else:
         factor_data = [
+            ("Composite", score),
             ("Intrinsic",   comp.get("graham_pct", 0)),
             ("Quality",  comp.get("quality_pct", 0)),
             ("Momentum", comp.get("momentum_pct") or 0),
-            ("Altman",   comp.get("altman_pct", 0)),
-            ("Safety",   comp.get("safety_pct", 0)),
+            ("Safety",   comp.get("safety_pct") or comp.get("altman_pct", 0)),
+            ("Profit.",  comp.get("profitability_pct", 0)),
         ]
-
-    circles = []
-    for label, pct in factor_data:
-        pct = min(max(pct, 0), 100)
-        color = GREEN if pct >= 66 else AMBER if pct >= 33 else RED
-        circles.append(html.Div(className="factor-circle-wrap", children=[
-            html.Div(className="factor-circle-progress",
-                     style={"background": f"conic-gradient({color} 0% {pct}%, rgba(255,255,255,0.08) {pct}% 100%)"},
-                     children=[html.Div(className="factor-circle-progress-inner")]),
-            html.Div(f"{pct:.0f}", className="factor-circle-score",
-                     style={"color": color}),
-            html.Div(label, className="factor-circle-label"),
-        ]))
+    verdict_colors = {"hc": GREEN, "fav": BLUE, "bal": AMBER, "cau": "#ff6d00", "unfav": RED}
+    hexagon = _factor_hexagon(factor_data, verdict_colors[vcls])
 
     # Stats row (matching mockup)
     market_cap = g.get("market_cap")
@@ -192,9 +233,7 @@ def _composite_banner(data: dict) -> html.Div:
                 html.Div(verdict.upper(), className=f"composite-verdict {vcls}",
                          title=verdict_desc),
             ]),
-            html.Div(style={"flex": "1", "minWidth": "200px"}, children=[
-                html.Div(className="factor-circles", children=circles),
-            ]),
+            html.Div(style={"flex": "1", "minWidth": "260px"}, children=[hexagon]),
             stats,
         ]),
         html.Div(flags, className="d-flex gap-8 flex-wrap") if flags else html.Div(),

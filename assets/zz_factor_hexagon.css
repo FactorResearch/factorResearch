@@ -1,0 +1,20 @@
+.factor-hexagon {
+  width: min(300px, 100%);
+  margin: 0 auto;
+}
+
+.factor-hexagon img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.factor-hex-grid { fill: none; stroke: rgba(132, 157, 194, 0.28); stroke-width: 1; }
+.factor-hex-axis { stroke: rgba(132, 157, 194, 0.34); stroke-width: 1; }
+.factor-hex-label { fill: #9eafc7; font: 600 10px Inter, Arial, sans-serif; }
+.factor-hex-label tspan { fill: #e8eef8; font-weight: 800; }
+
+body.light .factor-hex-grid { stroke: rgba(71, 85, 105, 0.27); }
+body.light .factor-hex-axis { stroke: rgba(71, 85, 105, 0.32); }
+body.light .factor-hex-label { fill: #475569; }
+body.light .factor-hex-label tspan { fill: #0f172a; }
