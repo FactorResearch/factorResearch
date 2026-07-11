@@ -145,6 +145,11 @@ Preserve:
 
 Unless explicitly instructed otherwise.
 
+For every new roadmap version or major development phase, create and work on a
+dedicated git branch named after that version number, for example `V2.0`.
+Keep version work isolated from `main` so it can be tested and promoted to
+production intentionally.
+
 ---
 
 ## Token Efficiency Rules
