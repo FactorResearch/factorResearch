@@ -2866,6 +2866,193 @@ context: both page are currenlty empty and open in new page
 
 solution: fill both page with legal content, and make them open as popup with same look and feel as rest of the application, popups up should not take the whole page but allow user to make them whole page.
 
+# ISSUE_031 — Pricing + Conversion System (Master)
+
+Status: [x]
+
+title: Implement simplified pricing model + conversion-driven upgrade system (Free → Premium)
+
+category: monetization / product-growth / authorization
+
+---
+
+## Overview
+
+Refactor pricing into a conversion-driven system:
+
+FREE → hook user  
+PREMIUM → monetize core value (backtesting)
+
+---
+
+## Core Rules
+
+- Only 2 tiers at launch: FREE + PREMIUM
+- Backtesting = main conversion trigger
+- Centralized pricing logic
+- Consistent upgrade UI across app
+
+---
+
+## Tiers
+
+### FREE
+- 3 analyses
+- full breakdown
+- custom weights
+- NO backtesting
+- NO portfolio analytics
+
+### PREMIUM
+- unlimited analysis
+- portfolio tools
+- backtesting
+- full history
+
+---
+
+## Acceptance Criteria
+
+- Only 2 plans exist
+- Backtest is gated
+- Analysis limit enforced
+- Upgrade prompts consistent
+- Stripe integration aligned
+
+---
+
+# ISSUE_031A — Backend (Permissions + Pricing Engine)
+
+Status: [x]
+
+category: backend / authorization
+
+files:
+- codes/services/permissions.py
+- codes/services/pricing.py
+- codes/data/db.py
+
+---
+
+## Required Fix
+
+Create centralized pricing config:
+
+```python
+PLANS = {
+    "free": {
+        "analysis_limit": 3,
+        "features": ["ANALYSIS", "CUSTOM_WEIGHTS"]
+    },
+    "premium": {
+        "analysis_limit": None,
+        "features": ["ANALYSIS", "CUSTOM_WEIGHTS", "BACKTEST", "PORTFOLIO_ANALYTICS"]
+    }
+}
+```
+
+---
+
+## Logic
+
+- FREE → limited analysis, no backtest
+- PREMIUM → full access
+
+---
+
+## Acceptance Criteria
+
+- can_access_feature() uses PLANS
+- analysis limits enforced server-side
+- no scattered entitlement logic
+
+---
+
+# ISSUE_031B — UI (Upgrade System)
+
+Status: [x]
+
+category: frontend / conversion
+
+files:
+- codes/app_modules/components/upgrade_banner.py
+- codes/app_modules/components/feature_lock_modal.py
+- codes/app_modules/tabs/analyze.py
+- codes/app_modules/tabs/factor_lab.py
+- codes/app_modules/tabs/portfolio.py
+
+---
+
+## Required Fix
+
+Create reusable UI:
+
+### UpgradeBanner
+- shows usage (2/3 analyses)
+- triggers upgrade
+
+### FeatureLockedModal
+Used when:
+- backtest clicked
+- portfolio locked
+
+---
+
+## Modal Copy
+
+Title:
+Does your strategy actually work?
+
+Body:
+Test your strategy using historical data
+
+CTA:
+Unlock Premium
+
+---
+
+## Acceptance Criteria
+
+- Same modal used everywhere
+- Triggered on backtest click
+- Banner shows usage state
+
+---
+
+# ISSUE_031C — Payments + Stripe Integration
+
+Status: [x]
+
+category: payments
+
+files:
+- codes/billing.py
+- codes/payments/stripe_client.py
+- codes/payments/webhooks.py
+
+---
+
+## Required Fix
+
+Align Stripe with 2-tier system:
+
+- free → no subscription
+- premium → active subscription
+
+---
+
+## Webhook Logic
+
+- subscription_created → set premium
+- subscription_cancelled → revert to free
+
+---
+
+## Acceptance Criteria
+
+- Stripe updates user plan correctly
+- Permissions reflect plan instantly
+- No mismatch between billing + access
 
 # AI EXECUTION PROTOCOL
 
