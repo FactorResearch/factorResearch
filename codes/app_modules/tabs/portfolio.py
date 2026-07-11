@@ -16,7 +16,8 @@ from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.services import permissions
 from codes.services import product_analytics
-from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
+from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
+from codes.app_modules.tabs.pricing import open_upgrade_funnel
 
 PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
@@ -703,11 +704,9 @@ def run_simulation(n, active, compare):
             "upgrade_viewed",
             {"feature": "portfolio_analytics", "source": "portfolio_sim_lock", "plan": "premium"},
         )
-        return build_upgrade_prompt(
-            title="Portfolio simulation limit reached",
-            body=access.message,
-            source="portfolio_sim_lock",
+        return FeatureLockedModal(
             feature="portfolio_analytics",
+            source="portfolio_sim_lock",
         ), open_upgrade_funnel(
             feature="portfolio_analytics",
             feature_label="Portfolio analytics",

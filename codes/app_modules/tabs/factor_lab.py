@@ -12,7 +12,8 @@ from codes.app_modules.session import get_user_id
 from codes.engine import scorer
 from codes.services import permissions
 from codes.services import product_analytics
-from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
+from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
+from codes.app_modules.tabs.pricing import open_upgrade_funnel
 
 # ── Factor Lab callbacks ─────────────────────────────────────────────────────
 
@@ -84,14 +85,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
                 "upgrade_viewed",
                 {"feature": "backtest", "source": "factor_lab_lock", "plan": "premium"},
             )
-            return [
-                build_upgrade_prompt(
-                    title="Backtesting requires Premium",
-                    body=access.message,
-                    source="factor_lab_lock",
-                    feature="backtest",
-                )
-            ], "🔒 Premium required", open_upgrade_funnel(
+            return [FeatureLockedModal(feature="backtest", source="factor_lab_lock")], "🔒 Premium required", open_upgrade_funnel(
                 feature="backtest",
                 feature_label="Historical backtesting",
                 reason=access.message,

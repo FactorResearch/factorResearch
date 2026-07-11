@@ -14,7 +14,9 @@ from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes.services import permissions
 from codes.services import product_analytics
-from codes.app_modules.tabs.pricing import build_upgrade_prompt, open_upgrade_funnel
+from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
+from codes.app_modules.components.upgrade_banner import UpgradeBanner
+from codes.app_modules.tabs.pricing import open_upgrade_funnel
 
 
 _ANALYZE_PATH_RE = re.compile(
@@ -137,12 +139,7 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
             )
             return (
                 "/pricing",
-                [build_upgrade_prompt(
-                    title="Analysis limit reached",
-                    body=access.message,
-                    source="analyze_lock",
-                    feature="analysis",
-                )],
+                [FeatureLockedModal(feature="analysis", source="analyze_lock")],
                 None,
                 "🔒 Upgrade required to continue.",
                 False,
@@ -227,6 +224,7 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
     if access and access.remaining is not None:
         consumed = permissions.consume_analysis_if_allowed(user_id, ticker=symbol)
         usage_msg = f" · {consumed.remaining} free analyses remaining"
+        content = [UpgradeBanner(remaining=consumed.remaining), *content]
     return (
         dash.no_update if triggered in ("url", None) else f"/analyze/{symbol}/{_time.strftime('%Y%m%d')}",
         content,

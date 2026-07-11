@@ -7,6 +7,18 @@ from codes import billing
 from codes.app_modules.tabs import analyze, factor_lab, navigation
 from codes.services.permissions import Feature, PermissionResult
 from codes.services import permissions
+from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
+from codes.app_modules.components.upgrade_banner import UpgradeBanner
+
+
+def test_reusable_upgrade_components_use_required_copy():
+    modal = FeatureLockedModal(feature="backtest", source="test")
+    banner = UpgradeBanner(remaining=1)
+
+    assert "Does your strategy actually work?" in str(modal)
+    assert "Test your strategy using historical data" in str(modal)
+    assert "Unlock Premium" in str(modal)
+    assert "2/3 free analyses used" in str(banner)
 
 
 def test_free_portfolio_analytics_is_locked(monkeypatch):
