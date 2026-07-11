@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS user_weights (
 CREATE TABLE IF NOT EXISTS subscriptions (
     id                     BIGSERIAL PRIMARY KEY,
     user_id                TEXT NOT NULL UNIQUE,
-    plan                   TEXT NOT NULL DEFAULT 'trial',
+    plan                   TEXT NOT NULL DEFAULT 'free',
     status                 TEXT NOT NULL DEFAULT 'trialing',
     start_date             TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     end_date               TIMESTAMPTZ,
@@ -602,7 +602,7 @@ def get_subscription_by_stripe_id(stripe_subscription_id: str) -> dict | None:
 def upsert_subscription(
     user_id: str,
     *,
-    plan: str = "trial",
+    plan: str = "free",
     status: str = "trialing",
     start_date=None,
     end_date=None,
@@ -660,6 +660,44 @@ def increment_usage(user_id: str, feature_name: str, usage_key: str | None = Non
         period_end = period_start.replace(month=period_start.month + 1)
     with _users_conn() as con:
         con.row_factory = dict_row
+        row = con.execute(_INCREMENT_USAGE, {
+            "user_id": user_id,
+            "period_start": period_start,
+            "period_end": period_end,
+            "feature_name": feature_name,
+            "usage_key": usage_key or feature_name,
+        }).fetchone()
+    result = dict(row)
+    result["feature_usage"] = result.get("feature_usage") or {}
+    return result
+
+
+def consume_limited_usage(
+    user_id: str,
+    feature_name: str,
+    limit: int,
+    usage_key: str | None = None,
+) -> dict | None:
+    """Atomically record usage only while the lifetime feature limit remains."""
+    _ensure_user_init()
+    now = datetime.datetime.utcnow()
+    period_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    if period_start.month == 12:
+        period_end = period_start.replace(year=period_start.year + 1, month=1)
+    else:
+        period_end = period_start.replace(month=period_start.month + 1)
+    with _users_conn() as con:
+        con.row_factory = dict_row
+        con.execute(
+            "SELECT pg_advisory_xact_lock(hashtext(%(usage_lock)s))",
+            {"usage_lock": f"{user_id}:{feature_name}"},
+        )
+        used = con.execute(_SELECT_TOTAL_USAGE, {
+            "user_id": user_id,
+            "feature_name": feature_name,
+        }).fetchone()[0]
+        if int(used or 0) >= limit:
+            return None
         row = con.execute(_INCREMENT_USAGE, {
             "user_id": user_id,
             "period_start": period_start,

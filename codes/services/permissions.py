@@ -8,12 +8,11 @@ from typing import Any
 
 from codes import auth
 from codes.data import db
+from codes.services.pricing import FREE, PLANS, PREMIUM, normalize_plan
 
 
-TRIAL_ANALYSIS_LIMIT = 3
-TRIAL_PORTFOLIO_SIM_LIMIT = 1
 ACTIVE_SUBSCRIPTION_STATUSES = {"active", "trialing", "past_due"}
-PAID_PLANS = {"premium", "professional"}
+TRIAL_ANALYSIS_LIMIT = PLANS[FREE]["analysis_limit"]
 
 
 class Feature(str, Enum):
@@ -30,7 +29,7 @@ class PermissionResult:
     allowed: bool
     feature: Feature
     reason: str = ""
-    plan: str = "trial"
+    plan: str = FREE
     status: str = "trialing"
     remaining: int | None = None
     upgrade_required: bool = False
@@ -59,15 +58,15 @@ def get_or_create_subscription(user_id: str) -> dict[str, Any]:
     sub = db.get_subscription(user_id)
     if sub:
         return sub
-    return db.upsert_subscription(user_id, plan="trial", status="trialing")
+    return db.upsert_subscription(user_id, plan=FREE, status="trialing")
 
 
 def is_paid_subscription(subscription: dict[str, Any] | None) -> bool:
     if not subscription:
         return False
-    plan = str(subscription.get("plan") or "trial").lower()
+    plan = normalize_plan(subscription.get("plan"))
     status = str(subscription.get("status") or "").lower()
-    return plan in PAID_PLANS and status in ACTIVE_SUBSCRIPTION_STATUSES
+    return plan == PREMIUM and status in ACTIVE_SUBSCRIPTION_STATUSES
 
 
 def get_trial_analysis_usage(user_id: str) -> int:
@@ -85,13 +84,13 @@ def get_feature_usage_total(user_id: str, feature: Feature | str) -> int:
 def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult:
     feature = normalize_feature(feature)
     subscription = get_or_create_subscription(user_id)
-    plan = str(subscription.get("plan") or "trial").lower()
+    plan = normalize_plan(subscription.get("plan"))
     status = str(subscription.get("status") or "trialing").lower()
 
-    if is_paid_subscription(subscription):
+    if is_paid_subscription(subscription) and feature.value in PLANS[PREMIUM]["features"]:
         return PermissionResult(True, feature, plan=plan, status=status)
 
-    if feature == Feature.CUSTOM_WEIGHTS:
+    if feature.value in PLANS[FREE]["features"] and feature != Feature.ANALYSIS:
         return PermissionResult(True, feature, plan=plan, status=status)
 
     if feature == Feature.ANALYSIS:
@@ -119,32 +118,9 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
             upgrade_required=True,
         )
 
-    if feature == Feature.PORTFOLIO_ANALYTICS:
-        used = get_feature_usage_total(user_id, feature)
-        remaining = max(TRIAL_PORTFOLIO_SIM_LIMIT - used, 0)
-        if remaining > 0:
-            return PermissionResult(
-                True,
-                feature,
-                plan=plan,
-                status=status,
-                remaining=remaining,
-            )
-        return PermissionResult(
-            False,
-            feature,
-            reason=(
-                "You have used your free portfolio simulation. Unlock Factor Research Premium "
-                "for unlimited portfolio analytics, simulations, and strategy backtesting."
-            ),
-            plan=plan,
-            status=status,
-            remaining=0,
-            upgrade_required=True,
-        )
-
     messages = {
         Feature.BACKTEST: "Historical backtesting requires Premium.",
+        Feature.PORTFOLIO_ANALYTICS: "Portfolio analytics requires Premium.",
         Feature.SCREENING: "Unlimited screening requires Premium.",
         Feature.EXPORT: "Research data export requires Premium.",
     }
@@ -166,7 +142,14 @@ def record_feature_usage(user_id: str, feature: Feature | str, usage_key: str | 
 def consume_analysis_if_allowed(user_id: str, ticker: str | None = None) -> PermissionResult:
     result = can_access_feature(user_id, Feature.ANALYSIS)
     if result.allowed and result.remaining is not None:
-        record_feature_usage(user_id, Feature.ANALYSIS, usage_key=ticker or Feature.ANALYSIS.value)
+        usage = db.consume_limited_usage(
+            user_id,
+            Feature.ANALYSIS.value,
+            TRIAL_ANALYSIS_LIMIT,
+            usage_key=ticker or Feature.ANALYSIS.value,
+        )
+        if usage is None:
+            return can_access_feature(user_id, Feature.ANALYSIS)
         used = get_trial_analysis_usage(user_id)
         remaining = max(TRIAL_ANALYSIS_LIMIT - used, 0)
         return PermissionResult(

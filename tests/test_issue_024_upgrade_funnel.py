@@ -9,22 +9,16 @@ from codes.services.permissions import Feature, PermissionResult
 from codes.services import permissions
 
 
-def test_trial_portfolio_analytics_allows_one_then_locks(monkeypatch):
+def test_free_portfolio_analytics_is_locked(monkeypatch):
     monkeypatch.setattr(permissions.db, "get_subscription", lambda *_: None)
     monkeypatch.setattr(
         permissions.db,
         "upsert_subscription",
         lambda *args, **kwargs: {"plan": "trial", "status": "trialing"},
     )
-    monkeypatch.setattr(permissions.db, "get_total_usage", lambda *_: 0)
-    allow = permissions.can_access_feature("u1", Feature.PORTFOLIO_ANALYTICS)
-    assert allow.allowed is True
-    assert allow.remaining == 1
-
-    monkeypatch.setattr(permissions.db, "get_total_usage", lambda *_: 1)
     deny = permissions.can_access_feature("u1", Feature.PORTFOLIO_ANALYTICS)
     assert deny.allowed is False
-    assert "free portfolio simulation" in deny.message
+    assert "requires Premium" in deny.message
 
 
 def test_billing_entry_url_routes_through_checkout():

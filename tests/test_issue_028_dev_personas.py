@@ -78,4 +78,4 @@ def test_free_persona_behaves_like_trial_user(monkeypatch):
     assert analysis.allowed is True
     assert analysis.remaining == 3
     assert backtest.allowed is False
-    assert backtest.plan == "trial"
+    assert backtest.plan == "free"
