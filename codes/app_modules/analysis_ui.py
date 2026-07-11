@@ -991,20 +991,28 @@ def _build_analysis_content(data: dict) -> list:
     "beta": {"direction": "low", "good_threshold": 1.0, "bad_threshold": 1.5},
     "f_score": {"direction": "high", "good_threshold": 7, "bad_threshold": 4},
     }
+    composite_bucket = (
+        data.get("enhanced", {}).get("verdict")
+        or data.get("composite", {}).get("verdict")
+        or "N/A"
+    ).replace("_", " ")
     header = html.Div(
-        className="company-header",
+        className="company-header company-identity-header",
         children=[
             html.Div(
                 className="company-header-left",
                 children=[
                     html.H2(dcc.Link(
-                        name,
+                        f"{symbol} — {name}",
                         href=f"/analyze/{symbol}/",
                         refresh=True,
                         className="company-title-link",
                         title=f"Open {name} company research",
                     )),
-                    html.Div(f"{symbol} · {sector}", className="company-meta"),
+                    html.Div(className="company-meta", children=[
+                        html.Span(f"Sector · {sector}", className="company-meta-item"),
+                        html.Span(f"Composite · {composite_bucket}", className="company-meta-item"),
+                    ]),
                     html.Div(
                         className="stats-row",
                         children=[
