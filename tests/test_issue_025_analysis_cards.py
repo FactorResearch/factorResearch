@@ -95,3 +95,95 @@ def test_issue_025_metric_rows_use_visible_divider_color():
     })
     first_row = _body(card).children[0]
     assert first_row.style["borderBottom"] == "1px solid rgba(67, 52, 90, 0.65)"
+
+
+def test_options_card_switches_to_true_iv_and_chain_quote_labels():
+    card = analysis_ui._options_signal_card({
+        "options_signal": {
+            "bias": "CALL",
+            "signal": "FAVORABLE_CALL",
+            "edge_score": 68,
+            "risk_score": 42,
+            "iv_level": "NORMAL",
+            "implied_volatility": 0.284,
+            "iv_vs_realized_ratio": 1.08,
+            "iv_source": "FINNHUB_OPTION_CHAIN",
+            "chain_provider": "FINNHUB",
+            "chain_status": "AVAILABLE",
+            "recommended_contract_symbol": "AAPL260821C00200000",
+            "recommended_expiration_date": "2026-08-21",
+            "recommended_expiry_days": 41,
+            "selected_contract": {
+                "bid": 4.9,
+                "ask": 5.1,
+                "open_interest": 2450,
+                "volume": 321,
+            },
+        }
+    })
+    rendered = str(card)
+    assert "Implied Volatility" in rendered
+    assert "Bid / Ask" in rendered
+    assert "AAPL260821C00200000" in rendered
+    assert "true contract IV" in rendered
+    assert "Vol Proxy Level" not in rendered
+
+
+def test_options_card_displays_ranked_strategy_payoff_and_greeks():
+    top_strategy = {
+        "strategy_type": "BULL_CALL_SPREAD",
+        "strategy_name": "Bull Call Spread",
+        "ranking_score": 73,
+        "net_debit": 420,
+        "max_loss": 420,
+        "max_profit": 580,
+        "max_profit_unbounded": False,
+        "breakevens": [104.2],
+        "expected_value_risk_neutral": -18.5,
+        "probability_profit_risk_neutral": 0.43,
+        "greeks": {
+            "delta": 0.31,
+            "gamma": 0.012,
+            "theta_per_day": -0.021,
+            "vega_per_vol_point": 0.08,
+        },
+    }
+    card = analysis_ui._options_signal_card({
+        "options_signal": {
+            "bias": "CALL",
+            "signal": "FAVORABLE_CALL",
+            "edge_score": 66,
+            "risk_score": 40,
+            "top_strategy": top_strategy,
+            "strategy_candidates": [
+                top_strategy,
+                {"strategy_name": "Long Call", "ranking_score": 65},
+                {"strategy_name": "Long Straddle", "ranking_score": 48},
+            ],
+            "pricing_assumptions": {"risk_free_rate": 0.04, "dividend_yield": 0.01},
+            "calibration_status": "CALIBRATED",
+            "event_risk": {
+                "coverage": "AVAILABLE",
+                "risk_score": 95,
+                "risk_level": "HIGH",
+            },
+            "event_entry_suppressed": True,
+            "event_suppression_reasons": ["EARNINGS within 2d"],
+        }
+    })
+    rendered = str(card)
+    assert "Bull Call Spread" in rendered
+    assert "Strategy Rank" in rendered
+    assert "Max Loss" in rendered
+    assert "Risk-Neutral EV" in rendered
+    assert "Net Delta" in rendered
+    assert "BSM (European approximation)" in rendered
+    assert "4.00% / 1.00%" in rendered
+    assert "Calibration" in rendered
+    assert "CALIBRATED" in rendered
+    assert "Event Coverage" in rendered
+    assert "Suppressed" in rendered
+    assert "EARNINGS within 2d" in rendered
+    assert "Long Call (65)" in rendered
+    assert "walk-forward calibration" in rendered
+    assert "New option entries are suppressed" in rendered

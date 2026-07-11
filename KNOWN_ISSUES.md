@@ -2838,12 +2838,11 @@ expansion for ISSUE_026 has been moved to `Publish.md` under
   algorithim should never produce these word: BUY,SELL,HOLD. for legal reason we need to play around with the word, ENHANCED_VERDICTS from scorer.py is a good anchor, all 
   buy and sell signal must get their information from there, this includes, option signal and any other signal in future
 ---
-# ISSUE_028:
+# ISSUE_028 developer qa:
   **Status:** [x]
   title: developer qa
 
   create a solution that in development mode, dev can easily pretend to be different user type, paid free and pro. make it so it is exapndable in future
-
 # ISSUE_029:
 **Status:** []
 title: alt data not complete
@@ -2858,7 +2857,50 @@ implementation status:
 - [ ] Phase 3 — add dedicated providers and scheduled storage for hiring velocity, web traffic, and supply-chain relationships; FMP/Finnhub do not supply those complete datasets.
 - [ ] Phase 4 — add freshness/source timestamps and a background refresh job before treating alternative data as production-ready.
 
+---
 # ISSUE_030:
+**Status:** [x]
+title: options signal engine accuracy and expansion
+
+context: the options signal engine now supports normalized live option-chain snapshots, contract/spread payoff analytics, and ranked strategies with honest fallback behavior, but it still needs event awareness and calibrated outcome testing before it can be considered production-grade.
+files: codes/data/options_chain.py, codes/data/api_fetcher.py, codes/app_modules/analysis.py, codes/models/options_pricing.py, codes/models/options_strategy.py, codes/models/options_signal_engine.py, codes/models/regime.py, codes/app_modules/analysis_ui.py, tests/test_options_pricing.py, tests/test_options_chain_provider.py, tests/test_options_signal_engine.py, tests/test_regime.py
+
+implementation status:
+- [x] Phase 1 — fix finite-value handling in the regime and options paths so `NaN` volatility does not leak into signals.
+- [x] Phase 1 — prefer `AdjClose` when available for momentum and volatility calculations.
+- [x] Phase 1 — expose honest proxy labels in the UI (`Vol Proxy Level/Trend`) instead of implying live implied volatility.
+- [x] Phase 1 — add `data_quality_score` and explicit proxy/source fields to the options output.
+- [x] Phase 1 — use the stock risk profile (`risk_result`) as part of the option risk score.
+- [x] Phase 2 — add provider-neutral option contract/snapshot models and an injectable `OptionsChainProvider` protocol.
+- [x] Phase 2 — add a real Finnhub option-chain adapter covering contract symbol/type, expiration, strike, bid, ask, mid, spread, last price, volume, open interest, IV, contract size/multiplier, currency, moneyness, and quote timestamps.
+- [x] Phase 2 — add rate-limit integration, a configurable short-lived chain cache, cross-process refresh locking, explicit provider/configuration statuses, and stale-snapshot fallback behavior.
+- [x] Phase 2 — fetch option chains in the analysis market-data pool, pass normalized snapshots into the read-only options model, and independently refresh the options overlay when a long-lived fundamental analysis cache is reused.
+- [x] Phase 2 — select a listed contract by directional type, target horizon, strike proximity, and liquidity tie-breaks instead of returning only a theoretical strike/expiry.
+- [x] Phase 2 — use actual bid/ask spread, open interest, and volume in option liquidity risk.
+- [x] Phase 2 — use true selected-contract IV for IV level and expected-move calculations when available, while preserving explicitly labeled realized-volatility fallback fields.
+- [x] Phase 2 — switch the analysis UI between true-IV/chain quote fields and realized-volatility proxy labels based on data source.
+- [x] Phase 2 — add provider, cache, pipeline handoff, contract selection, stale fallback, source-label, and UI tests.
+- [x] Phase 3 — calculate Black-Scholes-Merton theoretical value, delta, gamma, theta/day, vega/volatility-point, and rho/rate-point using explicit risk-free-rate and dividend-yield assumptions.
+- [x] Phase 3 — preserve provider Greeks/theoretical fields for comparison while labeling calculated Greeks as a European-style model approximation.
+- [x] Phase 3 — price entries conservatively at long-leg ask and short-leg bid, with explicit mid/last fallbacks.
+- [x] Phase 3 — calculate breakeven, maximum loss, maximum profit, probability of profit, and risk-neutral expected value for long calls, long puts, bull-call spreads, bear-put spreads, and long straddles/strangles.
+- [x] Phase 3 — reject malformed or economically invalid debit spreads, including crossed expirations/types and debit at or above spread width.
+- [x] Phase 3 — construct and rank multiple directional and volatility candidates using direction alignment, risk-neutral value, probability, liquidity, IV fit, and risk/reward components.
+- [x] Phase 3 — expose the ranking as `PHASE_3_HEURISTIC_UNCALIBRATED` so it cannot be mistaken for outcome-calibrated evidence before Phase 4.
+- [x] Phase 3 — pass the risk model's rate and capital-allocation dividend yield through fresh and cached analysis paths.
+- [x] Phase 3 — display top strategy, alternatives, debit, breakeven, max loss/profit, risk-neutral EV, probability, Greeks, and pricing assumptions in the analysis UI.
+- [x] Phase 3 — add formula, put-call parity, payoff, provider-Greek, pipeline-input, ranking, legal-label, and UI tests.
+- [x] Phase 4 — add injectable event-calendar awareness for earnings, ex-dividend dates, and major macro events, with explicit coverage labels and conservative entry suppression around near-term high-risk events.
+- [x] Phase 4 — add pure walk-forward calibration helpers so ranking labels can use observed outcome thresholds when a calibrated profile is supplied, while retaining explicit uncalibrated status when production history is unavailable.
+- [x] Phase 4 — expose event risk, suppression reasons, calibration status, and calibrated ranking methods through the options signal output and analysis UI.
+- [x] Phase 4 — add event-suppression, calibration-threshold, calibrated-ranking, output-schema, and UI tests.
+
+deployment prerequisite: the live path requires a non-placeholder `FINNHUB_API_KEY` whose plan includes the stock option-chain endpoint. Without that entitlement, the implementation returns `CONFIGURATION_REQUIRED`/`PROVIDER_ERROR` and safely retains the realized-volatility fallback.
+
+remaining deployment step:
+- [x] important note - this feature is expensive for us the data providers are expensive, i want all the changes that have been made be pushed into a new branch called option chain, not the main branch.it should be that in future if we do want to bring this online we can easily do it. so code does not get thrown away.
+
+# ISSUE_031:
 **Status:** []
 title: TOC and Privacy
 
@@ -2866,7 +2908,7 @@ context: both page are currenlty empty and open in new page
 
 solution: fill both page with legal content, and make them open as popup with same look and feel as rest of the application, popups up should not take the whole page but allow user to make them whole page.
 
-# ISSUE_031 — Pricing + Conversion System (Master)
+# ISSUE_032 — Pricing + Conversion System (Master)
 
 Status: [x]
 
@@ -2921,7 +2963,7 @@ PREMIUM → monetize core value (backtesting)
 
 ---
 
-# ISSUE_031A — Backend (Permissions + Pricing Engine)
+# ISSUE_032A — Backend (Permissions + Pricing Engine)
 
 Status: [x]
 
@@ -2968,7 +3010,7 @@ PLANS = {
 
 ---
 
-# ISSUE_031B — UI (Upgrade System)
+# ISSUE_032B — UI (Upgrade System)
 
 Status: [x]
 
@@ -3019,7 +3061,7 @@ Unlock Premium
 
 ---
 
-# ISSUE_031C — Payments + Stripe Integration
+# ISSUE_032C — Payments + Stripe Integration
 
 Status: [x]
 
@@ -3053,6 +3095,22 @@ Align Stripe with 2-tier system:
 - Stripe updates user plan correctly
 - Permissions reflect plan instantly
 - No mismatch between billing + access
+
+
+
+
+
+
+# ISSUE_33 - BUG
+status: []
+context:
+Invalid argument `value` passed into Progress. Expected `string`. Was supplied type `number`. Value provided: 0
+11:05:58 AM
+Invalid argument `value` passed into Progress.
+Expected `string`.
+Was supplied type `number`.
+Value provided: 0
+(This error originated from the built-in JavaScript code that runs Dash apps. Click to see the full stack trace or open your browser's console.)
 
 # AI EXECUTION PROTOCOL
 

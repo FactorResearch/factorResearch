@@ -109,11 +109,23 @@ def _sma(prices: np.ndarray, window: int) -> float | None:
 
 
 def _realized_vol(log_returns: np.ndarray, window: int) -> float | None:
-    """Annualised realised vol from last `window` log-return bars (monthly → ×√12)."""
+    """Annualised realised vol from recent log-return bars (monthly → ×√12).
+
+    A 1-bar "20D" proxy cannot use sample standard deviation with ddof=1:
+    that produces NaN. For that specific proxy, use absolute monthly return
+    scaled to annualized volatility. Multi-bar windows continue to use sample
+    standard deviation.
+    """
     if len(log_returns) < window:
         return None
     subset = log_returns[-window:]
-    return float(np.std(subset, ddof=1)) * math.sqrt(12) * 100  # annualised %
+    if window <= 1:
+        v = abs(float(subset[-1])) * math.sqrt(12) * 100
+    elif len(subset) >= 2:
+        v = float(np.std(subset, ddof=1)) * math.sqrt(12) * 100
+    else:
+        return None
+    return v if math.isfinite(v) else None
 
 
 def _vol_percentile(log_returns: np.ndarray, current_vol: float,
@@ -122,6 +134,10 @@ def _vol_percentile(log_returns: np.ndarray, current_vol: float,
     Rank current_vol within a rolling window of historical vols.
     Each historical vol is computed over _BARS_20D (1 bar) rolling windows.
     """
+    current_vol = _safe(current_vol)
+    if current_vol is None:
+        return 50.0
+
     n = len(log_returns)
     if n < 2:
         return 50.0
@@ -278,7 +294,7 @@ def score(price_hist: pd.DataFrame, comomentum_result: dict | None = None) -> di
             risk_alert = True
 
     # 2. Vol percentile increases ≥30pts over 10 trading days (2 bars proxy)
-    if not risk_alert and len(log_rets) >= 2 + _BARS_60D:
+    if not risk_alert and len(log_rets) >= 2 + _BARS_60D and primary_vol is not None and primary_vol >= 15.0:
         old_vol_raw = _realized_vol(log_rets[:-2], _BARS_60D)
         if old_vol_raw is not None:
             old_vol_pct = _vol_percentile(log_rets[:-2], old_vol_raw)

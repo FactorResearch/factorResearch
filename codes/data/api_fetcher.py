@@ -6,6 +6,7 @@ Source priority
   Real-time quote : Finnhub (live) → Tiingo (EOD close fallback) → Alpha Vantage
   Price history   : Tiingo (primary) → Alpha Vantage (fallback)
   Split history   : Finnhub (explicit) → Tiingo (derived) → Alpha Vantage (derived)
+  Option chains   : Finnhub (normalized, entitlement-dependent, 15-minute cache)
 
 FMP has been removed — both /api/v3/ (legacy, dead Aug 2025) and /stable/
 (paid only, 402 on free accounts) are no longer usable on free tier.
@@ -74,6 +75,12 @@ import threading
 from pathlib import Path
 
 from .cache import read, read_entry, write
+from .options_chain import (
+    FinnhubOptionsChainProvider,
+    OptionsChainProvider,
+    OptionsChainProviderError,
+    unavailable_chain,
+)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -316,6 +323,11 @@ FINNHUB_CONFIGURED = _is_usable_api_key(FINNHUB_API_KEY)
 _fh_client: finnhub.Client | None = (
     finnhub.Client(api_key=FINNHUB_API_KEY) if FINNHUB_CONFIGURED else None
 )
+
+try:
+    OPTIONS_CHAIN_CACHE_TTL = max(60, int(os.getenv("OPTIONS_CHAIN_CACHE_TTL", "900")))
+except ValueError:
+    OPTIONS_CHAIN_CACHE_TTL = 900
 
 
 def is_finnhub_configured() -> bool:
@@ -839,6 +851,133 @@ def get_splits(symbol: str) -> list[dict]:
 
     write("splits", symbol, splits)
     return splits
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Option chains — provider-neutral normalized snapshots
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _options_chain_cache_key(provider_name: str, symbol: str) -> str:
+    safe_provider = "".join(
+        char for char in provider_name.strip().lower() if char.isalnum() or char in "_-"
+    ) or "unknown"
+    return f"{safe_provider}-{symbol.lower()}"
+
+
+def _options_chain_cache_is_fresh(entry: dict | None) -> bool:
+    if not isinstance(entry, dict) or not isinstance(entry.get("ts"), (int, float)):
+        return False
+    return time.time() - entry["ts"] < OPTIONS_CHAIN_CACHE_TTL
+
+
+def _stale_options_chain(entry: dict, *, error: str | None = None) -> dict | None:
+    payload = entry.get("data")
+    if not isinstance(payload, dict) or not isinstance(payload.get("contracts"), list):
+        return None
+    stale = dict(payload)
+    stale["status"] = "STALE"
+    stale["error"] = error
+    stale["contract_count"] = len(stale["contracts"])
+    return stale
+
+
+def _get_options_chain_unlocked(
+    symbol: str,
+    *,
+    provider: OptionsChainProvider | None = None,
+    force_refresh: bool = False,
+) -> dict:
+    """Return a normalized, short-lived option-chain snapshot.
+
+    Finnhub is the default live adapter.  A provider can be injected for tests
+    or future vendors as long as it implements ``OptionsChainProvider``.
+    Provider failures never masquerade as live data: a prior snapshot is marked
+    ``STALE`` and otherwise a stable empty status is returned.
+    """
+    symbol = symbol.upper().strip()
+    if not symbol:
+        raise ValueError("symbol is required")
+
+    provider_name = str(getattr(provider, "name", "FINNHUB")).upper().strip() or "UNKNOWN"
+    cache_key = _options_chain_cache_key(provider_name, symbol)
+    cache_entry = read_entry("options_chain", cache_key)
+    if not force_refresh and _options_chain_cache_is_fresh(cache_entry):
+        cached = cache_entry.get("data")
+        if isinstance(cached, dict):
+            return cached
+
+    active_provider = provider
+    if active_provider is None:
+        if _fh_client is None:
+            stale = _stale_options_chain(
+                cache_entry,
+                error="Live option-chain provider is not configured.",
+            ) if cache_entry else None
+            if stale is not None:
+                return stale
+            return unavailable_chain(
+                symbol,
+                provider="FINNHUB",
+                status="CONFIGURATION_REQUIRED",
+                error="FINNHUB_API_KEY is not configured.",
+            )
+        active_provider = FinnhubOptionsChainProvider(
+            _fh_client,
+            before_request=_fh_limiter.check,
+            after_request=_fh_limiter.record,
+        )
+
+    try:
+        snapshot = active_provider.fetch_chain(symbol)
+        payload = snapshot.to_dict() if hasattr(snapshot, "to_dict") else snapshot
+        if not isinstance(payload, dict) or not isinstance(payload.get("contracts"), list):
+            raise OptionsChainProviderError("Provider returned an invalid normalized chain")
+        payload["contract_count"] = len(payload["contracts"])
+        write("options_chain", cache_key, payload)
+        return payload
+    except RateLimitError:
+        stale = _stale_options_chain(
+            cache_entry,
+            error="Provider rate limit reached; using the last chain snapshot.",
+        ) if cache_entry else None
+        if stale is not None:
+            return stale
+        raise
+    except Exception as exc:
+        print(f"  [{provider_name}] option_chain error for {symbol}: {type(exc).__name__}: {exc}")
+        stale = _stale_options_chain(
+            cache_entry,
+            error="Live refresh failed; using the last chain snapshot.",
+        ) if cache_entry else None
+        if stale is not None:
+            return stale
+        return unavailable_chain(
+            symbol,
+            provider=provider_name,
+            status="PROVIDER_ERROR",
+            error=f"Option-chain refresh failed ({type(exc).__name__}).",
+        )
+
+
+def get_options_chain(
+    symbol: str,
+    *,
+    provider: OptionsChainProvider | None = None,
+    force_refresh: bool = False,
+) -> dict:
+    """Thread/process-safe wrapper around the normalized chain refresh."""
+    normalized_symbol = symbol.upper().strip()
+    if not normalized_symbol:
+        raise ValueError("symbol is required")
+    provider_name = str(getattr(provider, "name", "FINNHUB")).upper().strip() or "UNKNOWN"
+    cache_key = _options_chain_cache_key(provider_name, normalized_symbol)
+    lock_path = Path(".cache") / f"options-chain-{cache_key}.lock"
+    with _FileLock(lock_path):
+        return _get_options_chain_unlocked(
+            normalized_symbol,
+            provider=provider,
+            force_refresh=force_refresh,
+        )
 
 
 # ══════════════════════════════════════════════════════════════════════════════

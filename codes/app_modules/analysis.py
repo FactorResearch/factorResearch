@@ -5,6 +5,8 @@ import threading
 import time as _time
 from concurrent.futures import ThreadPoolExecutor
 
+import pandas as pd
+
 from codes import security
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
@@ -127,6 +129,51 @@ def _attach_market_fear(result: dict) -> dict:
     return result
 
 
+def _option_dividend_yield(capital_allocation: dict | None) -> float | None:
+    """Convert the capital-allocation percentage yield to a pricing decimal."""
+    try:
+        value = float((capital_allocation or {}).get("dividend_yield_implied"))
+    except (TypeError, ValueError):
+        return None
+    return value / 100.0 if 0 <= value <= 25 else None
+
+
+def _refresh_cached_options_signal(result: dict) -> dict:
+    """Refresh the short-lived options overlay on a long-lived analysis cache.
+
+    Fundamental analysis cache entries do not expire on the option-chain TTL.
+    Recompute only this market-data overlay so cached page loads can use the
+    current normalized chain without rerunning every fundamental model.
+    """
+    if not isinstance(result, dict) or result.get("error"):
+        return result
+    symbol = str(result.get("symbol") or "").upper().strip()
+    if not symbol or not result.get("price"):
+        return result
+
+    history_payload = result.get("price_history")
+    try:
+        history = pd.DataFrame(history_payload) if history_payload else None
+    except (TypeError, ValueError):
+        history = None
+
+    try:
+        chain = api_fetcher.get_options_chain(symbol)
+        result["options_signal"] = options_signal_model.get_options_signal(
+            symbol,
+            price_hist=history,
+            regime_result=result.get("regime"),
+            risk_result=result.get("risk"),
+            current_price=result.get("price"),
+            option_chain=chain,
+            risk_free_rate=(result.get("risk") or {}).get("risk_free_rate"),
+            dividend_yield=_option_dividend_yield(result.get("capital_allocation")),
+        )
+    except Exception as e:
+        print(f"Cached option signal refresh failed for {symbol}: {type(e).__name__}: {e}")
+    return result
+
+
 def is_production() -> bool:
     
     return os.environ.get("FLASK_ENV", "").lower() == "production"
@@ -157,6 +204,7 @@ def analyze_stock(symbol: str) -> dict:
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
             cached_memory = _set_cache_metadata(_analysis_cache[symbol], True, "memory")
+            _refresh_cached_options_signal(cached_memory)
             _attach_market_fear(cached_memory)
             try:
                 save_standard_snapshot(cached_memory, analysis_type=AnalysisType.STANDARD)
@@ -168,6 +216,7 @@ def analyze_stock(symbol: str) -> dict:
 
     if cached:
         _set_cache_metadata(cached, True, "database")
+        _refresh_cached_options_signal(cached)
         _attach_market_fear(cached)
         try:
             save_standard_snapshot(cached, analysis_type=AnalysisType.STANDARD)
@@ -213,15 +262,16 @@ def analyze_stock(symbol: str) -> dict:
             print(f"Earnings revision calculation failed: {e}")
     hist = None
     spy_hist = None
+    option_chain_result = None
     
-    # 1B: Parallelize price history fetches with ThreadPoolExecutor
+    # 1B: Parallelize independent market-data fetches.
     if price:
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            # Fetch stock history + use lazy-loaded SPY history
+        with ThreadPoolExecutor(max_workers=3) as executor:
             hist_future = executor.submit(
                 api_fetcher.get_price_history, symbol, 10
             )
             spy_hist_future = executor.submit(_get_spy_history_lazy)
+            option_chain_future = executor.submit(api_fetcher.get_options_chain, symbol)
             
             try:
                 hist = hist_future.result(timeout=30)
@@ -235,6 +285,13 @@ def analyze_stock(symbol: str) -> dict:
                 spy_hist = spy_hist_future.result(timeout=30)
             except Exception as e:
                 print(f"SPY history fetch failed: {e}")
+
+            # Options are an optional analysis layer.  A chain rate limit or
+            # entitlement failure must not discard the stock analysis.
+            try:
+                option_chain_result = option_chain_future.result(timeout=30)
+            except Exception as e:
+                print(f"Option chain fetch failed for {symbol}: {type(e).__name__}: {e}")
     # 1G: Calculate Graham score WITH price (if available), eliminating redundant call
     g = graham.score(price, sec_facts) if price else graham.score(None, sec_facts)
     # Momentum score (needs price history)
@@ -370,12 +427,15 @@ def analyze_stock(symbol: str) -> dict:
     regime_overlay = scorer.apply_regime_overlay(
         enhanced.get("composite_score", 0), regime_result
     )
-    # Options Signal (P4) — depends on regime + risk + price history
+    # Options Signal (P4) — uses live normalized chain data when available.
     options_signal_result = None
     try:
         options_signal_result = options_signal_model.get_options_signal(
             symbol, price_hist=hist, regime_result=regime_result,
             risk_result=risk_result, current_price=price,
+            option_chain=option_chain_result,
+            risk_free_rate=risk_result.get("risk_free_rate"),
+            dividend_yield=_option_dividend_yield(capital_allocation_result),
         )
     except Exception as e:
         print(f"Options signal calculation failed: {e}")

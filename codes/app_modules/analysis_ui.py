@@ -53,7 +53,7 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
         for value, angle in zip(values, angles)
     )
     labels = "".join(
-        f'<text x="{center + 138 * math.cos(angle):.1f}" y="{center + 138 * math.sin(angle):.1f}" fill="#f5f9ff" stroke="#07182e" stroke-width="2.2" paint-order="stroke" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle">{label}<tspan x="{center + 138 * math.cos(angle):.1f}" dy="16" fill="{color}" font-size="14" font-weight="800">{value:.0f}</tspan></text>'
+        f'<text x="{center + 138 * math.cos(angle):.1f}" y="{center + 128 * math.sin(angle):.1f}" fill="#f5f9ff" stroke="#07182e" stroke-width="2.2" paint-order="stroke" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle">{label}<tspan x="{center + 138 * math.cos(angle):.1f}" dy="16" fill="{color}" font-size="14" font-weight="800">{value:.0f}</tspan></text>'
         for (label, _), value, angle in zip(factors, values, angles)
     )
     svg = (
@@ -104,6 +104,7 @@ def _composite_trend_chart(symbol: str, color: str):
 def _metric_data_row(label, value) -> html.Div:
     return html.Div(
         className="analysis-metric-row analysis-divider d-flex jc-between gap-12 py-4 fs-12",
+        style={"borderBottom": "1px solid rgba(67, 52, 90, 0.65)"},
         children=[
             html.Span(label, className="analysis-metric-label text-muted"),
             value if not isinstance(value, str) else html.Span(value, className="analysis-metric-value clr-text fw-600"),
@@ -328,7 +329,7 @@ def _fcf_quality_card(data: dict) -> html.Div:
         body_children=metric_rows,
     )
 def _options_signal_card(data: dict) -> html.Div:
-    """Options Signal card: directional bias, IV regime, strike/expiry, risk/edge."""
+    """Options signal card with live-chain detail and proxy fallback labels."""
     os_data = data.get("options_signal") or {}
     if not os_data:
         return html.Div()
@@ -340,14 +341,18 @@ def _options_signal_card(data: dict) -> html.Div:
     if edge is None:
         return html.Div()
 
+    top_strategy = os_data.get("top_strategy") or {}
+    strategy_score = top_strategy.get("ranking_score")
+    display_score = strategy_score if strategy_score is not None else edge
     bias_color = {"CALL": GREEN, "PUT": RED, "NEUTRAL": MUTED}.get(bias, MUTED)
     sig_color = {
-        "BUY_CALL": GREEN, "BUY_PUT": GREEN,
         "HIGH_CONVICTION_CALL": GREEN, "HIGH_CONVICTION_PUT": GREEN,
         "FAVORABLE_CALL": GREEN, "FAVORABLE_PUT": GREEN,
         "WATCH": AMBER, "AVOID": RED, "NO_TRADE": MUTED,
         "BALANCED": AMBER, "CAUTION": AMBER, "UNFAVORABLE": RED,
     }.get(signal, MUTED)
+    if strategy_score is not None:
+        sig_color = GREEN if strategy_score >= 55 else AMBER if strategy_score >= 40 else RED
 
     def _fmt(v, fmt=".2f", prefix="", suffix=""):
         if v is None:
@@ -357,26 +362,137 @@ def _options_signal_card(data: dict) -> html.Div:
         except (ValueError, TypeError):
             return "N/A"
 
+    contract = os_data.get("selected_contract") or {}
+    implied_volatility = os_data.get("implied_volatility")
+    has_chain_iv = implied_volatility is not None and os_data.get("iv_source") != "REALIZED_VOL_PROXY"
+    expected_move_pct = os_data.get("expected_move_pct")
+    expiry_date = os_data.get("recommended_expiration_date")
+    expiry_days = os_data.get("recommended_expiry_days")
+    event_risk = os_data.get("event_risk") or {}
+
     metrics = [
         ("Bias",             html.Span(bias, className=f"fw-700 {tone_class(bias_color)}")),
         ("Confidence",       _fmt(os_data.get("bias_confidence"), ".0f", suffix="/100")),
-        ("IV Level",         os_data.get("iv_level", "N/A")),
-        ("IV Trend",         os_data.get("iv_trend", "N/A")),
-        ("Expected Move",    _fmt((os_data.get("expected_move_pct") or 0) * 100, ".1f", suffix="%")),
+    ]
+    if top_strategy:
+        assumptions = os_data.get("pricing_assumptions") or {}
+        assumption_rate = assumptions.get("risk_free_rate")
+        assumption_dividend = assumptions.get("dividend_yield")
+        breakevens = top_strategy.get("breakevens") or []
+        breakeven_text = " / ".join(_fmt(value, ",.2f", "$") for value in breakevens) or "N/A"
+        max_profit = (
+            "Unbounded"
+            if top_strategy.get("max_profit_unbounded")
+            else _fmt(top_strategy.get("max_profit"), ",.2f", "$")
+        )
+        probability_profit = top_strategy.get("probability_profit_risk_neutral")
+        metrics.extend([
+            ("Top Strategy",      top_strategy.get("strategy_name", "N/A")),
+            ("Strategy Rank",     _fmt(strategy_score, ".0f", suffix="/100")),
+            ("Net Debit",         _fmt(top_strategy.get("net_debit"), ",.2f", "$")),
+            ("Max Loss",          _fmt(top_strategy.get("max_loss"), ",.2f", "$")),
+            ("Max Profit",        max_profit),
+            ("Breakeven",         breakeven_text),
+            ("Risk-Neutral EV",   _fmt(top_strategy.get("expected_value_risk_neutral"), ",.2f", "$")),
+            ("Probability Profit", _fmt(
+                probability_profit * 100 if probability_profit is not None else None,
+                ".1f", suffix="%",
+            )),
+            ("Pricing Model",      "BSM (European approximation)"),
+            ("Calibration",        os_data.get("calibration_status", "UNAVAILABLE")),
+            ("Rate / Dividend",    (
+                f"{_fmt(assumption_rate * 100 if assumption_rate is not None else None, '.2f', suffix='%')} / "
+                f"{_fmt(assumption_dividend * 100 if assumption_dividend is not None else None, '.2f', suffix='%')}"
+            )),
+        ])
+        greeks = top_strategy.get("greeks") or {}
+        if greeks:
+            metrics.extend([
+                ("Net Delta",     _fmt(greeks.get("delta"), ".3f")),
+                ("Net Gamma",     _fmt(greeks.get("gamma"), ".4f")),
+                ("Theta / Day",   _fmt(greeks.get("theta_per_day"), ".3f")),
+                ("Vega / Vol Pt", _fmt(greeks.get("vega_per_vol_point"), ".3f")),
+            ])
+        alternatives = os_data.get("strategy_candidates") or []
+        alternative_text = ", ".join(
+            f"{item.get('strategy_name')} ({item.get('ranking_score') or 0:.0f})"
+            for item in alternatives[1:4]
+        )
+        if alternative_text:
+            metrics.append(("Alternatives", alternative_text))
+    if has_chain_iv:
+        metrics.extend([
+            ("Implied Volatility", _fmt(implied_volatility * 100, ".1f", suffix="%")),
+            ("IV Level",           os_data.get("iv_level", "N/A")),
+            ("IV / Realized",      _fmt(os_data.get("iv_vs_realized_ratio"), ".2f", suffix="x")),
+        ])
+    else:
+        metrics.extend([
+            ("Vol Proxy Level", os_data.get("vol_proxy_level") or os_data.get("iv_level", "N/A")),
+            ("Vol Proxy Trend", os_data.get("vol_proxy_trend") or os_data.get("iv_trend", "N/A")),
+        ])
+
+    if contract:
+        bid = _fmt(contract.get("bid"), ".2f", "$")
+        ask = _fmt(contract.get("ask"), ".2f", "$")
+        metrics.extend([
+            ("Contract",          os_data.get("recommended_contract_symbol") or "N/A"),
+            ("Bid / Ask",         f"{bid} / {ask}"),
+            ("Open Interest",     _fmt(contract.get("open_interest"), ",.0f")),
+            ("Contract Volume",   _fmt(contract.get("volume"), ",.0f")),
+            ("Liquidity Risk",    _fmt(os_data.get("liquidity_risk"), ".0f", suffix="/100")),
+        ])
+
+    if event_risk:
+        reasons = os_data.get("event_suppression_reasons") or []
+        reason_text = ", ".join(reasons) if reasons else event_risk.get("risk_level", "N/A")
+        metrics.extend([
+            ("Event Coverage", event_risk.get("coverage", os_data.get("event_coverage", "UNAVAILABLE"))),
+            ("Event Risk", _fmt(event_risk.get("risk_score"), ".0f", suffix="/100")),
+        ])
+        if os_data.get("event_entry_suppressed"):
+            metrics.append(("Suppressed", reason_text))
+
+    metrics.extend([
+        ("Expected Move",    _fmt(expected_move_pct * 100 if expected_move_pct is not None else None, ".1f", suffix="%")),
         ("Expected Move $",  _fmt(os_data.get("expected_move_dollar"), ",.2f", "$")),
         ("Suggested Strike", _fmt(os_data.get("recommended_strike"), ",.2f", "$")),
-        ("Expiry (days)",    str(os_data.get("recommended_expiry_days", "N/A"))),
+        ("Expiration",       f"{expiry_date} ({expiry_days}d)" if expiry_date else str(expiry_days or "N/A")),
         ("Risk Score",       _fmt(risk, ".0f", suffix="/100")),
-    ]
+        ("Data Quality",     _fmt(os_data.get("data_quality_score"), ".0f", suffix="/100")),
+    ])
+
+    if has_chain_iv:
+        provider = os_data.get("chain_provider") or "live"
+        stale_note = " (stale fallback)" if os_data.get("chain_status") == "STALE" else ""
+        subtitle = (
+            f"Uses {provider} option-chain quotes and true contract IV{stale_note}; "
+            "expected move is one standard deviation."
+        )
+    else:
+        chain_status = os_data.get("chain_status")
+        status_note = f" Chain status: {chain_status}." if chain_status and chain_status != "UNAVAILABLE" else ""
+        subtitle = f"Uses realized-volatility proxy data while live contract IV is unavailable.{status_note}"
+    if top_strategy:
+        if os_data.get("calibration_status") == "CALIBRATED":
+            subtitle += " Strategy labels use walk-forward calibration; risk-neutral EV is a pricing measure, not a return forecast."
+        else:
+            subtitle += " Strategy rank is uncalibrated; risk-neutral EV is a pricing measure, not a return forecast."
+    if os_data.get("event_entry_suppressed"):
+        subtitle += " New option entries are suppressed by event-risk rules."
 
     metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
 
     return _metric_scorecard(
         title="Options Signal",
-        score_text=f"{edge:.0f}/100",
+        score_text=f"{display_score:.0f}/100",
         score_color=sig_color,
-        status_text=f"— {signal.replace('_', ' ').title()}",
-        subtitle="Models short-horizon option mark-to-market movement, not expiry payoff.",
+        status_text=(
+            f"— {top_strategy.get('strategy_name')}"
+            if top_strategy
+            else f"— {signal.replace('_', ' ').title()}"
+        ),
+        subtitle=subtitle,
         body_children=metric_rows,
     )
 

@@ -68,7 +68,7 @@ class TestOutputSchema:
         "market_trend_score", "volatility_percentile", "drawdown_depth",
         "regime", "risk_level", "risk_alert", "max_equity_exposure",
         "regime_multiplier", "sma_50", "sma_200", "current_price",
-        "vol_20d", "vol_60d", "error",
+        "vol_20d", "vol_60d", "comomentum_percentile", "error",
     }
 
     def test_all_required_keys_present(self):
@@ -86,7 +86,7 @@ class TestOutputSchema:
     def test_all_numeric_fields_finite(self):
         result = score(_make_hist(_rising(n=24)))
         for key in ("market_trend_score", "volatility_percentile", "drawdown_depth",
-                    "max_equity_exposure", "regime_multiplier"):
+                    "max_equity_exposure", "regime_multiplier", "vol_20d", "vol_60d"):
             val = result[key]
             assert val is not None and math.isfinite(val), f"{key} = {val}"
 
