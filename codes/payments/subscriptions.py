@@ -19,18 +19,14 @@ def _from_unix(ts: int | None):
 
 
 def plan_from_price_id(price_id: str | None) -> str:
-    if not price_id:
-        return "premium"
-    return "professional" if "professional" in price_id.lower() or "pro_" in price_id.lower() else "premium"
+    return "premium"
 
 
 def status_to_plan(status: str, price_id: str | None = None) -> str:
     status = (status or "").lower()
     if status in STRIPE_ACTIVE_STATUSES:
-        return plan_from_price_id(price_id)
-    if status in STRIPE_CANCELLED_STATUSES:
-        return "cancelled"
-    return "trial"
+        return "premium"
+    return "free"
 
 
 def sync_checkout_completed(session: dict[str, Any]) -> dict | None:
@@ -40,10 +36,9 @@ def sync_checkout_completed(session: dict[str, Any]) -> dict | None:
         return None
     stripe_customer_id = session.get("customer")
     stripe_subscription_id = session.get("subscription")
-    plan = metadata.get("plan") or "premium"
     return db.upsert_subscription(
         user_id,
-        plan=plan,
+        plan="premium",
         status="active",
         stripe_customer_id=stripe_customer_id,
         stripe_subscription_id=stripe_subscription_id,
@@ -89,7 +84,7 @@ def cancel_subscription_locally(user_id: str) -> dict:
     sub = db.get_subscription(user_id) or {}
     return db.upsert_subscription(
         user_id,
-        plan="cancelled",
+        plan="free",
         status="canceled",
         stripe_customer_id=sub.get("stripe_customer_id"),
         stripe_subscription_id=sub.get("stripe_subscription_id"),
@@ -97,4 +92,4 @@ def cancel_subscription_locally(user_id: str) -> dict:
 
 
 def mark_paid_for_dev(user_id: str, plan: str = "premium") -> dict:
-    return db.upsert_subscription(user_id, plan=plan, status="active")
+    return db.upsert_subscription(user_id, plan="premium", status="active")

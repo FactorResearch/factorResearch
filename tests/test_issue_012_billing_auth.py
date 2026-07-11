@@ -73,11 +73,23 @@ def test_checkout_ignores_user_id_query(monkeypatch):
     with client.session_transaction() as session:
         session["_uid"] = "current_user"
 
-    response = client.get("/billing/checkout?user_id=other_user&plan=professional")
+    response = client.get("/billing/checkout?user_id=other_user&plan=premium")
 
     assert response.status_code == 302
-    assert response.headers["Location"] == "/checkout/current_user/professional"
-    assert seen == {"user_id": "current_user", "plan": "professional"}
+    assert response.headers["Location"] == "/checkout/current_user/premium"
+    assert seen == {"user_id": "current_user", "plan": "premium"}
+
+
+def test_checkout_rejects_retired_plan(monkeypatch):
+    billing = _billing_module(monkeypatch)
+    client = _client(monkeypatch, billing)
+    with client.session_transaction() as session:
+        session["_uid"] = "current_user"
+
+    response = client.get("/billing/checkout?plan=professional")
+
+    assert response.status_code == 400
+    assert b"Only the Premium plan" in response.data
 
 
 def test_portal_ignores_user_id_query(monkeypatch):

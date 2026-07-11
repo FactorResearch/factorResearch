@@ -9,7 +9,6 @@ from codes.data import db
 
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PREMIUM_PRICE_ID = os.environ.get("STRIPE_PREMIUM_PRICE_ID") or os.environ.get("STRIPE_PRICE_ID")
-STRIPE_PROFESSIONAL_PRICE_ID = os.environ.get("STRIPE_PROFESSIONAL_PRICE_ID")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET")
 PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL") or os.environ.get("APP_BASE_URL")
 
@@ -37,10 +36,8 @@ def _base_url() -> str:
 
 def _price_id_for_plan(plan: str) -> str:
     plan = (plan or "premium").lower()
-    if plan == "professional":
-        if not STRIPE_PROFESSIONAL_PRICE_ID:
-            raise StripeConfigurationError("STRIPE_PROFESSIONAL_PRICE_ID is not configured.")
-        return STRIPE_PROFESSIONAL_PRICE_ID
+    if plan != "premium":
+        raise StripeConfigurationError("Only the Premium plan is available.")
     if not STRIPE_PREMIUM_PRICE_ID:
         raise StripeConfigurationError("STRIPE_PREMIUM_PRICE_ID or STRIPE_PRICE_ID is not configured.")
     return STRIPE_PREMIUM_PRICE_ID
@@ -60,8 +57,8 @@ def create_checkout_session(user_id: str, plan: str = "premium") -> str:
         "client_reference_id": user_id,
         "success_url": f"{_base_url()}/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
         "cancel_url": f"{_base_url()}/?billing=cancelled",
-        "metadata": {"user_id": user_id, "plan": plan},
-        "subscription_data": {"metadata": {"user_id": user_id, "plan": plan}},
+        "metadata": {"user_id": user_id, "plan": "premium"},
+        "subscription_data": {"metadata": {"user_id": user_id, "plan": "premium"}},
         "allow_promotion_codes": True,
     }
     if subscription.get("stripe_customer_id"):

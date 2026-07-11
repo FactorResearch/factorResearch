@@ -93,8 +93,8 @@ def test_billing_checkout_tracks_funnel_events(monkeypatch):
     with client.session_transaction() as session:
         session["_uid"] = "current_user"
 
-    response = client.get("/billing/checkout?plan=professional&source=pricing_tab&feature=subscription")
+    response = client.get("/billing/checkout?plan=premium&source=pricing_tab&feature=subscription")
 
     assert response.status_code == 302
-    assert response.headers["Location"] == "/checkout/current_user/professional"
+    assert response.headers["Location"] == "/checkout/current_user/premium"
     assert tracked.call_count == 2

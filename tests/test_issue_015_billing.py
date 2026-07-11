@@ -97,5 +97,20 @@ def test_subscription_webhook_updates_status_from_stripe_payload():
     with patch("codes.payments.subscriptions.db.upsert_subscription") as upsert:
         handled = webhooks.handle_event(event)
     assert handled is True
-    assert upsert.call_args.kwargs["plan"] == "cancelled"
+    assert upsert.call_args.kwargs["plan"] == "free"
     assert upsert.call_args.kwargs["status"] == "canceled"
+
+
+def test_subscription_created_webhook_sets_premium():
+    event = {
+        "type": "customer.subscription.created",
+        "data": {"object": {
+            "id": "sub_123", "customer": "cus_123", "status": "active",
+            "metadata": {"user_id": "u1"},
+            "items": {"data": [{"price": {"id": "price_premium"}}]},
+        }},
+    }
+    with patch("codes.payments.subscriptions.db.upsert_subscription") as upsert:
+        assert webhooks.handle_event(event) is True
+    assert upsert.call_args.kwargs["plan"] == "premium"
+    assert upsert.call_args.kwargs["status"] == "active"

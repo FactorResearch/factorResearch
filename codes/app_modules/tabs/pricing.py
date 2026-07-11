@@ -13,12 +13,11 @@ from codes.services import product_analytics
 
 PLAN_CARDS = [
     {
-        "name": "Trial",
+        "name": "Free",
         "price": "$0",
         "subtitle": "Start free",
         "features": [
             "3 company analyses",
-            "1 portfolio simulation",
             "Custom factor weights",
         ],
         "cta": None,
@@ -34,18 +33,6 @@ PLAN_CARDS = [
             "Strategy validation workflow",
         ],
         "cta": billing.get_billing_entry_url(plan="premium", source="pricing_tab", feature="subscription"),
-    },
-    {
-        "name": "Professional",
-        "price": "$79",
-        "subtitle": "Per month",
-        "features": [
-            "Everything in Premium",
-            "Advanced workflow support",
-            "Team-ready research flow",
-            "Priority expansion path",
-        ],
-        "cta": billing.get_billing_entry_url(plan="professional", source="pricing_tab", feature="subscription"),
     },
 ]
 

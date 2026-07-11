@@ -24,9 +24,11 @@ def init_billing(server: Optional[flask.Flask] = None):
 
     @server.route("/billing/checkout", methods=["GET"])
     def _checkout():
-        plan = flask.request.args.get("plan", "premium")
+        plan = flask.request.args.get("plan", "premium").lower()
         source = flask.request.args.get("source", "direct")
         feature = flask.request.args.get("feature", "")
+        if plan != "premium":
+            return "Only the Premium plan is available.", 400
         try:
             user_id = get_user_id()
         except RuntimeError:
@@ -100,6 +102,8 @@ def user_has_paid(user_id: str) -> bool:
 
 
 def get_checkout_url(user_id: str, plan: str = "premium") -> str:
+    if plan.lower() != "premium":
+        raise ValueError("Only the Premium plan is available.")
     if stripe_client.is_configured():
         return stripe_client.create_checkout_session(user_id, plan=plan)
     if _is_production():
@@ -108,6 +112,8 @@ def get_checkout_url(user_id: str, plan: str = "premium") -> str:
 
 
 def get_billing_entry_url(plan: str = "premium", **context: str | None) -> str:
+    if plan.lower() != "premium":
+        raise ValueError("Only the Premium plan is available.")
     params = {"plan": plan}
     for key, value in context.items():
         if value:
