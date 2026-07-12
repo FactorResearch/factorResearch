@@ -111,7 +111,7 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
     route_ticker = _ticker_from_analyze_path(pathname)
     if triggered == "screener-click-ticker" and clicked_ticker:
         ticker = clicked_ticker
-    elif triggered in ("url", None) and route_ticker:
+    elif route_ticker and (triggered in ("url", None) or not ticker_input_value):
         ticker = route_ticker
     else:
         ticker = ticker_input_value

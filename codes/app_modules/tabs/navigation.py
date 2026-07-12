@@ -31,10 +31,6 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clic
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
     if triggered == "screener-click-ticker" and clicked_ticker:
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
-    if triggered in ("url", None) and (pathname or "").startswith("/analyze/"):
-        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
-    if triggered in ("url", None) and (pathname or "") == "/pricing":
-        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if triggered == "upgrade-funnel-store" and upgrade_context:
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if triggered == "tab-analyze-btn":
@@ -44,6 +40,10 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clic
     if triggered == "tab-factorlab-btn":
         return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if triggered == "tab-pricing-btn":
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    if (pathname or "").startswith("/analyze/"):
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+    if (pathname or "") == "/pricing":
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
 

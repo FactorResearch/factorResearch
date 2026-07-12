@@ -3061,7 +3061,7 @@ category: UI
 
 ISSUE : footer shows up in middle of the page, and it has a white background
 
-# ISSUE_032- engine contract
+# ISSUE_033-engine contract
 status:[x]
 category: engine
 files:
@@ -3069,6 +3069,51 @@ engine_contarct.py,app.py,billing.py, or any other files that will make this iss
 
 ISSUE: wire engine contract to all and allow an ability to easily set flag,add a small file so we can switch flags in that file, maybe a json file, so when flag is set to INTERNAL all billing checks turns off, we just run the app at full,but do add an ability in git so we never be allowed to push to git main branch when flag INTERNAL or BETA are set.
 
+# ISSUE_034- analysis direct linking not working
+status:[x]
+category: engine
+files:analysis_ui.py, app.py, analysis.py
+ISSUE: trying to open this link does nothing http://127.0.0.1:8050/analyze/AAPL/20260711
+
+# ISSUE_035- user get locked out in Company research tab
+status:[x]
+category: code
+files:
+ISSUE: [http://127.0.0.1:8050/analyze/AAPL](http://127.0.0.1:8050/analyze/AAPL) when in company page we can't navigate to analyze tab, we get stuck, if user click on analyze tab we run analyze on a company page
+
+# ISSUE_036- error pages are missing
+status:[]
+category: code
+files: 404.html,401,500,403,400
+ISSUE: we currently have none of these pages, they must be created with looks and feels of the application
+
+
+# ISSUE_037- sign up not working
+status:[]
+category: pre landing pages
+files: http://127.0.0.1:8050/landing/pre-a , http://127.0.0.1:8050/landing/pre-b
+ISSUE: both page currently throw an error when user try to sign up, pre-b has visual bug issue the apple analyze demo is broken and does not match our own view, and "What you
+can expect
+" is also broken
+
+# ISSUE_038- light mode issue 
+status:[]
+category: UI
+files: .scss
+ISSUE: 
+  - light mode text are hard to read the color "#e8eaf0" is not readable with white background chose a darker one
+  - color #00e676!important is also not easy to read    
+  - insider activity have a bolder lines , all cards must match a same feel and desgin
+  - in dark mode some labels are white some are greyish , unify them all to #8899aa
+
+# ISSUE_09- option removed
+status:[]
+category: UI
+files: screener.py
+ISSUE: 
+  - option engine is not ready so it has to be removed, i have removed the card but the analytic tab needs to be ordered correctly, preffered to keep everything as pair
+
+ 
 # AI EXECUTION PROTOCOL
 
 When fixing an issue:
@@ -3080,7 +3125,8 @@ When fixing an issue:
 5. Add or update tests
 6. known issues are always in main branch, so they must be tested before they are pushed to git
 7. once an issue has been fixed and pushed to main, other branches start downloading the correct files, if it is shared among them, this way we do not have confilict merge
-8. STOP
+8. never write inline css alwasys use external scss file
+9. STOP
 
 ---
 

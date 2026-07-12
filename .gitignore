@@ -12,6 +12,7 @@ assets/*.min.css
 assets/*.css.map
 assets/*.css
 !assets/zz_runtime_fixes.css
+!assets/company_analysis.css
 agency-agents/*
 .ev.example
 .codex/
@@ -21,3 +22,4 @@ mockup/
 roadMap.md
 AI_CONTEXT.md
 .githooks
+*.png

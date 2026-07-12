@@ -1,5 +1,39 @@
 /* Runtime overrides: Dash loads .css assets directly; SCSS is source-only. */
 
+/* Keep every Dash root/loading shell dark so no white band can show behind wide tables. */
+html:not(.light),
+body:not(.light),
+html:has(body #tab-screener.block),
+body:has(#tab-screener.block),
+body:has(#tab-screener.block) #react-entry-point,
+body:has(#tab-screener.block) #_dash-app-content,
+body:has(#tab-screener.block) .app-container,
+body:has(#tab-screener.block) #tab-screener,
+body:has(#tab-screener.block) .screener-content,
+body:has(#tab-screener.block) #screener-table-container,
+body:has(#tab-screener.block) .screener-market-shell,
+body:has(#tab-screener.block) .screener-table-wrap,
+body:not(.light) #react-entry-point,
+body:not(.light) #_dash-app-content,
+body:not(.light) .app-container,
+body:not(.light) .block,
+body:not(.light) .d-block,
+body:not(.light) .main-content,
+body:not(.light) .screener-content,
+body:not(.light) #screener-table-container,
+body:not(.light) .screener-market-shell,
+body:not(.light) .screener-table-wrap,
+body:not(.light) .dash-table-container,
+body:not(.light) .dash-spreadsheet-container,
+body:not(.light) .dash-graph,
+body:not(.light) .dash-loading,
+body:not(.light) .dash-loading-callback,
+body:not(.light) ._dash-loading,
+body:not(.light) ._dash-loading-callback,
+body:not(.light) [data-dash-is-loading="true"] {
+  background: #0d1117 !important;
+}
+
 /* The global application navigation should leave the viewport when scrolling. */
 #topbar.topbar {
   position: relative !important;
@@ -197,4 +231,23 @@ body.light #tab-analyze .analysis-card-subtitle {
 
 body.light #tab-analyze .analysis-metric-value {
   color: #0f172a !important;
+}
+
+/* ISSUE_032: keep the legal footer at the viewport bottom on short tabs. */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 0 !important;
+}
+
+.app-footer {
+  margin-top: auto;
+  border-top: 1px solid #43345a;
+  background: #161d2a;
+}
+
+body.light .app-footer {
+  background: #f7f8fa;
+  border-top-color: #cbd5e1;
 }

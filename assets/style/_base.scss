@@ -19,6 +19,14 @@ body {
   min-height: 100vh;
 }
 
+html:not(.light),
+body:not(.light),
+body:not(.light) #react-entry-point,
+body:not(.light) #_dash-app-content,
+body:not(.light) .app-container {
+  background: $bg;
+}
+
 // ── Light Theme ─────────────────────────────────────────────────────────────
 body.light {
   background: $light-bg;
@@ -371,6 +379,8 @@ body.light {
   }
 
   .app-footer {
+    background: $light-surface;
+    border-top-color: $light-border;
     color: $light-text-muted !important;
 
     a {

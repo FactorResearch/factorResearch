@@ -1210,7 +1210,7 @@ _stat(
             "Signals",
             [
                 html.Div(className="card-row", children=[_insider_activity_card(data), alternative_data_card]),
-                html.Div(className="card-row", children=[factor_momentum_card, _options_signal_card(data)]),
+                
             ],
         ),
         (
