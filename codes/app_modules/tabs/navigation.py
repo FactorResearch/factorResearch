@@ -2,6 +2,7 @@
 
 import dash
 from dash import Input, Output, State, callback, clientside_callback
+from dash.exceptions import PreventUpdate
 
 # ── Tab Navigation ───────────────────────────────────────────────────────────
 @callback(
@@ -33,6 +34,8 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clic
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "upgrade-funnel-store" and upgrade_context:
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    if triggered == "upgrade-funnel-store":
+        raise PreventUpdate
     if triggered == "tab-screener-btn" and n_screener:
         return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if triggered == "tab-analyze-btn":
@@ -45,9 +48,38 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clic
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if (pathname or "").startswith("/analyze/"):
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+    if (pathname or "") == "/portfolio":
+        return HIDE, HIDE, SHOW, HIDE, HIDE, IDLE, IDLE, ACTIVE, IDLE, IDLE
+    if (pathname or "") == "/factor-lab":
+        return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if (pathname or "") == "/pricing":
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
+
+
+@callback(
+    Output("url", "pathname", allow_duplicate=True),
+    Input("tab-screener-btn",  "n_clicks"),
+    Input("tab-analyze-btn",   "n_clicks"),
+    Input("tab-portfolio-btn", "n_clicks"),
+    Input("tab-factorlab-btn", "n_clicks"),
+    Input("tab-pricing-btn",   "n_clicks"),
+    State("url", "pathname"),
+    prevent_initial_call=True,
+)
+def sync_tab_url(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, pathname):
+    triggered = dash.ctx.triggered_id
+    if triggered == "tab-screener-btn" and n_screener:
+        return "/"
+    if triggered == "tab-portfolio-btn" and n_portfolio:
+        return "/portfolio"
+    if triggered == "tab-factorlab-btn" and n_factorlab:
+        return "/factor-lab"
+    if triggered == "tab-pricing-btn" and n_pricing:
+        return "/pricing"
+    if triggered == "tab-analyze-btn" and n_analyze:
+        return pathname if (pathname or "").startswith("/analyze/") else dash.no_update
+    raise PreventUpdate
 
 
 # ── Theme Toggle ────────────────────────────────────────────────────────────
