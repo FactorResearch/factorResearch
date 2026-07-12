@@ -7,6 +7,7 @@ import math
 import dash
 from dash import Input, Output, State, callback, html
 
+from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
 from codes.engine import screener
 from codes.engine.scorer import verdict_for_score
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
@@ -51,6 +52,20 @@ def _filter_results_by_country(results, country_code):
     return [r for r in results if row_matches_country(r, active)]
 
 
+def _index_pill_buttons(selected_indices=None):
+    selected = set(selected_indices or [])
+    return [
+        html.Button(
+            index["label"],
+            id={"type": "index-filter-pill", "index": index["value"]},
+            className="screener-index-pill" + (" active" if index["value"] in selected else ""),
+            n_clicks=0,
+            type="button",
+        )
+        for index in US_INDEX_DEFINITIONS
+    ]
+
+
 # ── Screener ticker-click → store ─────────────────────────────────────────────
 @callback(
     Output("screener-click-ticker", "data"),
@@ -87,12 +102,41 @@ def switch_screener_country(n_clicks_list):
 
 
 @callback(
+    Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
     Input("screener-country-store", "data"),
     prevent_initial_call=True
 )
-def reset_sector_filter_for_country(active_country):
-    return ""
+def reset_filters_for_country(active_country):
+    return [], ""
+
+
+@callback(
+    Output("index-filter", "data", allow_duplicate=True),
+    Input({"type": "index-filter-pill", "index": dash.ALL}, "n_clicks"),
+    State("index-filter", "data"),
+    prevent_initial_call=True
+)
+def update_index_filter(n_clicks_list, selected_indices):
+    triggered = dash.ctx.triggered_id
+    if not triggered or not any(n for n in n_clicks_list if n):
+        return dash.no_update
+    value = triggered["index"]
+    selected = list(selected_indices or [])
+    if value in selected:
+        return [item for item in selected if item != value]
+    if len(selected) >= 2:
+        return dash.no_update
+    return selected + [value]
+
+
+@callback(
+    Output("index-filter-pill-container", "children"),
+    Input("index-filter", "data"),
+    prevent_initial_call=False
+)
+def render_index_filter_pills(selected_indices):
+    return _index_pill_buttons(selected_indices)
 
 
 @callback(
@@ -192,13 +236,14 @@ def update_progress_bar(n):
     Input("screener-ready-store",  "data"),
     Input("screener-country-store","data"),
     Input("page-load-interval",    "n_intervals"),
+    Input("index-filter",          "data"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
     Input("screener-page-store",   "data"),
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, active_country, n_load, sector_filter, sort_state, page_num, viewed_data):
+def render_screener_table(ready, active_country, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
     global last_screener_state
     triggered_id = dash.ctx.triggered_id
     if triggered_id == "page-load-interval":
@@ -214,13 +259,14 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
     
-    if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store", "screener-country-store"]:
+    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "screener-country-store"]:
         page = 1
         page_reset = 1
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
     state_tuple = (
         json.dumps([r["symbol"] for r in results], sort_keys=True),
         active_country,
+        selected_indices or [],
         sector_filter or "",
         sort_col,
         sort_asc,
@@ -232,7 +278,8 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
     if state_hash == last_screener_state:
         return dash.no_update, dash.no_update, page_reset
     last_screener_state = state_hash
-    sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
+    index_filtered_results = [r for r in results if row_matches_any_index(r, selected_indices)]
+    sectors = sorted(set(r["sector"] for r in index_filtered_results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
         {"label": s, "value": s} for s in sectors
     ]
@@ -255,20 +302,24 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             page_reset,
         )
     portfolio_symbols = get_portfolio_symbols()
-    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    filtered = [
+        r for r in index_filtered_results
+        if not sector_filter or r.get("sector") == sector_filter
+    ]
     
     text_cols = {"symbol", "name", "sector", "updated_at"}
     if sort_col in text_cols:
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-    if triggered_id in {"screener-ready-store", "page-load-interval", "sector-filter", "screener-sort-store", "screener-country-store"}:
+    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "screener-country-store"}:
         try:
             product_analytics.track_event(
                 get_user_id(),
                 "screener_run",
                 {
                     "country": active_country,
+                    "indices": selected_indices or [],
                     "sector": sector_filter or "",
                     "sort_col": sort_col,
                     "sort_asc": sort_asc,
@@ -479,16 +530,21 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
     Input({"type": "screener-page-btn", "index": dash.ALL}, "n_clicks"),
     State("screener-page-store", "data"),
     State("screener-sort-store", "data"),
+    State("index-filter", "data"),
     State("sector-filter", "value"),
     State("screener-country-store", "data"),
     prevent_initial_call=True
 )
-def navigate_screener_page(n_clicks_list, current_page, sort_state, sector_filter, active_country):
+def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, active_country):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
     results = _filter_results_by_country(screener.get_screener_results(), active_country)
-    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    filtered = [
+        r for r in results
+        if row_matches_any_index(r, selected_indices)
+        and (not sector_filter or r.get("sector") == sector_filter)
+    ]
     total_pages = max(1, math.ceil(len(filtered) / PAGE_SIZE))
     cp = current_page or 1
     direction = triggered.get("index", "next")

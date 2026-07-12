@@ -6,6 +6,7 @@ from codes.engine import scorer
 
 from .config import BLUE
 from .screener_markets import DEFAULT_SCREENER_COUNTRY, SCREENER_COUNTRIES
+from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
 def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
@@ -21,6 +22,20 @@ def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
             n_clicks=0,
         )
         for country in SCREENER_COUNTRIES
+    ]
+
+
+def _screener_index_pills(selected=None):
+    selected = set(selected or [])
+    return [
+        html.Button(
+            index["label"],
+            id={"type": "index-filter-pill", "index": index["value"]},
+            className="screener-index-pill" + (" active" if index["value"] in selected else ""),
+            n_clicks=0,
+            type="button",
+        )
+        for index in US_INDEX_DEFINITIONS
     ]
 
 
@@ -107,6 +122,15 @@ def build_layout():
                 #     html.Div(id="screener-progress-info", className="screener-info"),
                 # ]),
                 html.Div(className="screener-controls flex gap-lg align-items-center", children=[
+                    html.Div(className="screener-index-filter", children=[
+                        html.Label("Filter by index:", className="text-sm text-muted"),
+                        html.Div(
+                            id="index-filter-pill-container",
+                            className="screener-index-pills",
+                            children=_screener_index_pills(),
+                        ),
+                        dcc.Store(id="index-filter", data=[]),
+                    ]),
                     html.Label("Filter by sector:", className="text-sm text-muted"),
                     dcc.Dropdown(
                         id="sector-filter",
