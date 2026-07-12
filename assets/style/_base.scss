@@ -159,7 +159,7 @@ body.light {
   }
 
   .criterion-label {
-    color: $light-text;
+    color: $light-text-dim;
   }
 
   .criterion-note {
@@ -789,6 +789,36 @@ body.light {
 
   .risk-value--neutral {
     color: $light-text-dim !important;
+  }
+
+  .tone-positive,
+  .clr-green {
+    color: $light-positive !important;
+  }
+
+  .tone-info,
+  .clr-blue,
+  .clr-cyan {
+    color: $light-blue !important;
+  }
+
+  .tone-caution,
+  .clr-amber {
+    color: $light-amber !important;
+  }
+
+  .tone-danger,
+  .clr-red {
+    color: $light-negative !important;
+  }
+
+  .tone-muted {
+    color: $light-text-dim !important;
+  }
+
+  .metric-row-divider,
+  .metric-row-divider--analysis {
+    border-bottom-color: rgba($light-border, 0.65) !important;
   }
 
   // Dash inline colors are authored for the dark theme. Remap the shared

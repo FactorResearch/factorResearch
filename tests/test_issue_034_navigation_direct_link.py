@@ -40,3 +40,21 @@ def test_explicit_tab_click_can_leave_analyze_path():
     assert result[1] == {"display": "none"}
     assert result[2] == {"display": "block"}
     assert result[7] == "topbar-nav-btn tab-btn active"
+
+
+def test_explicit_screener_click_can_leave_analyze_path():
+    with patch.object(navigation.dash, "ctx", SimpleNamespace(triggered_id="tab-screener-btn")):
+        result = navigation.switch_tabs(
+            1,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            "/analyze/AAPL/20260711",
+        )
+
+    assert result[0] == {"display": "block"}
+    assert result[1] == {"display": "none"}
+    assert result[5] == "topbar-nav-btn tab-btn active"

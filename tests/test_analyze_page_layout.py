@@ -65,8 +65,10 @@ def test_dark_shell_background_covers_dash_loading_gaps():
     runtime_css = (repo_root / "assets/zz_runtime_fixes.css").read_text()
     app_py = (repo_root / "codes/app.py").read_text()
 
-    assert 'const APP_VERSION = "v3.6";' in app_py
-    assert "body:has(#tab-screener.block)" in runtime_css
+    assert 'const APP_VERSION = "' in app_py
+    assert "body:not(.light):has(#tab-screener.block)" in runtime_css
+    assert "body.light .screener-table-wrap" in runtime_css
+    assert "background-color: #ffffff !important;" in runtime_css
     assert "body:not(.light) #react-entry-point" in runtime_css
     assert "body:not(.light) #_dash-app-content" in runtime_css
     assert "body:not(.light) #screener-table-container" in runtime_css

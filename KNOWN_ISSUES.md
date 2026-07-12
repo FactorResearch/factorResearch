@@ -3097,7 +3097,7 @@ can expect
 " is also broken
 
 # ISSUE_038- light mode issue 
-status:[]
+status:[x]
 category: UI
 files: .scss
 ISSUE: 
@@ -3106,7 +3106,7 @@ ISSUE:
   - insider activity have a bolder lines , all cards must match a same feel and desgin
   - in dark mode some labels are white some are greyish , unify them all to #8899aa
 
-# ISSUE_09- option removed
+# ISSUE_039- option removed
 status:[]
 category: UI
 files: screener.py

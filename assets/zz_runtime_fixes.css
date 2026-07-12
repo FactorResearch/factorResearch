@@ -8,19 +8,66 @@ a,
   cursor: pointer;
 }
 
+/* ISSUE_038: normalize analysis labels and status colors across themes. */
+body:not(.light) .analysis-metric-label,
+body:not(.light) .criterion-label,
+body:not(.light) .text-muted,
+body:not(.light) .analysis-card-subtitle {
+  color: #8899aa !important;
+}
+
+body:not(.light) .metric-row-divider,
+body:not(.light) .metric-row-divider--analysis {
+  border-bottom-color: rgba(136, 153, 170, 0.18) !important;
+}
+
+body.light .tone-positive,
+body.light .clr-green {
+  color: #087f3f !important;
+}
+
+body.light .tone-info,
+body.light .clr-blue,
+body.light .clr-cyan {
+  color: #075fc7 !important;
+}
+
+body.light .tone-caution,
+body.light .clr-amber {
+  color: #946200 !important;
+}
+
+body.light .tone-danger,
+body.light .clr-red {
+  color: #c62828 !important;
+}
+
+body.light .tone-muted,
+body.light .text-muted,
+body.light .analysis-metric-label,
+body.light .criterion-label,
+body.light .analysis-card-subtitle {
+  color: #475569 !important;
+}
+
+body.light .metric-row-divider,
+body.light .metric-row-divider--analysis {
+  border-bottom-color: rgba(203, 213, 225, 0.65) !important;
+}
+
 /* Keep every Dash root/loading shell dark so no white band can show behind wide tables. */
 html:not(.light),
 body:not(.light),
-html:has(body #tab-screener.block),
-body:has(#tab-screener.block),
-body:has(#tab-screener.block) #react-entry-point,
-body:has(#tab-screener.block) #_dash-app-content,
-body:has(#tab-screener.block) .app-container,
-body:has(#tab-screener.block) #tab-screener,
-body:has(#tab-screener.block) .screener-content,
-body:has(#tab-screener.block) #screener-table-container,
-body:has(#tab-screener.block) .screener-market-shell,
-body:has(#tab-screener.block) .screener-table-wrap,
+html:has(body:not(.light) #tab-screener.block),
+body:not(.light):has(#tab-screener.block),
+body:not(.light):has(#tab-screener.block) #react-entry-point,
+body:not(.light):has(#tab-screener.block) #_dash-app-content,
+body:not(.light):has(#tab-screener.block) .app-container,
+body:not(.light):has(#tab-screener.block) #tab-screener,
+body:not(.light):has(#tab-screener.block) .screener-content,
+body:not(.light):has(#tab-screener.block) #screener-table-container,
+body:not(.light):has(#tab-screener.block) .screener-market-shell,
+body:not(.light):has(#tab-screener.block) .screener-table-wrap,
 body:not(.light) #react-entry-point,
 body:not(.light) #_dash-app-content,
 body:not(.light) .app-container,
@@ -40,6 +87,32 @@ body:not(.light) ._dash-loading,
 body:not(.light) ._dash-loading-callback,
 body:not(.light) [data-dash-is-loading="true"] {
   background: #0d1117 !important;
+}
+
+body.light,
+body.light #react-entry-point,
+body.light #_dash-app-content,
+body.light .app-container,
+body.light #tab-screener,
+body.light .screener-content,
+body.light #screener-table-container,
+body.light .screener-market-shell,
+body.light .screener-table-wrap,
+body.light .dash-table-container,
+body.light .dash-spreadsheet-container {
+  background: #ffffff !important;
+}
+
+body.light .screener-table-wrap,
+body.light .dash-table-container,
+body.light .dash-spreadsheet-container,
+body.light .dash-spreadsheet-inner,
+body.light .dash-spreadsheet-inner table,
+body.light .dash-spreadsheet-inner tr,
+body.light .dash-spreadsheet-inner td,
+body.light .dash-spreadsheet-inner th {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 /* The global application navigation should leave the viewport when scrolling. */

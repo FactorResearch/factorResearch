@@ -33,6 +33,8 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clic
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "upgrade-funnel-store" and upgrade_context:
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    if triggered == "tab-screener-btn" and n_screener:
+        return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if triggered == "tab-analyze-btn":
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "tab-portfolio-btn":

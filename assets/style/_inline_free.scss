@@ -16,8 +16,8 @@
 .analysis-flag--compounder { background: #003a1a; color: $green; }
 .analysis-flag--distress { background: #3a0000; color: $red; }
 .analysis-flag--acquisition { background: #3a2000; color: $amber; }
-.metric-row-divider { border-bottom: 1px solid $border; }
-.metric-row-divider--analysis { border-bottom-color: rgba(67, 52, 90, 0.65); }
+.metric-row-divider { border-bottom: 1px solid rgba($text-dim, 0.18); }
+.metric-row-divider--analysis { border-bottom-color: rgba($text-dim, 0.18); }
 .metric-note-tight { margin-top: 1px; }
 .metric-note-spaced { margin-top: 2px; }
 .piotroski-icon { font-size: 15px; min-width: 20px; margin-top: 1px; }
