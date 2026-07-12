@@ -26,6 +26,7 @@ from flask import render_template
 from codes.data import sec_data
 from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
+from codes.error_pages import register_error_pages
 from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
@@ -60,6 +61,7 @@ except Exception as e:
 auth.init_auth(server)
 billing.init_billing(server)
 register_landing_pages(server)
+register_error_pages(server)
 @server.route("/account/delete", methods=["POST"])
 def delete_account():
     user_id = get_user_id()
@@ -78,7 +80,7 @@ def delete_account():
     return flask.jsonify(summary)
 
 _LEGAL_PLACEHOLDER_NOTICE = (
-    "<p style='color:#b00;font-weight:700;'>⚠️ PLACEHOLDER TEXT — NOT REVIEWED BY LEGAL COUNSEL. "
+    "<p class='legal-placeholder-notice'>PLACEHOLDER TEXT - NOT REVIEWED BY LEGAL COUNSEL. "
     "Do not rely on this page for compliance. Replace before public launch.</p>"
 )
 
@@ -159,17 +161,6 @@ dash.Dash.callback = _logging_callback
 # Importing tab modules registers their Dash callbacks.
 from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, screener as screener_tab  # noqa: F401
 
-# ── Mobile touch fix: eliminate 300ms tap delay on all buttons ───────────────
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<style>'
-    'button,a,[role="button"]{'
-    'touch-action:manipulation;'
-    '-webkit-tap-highlight-color:rgba(0,0,0,0.08);'
-    'cursor:pointer;'
-    '}'
-    '</style></head>'
-)
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
@@ -196,7 +187,7 @@ app.index_string = app.index_string.replace(
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
-    'const APP_VERSION = "v3.6";'  # bump this on each deploy
+    'const APP_VERSION = "v3.7";'  # bump this on each deploy
     'if (localStorage.getItem("app_version") !== APP_VERSION) {'
     '    localStorage.setItem("app_version", APP_VERSION);'
     '    location.reload(true);'

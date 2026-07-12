@@ -1,5 +1,13 @@
 /* Runtime overrides: Dash loads .css assets directly; SCSS is source-only. */
 
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
 /* Keep every Dash root/loading shell dark so no white band can show behind wide tables. */
 html:not(.light),
 body:not(.light),

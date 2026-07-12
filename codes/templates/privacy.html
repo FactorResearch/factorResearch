@@ -2,9 +2,10 @@
 
 <head>
     <title>Privacy Policy</title>
+    <link rel="stylesheet" href="/assets/legal_pages.css">
 </head>
 
-<body style="font-family:sans-serif;max-width:700px;margin:40px auto;line-height:1.6;">
+<body class="legal-page">
     <h1>Privacy Policy</h1>
     {{ legal_notice|safe }}
     <p>We store the portfolios and holdings you create, tied to your account
@@ -19,8 +20,8 @@
         </strong>
     </p>
     <button id="analytics-opt-out-toggle"
-            type="button"
-            style="padding:10px 14px;border:1px solid #ccc;border-radius:8px;background:#f7f7f7;cursor:pointer;">
+            class="legal-toggle-button"
+            type="button">
         {{ "Enable analytics for this session" if analytics_opt_out else "Disable analytics for this session" }}
     </button>
     <script>

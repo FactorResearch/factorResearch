@@ -13,6 +13,8 @@ assets/*.css.map
 assets/*.css
 !assets/zz_runtime_fixes.css
 !assets/company_analysis.css
+!assets/error_pages.css
+!assets/legal_pages.css
 agency-agents/*
 .ev.example
 .codex/

@@ -3082,7 +3082,7 @@ files:
 ISSUE: [http://127.0.0.1:8050/analyze/AAPL](http://127.0.0.1:8050/analyze/AAPL) when in company page we can't navigate to analyze tab, we get stuck, if user click on analyze tab we run analyze on a company page
 
 # ISSUE_036- error pages are missing
-status:[]
+status:[x]
 category: code
 files: 404.html,401,500,403,400
 ISSUE: we currently have none of these pages, they must be created with looks and feels of the application
