@@ -17,6 +17,7 @@ from codes.models import (
     insider_activity as insider_activity_model, factor_momentum as factor_momentum_model,
     alternative_data as alternative_data_model, options_signal_engine as options_signal_model,
     spy_benchmark_model, bias_engine, comomentum as comomentum_model,
+    distress_scores as distress_scores_model,
 )
 from codes.models.analysis_snapshot import AnalysisType
 from codes.services.analysis_snapshot_service import save_standard_snapshot
@@ -127,6 +128,24 @@ def _attach_market_fear(result: dict) -> dict:
     return result
 
 
+def _attach_v21_distress_scores(result: dict) -> dict:
+    if not isinstance(result, dict) or result.get("error") or result.get("distress_scores"):
+        return result
+    symbol = result.get("symbol")
+    if not symbol:
+        return result
+    try:
+        sec_facts = sec_data.get_financials(symbol)
+        result["distress_scores"] = distress_scores_model.score(
+            result.get("price"),
+            sec_facts,
+            result.get("altman"),
+        )
+    except Exception as e:
+        print(f"V2.1 distress score backfill failed for {symbol}: {e}")
+    return result
+
+
 def is_production() -> bool:
     
     return os.environ.get("FLASK_ENV", "").lower() == "production"
@@ -158,6 +177,7 @@ def analyze_stock(symbol: str) -> dict:
         if symbol in _analysis_cache:
             cached_memory = _set_cache_metadata(_analysis_cache[symbol], True, "memory")
             _attach_market_fear(cached_memory)
+            _attach_v21_distress_scores(cached_memory)
             try:
                 save_standard_snapshot(cached_memory, analysis_type=AnalysisType.STANDARD)
             except Exception as e:
@@ -169,6 +189,7 @@ def analyze_stock(symbol: str) -> dict:
     if cached:
         _set_cache_metadata(cached, True, "database")
         _attach_market_fear(cached)
+        _attach_v21_distress_scores(cached)
         try:
             save_standard_snapshot(cached, analysis_type=AnalysisType.STANDARD)
         except Exception as e:
@@ -253,6 +274,7 @@ def analyze_stock(symbol: str) -> dict:
     # ── New quant modules ─────────────────────────────────────────────────
     piotroski_result = piotroski.score(sec_facts)
     altman_result = altman.score(price, sec_facts)
+    distress_scores_result = distress_scores_model.score(price, sec_facts, altman_result)
     risk_result = {"risk_score": 50, "risk_score_max": 100, "risk_criteria": []}
     if hist is not None and not hist.empty:
         try:
@@ -431,6 +453,7 @@ def analyze_stock(symbol: str) -> dict:
         # ── New ──────────────────────────────────────────
         "piotroski":   piotroski_result,
         "altman":      altman_result,
+        "distress_scores": distress_scores_result,
         "risk":        risk_result,
         "greenblatt":  greenblatt_result,
         "buffett":     buffett_result,

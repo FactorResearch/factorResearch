@@ -32,6 +32,7 @@ import hashlib
 import numpy as np
 import pandas as pd
 from codes.core import financial_math as fm
+from codes.models import portfolio_risk_analytics
 from .data import cache
 from .data import api_fetcher
 
@@ -778,10 +779,10 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
     cache_key = _simulation_key(user_id, portfolio_name)
     cached = cache.read("port_sim", cache_key)
     if cached:
-        return cached
+        return _attach_risk_analytics(cached)
     cached = _read_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
     if cached:
-        return cached
+        return _attach_risk_analytics(cached)
 
     bt = run_backtest(p)
     mc = run_montecarlo(p, bt)
@@ -792,9 +793,26 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
         "montecarlo":     mc,
         "holdings":       p["holdings"],
     }
+    _attach_risk_analytics(result)
 
     _write_cache_or_raise("port_sim", cache_key, result)
     return result
+
+
+def _attach_risk_analytics(simulation: dict) -> dict:
+    """Backfill V2.1 risk analytics onto fresh or cached simulations."""
+    if not isinstance(simulation, dict) or simulation.get("risk_analytics"):
+        return simulation
+    bt = simulation.get("backtest") or {}
+    simulation["risk_analytics"] = (
+        portfolio_risk_analytics.analyze_equity_curve(
+            bt.get("dates", []),
+            bt.get("portfolio_value", []),
+        )
+        if not bt.get("error") else
+        {"error": bt.get("error") or "Backtest unavailable"}
+    )
+    return simulation
 
 
 def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:

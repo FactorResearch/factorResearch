@@ -697,6 +697,97 @@ def _altman_card(data: dict) -> html.Div:
         ],
     )
 
+def _distress_zone_color(zone: str):
+    return {"low": GREEN, "elevated": AMBER, "high": RED, "unknown": MUTED}.get(zone, MUTED)
+
+
+def _distress_prob_text(model: dict) -> str:
+    value = model.get("probability")
+    return f"{value:.2f}%" if value is not None else "N/A"
+
+
+def _distress_zone_text(model: dict) -> str:
+    return str(model.get("zone", "unknown")).replace("_", " ").title()
+
+
+def _distress_component_rows(model: dict, labels: list[tuple[str, str]]) -> list:
+    comps = model.get("components") or {}
+    rows = []
+    for key, label in labels:
+        value = comps.get(key)
+        if isinstance(value, bool):
+            display = "Yes" if value else "No"
+        elif value is None:
+            display = "N/A"
+        else:
+            display = f"{value:.3f}"
+        rows.append(
+            _metric_data_row(
+                label,
+                html.Span(
+                    display,
+                    className=f"analysis-metric-value fw-600 {tone_class(TEXT if value is not None else MUTED)}",
+                ),
+            )
+        )
+    return rows
+
+
+def _ohlson_card(data: dict) -> html.Div:
+    """Ohlson O-Score card with component breakdown."""
+    d = data.get("distress_scores") or {}
+    o = d.get("ohlson") or {}
+    if not o:
+        return html.Div()
+    zone = o.get("zone", "unknown")
+    color = _distress_zone_color(zone)
+    labels = [
+        ("size_log_assets_millions", "Size — Log Assets ($M)"),
+        ("total_liabilities_to_assets", "Total Liabilities / Assets"),
+        ("working_capital_to_assets", "Working Capital / Assets"),
+        ("current_liabilities_to_assets", "Current Liabilities / Assets"),
+        ("net_income_to_assets", "Net Income / Assets"),
+        ("operating_cash_flow_to_liabilities", "Operating Cash Flow / Liabilities"),
+        ("liabilities_exceed_assets", "Liabilities Exceed Assets"),
+        ("two_year_losses", "Two Consecutive Loss Years"),
+        ("net_income_change", "Net Income Change"),
+    ]
+    return _metric_scorecard(
+        title="Ohlson O-Score",
+        score_text=f"O = {o.get('o_score'):.2f}" if o.get("o_score") is not None else "N/A",
+        score_color=color,
+        status_text=f"· {_distress_prob_text(o)} · {_distress_zone_text(o)}",
+        body_children=[
+            html.Div(o.get("note", ""), className="fs-12 clr-muted fsi mb-8"),
+            *_distress_component_rows(o, labels),
+        ],
+    )
+
+
+def _zmijewski_card(data: dict) -> html.Div:
+    """Zmijewski Score card with component breakdown."""
+    d = data.get("distress_scores") or {}
+    z = d.get("zmijewski") or {}
+    if not z:
+        return html.Div()
+    zone = z.get("zone", "unknown")
+    color = _distress_zone_color(zone)
+    labels = [
+        ("return_on_assets", "Return on Assets"),
+        ("liabilities_to_assets", "Liabilities / Assets"),
+        ("current_ratio", "Current Ratio"),
+    ]
+    return _metric_scorecard(
+        title="Zmijewski Score",
+        score_text=f"X = {z.get('x_score'):.2f}" if z.get("x_score") is not None else "N/A",
+        score_color=color,
+        status_text=f"· {_distress_prob_text(z)} · {_distress_zone_text(z)}",
+        body_children=[
+            html.Div(z.get("note", ""), className="fs-12 clr-muted fsi mb-8"),
+            *_distress_component_rows(z, labels),
+        ],
+    )
+
 def _risk_card(data: dict) -> html.Div:
     """Risk & performance metrics dashboard."""
     r = data.get("risk") or {}
@@ -1157,6 +1248,8 @@ _stat(
     
     piotroski_card = _piotroski_card(data)
     altman_card = _altman_card(data)
+    ohlson_card = _ohlson_card(data)
+    zmijewski_card = _zmijewski_card(data)
     risk_card = _risk_card(data)
     fcf_quality_card = _fcf_quality_card(data)
     market_fear_card = _market_fear_card(data)
@@ -1189,8 +1282,8 @@ _stat(
         (
             "analysis-health",
             "Financial Health",
-            [html.Div(className="quant_row", children=[piotroski_card, altman_card])]
-            if p_data and a_data else [],
+            [html.Div(className="quant_row", children=[piotroski_card, altman_card, ohlson_card, zmijewski_card])]
+            if p_data or a_data or data.get("distress_scores") else [],
         ),
         (
             "analysis-regime",

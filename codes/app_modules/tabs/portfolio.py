@@ -658,6 +658,12 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
         _comparison_holdings_table(bt_b),
     ))
 
+    # ── Side-by-side V2.1 risk analytics ─────────────────────────────────
+    sections.append(_two_col(
+        _portfolio_risk_card(sim_a.get("risk_analytics") or {}, color_a),
+        _portfolio_risk_card(sim_b.get("risk_analytics") or {}, color_b),
+    ))
+
     # ── Side-by-side weak-link analysis ──────────────────────────────────
     sections.append(_two_col(
         _comparison_weak_link_card(user_id, active, bt_a),
@@ -665,6 +671,113 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
     ))
 
     return sections
+
+
+def _risk_value(value, suffix="%", signed=False):
+    if value is None:
+        return "—"
+    sign = "+" if signed and value >= 0 else ""
+    return f"{sign}{value:.2f}{suffix}"
+
+
+def _portfolio_risk_card(risk: dict, color: str):
+    if not risk or risk.get("error"):
+        return html.Div(
+            f"⚠️ Risk analytics unavailable: {(risk or {}).get('error', 'unknown error')}",
+            className="clr-muted fs-13 py-8 px-4",
+        )
+
+    summary = html.Div(className="portfolio-stats-row", children=[
+        html.Div(className="stat-item", children=[
+            html.Div("Max Drawdown", className="stat-label"),
+            html.Div(_risk_value(risk.get("max_drawdown")), className="stat-value clr-red"),
+        ]),
+        html.Div(className="stat-item", children=[
+            html.Div("Downside Dev", className="stat-label"),
+            html.Div(_risk_value(risk.get("downside_deviation")), className="stat-value"),
+        ]),
+        html.Div(className="stat-item", children=[
+            html.Div("VaR 95%", className="stat-label"),
+            html.Div(_risk_value(risk.get("var_95")), className="stat-value clr-red"),
+        ]),
+        html.Div(className="stat-item", children=[
+            html.Div("CVaR 95%", className="stat-label"),
+            html.Div(_risk_value(risk.get("cvar_95")), className="stat-value clr-red"),
+        ]),
+        html.Div(className="stat-item", children=[
+            html.Div("Recovery", className="stat-label"),
+            html.Div(
+                "Unrecovered" if risk.get("recovery_time_months") is None else f"{risk.get('recovery_time_months')} mo",
+                className="stat-value",
+            ),
+        ]),
+        html.Div(className="stat-item", children=[
+            html.Div("Ulcer Index", className="stat-label"),
+            html.Div(_risk_value(risk.get("ulcer_index")), className="stat-value"),
+        ]),
+    ])
+
+    worst_rows = []
+    for label, key in (("Worst Month", "worst_month"), ("Worst Quarter", "worst_quarter"), ("Worst Year", "worst_year")):
+        item = risk.get(key)
+        worst_rows.append(html.Tr([
+            html.Td(label),
+            html.Td(item.get("period") if item else "—"),
+            html.Td(_risk_value(item.get("return") if item else None), className="clr-red"),
+        ]))
+
+    drawdown = risk.get("underwater") or []
+    fig_dd = go.Figure()
+    if drawdown:
+        fig_dd.add_trace(go.Scatter(
+            x=[item["date"] for item in drawdown],
+            y=[item["value"] for item in drawdown],
+            name="Drawdown",
+            fill="tozeroy",
+            line=dict(color=RED, width=2),
+        ))
+        fig_dd.update_layout(**_chart_layout("Underwater Chart", many_traces=False))
+        fig_dd.update_yaxes(title_text="Drawdown (%)")
+
+    rolling_sharpe = [p for p in (risk.get("rolling_sharpe") or []) if p.get("value") is not None]
+    rolling_sortino = [p for p in (risk.get("rolling_sortino") or []) if p.get("value") is not None]
+    fig_roll = go.Figure()
+    if rolling_sharpe:
+        fig_roll.add_trace(go.Scatter(
+            x=[item["date"] for item in rolling_sharpe],
+            y=[item["value"] for item in rolling_sharpe],
+            name="Rolling Sharpe",
+            line=dict(color=color, width=2),
+        ))
+    if rolling_sortino:
+        fig_roll.add_trace(go.Scatter(
+            x=[item["date"] for item in rolling_sortino],
+            y=[item["value"] for item in rolling_sortino],
+            name="Rolling Sortino",
+            line=dict(color=GREEN, width=2),
+        ))
+    if rolling_sharpe or rolling_sortino:
+        fig_roll.update_layout(**_chart_layout("Rolling Risk-Adjusted Return", many_traces=True))
+        fig_roll.update_yaxes(title_text="Ratio")
+
+    children = [
+        html.Div("V2.1 Risk Analytics", className="scorecard-header"),
+        summary,
+        html.Table(className="screener-table mt-12", children=[
+            html.Thead(html.Tr([html.Th("Period"), html.Th("Date"), html.Th("Return")])),
+            html.Tbody(worst_rows),
+        ]),
+        html.Div(
+            f"Recovery Factor: {_risk_value(risk.get('recovery_factor'), suffix='')}",
+            className="fs-12 clr-muted mt-10 px-4",
+        ),
+    ]
+    if drawdown:
+        children.append(dcc.Graph(figure=fig_dd, config={"displayModeBar": False}))
+    if rolling_sharpe or rolling_sortino:
+        children.append(dcc.Graph(figure=fig_roll, config={"displayModeBar": False}))
+
+    return html.Div(className="scorecard", children=children)
 
 
 # ── Run simulation ────────────────────────────────────────────────────────────
@@ -716,6 +829,7 @@ def run_simulation(n, active, compare):
             return [html.Div(f"❌ {sim['error']}", className="text-danger")]
         bt = sim["backtest"]
         mc = sim["montecarlo"]
+        risk = sim.get("risk_analytics") or {}
         components = []
         # ── Summary stats row ──────────────────────────────────────────────
         def _delta(val, ref):
@@ -773,6 +887,7 @@ def run_simulation(n, active, compare):
             fig_bt.update_layout(**_chart_layout(f"{port_name} — 10yr Backtest vs SPY (actual $)", many_traces=True))
             fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
             components.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
+            components.append(_portfolio_risk_card(risk, color))
         # ── Monte Carlo chart ──────────────────────────────────────────────
         if not mc.get("error"):
             fig_mc = go.Figure()
