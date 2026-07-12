@@ -30,20 +30,36 @@
           <div><input aria-label="Email address" name="email" type="email" placeholder="Enter your email address" required autocomplete="email"><button>Join Waitlist <span>→</span></button></div>
           <small>✓ No spam &nbsp;&nbsp; ✓ Early access &nbsp;&nbsp; ✓ Launch discounts</small>
           {% if request.args.get('waitlist') == 'confirmed' %}<p class="waitlist-result success">You're on the list — check your inbox for confirmation.</p>{% endif %}
+          {% if request.args.get('waitlist') == 'confirmed_no_email' %}<p class="waitlist-result success">You're on the list. Confirmation email is temporarily unavailable.</p>{% endif %}
           {% if request.args.get('waitlist') == 'already_confirmed' %}<p class="waitlist-result">You're already on the waitlist.</p>{% endif %}
           {% if request.args.get('waitlist') == 'invalid' %}<p class="waitlist-result error">Enter a valid email address.</p>{% endif %}
           {% if request.args.get('waitlist') == 'email_unavailable' %}<p class="waitlist-result error">We couldn't send confirmation right now. Please try again shortly.</p>{% endif %}
         </form>
       </div>
       {% if style == 'pre-b' %}
-      <aside class="product-preview"><div class="preview-nav">⌕&nbsp; Search any stock (e.g. AAPL, MSFT...)</div><h2>AAPL <small>Apple Inc.</small></h2><div class="preview-grid"><strong>Overall Score<br><b>72</b> /100</strong><div class="radar">◇</div><strong>Intrinsic Value<br><b>$198.45</b><em>+13.2%</em></strong></div><div class="preview-stats">Market Cap <b>$2.85T</b> &nbsp; P/E Ratio <b>28.4</b> &nbsp; ROE <b>26.1%</b></div></aside>
+      <aside class="product-preview product-preview-analysis" aria-label="Apple analysis preview">
+        <div class="preview-nav">Analyze / AAPL / Apple Inc.</div>
+        <div class="preview-title-row">
+          <div><span class="preview-kicker">FactorResearch Analysis</span><h2>AAPL <small>Apple Inc.</small></h2></div>
+          <strong class="preview-price">$195.64 <em>+1.24%</em></strong>
+        </div>
+        <div class="preview-score-grid">
+          <article><span>Composite Score</span><b>72</b><small>/100</small></article>
+          <article><span>Intrinsic Value</span><b>$198.45</b><em>+1.4% margin</em></article>
+          <article><span>Financial Health</span><b>7</b><small>/9</small></article>
+        </div>
+        <div class="preview-model-list">
+          <span>Analysis Models</span>
+          <p>Value Quality Momentum Risk Profitability Growth</p>
+        </div>
+      </aside>
       {% endif %}
     </section>
     {% if style == 'pre-a' %}
     <section class="benefits"><article>✉<b>Launch Updates</b><span>Get notified as soon as we go live.</span></article><article>⌕<b>Early Access</b><span>Be among the first to try Research Factor.</span></article><article>▣<b>Exclusive Insights</b><span>Receive original research and market perspectives.</span></article><article>✓<b>Built for Investors</b><span>Designed by investors, for investors.</span></article></section>
     <blockquote>“ The goal of investing is not to beat others at their game.<br>The goal is to control yourself at your own game. ”<cite>— Benjamin Graham</cite></blockquote>
     {% else %}
-    <aside class="expect"><h2>What you<br>can expect</h2><p>⌁ &nbsp;20+ Proven Analysis Models</p><p>☷ &nbsp;Custom Weights & Backtesting</p><p>◴ &nbsp;Portfolio Management</p><p>⌁ &nbsp;Historical Analysis & Tracking</p><p>♢ &nbsp;Clear Explanations You Can Trust</p></aside>
+    <aside class="expect"><h2>What you can expect</h2><p>20+ Proven Analysis Models</p><p>Custom Weights & Backtesting</p><p>Portfolio Management</p><p>Historical Analysis & Tracking</p><p>Clear Explanations You Can Trust</p></aside>
     {% endif %}
   </main>
   {% else %}

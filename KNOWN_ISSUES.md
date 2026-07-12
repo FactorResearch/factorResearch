@@ -3089,7 +3089,7 @@ ISSUE: we currently have none of these pages, they must be created with looks an
 
 
 # ISSUE_037- sign up not working
-status:[]
+status:[x]
 category: pre landing pages
 files: http://127.0.0.1:8050/landing/pre-a , http://127.0.0.1:8050/landing/pre-b
 ISSUE: both page currently throw an error when user try to sign up, pre-b has visual bug issue the apple analyze demo is broken and does not match our own view, and "What you

@@ -45,3 +45,48 @@ def test_waitlist_submission_captures_email_and_variant(monkeypatch):
     assert response.status_code == 302
     assert response.headers["Location"].endswith("/landing/pre-b?waitlist=confirmed")
     assert captured == {"email": "investor@example.com", "source": "pre-b"}
+
+
+def test_waitlist_submission_shows_success_when_email_confirmation_is_unavailable(monkeypatch):
+    client = _client(monkeypatch)
+
+    def subscribe(email, source):
+        return "confirmed_no_email"
+
+    monkeypatch.setattr("codes.landing_pages.waitlist.subscribe", subscribe)
+    response = client.post("/landing/waitlist", data={"email": "investor@example.com", "variant": "pre-b"})
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/landing/pre-b?waitlist=confirmed_no_email")
+
+    page = client.get("/landing/pre-b?waitlist=confirmed_no_email")
+    assert "You're on the list. Confirmation email is temporarily unavailable." in page.get_data(as_text=True)
+
+
+def test_waitlist_submission_does_not_crash_when_backend_is_unavailable(monkeypatch):
+    client = _client(monkeypatch)
+
+    def subscribe(email, source):
+        raise RuntimeError("DATABASE_USERS_URL is not set")
+
+    monkeypatch.setattr("codes.landing_pages.waitlist.subscribe", subscribe)
+    response = client.post("/landing/waitlist", data={"email": "investor@example.com", "variant": "pre-a"})
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/landing/pre-a?waitlist=email_unavailable")
+
+
+def test_pre_b_renders_app_like_preview_and_expect_panel(monkeypatch):
+    response = _client(monkeypatch).get("/landing/pre-b")
+    body = response.get_data(as_text=True)
+
+    assert response.status_code == 200
+    assert "product-preview-analysis" in body
+    assert "FactorResearch Analysis" in body
+    assert "Composite Score" in body
+    assert "Intrinsic Value" in body
+    assert "<h2>What you can expect</h2>" in body
+    assert "What you<br>can expect" not in body
+    assert "◇" not in body
+    assert "<style" not in body
+    assert "style=" not in body
