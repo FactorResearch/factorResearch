@@ -79,23 +79,14 @@ def delete_account():
     security.SECURITY_LOGGER.info(f"Right-to-erasure completed for user {user_id}")
     return flask.jsonify(summary)
 
-_LEGAL_PLACEHOLDER_NOTICE = (
-    "<p class='legal-placeholder-notice'>PLACEHOLDER TEXT - NOT REVIEWED BY LEGAL COUNSEL. "
-    "Do not rely on this page for compliance. Replace before public launch.</p>"
-)
-
 @server.route("/terms")
 def terms_page():
-    return render_template(
-        "terms.html",
-        legal_notice=_LEGAL_PLACEHOLDER_NOTICE
-    )
+    return render_template("terms.html")
 
 @server.route("/privacy")
 def privacy_page():
     return render_template(
         "privacy.html",
-        legal_notice=_LEGAL_PLACEHOLDER_NOTICE,
         analytics_opt_out=product_analytics.is_tracking_opted_out(),
     )
 
@@ -187,7 +178,7 @@ app.index_string = app.index_string.replace(
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
-    'const APP_VERSION = "v4.2";'  # bump this on each deploy
+    'const APP_VERSION = "v4.5";'  # bump this on each deploy
     'if (localStorage.getItem("app_version") !== APP_VERSION) {'
     '    localStorage.setItem("app_version", APP_VERSION);'
     '    location.reload(true);'

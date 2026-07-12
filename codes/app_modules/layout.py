@@ -48,6 +48,54 @@ def _topbar():
     ])
 
 
+def _legal_terms_content():
+    return [
+        html.P("FactorResearch provides research tools, scoring models, screeners, portfolio analytics, and educational content for self-directed investors.", className="legal-modal-lead"),
+        html.H3("No Investment Advice"),
+        html.P("The Service is not a registered investment adviser, broker-dealer, tax adviser, or legal adviser. Scores, rankings, forecasts, alerts, and model outputs are informational only and are not personalized recommendations."),
+        html.H3("Market Data and Model Risk"),
+        html.P("Financial data may come from public filings, third-party providers, cached calculations, and derived models. Data can be delayed, incomplete, inaccurate, or unavailable. Past performance and backtests do not guarantee future results."),
+        html.H3("Accounts, Payments, and Access"),
+        html.P("You are responsible for account security and lawful use. Paid features depend on billing status and product access rules. Plan access may change if billing, abuse prevention, or product requirements change."),
+        html.H3("Limitation of Liability"),
+        html.P("FactorResearch is provided as is without warranties. We are not liable for investment losses, missed opportunities, data outages, provider errors, or indirect damages arising from use of the Service."),
+    ]
+
+
+def _legal_privacy_content():
+    return [
+        html.P("We collect account identifiers, authentication session data, portfolio names and holdings, feature usage, billing status, waitlist submissions, and product analytics events.", className="legal-modal-lead"),
+        html.H3("How Information Is Used"),
+        html.P("Information is used to operate the app, save portfolios, enforce feature limits, process billing status, prevent abuse, improve product flows, and troubleshoot reliability issues."),
+        html.H3("Analytics and Providers"),
+        html.P("Product analytics can be disabled from the full Privacy Policy page. We may use infrastructure, authentication, analytics, email, market-data, and payment providers to operate the Service. We do not sell personal information."),
+        html.H3("Retention and Deletion"),
+        html.P("We keep data while needed to provide the Service, satisfy billing or security requirements, and maintain product records. Account deletion removes portfolios and session-linked user data through the account deletion flow."),
+        html.H3("Security"),
+        html.P("We use reasonable technical controls, but no internet service can be guaranteed secure. Do not submit private brokerage passwords or sensitive financial account credentials."),
+    ]
+
+
+def _legal_modal(modal_id, title, full_page_href, children):
+    return html.Section(id=modal_id, className="legal-modal-overlay", children=[
+        html.A(className="legal-modal-backdrop", href="#", **{"aria-label": "Close legal dialog"}),
+        html.Div(className="legal-modal-card", role="dialog", **{"aria-modal": "true", "aria-labelledby": f"{modal_id}-title"}, children=[
+            html.Div(className="legal-modal-header", children=[
+                html.Div([
+                    html.P("FactorResearch legal", className="legal-modal-kicker"),
+                    html.H2(title, id=f"{modal_id}-title"),
+                ]),
+                html.A("Close", href="#", className="legal-modal-close"),
+            ]),
+            html.Div(className="legal-modal-body", children=children),
+            html.Div(className="legal-modal-actions", children=[
+                html.A("Open full page", href=full_page_href, className="legal-modal-primary"),
+                html.A("Close", href="#", className="legal-modal-secondary"),
+            ]),
+        ]),
+    ])
+
+
 def build_layout():
     return html.Div(className="app-container", children=[
         dcc.Location(id="url", refresh=False),
@@ -279,12 +327,15 @@ def build_layout():
         ]),
         html.Div(id="tab-pricing", className="main-content d-none", children=[]),
 
-        # Legal footer (ISSUE_013) — routes are placeholders until ToS/Privacy pages exist.
+        _legal_modal("legal-terms", "Terms of Service", "/terms", _legal_terms_content()),
+        _legal_modal("legal-privacy", "Privacy Policy", "/privacy", _legal_privacy_content()),
+
+        # Legal footer
         html.Div(className="app-footer tac p-16 fs-11 clr-muted", children=[
             html.Span("© Factor Research · "),
-            html.A("Terms of Service", href="/terms", className="clr-muted"),
+            html.A("Terms of Service", href="#legal-terms", className="clr-muted"),
             html.Span(" · "),
-            html.A("Privacy Policy", href="/privacy", className="clr-muted"),
+            html.A("Privacy Policy", href="#legal-privacy", className="clr-muted"),
             html.Span(" · Not financial advice."),
         ]),
 

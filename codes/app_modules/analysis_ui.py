@@ -1197,7 +1197,7 @@ _stat(
             "Regime & Cash Flow",
             [
                 html.Div(className="card-row", children=[market_fear_card, regime_card]),
-                html.Div(className="card-row", children=[fcf_quality_card]),
+                html.Div(className="card-row", children=[fcf_quality_card, factor_momentum_card]),
             ],
         ),
         (
@@ -1210,7 +1210,6 @@ _stat(
             "Signals",
             [
                 html.Div(className="card-row", children=[_insider_activity_card(data), alternative_data_card]),
-                
             ],
         ),
         (

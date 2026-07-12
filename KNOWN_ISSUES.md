@@ -2859,7 +2859,7 @@ implementation status:
 - [ ] Phase 4 — add freshness/source timestamps and a background refresh job before treating alternative data as production-ready.
 
 # ISSUE_030:
-**Status:** []
+**Status:** [x]
 title: TOC and Privacy
 
 context: both page are currenlty empty and open in new page
@@ -3056,7 +3056,7 @@ Align Stripe with 2-tier system:
 
 
 # ISSUE_032 - UI BUG:
-Status: []
+Status: [x]
 category: UI
 
 ISSUE : footer shows up in middle of the page, and it has a white background
@@ -3107,12 +3107,18 @@ ISSUE:
   - in dark mode some labels are white some are greyish , unify them all to #8899aa
 
 # ISSUE_039- option removed
-status:[]
+status:[x]
 category: UI
 files: screener.py
 ISSUE: 
   - option engine is not ready so it has to be removed, i have removed the card but the analytic tab needs to be ordered correctly, preffered to keep everything as pair
 
+# ISSUE_040- Email template
+status:[]
+category: email
+files: 
+ISSUE: 
+  - create email tempalate which will be used later, we will use to send people whom sign up in wait list that app is ready and for future communications
  
 # AI EXECUTION PROTOCOL
 
