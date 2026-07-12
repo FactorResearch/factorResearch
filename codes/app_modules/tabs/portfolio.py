@@ -296,6 +296,13 @@ def render_portfolio_holdings(active, refresh):
                 n_clicks=0,
                 disabled=(count == 0),
             ),
+            html.Button(
+                "Optimize",
+                id="optimize-portfolio-btn",
+                className="portfolio-action-btn",
+                n_clicks=0,
+                disabled=(count == 0),
+            ),
         ])
         body = html.Div([summary_cards, table, actions])
     return html.Div([header, body])
@@ -667,6 +674,117 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
     return sections
 
 
+def _format_pct(value) -> str:
+    if value is None:
+        return "—"
+    return f"{float(value) * 100:.1f}%"
+
+
+def _optimizer_method_label(key: str) -> str:
+    labels = {
+        "current": "Current",
+        "mean_variance": "Mean-Variance",
+        "max_sharpe": "Maximum Sharpe",
+        "min_variance": "Minimum Variance",
+        "risk_parity": "Risk Parity",
+    }
+    return labels.get(key, key.replace("_", " ").title())
+
+
+def _build_optimization_view(result: dict) -> list:
+    if result.get("error"):
+        return [html.Div(f"❌ {result['error']}", className="text-danger")]
+
+    methods = result.get("methods", {})
+    symbols = result.get("symbols", [])
+    method_order = ["current", "mean_variance", "max_sharpe", "min_variance", "risk_parity"]
+
+    summary_rows = []
+    for key in method_order:
+        method = methods.get(key)
+        if not method:
+            continue
+        sharpe = method.get("sharpe")
+        sharpe_class = (
+            "clr-green" if sharpe is not None and sharpe >= 1.0 else
+            "clr-amber" if sharpe is not None and sharpe >= 0 else
+            "clr-red" if sharpe is not None else
+            "clr-muted"
+        )
+        summary_rows.append(html.Tr([
+            html.Td(_optimizer_method_label(key), className="font-semibold"),
+            html.Td(f"{method.get('expected_return', 0):+.2f}%"),
+            html.Td(f"{method.get('volatility', 0):.2f}%"),
+            html.Td("—" if sharpe is None else f"{sharpe:.3f}", className=sharpe_class),
+        ]))
+
+    allocation_rows = []
+    for symbol in symbols:
+        cells = [html.Td(symbol, className="font-semibold text-info")]
+        for key in method_order:
+            method = methods.get(key) or {}
+            cells.append(html.Td(_format_pct((method.get("weights") or {}).get(symbol))))
+        allocation_rows.append(html.Tr(cells))
+
+    sections = [
+        html.Div(
+            f"Portfolio Optimization — {result.get('portfolio_name', '')}",
+            className="scorecard-header mt-24 fs-16",
+        ),
+        html.Div(className="portfolio-stats-row", children=[
+            html.Div(className="stat-item", children=[
+                html.Div("Assets", className="stat-label"),
+                html.Div(str(len(symbols)), className="stat-value"),
+            ]),
+            html.Div(className="stat-item", children=[
+                html.Div("History", className="stat-label"),
+                html.Div(f"{result.get('n_months', 0)} months", className="stat-value"),
+            ]),
+            html.Div(className="stat-item", children=[
+                html.Div("Risk-Free Rate", className="stat-label"),
+                html.Div(f"{result.get('risk_free_rate', 0) * 100:.2f}%", className="stat-value"),
+            ]),
+        ]),
+        html.Div(className="scorecard", children=[
+            html.Div("Optimizer Metrics", className="scorecard-header"),
+            html.Table(className="screener-table", children=[
+                html.Thead(html.Tr([
+                    html.Th("Method"),
+                    html.Th("Expected Return"),
+                    html.Th("Volatility"),
+                    html.Th("Sharpe"),
+                ])),
+                html.Tbody(summary_rows),
+            ]),
+        ]),
+        html.Div(className="scorecard", children=[
+            html.Div("Suggested Allocation", className="scorecard-header"),
+            html.Table(className="screener-table", children=[
+                html.Thead(html.Tr([
+                    html.Th("Ticker"),
+                    html.Th("Current"),
+                    html.Th("Mean-Variance"),
+                    html.Th("Max Sharpe"),
+                    html.Th("Min Variance"),
+                    html.Th("Risk Parity"),
+                ])),
+                html.Tbody(allocation_rows),
+            ]),
+            html.Div(
+                "Advisory output only. Optimized weights do not change portfolio holdings.",
+                className="analysis-copy-leading fs-11 clr-muted mt-10 px-4",
+            ),
+        ]),
+    ]
+    excluded = result.get("excluded_symbols") or []
+    if excluded:
+        sections.append(html.Div(
+            f"Excluded for insufficient history: {', '.join(excluded)}",
+            className="clr-muted fs-12 mt-8 px-4",
+        ))
+    return sections
+
+
 # ── Run simulation ────────────────────────────────────────────────────────────
 @callback(
     Output("portfolio-sim-results", "children"),
@@ -967,3 +1085,49 @@ def run_simulation(n, active, compare):
                                          usage_key=f"portfolio:{active}")
         product_analytics.track_event(uid, "backtest_completed", {"source": "portfolio", "portfolio_name": active})
     return result, None
+
+
+# ── Optimize portfolio ────────────────────────────────────────────────────────
+@callback(
+    Output("portfolio-sim-results", "children", allow_duplicate=True),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Input("optimize-portfolio-btn", "n_clicks"),
+    State("portfolio-active-dropdown", "value"),
+    prevent_initial_call=True,
+)
+def optimize_portfolio(n, active):
+    if not n or not active:
+        return [], None
+    uid = get_user_id()
+    access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
+    if not access.allowed:
+        product_analytics.track_event(
+            uid,
+            "upgrade_viewed",
+            {"feature": "portfolio_analytics", "source": "portfolio_optimize_lock", "plan": "premium"},
+        )
+        return FeatureLockedModal(
+            feature="portfolio_analytics",
+            source="portfolio_optimize_lock",
+        ), open_upgrade_funnel(
+            feature="portfolio_analytics",
+            feature_label="Portfolio analytics",
+            reason=access.message,
+            source="portfolio_optimize_lock",
+        )
+    product_analytics.track_event(uid, "portfolio_optimization_started", {"portfolio_name": active})
+    result = portfolio_engine.optimize_portfolio(uid, active)
+    if result.get("error"):
+        product_analytics.track_event(
+            uid,
+            "portfolio_optimization_failed",
+            {"portfolio_name": active, "reason": result["error"]},
+        )
+    else:
+        product_analytics.track_event(uid, "portfolio_optimization_completed", {"portfolio_name": active})
+        permissions.record_feature_usage(
+            uid,
+            permissions.Feature.PORTFOLIO_ANALYTICS,
+            usage_key=f"portfolio_optimize:{active}",
+        )
+    return _build_optimization_view(result), None

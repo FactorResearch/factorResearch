@@ -32,6 +32,7 @@ import hashlib
 import numpy as np
 import pandas as pd
 from codes.core import financial_math as fm
+from codes.models.portfolio_optimization import optimize_portfolio as run_portfolio_optimizers
 from .data import cache
 from .data import api_fetcher
 
@@ -795,6 +796,77 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
 
     _write_cache_or_raise("port_sim", cache_key, result)
     return result
+
+
+def optimize_portfolio(user_id: str, portfolio_name: str) -> dict:
+    """
+    Run V2.0 advisory portfolio optimization for a saved portfolio.
+
+    This does not mutate holdings. It derives current weights from the stored
+    share count and price_at_add, then compares them with optimized allocations.
+    """
+    p = load_portfolio(user_id, portfolio_name)
+    if p is None:
+        return {"error": f'Portfolio "{portfolio_name}" not found'}
+
+    holdings = p.get("holdings", {})
+    if not holdings:
+        return {"error": "Portfolio is empty"}
+
+    symbols = list(holdings.keys())
+    histories: dict[str, pd.DataFrame] = {}
+    missing: list[str] = []
+    for symbol in symbols:
+        history = _load_history(symbol)
+        if history.empty or len(history) < 12:
+            missing.append(symbol)
+        else:
+            histories[symbol] = history
+
+    if not histories:
+        return {"error": "No holdings have enough price history to optimize"}
+
+    wide = _align_histories(histories)
+    if wide.empty or len(wide) < 13:
+        return {"error": "Insufficient overlapping price history"}
+
+    returns = (
+        wide.set_index("Date")[list(histories.keys())]
+        .pct_change()
+        .replace([np.inf, -np.inf], np.nan)
+        .dropna()
+    )
+    if returns.empty or len(returns) < 6:
+        return {"error": "Insufficient overlapping return history"}
+
+    current_weights = _current_portfolio_weights(holdings, list(returns.columns))
+    result = run_portfolio_optimizers(returns, current_weights)
+    if result.get("error"):
+        return result
+
+    result.update({
+        "portfolio_name": portfolio_name,
+        "available_symbols": list(returns.columns),
+        "excluded_symbols": missing,
+    })
+    return result
+
+
+def _current_portfolio_weights(holdings: dict, symbols: list[str]) -> dict[str, float]:
+    values: dict[str, float] = {}
+    for symbol in symbols:
+        holding = holdings.get(symbol, {})
+        try:
+            shares = float(holding.get("shares") or 0.0)
+            price = float(holding.get("price_at_add") or 0.0)
+        except (TypeError, ValueError):
+            shares = price = 0.0
+        values[symbol] = max(shares * price, 0.0)
+
+    total = sum(values.values())
+    if total <= 0 and symbols:
+        return {symbol: 1.0 / len(symbols) for symbol in symbols}
+    return {symbol: value / total for symbol, value in values.items()}
 
 
 def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
