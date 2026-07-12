@@ -4,8 +4,13 @@
   font-weight: 600;
 }
 
-.waitlist-result.success { color: #087f3f; }
-.waitlist-result.error { color: #b42318; }
+.waitlist-result.success {
+  color: #087f3f;
+}
+
+.waitlist-result.error {
+  color: #b42318;
+}
 
 .pre-b .pre-main {
   overflow: visible;
@@ -176,19 +181,16 @@
   .pre-b .pre-hero {
     padding-right: 24px;
   }
-
   .pre-b .product-preview-analysis {
     width: 100%;
   }
 }
-
 @media (max-width: 680px) {
   .preview-title-row,
   .preview-score-grid {
     grid-template-columns: 1fr;
   }
-
   .preview-title-row {
     display: grid;
   }
-}
+}/*# sourceMappingURL=waitlist.css.map */

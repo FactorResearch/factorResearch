@@ -27,6 +27,30 @@ body:not(.light) .app-container {
   background: $bg;
 }
 
+.dash-dropdown-content {
+  background: #111620;
+
+  .dash-options-list-option {
+    font-family: "DM Mono", "Fira Code", monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    min-height: 32px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(74, 85, 104, 0.22);
+    background: rgba(74, 85, 104, 0.06);
+    color: #8899aa;
+    cursor: pointer;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    touch-action: manipulation;
+  }
+
+  .dash-dropdown-grid-container {
+    background: #111620;
+  }
+}
+
 // ── Light Theme ─────────────────────────────────────────────────────────────
 body.light {
   background: $light-bg;
@@ -37,13 +61,24 @@ body.light {
   .app-container,
   .main-content,
   .screener-content,
+  .js-plotly-plot,
+  .accordion-item,
+  .screener-toolbar,
+  .screener-controls,
   .dash-table-container,
   .dash-spreadsheet-container,
   .dash-graph,
-  .js-plotly-plot {
+  .dash-dropdown-content,
+  .dash-dropdown-grid-container,
+  .dash-dropdown-search,
+  .dash-dropdown-options,.portfolio-name-badge{
     background: $light-bg;
     color: $light-text;
   }
+  .accordion-value{
+    color: #0f172a;
+  }
+
 
   .app-container {
     background: $light-bg;
@@ -76,17 +111,17 @@ body.light {
     }
   }
 
-  .screener-toolbar {
-    background: $light-surface;
-    border-color: $light-border;
-    border-left-color: $light-blue;
-  }
+  // .screener-toolbar {
+  //   background: $light-surface;
+  //   border-color: $light-border;
+  //   border-left-color: $light-blue;
+  // }
 
   .screener-table-wrap {
     background: $light-card;
     border-color: $light-border;
   }
-  
+
   .screener-country-tab {
     background: $light-surface;
     border-color: $light-border;

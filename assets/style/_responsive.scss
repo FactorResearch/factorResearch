@@ -1,5 +1,6 @@
 @use 'tokens' as *;
 @use 'helpers' as *;
+@use '../media' as media;
 
 img,
 svg,
@@ -23,7 +24,7 @@ canvas {
   max-height: 500px;
 }
 
-@media (max-width: $tablet) {
+@include media.tablet {
   .app-container {
     padding: 0 16px;
   }
@@ -45,9 +46,13 @@ canvas {
   .score-bar {
     max-width: 100%;
   }
+
+  .screener-controls {
+    flex-wrap: nowrap;
+  }
 }
 
-@media (max-width: $mobile) {
+@include media.phones {
 
   .dash-graph,
   .js-plotly-plot {
@@ -84,23 +89,32 @@ canvas {
     margin: 0 2px;
   }
 
-  .screener-toolbar {
-    flex-direction: column;
-    align-items: stretch;
+  .screener {
+    &-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    &-controls {
+      width: 100%;
+      flex-wrap: wrap;
+      flex-direction: column;
+              padding: 16px 0px;
+    }
+
+    &-container {
+      max-width: 100%;
+    }
   }
 
-  .screener-controls {
-    width: 100%;
-    flex-wrap: wrap;
+  .search {
+    &-input-wrapper {
+      flex-direction: column;
+    }
+
   }
 
-  .search-container {
-    max-width: 100%;
-  }
 
-  .search-input-wrapper {
-    flex-direction: column;
-  }
 
   .ticker-input {
     width: 100%;
@@ -173,7 +187,7 @@ canvas {
   }
 }
 
-@media (max-width: $small-mobile) {
+@include media.sm-phones {
   .app-header-content h1 {
     font-size: 16px;
   }
@@ -191,13 +205,19 @@ canvas {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+@include media.xs-phones{
+  .topbar-nav{
+            justify-content: flex-start;
+        overflow: overlay;
+  }
+}
 
 .quantRow {
   display: flex;
   flex-direction: row;
   gap: 16px;
 
-  @media (max-width: $mobile) {
+  @include media.phones {
     flex-direction: column;
   }
 }

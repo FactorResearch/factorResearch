@@ -81,7 +81,7 @@ body.legal-page {
 
 .legal-modal-card {
   position: relative;
-  width: min(760px, calc(100vw - 32px));
+  width: min(760px, 100vw - 32px);
   max-height: min(82vh, 760px);
   display: flex;
   flex-direction: column;
@@ -194,4 +194,4 @@ body.light .legal-modal-secondary {
     align-items: stretch;
     flex-direction: column;
   }
-}
+}/*# sourceMappingURL=legal_pages.css.map */
