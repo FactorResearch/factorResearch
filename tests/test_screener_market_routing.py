@@ -28,6 +28,14 @@ def test_disabled_or_unknown_market_routes_use_enabled_default(monkeypatch, tmp_
     assert screener_markets.market_from_path("/").code == "US"
 
 
+def test_netherlands_route_is_available_only_when_enabled(monkeypatch, tmp_path):
+    _set_enabled_markets(monkeypatch, tmp_path, {"US": True, "CA": False, "NL": True})
+
+    assert screener_markets.market_from_path("/screener/nl").code == "NL"
+    assert screener_markets.market_from_path("/screener/netherlands").code == "NL"
+    assert screener_markets.market_path("NL") == "/screener/nl"
+
+
 def test_market_row_matching_prefers_canonical_market_fields(monkeypatch, tmp_path):
     _set_enabled_markets(monkeypatch, tmp_path, {"US": True, "CA": True})
 
