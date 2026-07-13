@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" aria-label="Germany">
+  <path d="M0 0h3v.667H0z" fill="#000"/>
+  <path d="M0 .667h3v.667H0z" fill="#dd0000"/>
+  <path d="M0 1.333h3v.667H0z" fill="#ffce00"/>
+</svg>

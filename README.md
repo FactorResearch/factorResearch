@@ -11,18 +11,25 @@ expansion through provider-neutral financial models.
 > Do not advertise, sell, promise, enable, or publish Canada support until every
 > Canada release gate in this README has written evidence and final approval.
 
+> **GERMANY IS INTERNAL-ONLY. THERE IS NO GERMANY LAUNCH DATE.**
+>
+> Do not advertise, sell, promise, enable, or publish Germany support until the
+> source, licensing, coverage, and organization gates in
+> `docs/track_b_germany.md` have written evidence and final approval.
+
 The committed default in `feature_flags.json` is:
 
 ```json
 {
   "markets": {
     "US": true,
-    "CA": false
+    "CA": false,
+    "DE": false
   }
 }
 ```
 
-Keep `CA` set to `false` in every public branch and deployment. A successful
+Keep `CA` and `DE` set to `false` in every public branch and deployment. A successful
 worker message such as `public_score_ready` means that one issuer passed the
 fact-level source and quality checks. It does **not** mean the Canada product is
 licensed, complete, audited, or approved for release.
@@ -86,9 +93,12 @@ before signing an agreement or approving a release.
 - `codes/data/providers/canada_sec.py`: authoritative SEC path for eligible
   Canadian cross-listed issuers.
 - `codes/workers/canada_ingest_worker.py`: Canada acquisition/import CLI.
+- `codes/workers/germany_ingest_worker.py`: Germany verified-source import CLI.
 - `feature_flags.json`: application tier and market visibility switches.
 - `docs/track_b_canada.md`: Canada architecture and ingestion details.
 - `docs/release_canada.md`: Canada branch release notes.
+- `docs/track_b_germany.md`: Germany architecture, ingestion, and release gates.
+- `docs/release_germany.md`: Germany branch release notes.
 - `roadMap.md`: product and country release standards.
 - `Publish.md`: broader pre-launch work.
 - `SECURITY_CHECKLIST.md`: security controls and outstanding validation.
