@@ -69,6 +69,22 @@ commercial storage, redistribution, or derived-data rights. Recheck source
 terms immediately before contracting because terms, products, and contacts can
 change.
 
+## Licensing Contact Directory
+
+Contacts below were verified against official sites on 2026-07-13. Recheck them
+immediately before sending a request or signing an agreement.
+
+- Deutsche Borse Market Data + Services: email `data.services@deutsche-boerse.com`.
+  Use the [Market Data + Services contact page](https://www.mds.deutsche-boerse.com/mds-en/contact).
+  This is the commercial contact for Xetra/Frankfurt reference, price,
+  corporate-action, display, redistribution, and derived-data rights.
+- Deutsche Borse data-use approvals: email `mds.agreements@deutsche-boerse.com`.
+  Use the [Data Usage Declaration and approval page](https://www.mds.deutsche-boerse.com/mds-en/real-time-data/data-usage-declaration)
+  when the proposed product involves data-feed/API onward dissemination.
+- BaFin, Bundesanzeiger, Unternehmensregister, and issuer sources: use their
+  current official contact routes for filing-access and reuse questions. They
+  are not substitutes for a Deutsche Borse market-data licence.
+
 ## Data Acceptance Contract
 
 Only source exports with all files below may be imported:
