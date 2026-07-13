@@ -143,3 +143,32 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
 
     assert "No Canada screener data loaded yet" in str(table_container)
     assert "Loading in background" not in str(table_container)
+
+
+def test_canada_country_switch_rerenders_even_when_state_hash_matches(monkeypatch):
+    screener_tab.last_screener_state = None
+    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="screener-country-store"))
+    monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_progress",
+        lambda: {"running": False, "total": 0, "done": 0, "current": ""},
+    )
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_screener_results",
+        lambda: [_row("AAPL")],
+    )
+    monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
+
+    first, _sector_options, _page_reset = screener_tab.render_screener_table(
+        0, "CA", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+    )
+    second, _sector_options, _page_reset = screener_tab.render_screener_table(
+        0, "CA", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+    )
+
+    assert "No Canada screener data loaded yet" in str(first)
+    assert "No Canada screener data loaded yet" in str(second)
+    assert second is not screener_tab.dash.no_update

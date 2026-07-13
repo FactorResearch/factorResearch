@@ -276,7 +276,8 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     )
     state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
 
-    if state_hash == last_screener_state:
+    dedupe_allowed = dash.ctx.triggered_id not in {"screener-country-store", "page-load-interval"}
+    if dedupe_allowed and state_hash == last_screener_state:
         return dash.no_update, dash.no_update, page_reset
     last_screener_state = state_hash
     index_filtered_results = [r for r in results if row_matches_any_index(r, selected_indices)]
