@@ -6,7 +6,7 @@ import time as _time
 from concurrent.futures import ThreadPoolExecutor
 
 from codes import security
-from codes.data import api_fetcher, sec_data, db, market_data
+from codes.data import api_fetcher, factor_returns, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
 from codes.engine import factor_engine, factor_research, scorer, screener, market_fear
 from codes.models import (
@@ -37,33 +37,39 @@ _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
 
 
-def _calculate_factor_research(hist, spy_hist) -> dict:
-    """Visible V2.2 output from normalized stock/SPY return history."""
-    if hist is None or spy_hist is None or hist.empty or spy_hist.empty:
+def _calculate_factor_research(hist, spy_hist=None) -> dict:
+    """Visible V2.2 output from normalized stock and factor-return history."""
+    if hist is None or hist.empty:
         return {
             "status": "data_unavailable",
-            "message": "Factor Research appears when stock and benchmark history are available.",
-            "available_models": ["capm"],
-            "pending_models": ["ff3", "ff5", "carhart4"],
+            "message": "Factor Research appears when stock return history is available.",
+            "models": {},
         }
     try:
-        capm = factor_research.capm_from_price_history(hist, spy_hist)
-        if capm.get("error"):
-            raise ValueError(capm["error"])
+        factors = factor_returns.get_us_monthly_factors()
+        models = factor_research.analyze_models_from_price_history(hist, factors)
+        ready_models = {name: result for name, result in models.items() if not result.get("error")}
+        if not ready_models:
+            first_error = next(iter(models.values())).get("error", "No factor models could be calculated")
+            raise ValueError(first_error)
         return {
             "status": "ready",
-            "model": "capm",
-            "capm": capm,
-            "available_models": ["capm"],
-            "pending_models": ["ff3", "ff5", "carhart4"],
-            "message": "CAPM uses existing SPY benchmark history. Fama-French and Carhart require factor datasets.",
+            "source": "ken_french_us_monthly",
+            "models": models,
+            "capm": models.get("capm"),
+            "ff3": models.get("ff3"),
+            "ff5": models.get("ff5"),
+            "carhart4": models.get("carhart4"),
+            "message": "CAPM, Fama-French 3/5, and Carhart 4 calculated from monthly factor returns.",
         }
     except Exception as e:
+        capm = factor_research.capm_from_price_history(hist, spy_hist) if spy_hist is not None else {}
+        models = {"capm": capm} if capm and not capm.get("error") else {}
         return {
             "status": "error",
-            "message": f"Factor Research unavailable: {type(e).__name__}",
-            "available_models": [],
-            "pending_models": ["capm", "ff3", "ff5", "carhart4"],
+            "message": f"Factor Research factor dataset unavailable: {type(e).__name__}",
+            "models": models,
+            "capm": models.get("capm"),
         }
 
 def _get_spy_history_lazy():

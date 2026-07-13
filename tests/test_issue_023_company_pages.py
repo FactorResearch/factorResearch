@@ -220,16 +220,17 @@ def test_snapshot_preserves_factor_research_metrics_for_historical_pages():
         "name": "Amazon.com Inc.",
         "factor_research": {
             "status": "ready",
-            "model": "capm",
-            "capm": {
-                "betas": {"mkt_rf": 1.22},
-                "alpha_annualized": 0.031,
-                "r_squared": 0.68,
+            "models": {
+                "capm": {"betas": {"mkt_rf": 1.22}, "alpha_annualized": 0.031, "r_squared": 0.68},
+                "ff3": {"betas": {"mkt_rf": 1.18, "smb": 0.2, "hml": -0.1}, "alpha_annualized": 0.028, "r_squared": 0.70},
+                "ff5": {"betas": {"mkt_rf": 1.14, "smb": 0.2, "hml": -0.1, "rmw": 0.3, "cma": 0.1}, "alpha_annualized": 0.024, "r_squared": 0.74},
+                "carhart4": {"betas": {"mkt_rf": 1.16, "smb": 0.2, "hml": -0.1, "mom": 0.4}, "alpha_annualized": 0.022, "r_squared": 0.73},
             },
         },
     })
 
-    assert snapshot.official_metrics["factor_research_model"] == "capm"
+    models = snapshot.official_metrics["factor_research_models"]
+    assert set(models) == {"capm", "ff3", "ff5", "carhart4"}
     assert snapshot.official_metrics["capm_beta"] == 1.22
     assert snapshot.official_metrics["capm_alpha_annualized"] == 0.031
     assert snapshot.official_metrics["capm_r_squared"] == 0.68

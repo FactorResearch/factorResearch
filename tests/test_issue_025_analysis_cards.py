@@ -101,21 +101,20 @@ def test_factor_research_card_surfaces_v22_capm_output():
     card = analysis_ui._factor_research_card({
         "factor_research": {
             "status": "ready",
-            "capm": {
-                "betas": {"mkt_rf": 1.15},
-                "alpha_annualized": 0.024,
-                "r_squared": 0.72,
-                "return_attribution": {
-                    "factor_total": 0.08,
-                    "total_excess_return": 0.104,
-                },
+            "models": {
+                "capm": {"factors": ["mkt_rf"], "betas": {"mkt_rf": 1.15}, "alpha_annualized": 0.024, "r_squared": 0.72},
+                "ff3": {"factors": ["mkt_rf", "smb", "hml"], "betas": {"mkt_rf": 1.1}, "alpha_annualized": 0.018, "r_squared": 0.74},
+                "ff5": {"factors": ["mkt_rf", "smb", "hml", "rmw", "cma"], "betas": {"mkt_rf": 1.0}, "alpha_annualized": 0.015, "r_squared": 0.76},
+                "carhart4": {"factors": ["mkt_rf", "smb", "hml", "mom"], "betas": {"mkt_rf": 1.05}, "alpha_annualized": 0.012, "r_squared": 0.75},
             },
+            "source": "ken_french_us_monthly",
         }
     })
 
     assert "Factor Research" in str(card)
-    assert "CAPM vs SPY" in str(card)
-    assert "Fama-French 3/5 and Carhart 4 need factor datasets" in str(card)
+    assert "Fama-French 3" in str(card)
+    assert "Fama-French 5" in str(card)
+    assert "Carhart 4" in str(card)
 
 
 def test_factor_research_card_shows_pending_state():

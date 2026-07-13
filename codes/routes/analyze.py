@@ -394,11 +394,31 @@ def _comparison_section(snapshot, comparison) -> str:
 
 def _snapshot_factor_research_section(snapshot) -> str:
     metrics = snapshot.official_metrics or {}
-    beta = metrics.get("capm_beta")
-    alpha = metrics.get("capm_alpha_annualized")
-    r_squared = metrics.get("capm_r_squared")
-    has_capm = any(value is not None for value in (beta, alpha, r_squared))
-    if has_capm:
+    models = metrics.get("factor_research_models") or {}
+    if models:
+        labels = {
+            "capm": "CAPM",
+            "ff3": "Fama-French 3",
+            "ff5": "Fama-French 5",
+            "carhart4": "Carhart 4",
+        }
+        cards = []
+        for key in ("capm", "ff3", "ff5", "carhart4"):
+            model = models.get(key)
+            if not model:
+                continue
+            beta = (model.get("betas") or {}).get("mkt_rf")
+            cards.append(
+                '<div class="metric">'
+                f'<div class="label">{html.escape(labels[key])}</div>'
+                f'<div class="value">β {_fmt(beta)} · α {_fmt_pct(model.get("alpha_annualized"))} · R² {_fmt_pct(model.get("r_squared"))}</div>'
+                "</div>"
+            )
+        body = '<div class="grid">' + "".join(cards) + "</div>"
+    elif any(value is not None for value in (metrics.get("capm_beta"), metrics.get("capm_alpha_annualized"), metrics.get("capm_r_squared"))):
+        beta = metrics.get("capm_beta")
+        alpha = metrics.get("capm_alpha_annualized")
+        r_squared = metrics.get("capm_r_squared")
         body = (
             '<div class="grid">'
             f'<div class="metric"><div class="label">Model</div><div class="value">{html.escape(str(metrics.get("factor_research_model") or "CAPM"))}</div></div>'
@@ -406,7 +426,6 @@ def _snapshot_factor_research_section(snapshot) -> str:
             f'<div class="metric"><div class="label">Annualized Alpha</div><div class="value">{_fmt_pct(alpha)}</div></div>'
             f'<div class="metric"><div class="label">R-Squared</div><div class="value">{_fmt_pct(r_squared)}</div></div>'
             "</div>"
-            '<p class="muted">Fama-French 3/5 and Carhart 4 require external factor datasets.</p>'
         )
     else:
         body = (

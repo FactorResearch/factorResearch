@@ -564,9 +564,8 @@ def _factor_research_card(data: dict) -> html.Div:
     if not fr:
         return html.Div()
 
-    capm = fr.get("capm") or {}
-    betas = capm.get("betas") or {}
-    attribution = capm.get("return_attribution") or {}
+    models = fr.get("models") or {key: fr.get(key) for key in ("capm", "ff3", "ff5", "carhart4") if fr.get(key)}
+    capm = models.get("capm") or fr.get("capm") or {}
     status = fr.get("status", "pending")
 
     def _pct(value, decimals=1):
@@ -575,7 +574,7 @@ def _factor_research_card(data: dict) -> html.Div:
     def _num(value, decimals=2):
         return f"{value:.{decimals}f}" if value is not None else "N/A"
 
-    if status != "ready":
+    if status != "ready" and not models:
         rows = [
             _metric_data_row("Status", fr.get("message", "Factor Research is waiting for enough return history.")),
             _metric_data_row("Models", "CAPM, Fama-French 3/5, Carhart 4"),
@@ -588,21 +587,32 @@ def _factor_research_card(data: dict) -> html.Div:
             body_children=rows,
         )
 
-    beta = betas.get("mkt_rf")
+    beta = (capm.get("betas") or {}).get("mkt_rf")
     alpha = capm.get("alpha_annualized")
     r_squared = capm.get("r_squared")
-    factor_total = attribution.get("factor_total")
-    total_excess = attribution.get("total_excess_return")
     beta_color = GREEN if beta is not None and beta < 1 else AMBER if beta is not None and beta <= 1.3 else RED
-    rows = [
-        _metric_data_row("Model", "CAPM vs SPY"),
-        _metric_data_row("Market Beta", html.Span(_num(beta), className=f"fw-700 {tone_class(beta_color)}")),
-        _metric_data_row("Annualized Alpha", _pct(alpha)),
-        _metric_data_row("R-Squared", _pct(r_squared)),
-        _metric_data_row("Market Factor Contribution", _pct(factor_total)),
-        _metric_data_row("Total Excess Return", _pct(total_excess)),
-        _metric_data_row("Next Models", "Fama-French 3/5 and Carhart 4 need factor datasets"),
-    ]
+    model_labels = {
+        "capm": "CAPM",
+        "ff3": "Fama-French 3",
+        "ff5": "Fama-French 5",
+        "carhart4": "Carhart 4",
+    }
+    rows = []
+    for key in ("capm", "ff3", "ff5", "carhart4"):
+        result = models.get(key) or {}
+        if result.get("error"):
+            rows.append(_metric_data_row(model_labels[key], result["error"]))
+            continue
+        betas = result.get("betas") or {}
+        factor_count = len(result.get("factors") or [])
+        rows.append(_metric_data_row(
+            model_labels[key],
+            f"Beta {_num(betas.get('mkt_rf'))} · Alpha {_pct(result.get('alpha_annualized'))} · R² {_pct(result.get('r_squared'))} · {factor_count} factors",
+        ))
+    rows.extend([
+        _metric_data_row("Primary Market Beta", html.Span(_num(beta), className=f"fw-700 {tone_class(beta_color)}")),
+        _metric_data_row("Source", fr.get("source", "saved analysis")),
+    ])
     return _metric_scorecard(
         title="Factor Research",
         score_text=_num(beta),
@@ -624,9 +634,9 @@ def _legacy_factor_research(data: dict) -> dict:
     return {
         "status": "ready",
         "model": "capm",
+        "models": {"capm": capm},
         "capm": capm,
-        "available_models": ["capm"],
-        "pending_models": ["ff3", "ff5", "carhart4"],
+        "source": "saved stock/SPY histories",
         "message": "CAPM was backfilled from saved stock and SPY histories.",
     }
 

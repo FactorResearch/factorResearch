@@ -155,6 +155,26 @@ def capm_from_price_history(
     return capm(frame, risk_free_rate=risk_free_rate, periods_per_year=periods_per_year)
 
 
+def analyze_models_from_price_history(
+    price_history,
+    factor_returns: pd.DataFrame,
+    *,
+    risk_free_rate: float = 0.0,
+    periods_per_year: int = PERIODS_PER_YEAR,
+) -> dict[str, dict]:
+    """Run CAPM, FF3, FF5, and Carhart from stock prices plus factor returns."""
+    frame = _factor_price_return_frame(price_history, factor_returns)
+    if len(frame) < 12:
+        error = "Insufficient overlapping stock and factor return history"
+        return {model: _empty_result(model, error) for model in ("capm", "ff3", "ff5", "carhart4")}
+    return {
+        "capm": capm(frame, risk_free_rate=risk_free_rate, periods_per_year=periods_per_year),
+        "ff3": fama_french_3(frame, risk_free_rate=risk_free_rate, periods_per_year=periods_per_year),
+        "ff5": fama_french_5(frame, risk_free_rate=risk_free_rate, periods_per_year=periods_per_year),
+        "carhart4": carhart_4(frame, risk_free_rate=risk_free_rate, periods_per_year=periods_per_year),
+    }
+
+
 def fama_french_3(
     returns: pd.DataFrame,
     *,
@@ -369,6 +389,21 @@ def _price_return_frame(price_history, benchmark_history) -> pd.DataFrame:
         .merge(benchmark[["Date", "mkt_rf"]], on="Date", how="inner")
         .dropna()
     )
+
+
+def _factor_price_return_frame(price_history, factor_returns: pd.DataFrame) -> pd.DataFrame:
+    stock = _history_frame(price_history)
+    factors = pd.DataFrame(factor_returns) if factor_returns is not None else pd.DataFrame()
+    if stock.empty or factors.empty or "Date" not in factors:
+        return pd.DataFrame()
+    stock["Date"] = stock["Date"].dt.to_period("M").dt.to_timestamp("M")
+    stock["asset_return"] = stock["Close"].pct_change()
+    factors = factors.copy()
+    factors["Date"] = pd.to_datetime(factors["Date"], errors="coerce").dt.to_period("M").dt.to_timestamp("M")
+    for column in ("mkt_rf", "smb", "hml", "rmw", "cma", "mom", "rf"):
+        if column in factors:
+            factors[column] = pd.to_numeric(factors[column], errors="coerce")
+    return stock[["Date", "asset_return"]].merge(factors, on="Date", how="inner").dropna(subset=["asset_return", "mkt_rf"])
 
 
 def _history_frame(history) -> pd.DataFrame:

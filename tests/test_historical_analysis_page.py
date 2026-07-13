@@ -93,10 +93,12 @@ def test_historical_page_renders_persisted_factor_research_metrics():
         **{
             **current.__dict__,
             "official_metrics": {
-                "factor_research_model": "capm",
-                "capm_beta": 1.18,
-                "capm_alpha_annualized": 0.024,
-                "capm_r_squared": 0.71,
+                "factor_research_models": {
+                    "capm": {"betas": {"mkt_rf": 1.18}, "alpha_annualized": 0.024, "r_squared": 0.71},
+                    "ff3": {"betas": {"mkt_rf": 1.12}, "alpha_annualized": 0.021, "r_squared": 0.73},
+                    "ff5": {"betas": {"mkt_rf": 1.08}, "alpha_annualized": 0.019, "r_squared": 0.75},
+                    "carhart4": {"betas": {"mkt_rf": 1.1}, "alpha_annualized": 0.02, "r_squared": 0.74},
+                },
             },
         }
     )
@@ -108,7 +110,9 @@ def test_historical_page_renders_persisted_factor_research_metrics():
 
     body = response.get_data(as_text=True)
     assert "V2.2 Factor Research" in body
-    assert "Market Beta" in body
+    assert "Fama-French 3" in body
+    assert "Fama-French 5" in body
+    assert "Carhart 4" in body
     assert "1.18" in body
     assert "2.40%" in body
 

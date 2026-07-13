@@ -5,18 +5,29 @@ from codes.app_modules import analysis
 
 def test_calculate_factor_research_from_stock_and_spy_history():
     dates = pd.date_range("2024-01-01", periods=18, freq="MS")
-    spy_close = [100 * (1.01 ** index) for index in range(18)]
     stock_close = [50 * (1.012 ** index) for index in range(18)]
     hist = pd.DataFrame({"Date": dates, "Close": stock_close})
-    spy_hist = pd.DataFrame({"Date": dates, "Close": spy_close})
+    factor_frame = pd.DataFrame({
+        "Date": dates.strftime("%Y-%m-%d"),
+        "mkt_rf": [0.01] * 18,
+        "smb": [0.002] * 18,
+        "hml": [0.001] * 18,
+        "rmw": [0.003] * 18,
+        "cma": [0.0015] * 18,
+        "mom": [0.004] * 18,
+        "rf": [0.0002] * 18,
+    })
 
-    result = analysis._calculate_factor_research(hist, spy_hist)
+    original = analysis.factor_returns.get_us_monthly_factors
+    analysis.factor_returns.get_us_monthly_factors = lambda: factor_frame
+    try:
+        result = analysis._calculate_factor_research(hist)
+    finally:
+        analysis.factor_returns.get_us_monthly_factors = original
 
     assert result["status"] == "ready"
-    assert result["model"] == "capm"
-    assert result["capm"]["observations"] == 17
-    assert "mkt_rf" in result["capm"]["betas"]
-    assert "ff3" in result["pending_models"]
+    assert set(result["models"]) == {"capm", "ff3", "ff5", "carhart4"}
+    assert result["ff5"]["factors"] == ["mkt_rf", "smb", "hml", "rmw", "cma"]
 
 
 def test_legacy_cached_analysis_backfills_factor_research_card():
@@ -37,4 +48,4 @@ def test_legacy_cached_analysis_backfills_factor_research_card():
     card = analysis_ui._factor_research_card(data)
 
     assert "Factor Research" in str(card)
-    assert "CAPM vs SPY" in str(card)
+    assert "CAPM" in str(card)

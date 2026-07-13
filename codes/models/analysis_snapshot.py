@@ -143,7 +143,8 @@ class AnalysisSnapshot:
         regime = result.get("regime") or {}
         market_fear = result.get("market_fear") or {}
         factor_research = result.get("factor_research") or {}
-        capm = factor_research.get("capm") or {}
+        factor_models = factor_research.get("models") or {}
+        capm = factor_models.get("capm") or factor_research.get("capm") or {}
         capm_betas = capm.get("betas") or {}
         altman = result.get("altman") or {}
         piotroski = result.get("piotroski") or {}
@@ -194,6 +195,15 @@ class AnalysisSnapshot:
                 "profitability_score": _first_num(enhanced.get("profitability_pct"), profitability.get("score"), profitability.get("total_score")),
                 "factor_research_status": factor_research.get("status"),
                 "factor_research_model": factor_research.get("model"),
+                "factor_research_models": {
+                    name: {
+                        "alpha_annualized": _first_num((model or {}).get("alpha_annualized")),
+                        "r_squared": _first_num((model or {}).get("r_squared")),
+                        "betas": (model or {}).get("betas") or {},
+                    }
+                    for name, model in factor_models.items()
+                    if model and not model.get("error")
+                },
                 "capm_beta": _first_num(capm_betas.get("mkt_rf")),
                 "capm_alpha_annualized": _first_num(capm.get("alpha_annualized")),
                 "capm_r_squared": _first_num(capm.get("r_squared")),
