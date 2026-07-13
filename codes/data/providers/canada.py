@@ -16,6 +16,8 @@ from . import (
     CanonicalFinancials,
     CanonicalFiscalPeriod,
     CanonicalSharesOutstanding,
+    FilingDocument,
+    StatementProvenance,
 )
 
 
@@ -43,6 +45,12 @@ class CanadaDataSource(Protocol):
     def get_shares_outstanding(self, symbol: str) -> dict[str, Any] | None:
         ...
 
+    def get_source_documents(self, symbol: str) -> list[dict[str, Any]]:
+        ...
+
+    def get_statement_provenance(self, symbol: str) -> list[dict[str, Any]]:
+        ...
+
 
 class EmptyCanadaDataSource:
     """No-network default source used until a Canada feed is configured."""
@@ -67,6 +75,12 @@ class EmptyCanadaDataSource:
 
     def get_shares_outstanding(self, symbol: str) -> dict[str, Any] | None:
         return None
+
+    def get_source_documents(self, symbol: str) -> list[dict[str, Any]]:
+        return []
+
+    def get_statement_provenance(self, symbol: str) -> list[dict[str, Any]]:
+        return []
 
 
 class CanadaProviderAdapter:
@@ -100,6 +114,8 @@ class CanadaProviderAdapter:
             income_statement=tuple(self.source.get_income_statements(symbol)),
             balance_sheet=tuple(self.source.get_balance_sheets(symbol)),
             cash_flow=tuple(self.source.get_cash_flows(symbol)),
+            source_documents=tuple(self.get_source_documents(symbol)),
+            provenance=tuple(self.get_statement_provenance(symbol)),
         )
 
     def get_filings(self, symbol: str) -> list[dict[str, Any]]:
@@ -123,6 +139,16 @@ class CanadaProviderAdapter:
             as_of=row.get("as_of") or row.get("date"),
             source=row.get("source"),
         )
+
+    def get_source_documents(self, symbol: str) -> list[FilingDocument]:
+        getter = getattr(self.source, "get_source_documents", None)
+        rows = getter(normalize_canada_symbol(symbol)) if getter else []
+        return [_filing_document(row) for row in rows]
+
+    def get_statement_provenance(self, symbol: str) -> list[StatementProvenance]:
+        getter = getattr(self.source, "get_statement_provenance", None)
+        rows = getter(normalize_canada_symbol(symbol)) if getter else []
+        return [_statement_provenance(row) for row in rows]
 
     def get_currency(self, symbol: str) -> str | None:
         return self.get_currency_info(symbol).code
@@ -181,6 +207,30 @@ def _canonical_periods(rows: list[dict[str, Any]], fallback_currency: str | None
         if period is not None:
             periods.append(period)
     return periods
+
+
+def _filing_document(row: dict[str, Any]) -> FilingDocument:
+    return FilingDocument(
+        document_id=str(row.get("document_id") or row.get("id") or ""),
+        source=str(row.get("source") or "unknown"),
+        url=row.get("url"),
+        filing_date=row.get("filing_date") or row.get("date"),
+        period_end=row.get("period_end"),
+        form=row.get("form") or row.get("document_type"),
+        confidence=row.get("confidence") or "insufficient_source_evidence",
+    )
+
+
+def _statement_provenance(row: dict[str, Any]) -> StatementProvenance:
+    return StatementProvenance(
+        fact_name=str(row.get("fact_name") or row.get("field") or ""),
+        source_document_id=str(row.get("source_document_id") or row.get("document_id") or ""),
+        source_url=row.get("source_url") or row.get("url"),
+        confidence=row.get("confidence") or "insufficient_source_evidence",
+        accounting_standard=row.get("accounting_standard"),
+        extraction_method=row.get("extraction_method"),
+        normalization_method=row.get("normalization_method"),
+    )
 
 
 def _int_or_none(value) -> int | None:

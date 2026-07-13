@@ -7,6 +7,7 @@ from codes.data.providers.canada import (
     is_canadian_symbol,
     normalize_canada_symbol,
 )
+from codes.data.providers.canada_normalization import build_canada_scoring_facts
 from codes.data.providers.registry import provider_for_symbol
 
 
@@ -25,19 +26,84 @@ class FakeCanadaSource:
         ]
 
     def get_income_statements(self, symbol):
-        return [{"revenue": 100}]
+        return [{
+            "fiscal_year": 2025,
+            "period_end": "2025-12-31",
+            "currency": "CAD",
+            "revenue": 1_000_000,
+            "net_inc": 120_000,
+            "op_income": 160_000,
+        }]
 
     def get_balance_sheets(self, symbol):
-        return [{"assets": 200}]
+        return [{
+            "fiscal_year": 2025,
+            "period_end": "2025-12-31",
+            "currency": "CAD",
+            "total_assets": 800_000,
+            "tot_lib": 300_000,
+            "equity": 500_000,
+            "cur_ast": 250_000,
+            "cur_lib": 100_000,
+        }]
 
     def get_cash_flows(self, symbol):
-        return [{"operating_cash_flow": 50}]
+        return [{
+            "fiscal_year": 2025,
+            "period_end": "2025-12-31",
+            "currency": "CAD",
+            "operating_cash_flow": 150_000,
+            "capex": 40_000,
+        }]
 
     def get_filings(self, symbol):
         return [{"form": "Annual financial statements", "source": "SEDAR+"}]
 
     def get_shares_outstanding(self, symbol):
         return {"shares": "1234", "date": "2026-01-31", "source": "fixture"}
+
+    def get_source_documents(self, symbol):
+        return [{
+            "document_id": "sedar-2025-ar",
+            "source": "SEDAR+",
+            "url": "https://example.test/sedar/shop-2025",
+            "filing_date": "2026-02-15",
+            "period_end": "2025-12-31",
+            "form": "Annual financial statements",
+            "confidence": "regulatory_verified",
+        }]
+
+    def get_statement_provenance(self, symbol):
+        fields = ("revenue", "net_inc", "total_assets", "tot_lib", "equity")
+        return [{
+            "fact_name": field,
+            "source_document_id": "sedar-2025-ar",
+            "source_url": "https://example.test/sedar/shop-2025",
+            "confidence": "regulatory_verified",
+            "accounting_standard": "IFRS",
+            "extraction_method": "fixture",
+            "normalization_method": "canada_v1",
+        } for field in fields]
+
+
+class ProviderNormalizedOnlySource(FakeCanadaSource):
+    def get_source_documents(self, symbol):
+        rows = super().get_source_documents(symbol)
+        rows[0]["confidence"] = "provider_normalized_internal_only"
+        return rows
+
+    def get_statement_provenance(self, symbol):
+        rows = super().get_statement_provenance(symbol)
+        for row in rows:
+            row["confidence"] = "provider_normalized_internal_only"
+        return rows
+
+
+class BrokenBalanceSheetSource(FakeCanadaSource):
+    def get_balance_sheets(self, symbol):
+        rows = super().get_balance_sheets(symbol)
+        rows[0]["equity"] = 200_000
+        return rows
 
 
 def test_canada_symbol_normalization_and_detection():
@@ -59,7 +125,9 @@ def test_canada_provider_returns_canonical_models():
     assert company.currency == "CAD"
     assert isinstance(financials, CanonicalFinancials)
     assert financials.periods[0].fiscal_year == 2025
-    assert financials.income_statement == ({"revenue": 100},)
+    assert financials.income_statement[0]["revenue"] == 1_000_000
+    assert financials.source_documents[0].confidence == "regulatory_verified"
+    assert financials.provenance[0].accounting_standard == "IFRS"
     assert isinstance(shares, CanonicalSharesOutstanding)
     assert shares.shares_outstanding == 1234.0
     assert provider.get_listing_information("shop:tsx")["exchange"] == "TSX"
@@ -81,3 +149,44 @@ def test_canada_market_is_feature_gated(monkeypatch):
 
     monkeypatch.setenv("ENABLED_MARKETS", "US")
     reload(screener_markets)
+
+
+def test_canada_verified_data_builds_score_ready_facts():
+    provider = CanadaProviderAdapter(FakeCanadaSource())
+
+    result = build_canada_scoring_facts(provider, "shop:tsx")
+
+    assert result.can_score is True
+    assert result.quality_report.confidence == "regulatory_verified"
+    assert result.sec_facts["source_market"] == "CA"
+    assert result.sec_facts["source_regulator"] == "SEDAR+"
+    assert result.sec_facts["revenue"][0]["currency"] == "CAD"
+    assert result.sec_facts["revenue"][0]["source_document_id"] == "sedar-2025-ar"
+    assert result.sec_facts["net_inc"][0]["accounting_standard"] == "IFRS"
+    assert result.sec_facts["shares"][0]["source"] == "fixture"
+
+
+def test_canada_provider_normalized_data_is_internal_only():
+    provider = CanadaProviderAdapter(ProviderNormalizedOnlySource())
+
+    public_result = build_canada_scoring_facts(provider, "SHOP.TO")
+    internal_result = build_canada_scoring_facts(provider, "SHOP.TO", allow_internal=True)
+
+    assert public_result.can_score is False
+    assert public_result.sec_facts == {}
+    assert {issue.code for issue in public_result.quality_report.issues} == {
+        "weak_document_confidence",
+        "weak_fact_confidence",
+    }
+    assert internal_result.can_score is True
+    assert internal_result.quality_report.confidence == "provider_normalized_internal_only"
+
+
+def test_canada_balance_sheet_must_reconcile_before_scoring():
+    provider = CanadaProviderAdapter(BrokenBalanceSheetSource())
+
+    result = build_canada_scoring_facts(provider, "SHOP.TO")
+
+    assert result.can_score is False
+    assert result.sec_facts == {}
+    assert "balance_sheet_not_reconciled" in {issue.code for issue in result.quality_report.issues}
