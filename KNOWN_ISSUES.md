@@ -3119,7 +3119,276 @@ category: email
 files: 
 ISSUE: 
   - create email tempalate which will be used later, we will use to send people whom sign up in wait list that app is ready and for future communications
- 
+
+---
+
+# ISSUE_041 - Scalable chart rendering and graph artifact caching
+
+status: [x]
+
+category: performance / scalability / data-visualization
+
+priority: HIGH
+
+files:
+  - codes/app.py
+  - codes/data/db.py
+  - codes/data/cache.py
+  - codes/services/chart_service.py
+  - codes/workers/chart_worker.py
+  - codes/routes/charts.py
+  - codes/app_modules/components/*
+  - assets/*
+  - tests/test_issue_041_chart_caching.py
+
+problem: >
+  Graham App stores the underlying financial and analysis data in PostgreSQL,
+  but chart datasets and graph figures are still calculated and rendered
+  during user requests. As more charts are added and concurrent usage grows,
+  repeated database reads, financial transformations, figure construction,
+  image encoding, and response serialization can consume web-process CPU and
+  memory, increase response latency, and slow down unrelated users. once completed make sure all sub branches get the copy of this fix, so when merging back we do not override the fixes
+
+root_cause: >
+  Chart preparation, chart rendering, and page delivery are coupled inside the
+  request path. Identical charts may be rebuilt for every user even when the
+  ticker, analysis version, source data, period, and chart configuration have
+  not changed. There is no shared versioned chart cache, background chart job
+  pipeline, cache-stampede protection, or dedicated object-storage path for
+  generated PNG, SVG, and PDF artifacts.
+
+current_behavior:
+  - Financial and analysis data is persisted in PostgreSQL.
+  - Chart data is queried and transformed when a user opens a page.
+  - Figure objects are constructed repeatedly for identical requests.
+  - Web processes perform chart work while also serving application requests.
+  - Multiple users requesting the same uncached chart can trigger duplicate work.
+  - Static graph files do not have a defined object-storage and CDN strategy.
+  - Charts below the visible viewport may be prepared before the user views them.
+  - Cache invalidation is not tied consistently to source-data or chart-code versions.
+
+required_fix: >
+  Introduce a shared chart-delivery architecture that separates source data,
+  prepared chart datasets, interactive browser rendering, and static chart
+  artifacts.
+
+  1. Chart data service
+
+     Create a centralized chart service responsible for:
+       - loading the minimum required database records;
+       - producing normalized JSON-ready chart datasets;
+       - generating deterministic cache keys;
+       - returning cached data before performing calculations;
+       - recording generation time, cache status, and errors.
+
+     Application callbacks and routes must not duplicate chart-building logic.
+
+  2. Browser-side interactive rendering
+
+     Interactive charts should be rendered in the user's browser from prepared
+     JSON datasets whenever practical.
+
+     The server should return data and chart configuration rather than repeatedly
+     rendering complete figures or image files during every request.
+
+     Existing Dash/Plotly charts may remain supported, but expensive reusable
+     data preparation must be moved behind the chart service and shared cache.
+
+  3. Versioned cache keys
+
+     Cache keys must include all inputs that can change chart output, including:
+
+       chart:{ticker}:{chart_type}:{period}:{data_version}:{analysis_version}:{chart_schema_version}:{config_hash}
+
+     User-specific or custom-formula charts must include a normalized,
+     deterministic configuration hash. Raw user formulas, email addresses,
+     names, or other personally identifiable information must not appear in
+     cache keys.
+
+  4. Cache storage
+
+     Use Redis or another deployment-wide shared cache for prepared chart JSON
+     and short-lived generation locks.
+
+     The cache must be shared across web processes and application instances.
+     A process-local dictionary alone is not sufficient for production.
+
+  5. Data-version invalidation
+
+     Historical charts should remain cached until their source data changes.
+
+     When a new filing, market-data revision, analysis version, or chart-schema
+     version is introduced, the generated cache key must change automatically.
+     Avoid broad wildcard deletion when versioned keys can make old entries
+     unreachable safely.
+
+  6. Background generation
+
+     Add a dedicated chart worker using the project's approved job framework.
+
+     After a standard company analysis or financial-data refresh completes,
+     enqueue generation of commonly viewed chart datasets.
+
+     The worker must:
+       - be idempotent;
+       - deduplicate jobs;
+       - retry transient failures with limits;
+       - record failures without breaking the completed company analysis;
+       - avoid regenerating an artifact that already exists for the same version.
+
+     Rare, user-specific, or advanced charts may be generated on first request
+     and then cached.
+
+  7. Cache-stampede protection
+
+     Use a distributed lock or equivalent single-flight mechanism so multiple
+     users cannot rebuild the same missing or expired chart simultaneously.
+
+     After acquiring the lock, check the cache again before generating data.
+
+  8. Stale-while-revalidate
+
+     When a usable stale chart exists, return it immediately and enqueue one
+     refresh job rather than blocking the user.
+
+     The response should expose chart freshness metadata where useful, without
+     presenting stale market-sensitive data as current.
+
+  9. Static chart artifacts
+
+     PNG, SVG, and PDF chart files used for exports, reports, SEO pages, social
+     sharing, or email must be generated outside the normal web request path.
+
+     Store static artifacts in S3-compatible object storage such as Cloudflare
+     R2 rather than PostgreSQL or the web server's local filesystem.
+
+     PostgreSQL should store only artifact metadata, including:
+       - ticker;
+       - chart type;
+       - source data version;
+       - analysis version;
+       - chart schema version;
+       - object key;
+       - generation status;
+       - generated timestamp;
+       - content type;
+       - checksum;
+       - error details.
+
+     Serve public or authorized artifacts through a CDN or signed URL as
+     appropriate.
+
+  10. Lazy loading
+
+      Charts below the fold, inside unopened sections, tabs, carousels, or
+      accordions must not be fetched or initialized until the user approaches
+      or opens the relevant section.
+
+      The initial company-analysis page should prioritize summary content and
+      visible charts.
+
+  11. Generation policy
+
+      Do not pre-render every chart for every security.
+
+      Use the following policy:
+        - primary company-page charts: precompute after standard analysis;
+        - common model charts: precompute or generate on first request;
+        - rare advanced charts: generate on first request and cache;
+        - custom user charts: generate on demand using a configuration hash;
+        - export/share/SEO images: background worker plus object storage;
+        - live or intraday charts: short-lived cached data rendered in browser.
+
+  12. Failure behavior
+
+      A chart-generation failure must not make the full analysis page fail.
+
+      Return a chart-specific unavailable state with retry capability and log a
+      normalized failure class. Do not expose internal exceptions to users.
+
+constraints:
+  - PostgreSQL remains the source of truth for financial and analysis data.
+  - Do not store large PNG, SVG, or PDF binary payloads directly in PostgreSQL.
+  - Do not rely only on process-local memory caching in production.
+  - Do not recompute financial models solely to display an already-computed chart.
+  - Chart caching must never leak private custom strategies or portfolio data
+    between users.
+  - Public standard-analysis charts may be shared globally when their complete
+    inputs are identical.
+  - User-specific chart authorization must be checked before returning cached
+    data or signed artifact URLs.
+  - Live market-sensitive charts must use freshness rules appropriate to their
+    data source.
+  - Chart generation and cache failures must not interrupt core analysis storage.
+  - Existing chart output and interpretation must remain functionally consistent
+    unless a chart schema version is intentionally changed.
+
+observability:
+  - Track chart cache hit and miss counts.
+  - Track stale responses and background refreshes.
+  - Track generation duration by chart type.
+  - Track chart payload size.
+  - Track worker queue depth and job duration.
+  - Track generation failures by normalized failure class.
+  - Track distributed-lock wait and timeout counts.
+  - Track object-storage upload failures.
+  - Track page-level time to first visible chart.
+
+acceptance_criteria:
+  - Repeated requests for the same ticker, chart type, period, data version,
+    analysis version, schema version, and configuration reuse one cached result.
+  - Two concurrent requests for the same uncached chart cause no more than one
+    chart-generation execution.
+  - Interactive chart rendering is moved to the browser where practical, while
+    expensive server-side data preparation is reused from a shared cache.
+  - Common chart datasets can be generated by a worker after analysis completion.
+  - Rare and custom charts are generated on demand and cached deterministically.
+  - A new filing or changed source-data version produces a new chart cache key.
+  - A changed chart implementation increments chart_schema_version and does not
+    reuse incompatible cached output.
+  - Charts below the fold are lazy-loaded rather than prepared during initial
+    page rendering.
+  - Static PNG, SVG, and PDF artifacts are generated outside the normal web
+    request path and stored in object storage.
+  - PostgreSQL contains artifact metadata only, not large chart binaries.
+  - A chart-generation failure displays a chart-specific unavailable state and
+    does not break the rest of the analysis page.
+  - Authorization tests prove cached custom charts and private artifacts cannot
+    be accessed by another user.
+  - Tests cover cache hit, cache miss, version invalidation, configuration hash,
+    concurrent single-flight generation, stale-while-revalidate, worker
+    idempotency, and failure isolation.
+  - Load testing demonstrates that cached chart requests do not trigger repeated
+    financial calculations or database-heavy graph transformations.
+  - Production dashboards expose cache-hit rate, generation latency, worker
+    failures, and time to first visible chart.
+
+implementation_phases:
+
+  phase_1_shared_chart_data_cache:
+    - Create the centralized chart service.
+    - Add deterministic versioned cache keys.
+    - Cache normalized chart JSON in shared Redis.
+    - Add lazy loading for non-visible charts.
+    - Add cache-hit and generation-latency instrumentation.
+
+  phase_2_workers_and_concurrency:
+    - Add idempotent background chart jobs.
+    - Precompute primary chart datasets after analysis completion.
+    - Add distributed single-flight locking.
+    - Add stale-while-revalidate behavior.
+    - Add retry limits and chart-specific failure states.
+
+  phase_3_static_artifacts_and_cdn:
+    - Add chart artifact metadata storage.
+    - Generate export, SEO, social, and report images in workers.
+    - Store files in S3-compatible object storage.
+    - Serve artifacts through a CDN or authorized signed URLs.
+    - Add retention and cleanup rules for unreachable old versions.
+
+risk_if_not_fixed: HIGH
+
+---
 # AI EXECUTION PROTOCOL
 
 When fixing an issue:

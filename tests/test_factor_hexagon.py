@@ -1,5 +1,6 @@
 from codes.app_modules import analysis_ui
 from codes.app_modules.analysis_ui import _factor_hexagon
+from codes.services import chart_service
 from urllib.parse import unquote
 
 
@@ -18,7 +19,8 @@ def test_factor_hexagon_has_six_labeled_axes_and_accessible_summary():
 
 
 def test_composite_trend_chart_reports_score_direction(monkeypatch):
-    monkeypatch.setattr(analysis_ui.db, "list_composite_score_history", lambda _: [
+    chart_service.clear_local_cache()
+    monkeypatch.setattr(chart_service.db, "list_composite_score_history", lambda *_, **__: [
         {"snapshot_date": "2026-07-01", "composite_score": 62.0, "verdict": "WATCH"},
         {"snapshot_date": "2026-07-10", "composite_score": 70.5, "verdict": "BUY"},
     ])
