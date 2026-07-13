@@ -54,6 +54,19 @@ Official references:
 - FCA NSM terms: https://data.fca.org.uk/artefacts/NSM_Terms_of_Use.pdf
 - LSE market-data pricing and policies: https://www.londonstockexchange.com/securities-trading/market-data/pricing-and-policies
 
+Licensing and reuse contact directory, last checked 2026-07-13:
+
+- LSE / LSEG market data: email `marketdata@lseg.com`; use the [LSE market-data
+  pricing and policies site](https://www.londonstockexchange.com/securities-trading/market-data/pricing-and-policies).
+  This is the commercial contact for listing, corporate-action, price, display,
+  distribution, and derived-data rights.
+- Companies House: email `enquiries@companieshouse.gov.uk`; use the [Companies
+  House developer hub](https://developer.company-information.service.gov.uk/).
+  Ask for written confirmation of the intended filing and company-data reuse.
+- FCA National Storage Mechanism: use the [official NSM page](https://www.fca.org.uk/markets/primary-markets/regulatory-disclosures/national-storage-mechanism)
+  and its published contact route. Do not send an LSE licensing request to the
+  FCA; it does not license LSE market data.
+
 Terms and pricing change. Recheck the official documents immediately before
 contracting or approving release.
 
