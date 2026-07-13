@@ -252,6 +252,16 @@ Every provider implements
 -   get_source_documents()
 -   get_statement_provenance()
 
+Country documentation rule
+
+-   Every country branch must contain a unique `README_<COUNTRY>.md` release
+    runbook before it is merged or considered for launch. It must describe that
+    country's data sources and rights boundary, population commands, accepted
+    schemas, validation/refusal behavior, known exclusions, release blockers,
+    required evidence, approval owners, and exact feature-flag enablement
+    sequence. Generic repository documentation and release notes do not replace
+    this country-specific runbook.
+
 Normalization Layer
 
 Every provider returns the same canonical objects:

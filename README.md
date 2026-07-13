@@ -14,8 +14,8 @@ expansion through provider-neutral financial models.
 > **GERMANY IS INTERNAL-ONLY. THERE IS NO GERMANY LAUNCH DATE.**
 >
 > Do not advertise, sell, promise, enable, or publish Germany support until the
-> source, licensing, coverage, and organization gates in
-> `docs/track_b_germany.md` have written evidence and final approval.
+> source, licensing, coverage, and organization gates in the
+> [Germany release runbook](README_GERMANY.md) have written evidence and final approval.
 
 The committed default in `feature_flags.json` is:
 

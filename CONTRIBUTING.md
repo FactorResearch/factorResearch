@@ -27,7 +27,11 @@ deployable, and keep unreleased markets disabled in `feature_flags.json`.
   deployable; unreleased features stay disabled behind flags.
 - Country branches: lowercase country name, created directly from `main`, for
   example `canada` or `uk`. They contain only that market's adapter, ingestion,
-  tests, documentation, assets, and flag entry.
+  tests, documentation, assets, and flag entry. Every country branch must add
+  and maintain a unique `README_<COUNTRY>.md` publication runbook before it can
+  be merged or considered for launch. The runbook must cover market-specific
+  source rights, population commands, acceptance criteria, release blockers,
+  evidence, enablement steps, and the user-facing release boundary.
 - Version branches: exact lowercase release name, for example `v2.2` or `v3`.
   Treat a published version branch as shared history.
 - Short-lived work branches: use a descriptive name and delete them after they
@@ -61,6 +65,10 @@ Open a pull request to integrate work into `main`. Before merging:
 4. Prefer a normal merge when preserving release history matters; use squash
    only for disposable work branches.
 5. Delete merged short-lived branches.
+
+For a country branch, also verify its `README_<COUNTRY>.md` matches the actual
+implementation and lists every unresolved gate before requesting release
+approval. A generic repository README or release-note file is not a substitute.
 
 Configure the GitHub `main` branch protection rule to require pull requests,
 one approval, resolved conversations, and the `PR validation / tests` status
