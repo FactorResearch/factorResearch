@@ -93,6 +93,44 @@ before signing an agreement or approving a release.
 - `Publish.md`: broader pre-launch work.
 - `SECURITY_CHECKLIST.md`: security controls and outstanding validation.
 
+## Country Branch Workflow
+
+Country code and country launch state are separate concerns. A merged adapter
+does not release a market while its flag remains `false`.
+
+Use this workflow for every new country:
+
+1. Put provider-neutral schema, routing, cache, analysis, and UI fixes in
+   `main` first, with all unreleased market flags disabled.
+2. Create the country branch from the latest `main` using the lowercase branch
+   name specified in `roadMap.md`.
+3. Keep only that country's adapter, normalization, acquisition, flag entry,
+   asset, tests, runbook, and release notes in the country branch.
+4. Merge `main` into every active country branch when shared fixes land. Do not
+   copy the same fix independently into each branch.
+5. Merge completed country code into `main` with its market flag still `false`.
+   Enable one market only after its own release gates and written approvals
+   pass; other countries remain dormant and can launch in a different order.
+
+For a new branch:
+
+```bash
+git switch main
+git pull --ff-only
+git switch -c <country-branch>
+```
+
+For an already-published country branch, preserve its history and bring shared
+work forward with:
+
+```bash
+git switch <country-branch>
+git merge main
+```
+
+Rebase only local, unpublished country work. Never rewrite a shared remote
+country branch merely to make its graph look cleaner.
+
 ## Local Setup
 
 ### Prerequisites
