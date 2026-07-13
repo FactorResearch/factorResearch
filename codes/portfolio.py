@@ -59,10 +59,16 @@ def _splits_since(symbol: str, since_date: str) -> list[dict]:
         if now - ts < _SPLITS_TTL:
             splits = data
         else:
-            splits = api_fetcher.get_splits(symbol)
+            try:
+                splits = api_fetcher.get_splits(symbol)
+            except Exception:
+                splits = []
             _splits_memo[symbol] = (now, splits)
     else:
-        splits = api_fetcher.get_splits(symbol)
+        try:
+            splits = api_fetcher.get_splits(symbol)
+        except Exception:
+            splits = []
         _splits_memo[symbol] = (now, splits)
 
     return [s for s in splits if s["date"] >= since_date]
@@ -111,8 +117,9 @@ def _portfolio_key(user_id: str, name: str) -> str:
     return f"u_{_cache_token(user_id)}_p_{_cache_token(name)}"
 
 
-def _simulation_key(user_id: str, portfolio_name: str) -> str:
-    return f"u_{_cache_token(user_id)}_sim_{_cache_token(portfolio_name)}"
+def _simulation_key(user_id: str, portfolio_name: str, benchmark_symbol: str = "SPY") -> str:
+    benchmark_symbol = str(benchmark_symbol or "SPY").upper().strip()
+    return f"u_{_cache_token(user_id)}_sim_{_cache_token(portfolio_name)}_{_cache_token(benchmark_symbol)}"
 
 
 def _legacy_index_key(user_id: str) -> str:
@@ -184,7 +191,10 @@ def delete_portfolio(user_id: str, name: str) -> None:
     _save_index(user_id, idx)
 
 
-def create_portfolio(user_id: str, name: str) -> dict:
+def create_portfolio(user_id: str, name: str | None = None) -> dict:
+    if name is None:
+        name = user_id
+        user_id = "default"
     p = {
         "name":     name,
         "created":  datetime.datetime.now().isoformat(),
@@ -198,7 +208,11 @@ def create_portfolio(user_id: str, name: str) -> dict:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def add_holding(user_id: str, name: str, symbol: str, shares: int,
-                current_price: float, company_name: str) -> tuple[dict, str]:
+                current_price: float | None = None, company_name: str | None = None) -> tuple[dict, str]:
+    if company_name is None:
+        user_id, name, symbol, shares, current_price, company_name = (
+            "default", user_id, name, symbol, shares, current_price
+        )
     p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
@@ -224,7 +238,9 @@ def add_holding(user_id: str, name: str, symbol: str, shares: int,
     return p, ""
 
 
-def remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:
+def remove_holding(user_id: str, name: str, symbol: str | None = None) -> tuple[dict, str]:
+    if symbol is None:
+        user_id, name, symbol = "default", user_id, name
     p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
@@ -272,9 +288,9 @@ def _align_histories(histories: dict[str, pd.DataFrame]) -> pd.DataFrame:
 # Backtest
 # ══════════════════════════════════════════════════════════════════════════════
 
-def run_backtest(portfolio: dict) -> dict:
+def run_backtest(portfolio: dict, benchmark_symbol: str = "SPY") -> dict:
     """
-    Compute monthly portfolio value vs SPY over 10 years.
+    Compute monthly portfolio value vs a benchmark over 10 years.
 
     Entry: shares × price at the FIRST date available in the aligned history.
     This is the same entry date for every holding and for SPY, making the
@@ -301,10 +317,12 @@ def run_backtest(portfolio: dict) -> dict:
 
     symbols = list(holdings.keys())
 
-    # Load all histories + SPY
+    benchmark_symbol = str(benchmark_symbol or "SPY").upper().strip()
+
+    # Load all histories + benchmark
     print(f"  [Backtest] loading {len(symbols)+1} price histories...")
     histories = {}
-    for sym in symbols + ["SPY"]:
+    for sym in symbols + [benchmark_symbol]:
         h = _load_history(sym)
         if not h.empty:
             histories[sym] = h
@@ -314,11 +332,11 @@ def run_backtest(portfolio: dict) -> dict:
         print(f"  [Backtest] ⚠️  No price history for: {missing}")
 
     available = [s for s in symbols if s in histories]
-    if not available or "SPY" not in histories:
+    if not available or benchmark_symbol not in histories:
         return {"error": "Not enough price history to run backtest"}
 
     # Align on common dates
-    to_align = {s: histories[s] for s in available + ["SPY"]}
+    to_align = {s: histories[s] for s in available + [benchmark_symbol]}
     wide = _align_histories(to_align)
     if wide.empty or len(wide) < 6:
         return {"error": "Insufficient overlapping price history"}
@@ -344,13 +362,13 @@ def run_backtest(portfolio: dict) -> dict:
         for s in available if s in wide.columns
     )
 
-    spy_entry_price  = float(entry_row["SPY"])
-    spy_shares_equiv = port_entry_value / spy_entry_price  # same $ in SPY
+    benchmark_entry_price = float(entry_row[benchmark_symbol])
+    benchmark_shares_equiv = port_entry_value / benchmark_entry_price
 
     # Monthly values — share count adjusts forward as each split date passes.
     dates = wide["Date"].dt.strftime("%Y-%m-%d").tolist()
     port_values = []
-    spy_values  = []
+    benchmark_values  = []
 
     for _, row in wide.iterrows():
         row_date = row["Date"]
@@ -361,7 +379,7 @@ def run_backtest(portfolio: dict) -> dict:
             for s in available if s in wide.columns
         )
         port_values.append(round(pv, 2))
-        spy_values.append(round(spy_shares_equiv * float(row["SPY"]), 2))
+        benchmark_values.append(round(benchmark_shares_equiv * float(row[benchmark_symbol]), 2))
 
    # CAGR
     first_date = wide["Date"].iloc[0]
@@ -369,9 +387,9 @@ def run_backtest(portfolio: dict) -> dict:
     n_years    = max((last_date - first_date).days / 365.25, 1 / 12)
 
     port_cagr_raw = fm.cagr(port_values[0], port_values[-1], n_years)
-    spy_cagr_raw = fm.cagr(spy_values[0], spy_values[-1], n_years)
+    benchmark_cagr_raw = fm.cagr(benchmark_values[0], benchmark_values[-1], n_years)
     port_cagr = port_cagr_raw * 100 if port_cagr_raw is not None else 0.0
-    spy_cagr = spy_cagr_raw * 100 if spy_cagr_raw is not None else 0.0
+    benchmark_cagr = benchmark_cagr_raw * 100 if benchmark_cagr_raw is not None else 0.0
 
     # Per-holding detail — shares and current_value use fully split-adjusted count.
     last_row  = wide.iloc[-1]
@@ -403,13 +421,18 @@ def run_backtest(portfolio: dict) -> dict:
     return {
         "dates":            dates,
         "portfolio_value":  port_values,
-        "spy_value":        spy_values,
+        "benchmark_symbol": benchmark_symbol,
+        "benchmark_value":  benchmark_values,
+        "spy_value":        benchmark_values,
         "total_invested":   round(port_entry_value, 2),
+        "benchmark_invested": round(port_entry_value, 2),
         "spy_invested":     round(port_entry_value, 2),
         "final_value":      round(port_values[-1], 2),
-        "final_spy":        round(spy_values[-1], 2),
+        "final_benchmark":  round(benchmark_values[-1], 2),
+        "final_spy":        round(benchmark_values[-1], 2),
         "cagr":             round(port_cagr, 2),
-        "spy_cagr":         round(spy_cagr, 2),
+        "benchmark_cagr":   round(benchmark_cagr, 2),
+        "spy_cagr":         round(benchmark_cagr, 2),
         "n_months":         len(wide),
         "holdings_detail":  holdings_detail,
         "error":            None,
@@ -420,7 +443,7 @@ def run_backtest(portfolio: dict) -> dict:
 # Monte Carlo projection
 # ══════════════════════════════════════════════════════════════════════════════
 
-def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
+def run_montecarlo(portfolio: dict, backtest: dict, benchmark_symbol: str = "SPY") -> dict:
     """
     2-year forward Monte Carlo using per-stock historical monthly returns
     with full covariance-derived correlation matrix (multivariate simulation).
@@ -485,16 +508,22 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
     port_mean = sum(weights[s] * ret_series[s].mean() for s in symbols)
     port_std = float(np.sqrt(w_arr @ cov_mat @ w_arr))
 
-    # SPY stats
-    spy_df = _load_history("SPY")
-    if spy_df.empty or len(spy_df) < 12:
-        spy_mean, spy_std = 0.008, 0.040
-    else:
-        spy_rets = spy_df["Close"].pct_change().dropna()
-        spy_mean = float(spy_rets.mean())
-        spy_std = float(spy_rets.std())
+    benchmark_symbol = str(backtest.get("benchmark_symbol") or benchmark_symbol or "SPY").upper().strip()
 
-    spy_start = backtest.get("final_spy", start_value) if not backtest.get("error") else start_value
+    # Benchmark stats
+    benchmark_df = _load_history(benchmark_symbol)
+    if benchmark_df.empty or len(benchmark_df) < 12:
+        benchmark_mean, benchmark_std = 0.008, 0.040
+    else:
+        benchmark_rets = benchmark_df["Close"].pct_change().dropna()
+        benchmark_mean = float(benchmark_rets.mean())
+        benchmark_std = float(benchmark_rets.std())
+
+    benchmark_start = (
+        backtest.get("final_benchmark")
+        or backtest.get("final_spy")
+        or start_value
+    ) if not backtest.get("error") else start_value
 
     # Date range
     today = datetime.date.today()
@@ -533,12 +562,12 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
 
     # Drift correction
     port_geo_mean = port_mean - (port_std ** 2) / 2
-    spy_geo_mean  = spy_mean - (spy_std ** 2) / 2
+    benchmark_geo_mean = benchmark_mean - (benchmark_std ** 2) / 2
 
     # Portfolio paths with full correlation
     port_paths = _simulate_multivariate(start_value, port_geo_mean, cov_mat, w_arr)
 
-    # SPY (independent)
+    # Benchmark (independent)
     def _simulate(start: float, mu_geo: float, std: float) -> np.ndarray:
         paths = np.empty((MC_PATHS, MC_MONTHS + 1))
         paths[:, 0] = start
@@ -548,7 +577,7 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
             paths[:, t] = paths[:, t - 1] * growth
         return paths
 
-    spy_paths = _simulate(spy_start, spy_geo_mean, spy_std)
+    benchmark_paths = _simulate(benchmark_start, benchmark_geo_mean, benchmark_std)
 
     def _percentile_paths(paths: np.ndarray, pct: int) -> list[float]:
         return [round(float(fm.percentile(paths[:, t], pct) or 0.0), 2)
@@ -559,9 +588,13 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
         "p10":         _percentile_paths(port_paths, 10),
         "p50":         _percentile_paths(port_paths, 50),
         "p90":         _percentile_paths(port_paths, 90),
-        "spy_p10":     _percentile_paths(spy_paths, 10),
-        "spy_p50":     _percentile_paths(spy_paths, 50),
-        "spy_p90":     _percentile_paths(spy_paths, 90),
+        "benchmark_symbol": benchmark_symbol,
+        "benchmark_p10": _percentile_paths(benchmark_paths, 10),
+        "benchmark_p50": _percentile_paths(benchmark_paths, 50),
+        "benchmark_p90": _percentile_paths(benchmark_paths, 90),
+        "spy_p10":     _percentile_paths(benchmark_paths, 10),
+        "spy_p50":     _percentile_paths(benchmark_paths, 50),
+        "spy_p90":     _percentile_paths(benchmark_paths, 90),
         "start_value": round(start_value, 2),
         "error":       None,
     }
@@ -636,16 +669,17 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     port_cagr = backtest["cagr"]
     spy_cagr  = backtest["spy_cagr"]
     gap_cagr  = round(port_cagr - spy_cagr, 3)
+    benchmark_symbol = str(backtest.get("benchmark_symbol") or "SPY").upper().strip()
 
     # ── Rebuild price matrices from history for counterfactual swaps ──────────
     histories: dict[str, pd.DataFrame] = {}
-    for sym in available + ["SPY"]:
+    for sym in available + [benchmark_symbol]:
         h = _load_history(sym)
         if not h.empty:
             histories[sym] = h
 
     # We need a wide aligned frame exactly as in run_backtest
-    to_align = {s: histories[s] for s in available + ["SPY"] if s in histories}
+    to_align = {s: histories[s] for s in available + [benchmark_symbol] if s in histories}
     wide = _align_histories(to_align)
     if wide.empty or len(wide) < 6:
         return {"error": "Insufficient price history for weak-link analysis",
@@ -685,10 +719,10 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
         """
         Compute final portfolio value.
         If exclude_sym is set and replace_with_spy=True, that holding's
-        entry $ are invested in SPY instead.
+        entry $ are invested in the selected benchmark instead.
         """
-        spy_price_entry = float(entry_row["SPY"])
-        spy_price_exit  = float(exit_row["SPY"])
+        benchmark_price_entry = float(entry_row[benchmark_symbol])
+        benchmark_price_exit  = float(exit_row[benchmark_symbol])
 
         total = 0.0
         for sym in available:
@@ -696,9 +730,8 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
                 continue
             ev = entry_values[sym]
             if sym == exclude_sym and replace_with_spy:
-                # Replace this holding with equivalent $ in SPY
-                spy_shares_equiv = ev / spy_price_entry if spy_price_entry > 0 else 0
-                total += spy_shares_equiv * spy_price_exit
+                benchmark_shares_equiv = ev / benchmark_price_entry if benchmark_price_entry > 0 else 0
+                total += benchmark_shares_equiv * benchmark_price_exit
             else:
                 factor     = _split_factor_at(splits_by_sym[sym], exit_date)
                 adj_shares = holdings[sym]["shares"] * factor
@@ -771,24 +804,34 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     }
 
 
-def run_simulation(user_id: str, portfolio_name: str) -> dict:
+def run_simulation(
+    user_id: str,
+    portfolio_name: str | None = None,
+    benchmark_symbol: str = "SPY",
+) -> dict:
+    if portfolio_name is None:
+        portfolio_name = user_id
+        user_id = "default"
     p = load_portfolio(user_id, portfolio_name)
     if p is None:
         return {"error": f'Portfolio "{portfolio_name}" not found'}
 
-    cache_key = _simulation_key(user_id, portfolio_name)
+    benchmark_symbol = str(benchmark_symbol or "SPY").upper().strip()
+    cache_key = _simulation_key(user_id, portfolio_name, benchmark_symbol)
     cached = cache.read("port_sim", cache_key)
     if cached:
         return cached
-    cached = _read_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
-    if cached:
+    if benchmark_symbol == "SPY":
+        cached = _read_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
+    if benchmark_symbol == "SPY" and cached:
         return cached
 
-    bt = run_backtest(p)
-    mc = run_montecarlo(p, bt)
+    bt = run_backtest(p, benchmark_symbol)
+    mc = run_montecarlo(p, bt, benchmark_symbol)
 
     result = {
         "portfolio_name": portfolio_name,
+        "benchmark_symbol": benchmark_symbol,
         "backtest":       bt,
         "montecarlo":     mc,
         "holdings":       p["holdings"],
@@ -798,11 +841,12 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
     return result
 
 
-def run_institutional_analytics(portfolio: dict) -> dict:
+def run_institutional_analytics(portfolio: dict, benchmark_symbol: str = "SPY") -> dict:
     """Compute V2.3 analytics for the current request; results are not cached."""
     holdings = portfolio.get("holdings", {}) if portfolio else {}
     analyses = {}
     histories = {}
+    benchmark_symbol = str(benchmark_symbol or "SPY").upper().strip()
     for symbol in holdings:
         cached_analysis = db.get_analysis(symbol)
         if cached_analysis:
@@ -810,14 +854,20 @@ def run_institutional_analytics(portfolio: dict) -> dict:
         history = _load_history(symbol)
         if not history.empty:
             histories[symbol] = history
+    benchmark_history = _load_history(benchmark_symbol)
     return institutional_portfolio.analyze_portfolio(
         portfolio,
         analyses=analyses,
         histories=histories,
+        benchmark_symbol=benchmark_symbol,
+        benchmark_history=benchmark_history,
     )
 
 
-def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
+def invalidate_simulation_cache(user_id: str, portfolio_name: str | None = None) -> None:
+    if portfolio_name is None:
+        portfolio_name = user_id
+        user_id = "default"
     _clear_cache_if_safe("port_sim", _simulation_key(user_id, portfolio_name))
     _clear_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
 
@@ -860,6 +910,7 @@ def compare_portfolios(
     user_id: str,
     portfolio_a_name: str | None = None,
     portfolio_b_name: str | None = None,
+    benchmark_symbol: str = "SPY",
 ) -> dict:
     """
     Compare two portfolios for the Portfolio Page comparison view.
@@ -868,7 +919,7 @@ def compare_portfolios(
     analyze_weak_links() for both portfolios — does not re-implement or
     alter any existing simulation logic.
 
-    score = (cagr * 0.40) + (alpha_vs_spy * 0.25)
+    score = (cagr * 0.40) + (alpha_vs_benchmark * 0.25)
           + (normalized_final_value * 0.15) + (normalized_p50 * 0.15)
           + (weak_link_score * 0.05)
 
@@ -888,10 +939,11 @@ def compare_portfolios(
         user_id = "default"
     if not portfolio_a_name or not portfolio_b_name:
         return {"error": "Two portfolios are required for comparison"}
+    benchmark_symbol = str(benchmark_symbol or "SPY").upper().strip()
 
     def _run(name: str) -> dict:
         try:
-            return run_simulation(user_id, name)
+            return run_simulation(user_id, name, benchmark_symbol)
         except TypeError:
             return run_simulation(name)
 
@@ -910,8 +962,10 @@ def compare_portfolios(
         return {"error": "Backtest unavailable for one or both portfolios"}
 
     cagr_a, cagr_b = bt_a["cagr"], bt_b["cagr"]
-    alpha_a = cagr_a - bt_a["spy_cagr"]
-    alpha_b = cagr_b - bt_b["spy_cagr"]
+    benchmark_cagr_a = bt_a.get("benchmark_cagr", bt_a.get("spy_cagr", 0.0))
+    benchmark_cagr_b = bt_b.get("benchmark_cagr", bt_b.get("spy_cagr", 0.0))
+    alpha_a = cagr_a - benchmark_cagr_a
+    alpha_b = cagr_b - benchmark_cagr_b
 
     final_a, final_b = bt_a["final_value"], bt_b["final_value"]
     max_final = max(final_a, final_b, 1e-9)
@@ -966,7 +1020,7 @@ def compare_portfolios(
         if w_cagr > l_cagr:
             reasons.append("Higher CAGR")
         if w_alpha > l_alpha:
-            reasons.append("Better alpha vs SPY")
+            reasons.append(f"Better alpha vs {benchmark_symbol}")
         if w_final > l_final:
             reasons.append("Higher final portfolio value")
         if w_p50 is not None and l_p50 is not None and w_p50 > l_p50:
@@ -984,6 +1038,7 @@ def compare_portfolios(
         "score_a":     round(score_a, 2),
         "score_b":     round(score_b, 2),
         "reasons":     reasons,
+        "benchmark_symbol": benchmark_symbol,
         "portfolio_a": sim_a,
         "portfolio_b": sim_b,
         "error":       None,

@@ -248,6 +248,21 @@ def build_layout():
                         clearable=True,
                         className="min-w-200",
                     ),
+                    html.Label("Benchmark:", className="fs-13 clr-muted ml-8"),
+                    dcc.Dropdown(
+                        id="portfolio-benchmark-dropdown",
+                        options=[
+                            {"label": "S&P 500 (SPY)", "value": "SPY"},
+                            {"label": "Nasdaq 100 (QQQ)", "value": "QQQ"},
+                            {"label": "Russell 2000 (IWM)", "value": "IWM"},
+                            {"label": "Dow Jones (DIA)", "value": "DIA"},
+                            {"label": "US Total Market (VTI)", "value": "VTI"},
+                            {"label": "Global Equities (ACWI)", "value": "ACWI"},
+                        ],
+                        value="SPY",
+                        clearable=False,
+                        className="min-w-200",
+                    ),
                 ]),
             ]),
             # New portfolio name modal (inline, hidden by default)

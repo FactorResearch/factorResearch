@@ -57,9 +57,12 @@ def test_institutional_portfolio_calculates_v23_surface_area():
             "BBB": _history(200, 1),
             "CCC": _history(50, 1.5),
         },
+        benchmark_symbol="QQQ",
+        benchmark_history=_history(300, 2),
     )
 
     assert result["engine_version"] == "2.3.0"
+    assert result["benchmark"]["selected"] == "QQQ"
     assert result["exposures"]["sector"]["Technology"] > 70
     assert "United States" in result["exposures"]["country"]
     assert "Mega" in result["exposures"]["market_cap"]
@@ -71,6 +74,15 @@ def test_institutional_portfolio_calculates_v23_surface_area():
     assert set(result["advanced_monte_carlo"]) == {"gbm", "bootstrap", "fat_tail", "regime_aware"}
     assert result["advanced_monte_carlo"]["gbm"]["series"]["months"][0] == 0
     assert len(result["advanced_monte_carlo"]["gbm"]["series"]["p50"]) == 25
+    assert result["risk_budget"]["holdings"]
+    assert result["scenario_shocks"]
+    assert result["policy_checks"]["checks"]
+    assert result["portfolio_factor_exposure"]["quality"]["score"] is not None
+    assert result["attribution"]["holdings"]
+    assert result["rolling_attribution"]
+    assert "recommendations" in result["rebalancing_optimizer"]
+    assert "estimated_annual_income" in result["income_yield"]
+    assert "tax_loss_candidates" in result["tax_view"]
 
 
 def test_institutional_wrapper_does_not_write_json_cache(monkeypatch):

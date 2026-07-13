@@ -384,6 +384,11 @@ def _comparison_stats_row(port_name: str, bt: dict) -> html.Div:
         delta_class = "clr-green fs-12" if d >= 0 else "clr-red fs-12"
         return html.Span(f" ({sign}${d:,.0f})", className=delta_class)
 
+    benchmark = _benchmark_symbol(bt)
+    benchmark_final = _benchmark_final(bt) or 0
+    benchmark_invested = _benchmark_invested(bt) or 0
+    benchmark_cagr = _benchmark_cagr(bt) or 0
+
     return html.Div(className="portfolio-stats-row", children=[
         html.Div(className="stat-item", children=[
             html.Div("Invested", className="stat-label"),
@@ -397,10 +402,10 @@ def _comparison_stats_row(port_name: str, bt: dict) -> html.Div:
             ]),
         ]),
         html.Div(className="stat-item", children=[
-            html.Div("SPY (same $)", className="stat-label"),
+            html.Div(f"{benchmark} (same $)", className="stat-label"),
             html.Div([
-                html.Span(f"${bt['final_spy']:,.2f}", className="stat-value"),
-                _delta(bt["final_spy"], bt["spy_invested"]),
+                html.Span(f"${benchmark_final:,.2f}", className="stat-value"),
+                _delta(benchmark_final, benchmark_invested),
             ]),
         ]),
         html.Div(className="stat-item", children=[
@@ -409,14 +414,14 @@ def _comparison_stats_row(port_name: str, bt: dict) -> html.Div:
                      + ("clr-green" if bt["cagr"] > 0 else "clr-red")),
         ]),
         html.Div(className="stat-item", children=[
-            html.Div("SPY CAGR", className="stat-label"),
-            html.Div(f"{bt['spy_cagr']:+.1f}%", className="stat-value "
-                     + ("clr-green" if bt["spy_cagr"] > 0 else "clr-red")),
+            html.Div(f"{benchmark} CAGR", className="stat-label"),
+            html.Div(f"{benchmark_cagr:+.1f}%", className="stat-value "
+                     + ("clr-green" if benchmark_cagr > 0 else "clr-red")),
         ]),
         html.Div(className="stat-item", children=[
-            html.Div("vs SPY", className="stat-label"),
-            html.Div(f"{bt['cagr'] - bt['spy_cagr']:+.1f}% / yr", className="stat-value "
-                     + ("clr-green" if bt["cagr"] > bt["spy_cagr"] else "clr-red")),
+            html.Div(f"vs {benchmark}", className="stat-label"),
+            html.Div(f"{bt['cagr'] - benchmark_cagr:+.1f}% / yr", className="stat-value "
+                     + ("clr-green" if bt["cagr"] > benchmark_cagr else "clr-red")),
         ]),
     ])
 
@@ -470,6 +475,34 @@ def _fmt_pct(value) -> str:
         return "N/A"
 
 
+def _benchmark_symbol(bt_or_mc: dict) -> str:
+    return str((bt_or_mc or {}).get("benchmark_symbol") or "SPY").upper()
+
+
+def _benchmark_value(bt: dict) -> list:
+    return (bt or {}).get("benchmark_value") or (bt or {}).get("spy_value") or []
+
+
+def _benchmark_final(bt: dict):
+    return (bt or {}).get("final_benchmark", (bt or {}).get("final_spy"))
+
+
+def _benchmark_cagr(bt: dict):
+    return (bt or {}).get("benchmark_cagr", (bt or {}).get("spy_cagr"))
+
+
+def _benchmark_invested(bt: dict):
+    return (bt or {}).get("benchmark_invested", (bt or {}).get("spy_invested"))
+
+
+def _benchmark_mc_band(mc: dict, pct: int) -> list:
+    return (
+        (mc or {}).get(f"benchmark_p{pct}")
+        or (mc or {}).get(f"spy_p{pct}")
+        or []
+    )
+
+
 def _exposure_panel(title: str, exposures: dict) -> html.Div:
     rows = [
         html.Div(className="institutional-exposure-row", children=[
@@ -482,6 +515,136 @@ def _exposure_panel(title: str, exposures: dict) -> html.Div:
         html.Div(title, className="institutional-panel-title"),
         html.Div(className="institutional-exposure-list", children=rows),
     ])
+
+
+def _compact_rows(rows: list[tuple[str, str, str | None]], empty: str = "Unavailable") -> html.Div:
+    children = [
+        html.Div(className="institutional-exposure-row", children=[
+            html.Span(label, className="institutional-exposure-label"),
+            html.Span(value, className=f"institutional-exposure-value {tone or ''}".strip()),
+        ])
+        for label, value, tone in rows
+    ] or [html.Div(empty, className="clr-muted fs-12")]
+    return html.Div(className="institutional-exposure-list", children=children)
+
+
+def _pro_portfolio_panels(analytics: dict) -> list[html.Div]:
+    benchmark = analytics.get("benchmark") or {}
+    risk = analytics.get("risk_budget") or {}
+    risk_port = risk.get("portfolio") or {}
+    risk_rows = [
+        (
+            row.get("symbol", ""),
+            f"{row.get('risk_contribution', 'N/A')}% risk · {row.get('weight', 'N/A')}% weight",
+            "clr-red" if (row.get("risk_contribution") or 0) > (row.get("weight") or 0) * 1.5 else None,
+        )
+        for row in (risk.get("holdings") or [])[:5]
+    ]
+    scenario_rows = [
+        (
+            row.get("scenario", ""),
+            _fmt_pct(row.get("estimated_impact")),
+            "clr-green" if (row.get("estimated_impact") or 0) >= 0 else "clr-red",
+        )
+        for row in (analytics.get("scenario_shocks") or [])[:5]
+    ]
+    policy = analytics.get("policy_checks") or {}
+    policy_rows = [
+        (
+            check.get("rule", ""),
+            "Pass" if check.get("passed") else f"Review {check.get('value', 'N/A')}",
+            "clr-green" if check.get("passed") else "clr-red",
+        )
+        for check in (policy.get("checks") or [])[:5]
+    ]
+    factors = analytics.get("portfolio_factor_exposure") or {}
+    factor_rows = [
+        (name.replace("_", " ").title(), f"{data.get('score', 'N/A')} · {data.get('coverage', 0)}% cov.", None)
+        for name, data in factors.items()
+    ]
+    attribution = analytics.get("attribution") or {}
+    attribution_rows = [
+        (
+            row.get("symbol", ""),
+            f"{row.get('contribution', 'N/A')} pts · {row.get('total_return', 'N/A')}%",
+            "clr-green" if (row.get("contribution") or 0) >= 0 else "clr-red",
+        )
+        for row in (attribution.get("holdings") or [])[:5]
+    ]
+    rolling_rows = [
+        (
+            row.get("end_date", ""),
+            _fmt_pct(row.get("total_contribution")),
+            "clr-green" if (row.get("total_contribution") or 0) >= 0 else "clr-red",
+        )
+        for row in (analytics.get("rolling_attribution") or [])[-5:]
+    ]
+    rebalance = analytics.get("rebalancing_optimizer") or {}
+    rebalance_rows = [
+        (
+            row.get("symbol", ""),
+            f"{str(row.get('action', '')).title()} ${abs(row.get('dollar_delta') or 0):,.0f}",
+            "clr-green" if row.get("action") == "buy" else "clr-amber",
+        )
+        for row in (rebalance.get("recommendations") or [])[:5]
+    ]
+    income = analytics.get("income_yield") or {}
+    tax = analytics.get("tax_view") or {}
+    income_tax_rows = [
+        ("Weighted Yield", f"{income.get('weighted_yield', 'N/A')}%", None),
+        ("Annual Income", f"${income.get('estimated_annual_income', 0):,.0f}", None),
+        ("Income Coverage", _fmt_pct(income.get("coverage")), None),
+        ("Unrealized Gain", f"${tax.get('unrealized_gain', 0):,.0f}", "clr-green" if (tax.get("unrealized_gain") or 0) >= 0 else "clr-red"),
+        ("Tax-Loss Names", str(len(tax.get("tax_loss_candidates") or [])), None),
+    ]
+    benchmark_rows = [
+        ("Selected", benchmark.get("selected", "SPY"), None),
+        ("Supported", ", ".join(option["symbol"] for option in benchmark.get("options", [])[:6]), None),
+        ("Data Need", "No premium feed", "clr-green"),
+    ]
+
+    return [
+        html.Div(className="institutional-panel", children=[
+            html.Div("Benchmark Controls", className="institutional-panel-title"),
+            _compact_rows(benchmark_rows),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Risk Budget", className="institutional-panel-title"),
+            html.Div(
+                f"Vol {risk_port.get('annual_volatility', 'N/A')}% · Beta {risk_port.get('beta', 'N/A')} · CVaR {risk_port.get('cvar_95', 'N/A')}%",
+                className="fs-12 clr-muted mb-8",
+            ),
+            _compact_rows(risk_rows, "Needs more return history."),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Scenario Shocks", className="institutional-panel-title"),
+            _compact_rows(scenario_rows),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Risk Limits", className="institutional-panel-title"),
+            _compact_rows(policy_rows),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Portfolio Factors", className="institutional-panel-title"),
+            _compact_rows(factor_rows),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Return Attribution", className="institutional-panel-title"),
+            _compact_rows(attribution_rows, "Needs more holding history."),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Rolling Attribution", className="institutional-panel-title"),
+            _compact_rows(rolling_rows, "Needs more dated return history."),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Rebalancing Optimizer", className="institutional-panel-title"),
+            _compact_rows(rebalance_rows, "No material rebalance needed."),
+        ]),
+        html.Div(className="institutional-panel", children=[
+            html.Div("Income / Tax View", className="institutional-panel-title"),
+            _compact_rows(income_tax_rows),
+        ]),
+    ]
 
 
 def _institutional_analytics_view(analytics: dict) -> html.Div:
@@ -565,6 +728,7 @@ def _institutional_analytics_view(analytics: dict) -> html.Div:
                 html.Div("Advanced Monte Carlo", className="institutional-panel-title"),
                 html.Div(className="institutional-exposure-list", children=mc_rows),
             ]),
+            *_pro_portfolio_panels(analytics),
         ]),
     ])
 
@@ -611,9 +775,10 @@ def _advanced_monte_carlo_chart(
 
     fig = go.Figure()
     if benchmark_monte_carlo and not benchmark_monte_carlo.get("error") and months:
-        spy_p10 = _projected_returns(benchmark_monte_carlo.get("spy_p10") or [])
-        spy_p50 = _projected_returns(benchmark_monte_carlo.get("spy_p50") or [])
-        spy_p90 = _projected_returns(benchmark_monte_carlo.get("spy_p90") or [])
+        benchmark = _benchmark_symbol(benchmark_monte_carlo)
+        spy_p10 = _projected_returns(_benchmark_mc_band(benchmark_monte_carlo, 10))
+        spy_p50 = _projected_returns(_benchmark_mc_band(benchmark_monte_carlo, 50))
+        spy_p90 = _projected_returns(_benchmark_mc_band(benchmark_monte_carlo, 90))
         if (
             len(spy_p10) == len(months)
             and len(spy_p50) == len(months)
@@ -625,7 +790,7 @@ def _advanced_monte_carlo_chart(
                 fill="toself",
                 fillcolor="rgba(158,158,158,0.12)",
                 line={"color": "rgba(0,0,0,0)"},
-                name="SPY projected range",
+                name=f"{benchmark} projected range",
                 showlegend=True,
                 hoverinfo="skip",
             ))
@@ -633,9 +798,9 @@ def _advanced_monte_carlo_chart(
                 x=months,
                 y=spy_p50,
                 mode="lines",
-                name="SPY projected median",
+                name=f"{benchmark} projected median",
                 line={"color": MUTED, "width": 1.8, "dash": "dot"},
-                hovertemplate="SPY<br>Month %{x}<br>P50 %{y:.1f}%<extra></extra>",
+                hovertemplate=f"{benchmark}<br>Month %{{x}}<br>P50 %{{y:.1f}}%<extra></extra>",
             ))
     for method, result in available.items():
         series = result.get("series") or {}
@@ -702,11 +867,12 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
             f"⚠️  Weak-link analysis unavailable: {wl['error']}",
             className="clr-muted fs-13 py-8 px-4"
         )
+    benchmark = _benchmark_symbol(bt)
     gap      = wl["gap_cagr"]
     gap_col  = GREEN if gap >= 0 else RED
     gap_text = (
         f"Portfolio CAGR {wl['port_cagr']:+.1f}%  vs  "
-        f"SPY {wl['spy_cagr']:+.1f}%  —  {gap:+.2f}% / yr gap "
+        f"{benchmark} {wl['spy_cagr']:+.1f}%  —  {gap:+.2f}% / yr gap "
         f"over {wl['n_years']:.1f} yr"
     )
     if wl.get("weakest"):
@@ -714,13 +880,13 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
         wd  = wl["holdings"][ws]
         banner = html.Div(
             f"⚠️  Weakest link: {ws} — "
-            f"replacing it with SPY would have improved total returns "
+            f"replacing it with {benchmark} would have improved total returns "
             f"by +{wd['swap_delta_pct']:.2f}%",
             className="portfolio-weak-link-alert portfolio-weak-link-alert--danger br-6 px-14 py-8 mb-12 fs-13 fw-600"
         )
     else:
         banner = html.Div(
-            "✅  No weak links — every holding beat SPY over the backtest period.",
+            f"✅  No weak links — every holding beat {benchmark} over the backtest period.",
             className="portfolio-weak-link-alert portfolio-weak-link-alert--safe br-6 px-14 py-8 mb-12 fs-13 fw-600"
         )
     wl_rows = []
@@ -756,16 +922,16 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
         html.Table(className="screener-table", children=[
             html.Thead(html.Tr([
                 html.Th("Ticker"), html.Th("Weight"), html.Th("Stock CAGR"),
-                html.Th("vs SPY"), html.Th("Drag (bps)"), html.Th("Swap Δ"),
+                html.Th(f"vs {benchmark}"), html.Th("Drag (bps)"), html.Th("Swap Δ"),
                 html.Th("Verdict"),
             ])),
             html.Tbody(wl_rows),
         ]),
         html.Div(
             "Table sorted worst-to-best.  "
-            "Drag (bps): weighted annualised underperformance vs SPY (negative = drag).  "
-            "Swap Δ: total-return change if this stock were replaced with SPY "
-            "(positive = stock was a drag; negative = stock beat SPY).",
+            f"Drag (bps): weighted annualised underperformance vs {benchmark} (negative = drag).  "
+            f"Swap Δ: total-return change if this stock were replaced with {benchmark} "
+            f"(positive = stock was a drag; negative = stock beat {benchmark}).",
             className="analysis-copy-leading fs-11 clr-muted mt-10 px-4",
         ),
     ])
@@ -806,6 +972,7 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
     bt_a, mc_a = sim_a["backtest"], sim_a["montecarlo"]
     bt_b, mc_b = sim_b["backtest"], sim_b["montecarlo"]
     color_a, color_b = palette[0], palette[1]
+    benchmark = _benchmark_symbol(bt_a)
 
     # ── Column headers ───────────────────────────────────────────────────
     sections.append(_two_col(
@@ -819,7 +986,7 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
         _comparison_stats_row(compare, bt_b),
     ))
 
-    # ── Combined backtest chart (A + B + single SPY line) ───────────────
+    # ── Combined backtest chart (A + B + single benchmark line) ─────────
     if not bt_a.get("error") and not bt_b.get("error"):
         fig_bt = go.Figure()
         fig_bt.add_trace(go.Scatter(
@@ -831,11 +998,11 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
             name=compare, line=dict(color=color_b, width=2.5)
         ))
         fig_bt.add_trace(go.Scatter(
-            x=bt_a["dates"], y=bt_a["spy_value"],
-            name="SPY", line=dict(color=MUTED, width=1.5, dash="dot")
+            x=bt_a["dates"], y=_benchmark_value(bt_a),
+            name=benchmark, line=dict(color=MUTED, width=1.5, dash="dot")
         ))
         fig_bt.update_layout(**_chart_layout(
-            f"{active} vs {compare} vs SPY — 10yr Backtest (actual $)", many_traces=True
+            f"{active} vs {compare} vs {benchmark} — 10yr Backtest (actual $)", many_traces=True
         ))
         fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
         sections.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
@@ -844,19 +1011,19 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
     elif bt_b.get("error"):
         sections.append(html.Div(f"❌ {compare}: {bt_b['error']}", className="text-danger"))
 
-    # ── Combined Monte Carlo chart (A + B medians/bands + single SPY band) ──
+    # ── Combined Monte Carlo chart (A + B medians/bands + benchmark band) ──
     if not mc_a.get("error") and not mc_b.get("error"):
         fig_mc = go.Figure()
-        # SPY band (grey) — from portfolio A's projection (same SPY series)
+        # Benchmark band (grey) — from portfolio A's projection (same benchmark series)
         fig_mc.add_trace(go.Scatter(
             x=mc_a["dates"] + mc_a["dates"][::-1],
-            y=mc_a["spy_p90"] + mc_a["spy_p10"][::-1],
+            y=_benchmark_mc_band(mc_a, 90) + _benchmark_mc_band(mc_a, 10)[::-1],
             fill="toself", fillcolor="rgba(158,158,158,0.12)",
-            line=dict(color="rgba(0,0,0,0)"), name="SPY range", showlegend=True,
+            line=dict(color="rgba(0,0,0,0)"), name=f"{benchmark} range", showlegend=True,
         ))
         fig_mc.add_trace(go.Scatter(
-            x=mc_a["dates"], y=mc_a["spy_p50"],
-            name="SPY median", line=dict(color=MUTED, width=1.5, dash="dot")
+            x=mc_a["dates"], y=_benchmark_mc_band(mc_a, 50),
+            name=f"{benchmark} median", line=dict(color=MUTED, width=1.5, dash="dot")
         ))
         for mc, name, color in ((mc_a, active, color_a), (mc_b, compare, color_b)):
             r, g_c, b = int(color[1:3], 16), int(color[3:5], 16), int(color[5:7], 16)
@@ -872,7 +1039,7 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
                 name=f"{name} median", line=dict(color=color, width=2.5)
             ))
         fig_mc.update_layout(**_chart_layout(
-            f"{active} vs {compare} vs SPY — 2yr Monte Carlo Projection (1,000 paths)",
+            f"{active} vs {compare} vs {benchmark} — 2yr Monte Carlo Projection (1,000 paths)",
             many_traces=True
         ))
         fig_mc.update_yaxes(title_text="Projected Value ($)", tickprefix="$")
@@ -900,12 +1067,14 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
     Input("run-simulation-btn",        "n_clicks"),
     State("portfolio-active-dropdown", "value"),
     State("portfolio-compare-dropdown","value"),
+    State("portfolio-benchmark-dropdown","value"),
     prevent_initial_call=True
 )
-def run_simulation(n, active, compare):
+def run_simulation(n, active, compare, benchmark_symbol="SPY"):
     if not n or not active:
         return [], None
     uid = get_user_id()
+    benchmark_symbol = str(benchmark_symbol or "SPY").upper()
     access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
     if not access.allowed:
         product_analytics.track_event(
@@ -939,11 +1108,15 @@ def run_simulation(n, active, compare):
     use_pro_monte_carlo = _use_pro_monte_carlo(access)
 
     def _build_sim_charts(port_name: str, color: str, institutional_analytics: dict | None = None) -> list:
-        sim = portfolio_engine.run_simulation(uid, port_name)
+        sim = portfolio_engine.run_simulation(uid, port_name, benchmark_symbol)
         if sim.get("error"):
             return [html.Div(f"❌ {sim['error']}", className="text-danger")]
         bt = sim["backtest"]
         mc = sim["montecarlo"]
+        benchmark = _benchmark_symbol(bt)
+        benchmark_final = _benchmark_final(bt) or 0
+        benchmark_invested = _benchmark_invested(bt) or 0
+        benchmark_cagr = _benchmark_cagr(bt) or 0
         components = []
         # ── Summary stats row ──────────────────────────────────────────────
         def _delta(val, ref):
@@ -965,10 +1138,10 @@ def run_simulation(n, active, compare):
                     ]),
                 ]),
                 html.Div(className="stat-item", children=[
-                    html.Div("SPY (same $)", className="stat-label"),
+                    html.Div(f"{benchmark} (same $)", className="stat-label"),
                     html.Div([
-                        html.Span(f"${bt['final_spy']:,.2f}", className="stat-value"),
-                        _delta(bt["final_spy"], bt["spy_invested"]),
+                        html.Span(f"${benchmark_final:,.2f}", className="stat-value"),
+                        _delta(benchmark_final, benchmark_invested),
                     ]),
                 ]),
                 html.Div(className="stat-item", children=[
@@ -977,14 +1150,14 @@ def run_simulation(n, active, compare):
                              + ("clr-green" if bt["cagr"] > 0 else "clr-red")),
                 ]),
                 html.Div(className="stat-item", children=[
-                    html.Div("SPY CAGR", className="stat-label"),
-                    html.Div(f"{bt['spy_cagr']:+.1f}%", className="stat-value "
-                             + ("clr-green" if bt["spy_cagr"] > 0 else "clr-red")),
+                    html.Div(f"{benchmark} CAGR", className="stat-label"),
+                    html.Div(f"{benchmark_cagr:+.1f}%", className="stat-value "
+                             + ("clr-green" if benchmark_cagr > 0 else "clr-red")),
                 ]),
                 html.Div(className="stat-item", children=[
-                    html.Div("vs SPY", className="stat-label"),
-                    html.Div(f"{bt['cagr'] - bt['spy_cagr']:+.1f}% / yr", className="stat-value "
-                             + ("clr-green" if bt["cagr"] > bt["spy_cagr"] else "clr-red")),
+                    html.Div(f"vs {benchmark}", className="stat-label"),
+                    html.Div(f"{bt['cagr'] - benchmark_cagr:+.1f}% / yr", className="stat-value "
+                             + ("clr-green" if bt["cagr"] > benchmark_cagr else "clr-red")),
                 ]),
             ]))
         # ── Backtest chart ─────────────────────────────────────────────────
@@ -995,10 +1168,10 @@ def run_simulation(n, active, compare):
                 name=port_name, line=dict(color=color, width=2.5)
             ))
             fig_bt.add_trace(go.Scatter(
-                x=bt["dates"], y=bt["spy_value"],
-                name="SPY", line=dict(color=MUTED, width=1.5, dash="dot")
+                x=bt["dates"], y=_benchmark_value(bt),
+                name=benchmark, line=dict(color=MUTED, width=1.5, dash="dot")
             ))
-            fig_bt.update_layout(**_chart_layout(f"{port_name} — 10yr Backtest vs SPY (actual $)", many_traces=True))
+            fig_bt.update_layout(**_chart_layout(f"{port_name} — 10yr Backtest vs {benchmark} (actual $)", many_traces=True))
             fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
             components.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
         # ── Monte Carlo chart ──────────────────────────────────────────────
@@ -1006,16 +1179,16 @@ def run_simulation(n, active, compare):
             components.append(_advanced_monte_carlo_chart(institutional_analytics, port_name, mc))
         elif not mc.get("error"):
             fig_mc = go.Figure()
-            # SPY band (grey)
+            # Benchmark band (grey)
             fig_mc.add_trace(go.Scatter(
                 x=mc["dates"] + mc["dates"][::-1],
-                y=mc["spy_p90"] + mc["spy_p10"][::-1],
+                y=_benchmark_mc_band(mc, 90) + _benchmark_mc_band(mc, 10)[::-1],
                 fill="toself", fillcolor="rgba(158,158,158,0.12)",
-                line=dict(color="rgba(0,0,0,0)"), name="SPY range", showlegend=True,
+                line=dict(color="rgba(0,0,0,0)"), name=f"{benchmark} range", showlegend=True,
             ))
             fig_mc.add_trace(go.Scatter(
-                x=mc["dates"], y=mc["spy_p50"],
-                name="SPY median", line=dict(color=MUTED, width=1.5, dash="dot")
+                x=mc["dates"], y=_benchmark_mc_band(mc, 50),
+                name=f"{benchmark} median", line=dict(color=MUTED, width=1.5, dash="dot")
             ))
             # Portfolio band (colour)
             r, g_c, b = int(color[1:3],16), int(color[3:5],16), int(color[5:7],16)
@@ -1093,11 +1266,12 @@ def run_simulation(n, active, compare):
                         className="clr-muted fs-13 py-8 px-4"
                     ))
                 else:
+                    benchmark = _benchmark_symbol(bt)
                     gap      = wl["gap_cagr"]
                     gap_col  = GREEN if gap >= 0 else RED
                     gap_text = (
                         f"Portfolio CAGR {wl['port_cagr']:+.1f}%  vs  "
-                        f"SPY {wl['spy_cagr']:+.1f}%  —  {gap:+.2f}% / yr gap "
+                        f"{benchmark} {wl['spy_cagr']:+.1f}%  —  {gap:+.2f}% / yr gap "
                         f"over {wl['n_years']:.1f} yr"
                     )
                     # Banner: weakest link callout OR all-clear
@@ -1106,13 +1280,13 @@ def run_simulation(n, active, compare):
                         wd  = wl["holdings"][ws]
                         banner = html.Div(
                             f"⚠️  Weakest link: {ws} — "
-                            f"replacing it with SPY would have improved total returns "
+                            f"replacing it with {benchmark} would have improved total returns "
                             f"by +{wd['swap_delta_pct']:.2f}%",
                             className="portfolio-weak-link-alert portfolio-weak-link-alert--danger br-6 px-14 py-8 mb-12 fs-13 fw-600"
                         )
                     else:
                         banner = html.Div(
-                            "✅  No weak links — every holding beat SPY over the backtest period.",
+                            f"✅  No weak links — every holding beat {benchmark} over the backtest period.",
                             className="portfolio-weak-link-alert portfolio-weak-link-alert--safe br-6 px-14 py-8 mb-12 fs-13 fw-600"
                         )
                     # Per-holding rows — worst to best (ranking is worst-first)
@@ -1154,7 +1328,7 @@ def run_simulation(n, active, compare):
                                 html.Th("Ticker"),
                                 html.Th("Weight"),
                                 html.Th("Stock CAGR"),
-                                html.Th("vs SPY"),
+                                html.Th(f"vs {benchmark}"),
                                 html.Th("Drag (bps)"),
                                 html.Th("Swap Δ"),
                                 html.Th("Verdict"),
@@ -1163,16 +1337,16 @@ def run_simulation(n, active, compare):
                         ]),
                         html.Div(
                             "Table sorted worst-to-best.  "
-                            "Drag (bps): weighted annualised underperformance vs SPY (negative = drag).  "
-                            "Swap Δ: total-return change if this stock were replaced with SPY "
-                            "(positive = stock was a drag; negative = stock beat SPY).",
+                            f"Drag (bps): weighted annualised underperformance vs {benchmark} (negative = drag).  "
+                            f"Swap Δ: total-return change if this stock were replaced with {benchmark} "
+                            f"(positive = stock was a drag; negative = stock beat {benchmark}).",
                             className="analysis-copy-leading fs-11 clr-muted mt-10 px-4",
                         ),
                     ]))
         return components
     PALETTE = [BLUE, GREEN, AMBER, "#e040fb", "#00bcd4"]
     if compare and compare != active:
-        cmp_result = portfolio_engine.compare_portfolios(uid,active, compare)
+        cmp_result = portfolio_engine.compare_portfolios(uid, active, compare, benchmark_symbol)
         if cmp_result.get("error"):
             return [
                 html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
@@ -1193,7 +1367,7 @@ def run_simulation(n, active, compare):
     p_obj = portfolio_engine.load_portfolio(uid, active)
     institutional_analytics = None
     if p_obj:
-        institutional_analytics = portfolio_engine.run_institutional_analytics(p_obj)
+        institutional_analytics = portfolio_engine.run_institutional_analytics(p_obj, benchmark_symbol)
     result.extend(_build_sim_charts(active, PALETTE[0], institutional_analytics))
     if p_obj and institutional_analytics:
         result.append(_institutional_analytics_view(institutional_analytics))
