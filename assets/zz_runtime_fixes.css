@@ -169,6 +169,100 @@ body.light .factor-rolling-label {
   }
 }
 
+/* V2.3 Institutional Portfolio Analytics. */
+.institutional-analytics-card {
+  margin-top: 18px;
+}
+
+.institutional-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+  padding: 16px 18px 18px;
+}
+
+.institutional-panel {
+  border: 1px solid rgba(126, 157, 194, 0.2);
+  border-radius: 8px;
+  background: rgba(9, 18, 32, 0.22);
+  padding: 12px;
+  min-width: 0;
+}
+
+.institutional-panel--wide {
+  grid-column: span 2;
+}
+
+.institutional-panel-title {
+  color: #e8eaf0;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.institutional-exposure-list,
+.institutional-flag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.institutional-exposure-row,
+.institutional-flag {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(126, 157, 194, 0.14);
+  padding-bottom: 7px;
+}
+
+.institutional-exposure-row:last-child,
+.institutional-flag:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.institutional-exposure-label,
+.institutional-flag-type {
+  color: #8899aa;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.institutional-exposure-value,
+.institutional-flag-value {
+  color: #e8eaf0;
+  font-family: "DM Mono", "Fira Code", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  min-width: fit-content;
+}
+
+body.light .institutional-panel {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(31, 41, 55, 0.16);
+}
+
+body.light .institutional-panel-title,
+body.light .institutional-exposure-value,
+body.light .institutional-flag-value {
+  color: #1f2937;
+}
+
+body.light .institutional-exposure-label,
+body.light .institutional-flag-type {
+  color: #6b7280;
+}
+
+@media (max-width: 760px) {
+  .institutional-panel--wide {
+    grid-column: span 1;
+  }
+}
+
 /* Keep every Dash root/loading shell dark so no white band can show behind wide tables. */
 html:not(.light),
 body:not(.light),

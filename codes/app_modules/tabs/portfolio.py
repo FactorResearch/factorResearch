@@ -463,6 +463,112 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
     ])
 
 
+def _fmt_pct(value) -> str:
+    try:
+        return f"{float(value):.1f}%"
+    except (TypeError, ValueError):
+        return "N/A"
+
+
+def _exposure_panel(title: str, exposures: dict) -> html.Div:
+    rows = [
+        html.Div(className="institutional-exposure-row", children=[
+            html.Span(label, className="institutional-exposure-label"),
+            html.Span(_fmt_pct(value), className="institutional-exposure-value"),
+        ])
+        for label, value in list((exposures or {}).items())[:6]
+    ] or [html.Div("Unavailable", className="clr-muted fs-12")]
+    return html.Div(className="institutional-panel", children=[
+        html.Div(title, className="institutional-panel-title"),
+        html.Div(className="institutional-exposure-list", children=rows),
+    ])
+
+
+def _institutional_analytics_view(analytics: dict) -> html.Div:
+    if not analytics or analytics.get("error"):
+        return html.Div(
+            f"Institutional analytics unavailable: {(analytics or {}).get('error', 'not enough data')}",
+            className="clr-muted fs-13 py-8 px-4",
+        )
+    exposures = analytics.get("exposures") or {}
+    concentration = analytics.get("hidden_concentration") or {}
+    liquidity = analytics.get("estimated_liquidity") or {}
+    correlation = analytics.get("correlation_matrix") or {}
+    pca = analytics.get("pca") or {}
+    clusters = (analytics.get("hierarchical_clustering") or {}).get("clusters") or []
+    stress = analytics.get("historical_stress_testing") or []
+    monte_carlo = analytics.get("advanced_monte_carlo") or {}
+
+    flag_rows = [
+        html.Div(className="institutional-flag", children=[
+            html.Span(flag.get("type", "").replace("_", " ").title(), className="institutional-flag-type"),
+            html.Span(f"{flag.get('label')} · {_fmt_pct(flag.get('weight'))}", className="institutional-flag-value"),
+        ])
+        for flag in (concentration.get("flags") or [])[:4]
+    ] or [html.Div("No hidden concentration flags.", className="clr-green fs-12 fw-600")]
+
+    stress_rows = [
+        html.Div(className="institutional-exposure-row", children=[
+            html.Span(row.get("scenario", "Stress"), className="institutional-exposure-label"),
+            html.Span(_fmt_pct(row.get("return")), className=(
+                "institutional-exposure-value clr-green"
+                if (row.get("return") or 0) >= 0 else
+                "institutional-exposure-value clr-red"
+            )),
+        ])
+        for row in stress[:4]
+    ] or [html.Div("Needs more dated return history.", className="clr-muted fs-12")]
+
+    mc_rows = [
+        html.Div(className="institutional-exposure-row", children=[
+            html.Span(method.replace("_", " ").title(), className="institutional-exposure-label"),
+            html.Span(
+                f"P50 {_fmt_pct(result.get('p50'))} · Loss {_fmt_pct(result.get('probability_loss'))}"
+                if not result.get("error") else result.get("error"),
+                className="institutional-exposure-value",
+            ),
+        ])
+        for method, result in monte_carlo.items()
+    ] or [html.Div("Needs more return history.", className="clr-muted fs-12")]
+
+    pca_first = (pca.get("components") or [{}])[0]
+    cluster_text = ", ".join(
+        "/".join(cluster.get("members", []))
+        for cluster in clusters[:3]
+    ) or "N/A"
+
+    return html.Div(className="scorecard institutional-analytics-card", children=[
+        html.Div("V2.3 Institutional Portfolio Analytics", className="scorecard-header"),
+        html.Div(className="institutional-grid", children=[
+            _exposure_panel("Sector Exposure", exposures.get("sector")),
+            _exposure_panel("Industry Exposure", exposures.get("industry")),
+            _exposure_panel("Country Exposure", exposures.get("country")),
+            _exposure_panel("Market-Cap Exposure", exposures.get("market_cap")),
+            _exposure_panel("Style Exposure", exposures.get("style")),
+            html.Div(className="institutional-panel", children=[
+                html.Div("Liquidity & Concentration", className="institutional-panel-title"),
+                html.Div(f"Liquidity Score {liquidity.get('score', 'N/A')}", className="fs-13 fw-700 clr-text mb-8"),
+                html.Div(f"Concentration Score {concentration.get('score', 'N/A')}", className="fs-13 fw-700 clr-text mb-8"),
+                html.Div(className="institutional-flag-list", children=flag_rows),
+            ]),
+            html.Div(className="institutional-panel", children=[
+                html.Div("Correlation / Clustering / PCA", className="institutional-panel-title"),
+                html.Div(f"Avg Corr {_fmt_pct((correlation.get('average_correlation') or 0) * 100)}", className="fs-13 fw-700 clr-text mb-8"),
+                html.Div(f"Clusters {cluster_text}", className="fs-12 clr-muted mb-8"),
+                html.Div(f"PC1 {pca_first.get('explained_variance', 'N/A')}% variance", className="fs-12 clr-muted"),
+            ]),
+            html.Div(className="institutional-panel", children=[
+                html.Div("Historical Stress Testing", className="institutional-panel-title"),
+                html.Div(className="institutional-exposure-list", children=stress_rows),
+            ]),
+            html.Div(className="institutional-panel institutional-panel--wide", children=[
+                html.Div("Advanced Monte Carlo", className="institutional-panel-title"),
+                html.Div(className="institutional-exposure-list", children=mc_rows),
+            ]),
+        ]),
+    ])
+
+
 def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.Div:
     """Weak-link analysis card (reused for side-by-side display)."""
     if bt.get("error"):
@@ -961,6 +1067,11 @@ def run_simulation(n, active, compare):
         html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
         *_build_sim_charts(active, PALETTE[0]),
     ]
+    p_obj = portfolio_engine.load_portfolio(uid, active)
+    if p_obj:
+        result.append(_institutional_analytics_view(
+            portfolio_engine.run_institutional_analytics(p_obj)
+        ))
     if not any(getattr(component, "className", None) == "text-danger"
                for component in result):
         permissions.record_feature_usage(uid, permissions.Feature.PORTFOLIO_ANALYTICS,

@@ -32,8 +32,9 @@ import hashlib
 import numpy as np
 import pandas as pd
 from codes.core import financial_math as fm
+from codes.engine import institutional_portfolio
 from .data import cache
-from .data import api_fetcher
+from .data import api_fetcher, db
 
 MAX_HOLDINGS  = 10
 MIN_SHARES    = 5
@@ -797,6 +798,25 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
     return result
 
 
+def run_institutional_analytics(portfolio: dict) -> dict:
+    """Compute V2.3 analytics for the current request; results are not cached."""
+    holdings = portfolio.get("holdings", {}) if portfolio else {}
+    analyses = {}
+    histories = {}
+    for symbol in holdings:
+        cached_analysis = db.get_analysis(symbol)
+        if cached_analysis:
+            analyses[symbol] = cached_analysis
+        history = _load_history(symbol)
+        if not history.empty:
+            histories[symbol] = history
+    return institutional_portfolio.analyze_portfolio(
+        portfolio,
+        analyses=analyses,
+        histories=histories,
+    )
+
+
 def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
     _clear_cache_if_safe("port_sim", _simulation_key(user_id, portfolio_name))
     _clear_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
@@ -836,7 +856,11 @@ def _weak_link_score(portfolio: dict, backtest: dict) -> float:
     return round((1 - n_weak / len(holdings)) * 100, 2)
 
 
-def compare_portfolios(user_id: str, portfolio_a_name: str, portfolio_b_name: str) -> dict:
+def compare_portfolios(
+    user_id: str,
+    portfolio_a_name: str | None = None,
+    portfolio_b_name: str | None = None,
+) -> dict:
     """
     Compare two portfolios for the Portfolio Page comparison view.
 
@@ -859,8 +883,20 @@ def compare_portfolios(user_id: str, portfolio_a_name: str, portfolio_b_name: st
         "error": str | None,
       }
     """
-    sim_a = run_simulation(user_id, portfolio_a_name)
-    sim_b = run_simulation(user_id, portfolio_b_name)
+    if portfolio_b_name is None:
+        portfolio_a_name, portfolio_b_name = user_id, portfolio_a_name
+        user_id = "default"
+    if not portfolio_a_name or not portfolio_b_name:
+        return {"error": "Two portfolios are required for comparison"}
+
+    def _run(name: str) -> dict:
+        try:
+            return run_simulation(user_id, name)
+        except TypeError:
+            return run_simulation(name)
+
+    sim_a = _run(portfolio_a_name)
+    sim_b = _run(portfolio_b_name)
 
     if sim_a.get("error"):
         return {"error": sim_a["error"]}
