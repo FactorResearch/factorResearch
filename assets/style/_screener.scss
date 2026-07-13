@@ -195,6 +195,7 @@ body.light .screener-index-pill:hover {
 }
 
 .screener-country-tab {
+  box-sizing: border-box;
   position: relative;
   right: -1px;
   width: 42px;
@@ -214,6 +215,8 @@ body.light .screener-index-pill:hover {
   line-height: 1;
   padding: 9px 5px 12px;
   box-shadow: -5px 6px 16px rgba($black, 0.16);
+  cursor: pointer;
+  text-decoration: none;
 
   @include m.phones {
     right: auto;
@@ -236,6 +239,11 @@ body.light .screener-index-pill:hover {
 
   &.active {
     box-shadow: -6px 8px 18px rgba($blue, 0.14);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $blue;
+    outline-offset: 2px;
   }
 }
 

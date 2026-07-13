@@ -1,7 +1,5 @@
 """Screener tab callbacks."""
 
-import hashlib
-import json
 import math
 
 import dash
@@ -16,9 +14,8 @@ from codes.app_modules.config import (
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.screener_markets import (
-    SCREENER_COUNTRIES,
-    get_screener_country,
-    row_matches_country,
+    market_from_path,
+    row_matches_market,
 )
 from codes.app_modules.session import get_portfolio_symbols
 from codes.app_modules.session import get_user_id
@@ -26,30 +23,10 @@ from codes.services import product_analytics
 
 last_progress_state = None
 last_progress_bar_state = None
-last_screener_state = None
 
 
-def _country_tab_buttons(active_country):
-    active = get_screener_country(active_country)["code"]
-    buttons = []
-    for country in SCREENER_COUNTRIES:
-        is_active = country["code"] == active
-        buttons.append(html.Button(
-            [
-                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                html.Span(country["short_label"], className="screener-country-label"),
-            ],
-            id={"type": "screener-country-tab", "index": country["code"]},
-            className="screener-country-tab" + (" active" if is_active else ""),
-            title=country["label"],
-            n_clicks=0,
-        ))
-    return buttons
-
-
-def _filter_results_by_country(results, country_code):
-    active = get_screener_country(country_code)["code"]
-    return [r for r in results if row_matches_country(r, active)]
+def _filter_results_by_market(results, market_code):
+    return [r for r in results if row_matches_market(r, market_code)]
 
 
 def _index_pill_buttons(selected_indices=None):
@@ -85,29 +62,21 @@ def capture_screener_click(n_clicks_list):
 
 
 @callback(
-    Output("screener-country-store", "data"),
-    Output("screener-page-store", "data", allow_duplicate=True),
-    Input({"type": "screener-country-tab", "index": dash.ALL}, "n_clicks"),
-    prevent_initial_call=True
-)
-def switch_screener_country(n_clicks_list):
-    triggered = dash.ctx.triggered_id
-    if not triggered or not any(n for n in n_clicks_list if n):
-        return dash.no_update, dash.no_update
-    try:
-        product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": triggered["index"]})
-    except Exception:
-        pass
-    return triggered["index"], 1
-
-
-@callback(
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
-    Input("screener-country-store", "data"),
+    Input("url", "pathname"),
     prevent_initial_call=True
 )
-def reset_filters_for_country(active_country):
+def reset_filters_for_market(pathname):
+    market = market_from_path(pathname)
+    try:
+        product_analytics.track_event(
+            get_user_id(),
+            "screener_filter_changed",
+            {"filter": "country", "value": market.code},
+        )
+    except Exception:
+        pass
     return [], ""
 
 
@@ -140,12 +109,17 @@ def render_index_filter_pills(selected_indices):
 
 
 @callback(
-    Output("screener-country-tabs-container", "children"),
-    Input("screener-country-store", "data"),
-    prevent_initial_call=False
+    Output({"type": "screener-market-link", "index": dash.ALL}, "className"),
+    Input("url", "pathname"),
+    State({"type": "screener-market-link", "index": dash.ALL}, "id"),
+    prevent_initial_call=False,
 )
-def render_screener_country_tabs(active_country):
-    return _country_tab_buttons(active_country)
+def style_screener_market_links(pathname, link_ids):
+    active_code = market_from_path(pathname).code
+    return [
+        "screener-country-tab" + (" active" if link_id.get("index") == active_code else "")
+        for link_id in (link_ids or [])
+    ]
 
 
 @callback(
@@ -234,7 +208,7 @@ def update_progress_bar(n):
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
-    Input("screener-country-store","data"),
+    Input("url",                       "pathname"),
     Input("page-load-interval",    "n_intervals"),
     Input("index-filter",          "data"),
     Input("sector-filter",         "value"),
@@ -243,13 +217,10 @@ def update_progress_bar(n):
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, active_country, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
-    global last_screener_state
+def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
     triggered_id = dash.ctx.triggered_id
-    if triggered_id == "page-load-interval":
-        last_screener_state = None
-    active_country = get_screener_country(active_country)["code"]
-    results    = _filter_results_by_country(screener.get_screener_results(), active_country)
+    active_market = market_from_path(pathname)
+    results = _filter_results_by_market(screener.get_screener_results(), active_market.code)
    
     prog       = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
@@ -259,31 +230,26 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
     
-    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "screener-country-store"]:
+    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "url"]:
         page = 1
         page_reset = 1
-    # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
-    state_tuple = (
-        json.dumps([r["symbol"] for r in results], sort_keys=True),
-        active_country,
-        selected_indices or [],
-        sector_filter or "",
-        sort_col,
-        sort_asc,
-        sorted(viewed_set),
-        page
-    )
-    state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
-
-    if state_hash == last_screener_state:
-        return dash.no_update, dash.no_update, page_reset
-    last_screener_state = state_hash
     index_filtered_results = [r for r in results if row_matches_any_index(r, selected_indices)]
     sectors = sorted(set(r["sector"] for r in index_filtered_results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
         {"label": s, "value": s} for s in sectors
     ]
     if not results:
+        if active_market.code != "US":
+            return (
+                html.Div([
+                    html.Div(f"No {active_market.label} screener data loaded yet.",
+                             className="clr-muted fw-600 mb-8"),
+                    html.Div(f"Load verified {active_market.label} data into the market database, then refresh this view.",
+                             className="clr-muted fs-13"),
+                ], className="tac p-40"),
+                sector_options,
+                page_reset,
+            )
         if prog["running"]:
             return (
                 html.Div([
@@ -312,13 +278,13 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "screener-country-store"}:
+    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "url"}:
         try:
             product_analytics.track_event(
                 get_user_id(),
                 "screener_run",
                 {
-                    "country": active_country,
+                    "country": active_market.code,
                     "indices": selected_indices or [],
                     "sector": sector_filter or "",
                     "sort_col": sort_col,
@@ -397,15 +363,23 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
         # Graham Number cell — populated after full analysis
         gn    = r.get("graham_number")
         price = r.get("price")
-        if gn:
-            intrinsic_score = min(105, max(0, int((gn or 0) / (price or 1) * 50))) if gn and price else 0
+        currency = r.get("currency") or "USD"
+        grade = None
+        intrinsic_score = None
+        if gn and price:
+            intrinsic_score = min(105, max(0, int(gn / price * 50)))
             grade = "A" if intrinsic_score >= 80 else "B" if intrinsic_score >= 65 else "C" if intrinsic_score >= 50 else "D" if intrinsic_score >= 35 else "F"
-            grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED, "F": RED}.get(grade, MUTED)
             grade_class = {"A": "clr-green", "B": "clr-blue", "C": "clr-amber", "D": "clr-red", "F": "clr-red"}.get(grade, "clr-muted")
             gn_cell = html.Td([
                 html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
                 html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
             ], title=f"Intrinsic Value Estimate · #{intrinsic_score}/105")
+        elif gn:
+            gn_cell = html.Td(
+                f"{currency} {gn:,.2f}",
+                className="text-xs",
+                title="Fundamental fair value; live price not loaded",
+            )
         else:
             gn_cell = html.Td("—", className="text-xs text-muted",
                               title="Run full analysis to calculate Intrinsic Value")
@@ -443,7 +417,6 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
             html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
         ]))
         # ── Accordion item (mobile) ─────────────────────────────────────
-        acc_gn_color  = (GREEN if (price and gn  and price <= gn)  else MUTED) if gn  else MUTED
         acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
         acc_biv_class = "clr-green" if (price and biv and price <= biv) else "clr-muted"
         acc_rows = [
@@ -458,7 +431,10 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
                                 className=f"score-pill {get_score_class(r['composite_score'])}")],
                      className="accordion-row"),
             html.Div([html.Span("Intrinsic",  className="accordion-label"),
-                      html.Span(f"{grade} {intrinsic_score}/{105}"  if gn  else "—",
+                      html.Span(
+                          f"{grade} {intrinsic_score}/105"
+                          if gn and price
+                          else f"{currency} {gn:,.2f}" if gn else "—",
                                 className="accordion-value")],  className="accordion-row"),
             html.Div([html.Span("Moat", className="accordion-label"),
                       html.Span(f"${biv:.0f}" if biv else "—",
@@ -532,14 +508,15 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     State("screener-sort-store", "data"),
     State("index-filter", "data"),
     State("sector-filter", "value"),
-    State("screener-country-store", "data"),
+    State("url", "pathname"),
     prevent_initial_call=True
 )
-def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, active_country):
+def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
-    results = _filter_results_by_country(screener.get_screener_results(), active_country)
+    market = market_from_path(pathname)
+    results = _filter_results_by_market(screener.get_screener_results(), market.code)
     filtered = [
         r for r in results
         if row_matches_any_index(r, selected_indices)
@@ -618,7 +595,7 @@ def register_clientside_callbacks(app):
             return window.dash_clientside.no_update;
         }
         """,
-        Output("screener-table-container", "id"),
+        Output("screener-scroll-restore-sink", "children"),
         Input("tab-screener", "style"),
         Input("tab-analyze", "style"),
         Input("tab-portfolio", "style"),

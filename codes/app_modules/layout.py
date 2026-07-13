@@ -5,24 +5,35 @@ from dash import dcc, html
 from codes.engine import scorer
 
 from .config import BLUE
-from .screener_markets import DEFAULT_SCREENER_COUNTRY, SCREENER_COUNTRIES
+from .screener_markets import (
+    DEFAULT_SCREENER_MARKET,
+    available_screener_markets,
+    get_screener_market,
+)
 from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
-def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
-    return [
-        html.Button(
-            [
-                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                html.Span(country["short_label"], className="screener-country-label"),
-            ],
-            id={"type": "screener-country-tab", "index": country["code"]},
-            className="screener-country-tab" + (" active" if country["code"] == active_country else ""),
-            title=country["label"],
-            n_clicks=0,
-        )
-        for country in SCREENER_COUNTRIES
-    ]
+def _screener_market_links(active_market=DEFAULT_SCREENER_MARKET):
+    active_code = get_screener_market(active_market).code
+    return html.Nav(
+        id="screener-market-nav",
+        className="screener-country-tabs",
+        **{"aria-label": "Screener market"},
+        children=[
+            dcc.Link(
+                [
+                    html.Img(src=market.flag_src, alt="", className="screener-country-flag"),
+                    html.Span(market.short_label, className="screener-country-label"),
+                ],
+                id={"type": "screener-market-link", "index": market.code},
+                href=market.path,
+                refresh=False,
+                title=market.label,
+                className="screener-country-tab" + (" active" if market.code == active_code else ""),
+            )
+            for market in available_screener_markets()
+        ],
+    )
 
 
 def _screener_index_pills(selected=None):
@@ -143,12 +154,7 @@ def build_layout():
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),
             html.Div(className="screener-market-shell", children=[
-                html.Div(
-                    id="screener-country-tabs-container",
-                    className="screener-country-tabs",
-                    role="tablist",
-                    children=_screener_country_tabs(),
-                ),
+                _screener_market_links(),
                 dcc.Loading(
                     id="screener-loading",
                     type="default",
@@ -367,7 +373,6 @@ def build_layout():
         dcc.Store(id="screener-cache"),
         dcc.Store(id="analysis-store"),
         dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
-        dcc.Store(id="screener-country-store", data=DEFAULT_SCREENER_COUNTRY, storage_type="session"),
         dcc.Store(id="screener-page-store", data=1, storage_type="session"),  # current page in screener table
         dcc.Store(id="search-history-store"),
         dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table
@@ -377,6 +382,7 @@ def build_layout():
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
+        html.Div(id="screener-scroll-restore-sink", style={"display": "none"}),
         # interval disabled=True once loading finishes to stop constant re-renders
         dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
         # fires once 600ms after page load to render already-cached screener data
