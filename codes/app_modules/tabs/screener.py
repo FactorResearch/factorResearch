@@ -285,6 +285,18 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
         {"label": s, "value": s} for s in sectors
     ]
     if not results:
+        if active_country != "US":
+            country = get_screener_country(active_country)
+            return (
+                html.Div([
+                    html.Div(f"No {country['label']} screener data loaded yet.",
+                             className="clr-muted fw-600 mb-8"),
+                    html.Div("Import verified Canada data into the market database, then refresh this view.",
+                             className="clr-muted fs-13"),
+                ], className="tac p-40"),
+                sector_options,
+                page_reset,
+            )
         if prog["running"]:
             return (
                 html.Div([

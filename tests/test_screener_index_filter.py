@@ -111,3 +111,35 @@ def test_render_screener_table_filters_by_index(monkeypatch):
     ]
     tracked.assert_called_once()
     assert tracked.call_args.args[2]["indices"] == ["sp500"]
+
+
+def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
+    screener_tab.last_screener_state = None
+    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="screener-country-store"))
+    monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_progress",
+        lambda: {"running": True, "total": 100, "done": 10, "current": "AAPL"},
+    )
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_screener_results",
+        lambda: [_row("AAPL")],
+    )
+    monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
+
+    table_container, _sector_options, _page_reset = screener_tab.render_screener_table(
+        0,
+        "CA",
+        1,
+        [],
+        "",
+        {"col": "composite_score", "asc": False},
+        1,
+        [],
+    )
+
+    assert "No Canada screener data loaded yet" in str(table_container)
+    assert "Loading in background" not in str(table_container)
