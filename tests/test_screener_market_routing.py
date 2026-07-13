@@ -38,22 +38,10 @@ def test_market_row_matching_prefers_canonical_market_fields(monkeypatch, tmp_pa
 
 
 def test_new_market_requires_only_registry_metadata_and_feature_flag(monkeypatch, tmp_path):
-    uk = screener_markets.ScreenerMarket(
-        code="GB",
-        slug="gb",
-        label="United Kingdom",
-        short_label="UK",
-        flag_src="/assets/flags/gb.svg",
-        row_values=frozenset({"gb", "gbr", "united kingdom"}),
-        route_aliases=frozenset({"uk", "united-kingdom"}),
-    )
-    monkeypatch.setattr(
-        screener_markets,
-        "MARKET_REGISTRY",
-        screener_markets.MARKET_REGISTRY + (uk,),
-    )
     _set_enabled_markets(monkeypatch, tmp_path, {"US": True, "CA": True, "GB": True})
 
     assert [market.code for market in screener_markets.available_screener_markets()] == ["US", "CA", "GB"]
-    assert screener_markets.market_from_path("/screener/uk") == uk
+    assert screener_markets.market_from_path("/screener/uk").code == "GB"
+    assert screener_markets.market_from_path("/screener/united-kingdom").code == "GB"
     assert screener_markets.market_path("GB") == "/screener/gb"
+    assert screener_markets.row_matches_market({"market_code": "GB"}, "GB") is True

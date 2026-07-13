@@ -10,6 +10,11 @@ expansion through provider-neutral financial models.
 >
 > Do not advertise, sell, promise, enable, or publish Canada support until every
 > Canada release gate in this README has written evidence and final approval.
+>
+> **THE UNITED KINGDOM IS ALSO INTERNAL-ONLY. THERE IS NO UK LAUNCH DATE.**
+>
+> Keep UK support disabled until `docs/track_b_uk.md` release gates have
+> written legal, data, engineering, product, and operations approval.
 
 The committed default in `feature_flags.json` is:
 
@@ -17,12 +22,13 @@ The committed default in `feature_flags.json` is:
 {
   "markets": {
     "US": true,
-    "CA": false
+    "CA": false,
+    "GB": false
   }
 }
 ```
 
-Keep `CA` set to `false` in every public branch and deployment. A successful
+Keep `CA` and `GB` set to `false` in every public branch and deployment. A successful
 worker message such as `public_score_ready` means that one issuer passed the
 fact-level source and quality checks. It does **not** mean the Canada product is
 licensed, complete, audited, or approved for release.
@@ -57,6 +63,29 @@ Canada is a no-go while any item below remains true:
 
 Do not add a launch date to this file. Launch is gate-based, not date-based.
 
+## Current UK Blockers
+
+The UK implementation is functional for source-verified, relational imports,
+but is not approved for public release:
+
+- There is no approved full LSE/AIM issuer universe and ticker-to-Companies
+  House/LEI identity source.
+- There is no executed LSE market-data licence for the required listing,
+  corporate-action, price, quote-currency, and quote-unit data.
+- Companies House, FCA NSM, issuer-report, and licensed-source reuse terms have
+  not received written counsel approval for the intended paid product.
+- The verified-source pipeline begins at a structured CSV export. There is no
+  approved bulk downloader or full-market extraction job.
+- GBX-versus-GBP price normalization is intentionally disabled until licensed
+  quote metadata exists; UK price-based valuation is therefore withheld.
+- ADRs and investment trusts are identified but deliberately refused by the
+  ordinary-company scoring path until dedicated models are implemented.
+- UK coverage, manual source audit, amendment/restatement tests, and final
+  cross-functional release sign-offs are incomplete.
+
+See `docs/track_b_uk.md` for commands, schemas, licensing contacts, and the
+complete release checklist.
+
 ## Current Repository Publication Blockers
 
 These blockers apply even if Canada remains disabled:
@@ -86,9 +115,12 @@ before signing an agreement or approving a release.
 - `codes/data/providers/canada_sec.py`: authoritative SEC path for eligible
   Canadian cross-listed issuers.
 - `codes/workers/canada_ingest_worker.py`: Canada acquisition/import CLI.
+- `codes/workers/uk_ingest_worker.py`: verified UK source import CLI.
 - `feature_flags.json`: application tier and market visibility switches.
 - `docs/track_b_canada.md`: Canada architecture and ingestion details.
 - `docs/release_canada.md`: Canada branch release notes.
+- `docs/track_b_uk.md`: UK architecture, ingestion, and release gates.
+- `docs/release_uk.md`: UK branch release notes.
 - `roadMap.md`: product and country release standards.
 - `Publish.md`: broader pre-launch work.
 - `SECURITY_CHECKLIST.md`: security controls and outstanding validation.

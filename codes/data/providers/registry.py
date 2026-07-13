@@ -15,6 +15,9 @@ from .canada import CanadaProviderAdapter, is_canadian_symbol
 from .canada_db import CanadaDatabaseDataSource, materialize_canada_screener_projection
 from .canada_normalization import PUBLIC_CONFIDENCE, build_canada_scoring_facts
 from .screener_projection import FUNDAMENTAL_PROJECTION_VERSION
+from .uk import UKProviderAdapter, is_uk_symbol
+from .uk_db import UKDatabaseDataSource, materialize_uk_screener_projection
+from .uk_normalization import build_uk_scoring_facts
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,6 +38,14 @@ MARKET_PROVIDERS: tuple[MarketProviderRegistration, ...] = (
         provider_factory=lambda: CanadaProviderAdapter(CanadaDatabaseDataSource()),
         scoring_builder=build_canada_scoring_facts,
         projection_builder=materialize_canada_screener_projection,
+    ),
+    MarketProviderRegistration(
+        market_code="GB",
+        market_name="United Kingdom",
+        symbol_matcher=is_uk_symbol,
+        provider_factory=lambda: UKProviderAdapter(UKDatabaseDataSource()),
+        scoring_builder=build_uk_scoring_facts,
+        projection_builder=materialize_uk_screener_projection,
     ),
 )
 MARKET_PROJECTION_BUILDERS = {

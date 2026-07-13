@@ -459,6 +459,26 @@ Release standard
 -   Public UK support requires Companies House/FCA/issuer-source provenance,
     not provider-only data.
 
+Implemented foundation
+
+-   `GB` is independently controlled by `feature_flags.json` and defaults to
+    disabled. Routes are `/screener/gb` with `/screener/uk` as an alias.
+-   UK facts, source documents, issuer identity, security type, accounting
+    standard, shares, quality reports and screener projections use normalized
+    relational market tables keyed by `market_code='GB'`; no market JSON files.
+-   Verified Companies House/FCA NSM/issuer/licensed exports enter through the
+    standalone UK worker and are rejected when provenance, regulator identity,
+    currency, accounting standard, shares, or balance reconciliation is weak.
+-   Ordinary shares, ADRs and investment trusts are explicitly classified.
+    Only ordinary shares use the current operating-company score; the other
+    types fail closed until dedicated models exist.
+-   GBP is not assumed. Filing currency is preserved, mixed historical
+    currencies are rejected, and LSE GBX/GBP price-based calculations remain
+    disabled until a licensed quote source provides explicit unit metadata.
+-   Public launch remains blocked on source rights, LSE issuer/market-data
+    licensing, a production extraction path, coverage and manual audits, and
+    all gates in `docs/track_b_uk.md`.
+
 #### Germany
 
 Branch
@@ -818,6 +838,7 @@ look-ahead bias.
 8.  Expensive APIs are deferred until justified by customer demand and
     revenue.
 9. every version/track after launch gets a new branch, never push to main branch 
+10. always branch off the main for a new feauter so they are independent of each other, this way they can be released at any order. unless there is no other option
 
 Success Metric
 
