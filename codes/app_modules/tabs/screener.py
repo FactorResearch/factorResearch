@@ -93,13 +93,17 @@ def capture_screener_click(n_clicks_list):
 )
 def switch_screener_country(n_clicks_list):
     triggered = dash.ctx.triggered_id
-    if not triggered or not any(n for n in n_clicks_list if n):
+    if not triggered:
+        return dash.no_update, dash.no_update
+    country_code = triggered.get("index") if isinstance(triggered, dict) else None
+    available_codes = {country["code"] for country in available_screener_countries()}
+    if country_code not in available_codes:
         return dash.no_update, dash.no_update
     try:
-        product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": triggered["index"]})
+        product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": country_code})
     except Exception:
         pass
-    return triggered["index"], 1
+    return country_code, 1
 
 
 @callback(
