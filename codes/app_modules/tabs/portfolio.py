@@ -569,6 +569,76 @@ def _institutional_analytics_view(analytics: dict) -> html.Div:
     ])
 
 
+def _advanced_monte_carlo_chart(analytics: dict, port_name: str) -> html.Div:
+    monte_carlo = (analytics or {}).get("advanced_monte_carlo") or {}
+    available = {
+        method: result
+        for method, result in monte_carlo.items()
+        if result and not result.get("error") and (result.get("series") or {}).get("months")
+    }
+    if not available:
+        return html.Div(
+            "Advanced Monte Carlo needs more return history.",
+            className="clr-muted fs-13 py-8 px-4",
+        )
+    labels = {
+        "gbm": "GBM",
+        "bootstrap": "Bootstrap",
+        "fat_tail": "Fat-tail",
+        "regime_aware": "Regime-aware",
+    }
+    colors = {
+        "gbm": BLUE,
+        "bootstrap": GREEN,
+        "fat_tail": AMBER,
+        "regime_aware": "#e040fb",
+    }
+    fig = go.Figure()
+    for method, result in available.items():
+        series = result.get("series") or {}
+        months = series.get("months") or []
+        label = labels.get(method, method.replace("_", " ").title())
+        color = colors.get(method, MUTED)
+        fig.add_trace(go.Scatter(
+            x=months,
+            y=series.get("p50") or [],
+            mode="lines",
+            name=f"{label} median",
+            line={"color": color, "width": 2.4},
+            hovertemplate=f"{label}<br>Month %{{x}}<br>P50 %{{y:.1f}}%<extra></extra>",
+        ))
+        fig.add_trace(go.Scatter(
+            x=months,
+            y=series.get("p05") or [],
+            mode="lines",
+            name=f"{label} p05",
+            line={"color": color, "width": 1, "dash": "dot"},
+            opacity=0.55,
+            hovertemplate=f"{label}<br>Month %{{x}}<br>P05 %{{y:.1f}}%<extra></extra>",
+            showlegend=False,
+        ))
+        fig.add_trace(go.Scatter(
+            x=months,
+            y=series.get("p95") or [],
+            mode="lines",
+            name=f"{label} p95",
+            line={"color": color, "width": 1, "dash": "dot"},
+            opacity=0.55,
+            hovertemplate=f"{label}<br>Month %{{x}}<br>P95 %{{y:.1f}}%<extra></extra>",
+            showlegend=False,
+        ))
+    fig.update_layout(**_chart_layout(
+        f"{port_name} — Pro Monte Carlo Projection (V2.3 Advanced Models)",
+        many_traces=True,
+    ))
+    fig.update_xaxes(title_text="Months Forward")
+    fig.update_yaxes(title_text="Projected Return", ticksuffix="%")
+    return html.Div(className="scorecard advanced-monte-carlo-card", children=[
+        html.Div("Pro Monte Carlo", className="scorecard-header"),
+        dcc.Graph(figure=fig, config={"displayModeBar": False, "responsive": True}),
+    ])
+
+
 def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.Div:
     """Weak-link analysis card (reused for side-by-side display)."""
     if bt.get("error"):
@@ -1069,9 +1139,9 @@ def run_simulation(n, active, compare):
     ]
     p_obj = portfolio_engine.load_portfolio(uid, active)
     if p_obj:
-        result.append(_institutional_analytics_view(
-            portfolio_engine.run_institutional_analytics(p_obj)
-        ))
+        institutional_analytics = portfolio_engine.run_institutional_analytics(p_obj)
+        result.append(_advanced_monte_carlo_chart(institutional_analytics, active))
+        result.append(_institutional_analytics_view(institutional_analytics))
     if not any(getattr(component, "className", None) == "text-danger"
                for component in result):
         permissions.record_feature_usage(uid, permissions.Feature.PORTFOLIO_ANALYTICS,

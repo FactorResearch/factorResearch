@@ -68,6 +68,8 @@ def test_institutional_portfolio_calculates_v23_surface_area():
     assert result["pca"]["components"]
     assert result["historical_stress_testing"]
     assert set(result["advanced_monte_carlo"]) == {"gbm", "bootstrap", "fat_tail", "regime_aware"}
+    assert result["advanced_monte_carlo"]["gbm"]["series"]["months"][0] == 0
+    assert len(result["advanced_monte_carlo"]["gbm"]["series"]["p50"]) == 25
 
 
 def test_institutional_wrapper_does_not_write_json_cache(monkeypatch):
@@ -81,3 +83,26 @@ def test_institutional_wrapper_does_not_write_json_cache(monkeypatch):
     assert result["error"] is None
     assert result["advanced_monte_carlo"]["gbm"]["tier"] == "advanced"
     assert writes == []
+
+
+def test_advanced_monte_carlo_chart_renders_all_methods():
+    from codes.app_modules.tabs import portfolio as portfolio_tab
+
+    analytics = institutional_portfolio.analyze_portfolio(
+        _portfolio(),
+        analyses=_analyses(),
+        histories={
+            "AAA": _history(100, 2),
+            "BBB": _history(200, 1),
+            "CCC": _history(50, 1.5),
+        },
+    )
+
+    chart = portfolio_tab._advanced_monte_carlo_chart(analytics, "Institutional")
+    text = str(chart)
+
+    assert "Pro Monte Carlo" in text
+    assert "GBM median" in text
+    assert "Bootstrap median" in text
+    assert "Fat-tail median" in text
+    assert "Regime-aware median" in text

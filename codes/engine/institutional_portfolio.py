@@ -320,6 +320,9 @@ def advanced_monte_carlo(
             growth = np.exp((mu - 0.5 * sigma ** 2) + shocks)
         values[:, step] = np.maximum(values[:, step - 1] * growth, 0.0)
     terminal = values[:, -1]
+    p05_path = [round(float(np.percentile(values[:, step], 5) - 1) * 100, 2) for step in range(months + 1)]
+    p50_path = [round(float(np.percentile(values[:, step], 50) - 1) * 100, 2) for step in range(months + 1)]
+    p95_path = [round(float(np.percentile(values[:, step], 95) - 1) * 100, 2) for step in range(months + 1)]
     return {
         "method": method,
         "tier": "advanced",
@@ -330,6 +333,12 @@ def advanced_monte_carlo(
         "p95": round(float(np.percentile(terminal, 95) - 1) * 100, 2),
         "expected_return": round(float(np.mean(terminal) - 1) * 100, 2),
         "probability_loss": round(float(np.mean(terminal < 1.0)) * 100, 2),
+        "series": {
+            "months": list(range(months + 1)),
+            "p05": p05_path,
+            "p50": p50_path,
+            "p95": p95_path,
+        },
         "error": None,
     }
 
