@@ -5,19 +5,18 @@ Keeps market activation explicit so country releases can ship independently.
 
 from __future__ import annotations
 
-import os
+from codes.core import app_flags
 
 from .canada import CanadaProviderAdapter, is_canadian_symbol
 from .canada_db import CanadaDatabaseDataSource
 
 
 def _enabled_markets() -> set[str]:
-    raw = os.environ.get("ENABLED_MARKETS", "US")
-    return {part.strip().upper() for part in raw.split(",") if part.strip()}
+    return app_flags.get_enabled_markets()
 
 
 def is_market_enabled(country_code: str) -> bool:
-    return country_code.upper() in _enabled_markets()
+    return app_flags.is_market_enabled(country_code)
 
 
 def provider_for_symbol(symbol: str):

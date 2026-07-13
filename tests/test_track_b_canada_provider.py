@@ -1,6 +1,8 @@
 from importlib import reload
+import json
 
 from codes.app_modules import screener_markets
+from codes.core import app_flags
 from codes.data.providers import CanonicalFinancials, CanonicalSharesOutstanding
 from codes.data.providers.canada import (
     CanadaProviderAdapter,
@@ -133,21 +135,26 @@ def test_canada_provider_returns_canonical_models():
     assert provider.get_listing_information("shop:tsx")["exchange"] == "TSX"
 
 
-def test_canada_market_is_feature_gated(monkeypatch):
-    monkeypatch.setenv("ENABLED_MARKETS", "US")
+def test_canada_market_is_feature_gated(monkeypatch, tmp_path):
+    def set_markets(markets):
+        flag_file = tmp_path / "feature_flags.json"
+        flag_file.write_text(json.dumps({"flag": "INTERNAL", "markets": markets}))
+        monkeypatch.setattr(app_flags, "_FLAG_FILE", flag_file)
+
+    set_markets({"US": True, "CA": False})
     reload(screener_markets)
 
     assert screener_markets.get_screener_country("CA")["code"] == "US"
     assert provider_for_symbol("SHOP.TO") is None
 
-    monkeypatch.setenv("ENABLED_MARKETS", "US,CA")
+    set_markets({"US": True, "CA": True})
     reload(screener_markets)
 
     assert screener_markets.get_screener_country("CA")["code"] == "CA"
     assert screener_markets.row_matches_country({"country": "Canada"}, "CA") is True
     assert isinstance(provider_for_symbol("SHOP.TO"), CanadaProviderAdapter)
 
-    monkeypatch.setenv("ENABLED_MARKETS", "US")
+    set_markets({"US": True, "CA": False})
     reload(screener_markets)
 
 

@@ -1,6 +1,6 @@
 """Country/market configuration for the screener UI."""
 
-import os
+from codes.core import app_flags
 
 DEFAULT_SCREENER_COUNTRY = "US"
 
@@ -27,8 +27,7 @@ _OPTIONAL_COUNTRIES = [
 
 
 def _enabled_markets() -> set[str]:
-    raw = os.environ.get("ENABLED_MARKETS", "US")
-    return {part.strip().upper() for part in raw.split(",") if part.strip()}
+    return app_flags.get_enabled_markets()
 
 
 def _available_countries() -> list[dict]:

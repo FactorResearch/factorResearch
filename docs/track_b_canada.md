@@ -10,12 +10,17 @@ analysis engines to Canadian provider payloads.
 
 ## Release Switch
 
-Canada is disabled by default.
+Canada is controlled by `feature_flags.json`.
 
 Enable it with:
 
-```bash
-ENABLED_MARKETS=US,CA
+```json
+{
+  "markets": {
+    "US": true,
+    "CA": true
+  }
+}
 ```
 
 The screener country selector will show Canada only when `CA` is enabled.
