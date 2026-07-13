@@ -154,6 +154,32 @@ dash.Dash.callback = _logging_callback
 # Importing tab modules registers their Dash callbacks.
 from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, screener as screener_tab  # noqa: F401
 
+
+def _attach_global_dash_callbacks() -> None:
+    """Bind callbacks registered with dash.callback to this Dash app.
+
+    Some Dash versions do not copy the global callback registry onto an app
+    created before module import. Without this bridge, server callbacks never
+    run and UI surfaces remain stuck in their initial loading state.
+    """
+    try:
+        from dash import _callback as dash_callback
+    except Exception:
+        return
+
+    for key, callback_def in dash_callback.GLOBAL_CALLBACK_MAP.items():
+        app.callback_map.setdefault(key, callback_def)
+
+    existing_outputs = {str(item.get("output")) for item in app._callback_list}
+    for callback_def in dash_callback.GLOBAL_CALLBACK_LIST:
+        output = str(callback_def.get("output"))
+        if output not in existing_outputs:
+            app._callback_list.append(callback_def)
+            existing_outputs.add(output)
+
+
+_attach_global_dash_callbacks()
+
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
@@ -180,7 +206,7 @@ app.index_string = app.index_string.replace(
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
-    'const APP_VERSION = "v7";'  # bump this on each deploy
+    'const APP_VERSION = "v7.2";'  # bump this on each deploy
     'if (localStorage.getItem("app_version") !== APP_VERSION) {'
     '    localStorage.setItem("app_version", APP_VERSION);'
     '    location.reload(true);'
