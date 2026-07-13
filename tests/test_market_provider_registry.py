@@ -15,24 +15,24 @@ def test_disabled_registered_market_fails_before_cache_use(monkeypatch):
 def test_new_market_registration_supplies_scoring_facts(monkeypatch):
     provider = object()
     registration = registry.MarketProviderRegistration(
-        market_code="GB",
-        market_name="United Kingdom",
-        symbol_matcher=lambda symbol: symbol.endswith(".L"),
+        market_code="ZZ",
+        market_name="Test Market",
+        symbol_matcher=lambda symbol: symbol.endswith(".ZZ"),
         provider_factory=lambda: provider,
         scoring_builder=lambda selected, symbol: SimpleNamespace(
-            can_score=selected is provider and symbol == "VOD.L",
-            sec_facts={"source_market": "GB", "name": "Vodafone"},
+            can_score=selected is provider and symbol == "TEST.ZZ",
+            sec_facts={"source_market": "ZZ", "name": "Test Issuer"},
             quality_report=SimpleNamespace(issues=()),
         ),
         projection_builder=lambda _symbol: True,
     )
     monkeypatch.setattr(registry, "MARKET_PROVIDERS", registry.MARKET_PROVIDERS + (registration,))
-    monkeypatch.setattr(registry, "is_market_enabled", lambda code: code == "GB")
+    monkeypatch.setattr(registry, "is_market_enabled", lambda code: code == "ZZ")
 
-    assert registry.provider_for_symbol("VOD.L") is provider
-    assert registry.scoring_facts_for_symbol("VOD.L") == {
-        "source_market": "GB",
-        "name": "Vodafone",
+    assert registry.provider_for_symbol("TEST.ZZ") is provider
+    assert registry.scoring_facts_for_symbol("TEST.ZZ") == {
+        "source_market": "ZZ",
+        "name": "Test Issuer",
     }
 
 
