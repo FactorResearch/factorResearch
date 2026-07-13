@@ -67,6 +67,121 @@
   line-height: 1.5;
 }
 
+.factor-research-card .analysis-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.factor-research-model-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.factor-research-model,
+.factor-research-panel {
+  border: 1px solid rgba(126, 157, 194, 0.2);
+  border-radius: 8px;
+  background: rgba(9, 18, 32, 0.25);
+  padding: 10px;
+  min-width: 0;
+}
+
+.factor-research-model-title,
+.factor-research-panel-title {
+  color: $text;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.factor-research-stats,
+.factor-attribution-grid,
+.factor-rolling-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.factor-research-stat,
+.factor-attribution-row,
+.factor-rolling-cell {
+  min-width: 0;
+}
+
+.factor-research-stat-label,
+.factor-attribution-label,
+.factor-rolling-label {
+  display: block;
+  color: $text-dim;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.factor-research-stat-value,
+.factor-attribution-value,
+.factor-rolling-value {
+  display: block;
+  color: $text;
+  font-family: $font-mono;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.factor-attribution-row--total {
+  border-top: 1px solid rgba(126, 157, 194, 0.18);
+  padding-top: 8px;
+}
+
+.factor-research-error,
+.factor-research-empty {
+  color: $amber;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+body.light {
+  .factor-research-model,
+  .factor-research-panel {
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(31, 41, 55, 0.16);
+  }
+
+  .factor-research-model-title,
+  .factor-research-panel-title,
+  .factor-research-stat-value,
+  .factor-attribution-value,
+  .factor-rolling-value {
+    color: #1f2937;
+  }
+
+  .factor-research-stat-label,
+  .factor-attribution-label,
+  .factor-rolling-label {
+    color: #6b7280;
+  }
+}
+
+@media (max-width: 1180px) {
+  .factor-research-model-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .factor-research-model-grid,
+  .factor-research-stats,
+  .factor-attribution-grid,
+  .factor-rolling-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .stability-card .analysis-card-body {
   padding-top: 0;
 }

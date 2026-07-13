@@ -224,13 +224,33 @@ def test_snapshot_preserves_factor_research_metrics_for_historical_pages():
                 "capm": {"betas": {"mkt_rf": 1.22}, "alpha_annualized": 0.031, "r_squared": 0.68},
                 "ff3": {"betas": {"mkt_rf": 1.18, "smb": 0.2, "hml": -0.1}, "alpha_annualized": 0.028, "r_squared": 0.70},
                 "ff5": {"betas": {"mkt_rf": 1.14, "smb": 0.2, "hml": -0.1, "rmw": 0.3, "cma": 0.1}, "alpha_annualized": 0.024, "r_squared": 0.74},
-                "carhart4": {"betas": {"mkt_rf": 1.16, "smb": 0.2, "hml": -0.1, "mom": 0.4}, "alpha_annualized": 0.022, "r_squared": 0.73},
+                "carhart4": {
+                    "betas": {"mkt_rf": 1.16, "smb": 0.2, "hml": -0.1, "mom": 0.4},
+                    "alpha_annualized": 0.022,
+                    "r_squared": 0.73,
+                    "return_attribution": {
+                        "factor_contributions": {"mkt_rf": 0.04, "mom": 0.02},
+                        "alpha": 0.022,
+                        "residual": 0.001,
+                        "total_excess_return": 0.083,
+                    },
+                },
             },
+            "return_attribution": {
+                "factor_contributions": {"mkt_rf": 0.04, "mom": 0.02},
+                "alpha": 0.022,
+                "residual": 0.001,
+                "total_excess_return": 0.083,
+            },
+            "rolling_attribution": [{"end_date": "2026-07-31", "betas": {"mkt_rf": 1.16}}],
         },
     })
 
     models = snapshot.official_metrics["factor_research_models"]
     assert set(models) == {"capm", "ff3", "ff5", "carhart4"}
+    assert models["carhart4"]["return_attribution"]["total_excess_return"] == 0.083
+    assert snapshot.official_metrics["factor_research_return_attribution"]["total_excess_return"] == 0.083
+    assert snapshot.official_metrics["factor_research_rolling_attribution"]
     assert snapshot.official_metrics["capm_beta"] == 1.22
     assert snapshot.official_metrics["capm_alpha_annualized"] == 0.031
     assert snapshot.official_metrics["capm_r_squared"] == 0.68

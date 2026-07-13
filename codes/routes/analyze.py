@@ -414,7 +414,46 @@ def _snapshot_factor_research_section(snapshot) -> str:
                 f'<div class="value">β {_fmt(beta)} · α {_fmt_pct(model.get("alpha_annualized"))} · R² {_fmt_pct(model.get("r_squared"))}</div>'
                 "</div>"
             )
-        body = '<div class="grid">' + "".join(cards) + "</div>"
+        attribution = metrics.get("factor_research_return_attribution") or {}
+        if not attribution:
+            primary = next((models.get(key) for key in ("carhart4", "ff5", "ff3", "capm") if models.get(key)), {})
+            attribution = primary.get("return_attribution") or {}
+        attribution_cards = []
+        for factor, value in (attribution.get("factor_contributions") or {}).items():
+            attribution_cards.append(
+                '<div class="metric">'
+                f'<div class="label">{html.escape(str(factor).upper())}</div>'
+                f'<div class="value">{_fmt_pct(value)}</div>'
+                "</div>"
+            )
+        for label, key in (("Alpha", "alpha"), ("Residual", "residual"), ("Total Excess", "total_excess_return")):
+            attribution_cards.append(
+                '<div class="metric">'
+                f'<div class="label">{html.escape(label)}</div>'
+                f'<div class="value">{_fmt_pct(attribution.get(key))}</div>'
+                "</div>"
+            )
+        rolling = metrics.get("factor_research_rolling_attribution") or []
+        rolling_body = ""
+        if rolling:
+            latest = rolling[-1]
+            latest_beta = (latest.get("betas") or {}).get("mkt_rf")
+            latest_attr = latest.get("return_attribution") or {}
+            rolling_body = (
+                "<h3>Rolling Attribution</h3>"
+                '<div class="grid">'
+                f'<div class="metric"><div class="label">Windows</div><div class="value">{len(rolling)}</div></div>'
+                f'<div class="metric"><div class="label">Latest Date</div><div class="value">{html.escape(str(latest.get("end_date", "N/A")))}</div></div>'
+                f'<div class="metric"><div class="label">Latest Beta</div><div class="value">{_fmt(latest_beta)}</div></div>'
+                f'<div class="metric"><div class="label">Latest Excess</div><div class="value">{_fmt_pct(latest_attr.get("total_excess_return"))}</div></div>'
+                "</div>"
+            )
+        body = (
+            '<div class="grid">' + "".join(cards) + "</div>"
+            "<h3>Return Attribution</h3>"
+            '<div class="grid">' + "".join(attribution_cards) + "</div>"
+            + rolling_body
+        )
     elif any(value is not None for value in (metrics.get("capm_beta"), metrics.get("capm_alpha_annualized"), metrics.get("capm_r_squared"))):
         beta = metrics.get("capm_beta")
         alpha = metrics.get("capm_alpha_annualized")

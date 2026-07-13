@@ -133,6 +133,24 @@ CREATE TABLE IF NOT EXISTS composite_score_snapshots (
 CREATE INDEX IF NOT EXISTS idx_composite_snapshots_ticker_date
     ON composite_score_snapshots(ticker, snapshot_date DESC);
 
+CREATE TABLE IF NOT EXISTS factor_return_series (
+    source       TEXT NOT NULL,
+    period       TEXT NOT NULL,
+    factor_date  DATE NOT NULL,
+    mkt_rf       DOUBLE PRECISION,
+    smb          DOUBLE PRECISION,
+    hml          DOUBLE PRECISION,
+    rmw          DOUBLE PRECISION,
+    cma          DOUBLE PRECISION,
+    mom          DOUBLE PRECISION,
+    rf           DOUBLE PRECISION,
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (source, period, factor_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_factor_return_series_source_date
+    ON factor_return_series(source, period, factor_date);
+
 """
 _CREATE_USER_TABLES = """
 CREATE TABLE IF NOT EXISTS user_weights (
@@ -262,6 +280,40 @@ FROM sec_8k_filings
 WHERE ticker = %(ticker)s AND accession = ANY(%(accessions)s)
 """
 
+_UPSERT_FACTOR_RETURN = """
+INSERT INTO factor_return_series (
+    source, period, factor_date, mkt_rf, smb, hml, rmw, cma, mom, rf, updated_at
+)
+VALUES (
+    %(source)s, %(period)s, %(factor_date)s, %(mkt_rf)s, %(smb)s, %(hml)s,
+    %(rmw)s, %(cma)s, %(mom)s, %(rf)s, NOW()
+)
+ON CONFLICT (source, period, factor_date) DO UPDATE SET
+    mkt_rf = excluded.mkt_rf,
+    smb = excluded.smb,
+    hml = excluded.hml,
+    rmw = excluded.rmw,
+    cma = excluded.cma,
+    mom = excluded.mom,
+    rf = excluded.rf,
+    updated_at = NOW()
+"""
+
+_SELECT_FACTOR_RETURNS = """
+SELECT
+    factor_date AS "Date",
+    mkt_rf,
+    smb,
+    hml,
+    rmw,
+    cma,
+    mom,
+    rf
+FROM factor_return_series
+WHERE source = %(source)s AND period = %(period)s
+ORDER BY factor_date ASC
+"""
+
 
 def upsert_analysis(ticker: str, data: dict) -> None:
     """Persist a full analyze_stock() result. Replaces cache.write('analysis', ...)."""
@@ -363,6 +415,58 @@ def list_existing_sec_8k_accessions(ticker: str, accessions: list[str]) -> set[s
             {"ticker": ticker.upper(), "accessions": accessions},
         ).fetchall()
     return {row[0] for row in rows}
+
+
+def upsert_factor_returns(
+    rows: list[dict],
+    *,
+    source: str = "ken_french_us",
+    period: str = "monthly",
+) -> int:
+    """Persist normalized factor returns as relational rows."""
+    if not rows:
+        return 0
+    _ensure_init()
+    normalized = []
+    for row in rows:
+        factor_date = row.get("Date") or row.get("factor_date")
+        if not factor_date:
+            continue
+        normalized.append({
+            "source": source,
+            "period": period,
+            "factor_date": factor_date,
+            "mkt_rf": row.get("mkt_rf"),
+            "smb": row.get("smb"),
+            "hml": row.get("hml"),
+            "rmw": row.get("rmw"),
+            "cma": row.get("cma"),
+            "mom": row.get("mom"),
+            "rf": row.get("rf"),
+        })
+    if not normalized:
+        return 0
+    with _conn() as con:
+        for row in normalized:
+            con.execute(_UPSERT_FACTOR_RETURN, row)
+    return len(normalized)
+
+
+def get_factor_returns(
+    *,
+    source: str = "ken_french_us",
+    period: str = "monthly",
+) -> list[dict]:
+    """Return normalized factor return rows from the market database."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(
+            _SELECT_FACTOR_RETURNS,
+            {"source": source, "period": period},
+        ).fetchall()
+    return [dict(row) for row in rows]
+
 
 def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> None:
     """

@@ -97,8 +97,25 @@ def test_historical_page_renders_persisted_factor_research_metrics():
                     "capm": {"betas": {"mkt_rf": 1.18}, "alpha_annualized": 0.024, "r_squared": 0.71},
                     "ff3": {"betas": {"mkt_rf": 1.12}, "alpha_annualized": 0.021, "r_squared": 0.73},
                     "ff5": {"betas": {"mkt_rf": 1.08}, "alpha_annualized": 0.019, "r_squared": 0.75},
-                    "carhart4": {"betas": {"mkt_rf": 1.1}, "alpha_annualized": 0.02, "r_squared": 0.74},
+                    "carhart4": {
+                        "betas": {"mkt_rf": 1.1},
+                        "alpha_annualized": 0.02,
+                        "r_squared": 0.74,
+                        "return_attribution": {
+                            "factor_contributions": {"mkt_rf": 0.05, "mom": 0.01},
+                            "alpha": 0.02,
+                            "residual": 0.001,
+                            "total_excess_return": 0.081,
+                        },
+                    },
                 },
+                "factor_research_rolling_attribution": [
+                    {
+                        "end_date": "2026-07-31",
+                        "betas": {"mkt_rf": 1.1},
+                        "return_attribution": {"total_excess_return": 0.081},
+                    },
+                ],
             },
         }
     )
@@ -115,6 +132,9 @@ def test_historical_page_renders_persisted_factor_research_metrics():
     assert "Carhart 4" in body
     assert "1.18" in body
     assert "2.40%" in body
+    assert "Return Attribution" in body
+    assert "Rolling Attribution" in body
+    assert "Total Excess" in body
 
 
 def test_historical_page_renders_selected_comparison_deltas():

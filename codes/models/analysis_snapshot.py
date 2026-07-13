@@ -200,10 +200,13 @@ class AnalysisSnapshot:
                         "alpha_annualized": _first_num((model or {}).get("alpha_annualized")),
                         "r_squared": _first_num((model or {}).get("r_squared")),
                         "betas": (model or {}).get("betas") or {},
+                        "return_attribution": (model or {}).get("return_attribution") or {},
                     }
                     for name, model in factor_models.items()
                     if model and not model.get("error")
                 },
+                "factor_research_return_attribution": factor_research.get("return_attribution") or {},
+                "factor_research_rolling_attribution": factor_research.get("rolling_attribution") or [],
                 "capm_beta": _first_num(capm_betas.get("mkt_rf")),
                 "capm_alpha_annualized": _first_num(capm.get("alpha_annualized")),
                 "capm_r_squared": _first_num(capm.get("r_squared")),

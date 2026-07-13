@@ -10,7 +10,7 @@ from urllib.request import urlopen
 
 import pandas as pd
 
-from codes.data import cache
+from codes.data import db
 
 KEN_FRENCH_FF5_MONTHLY_URL = (
     "https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/"
@@ -21,21 +21,25 @@ KEN_FRENCH_MOM_MONTHLY_URL = (
     "F-F_Momentum_Factor_CSV.zip"
 )
 
-_CACHE_KIND = "factor_returns"
-_CACHE_KEY = "ken_french_us_monthly_v1"
+_SOURCE = "ken_french_us"
+_PERIOD = "monthly"
 
 
 def get_us_monthly_factors(*, force_refresh: bool = False) -> pd.DataFrame:
     """Return monthly U.S. factor returns as decimals."""
     if not force_refresh:
-        cached = cache.read(_CACHE_KIND, _CACHE_KEY)
-        if cached:
-            return _records_to_frame(cached)
+        stored = db.get_factor_returns(source=_SOURCE, period=_PERIOD)
+        if stored:
+            return _records_to_frame(stored)
 
     ff5 = _download_ken_french_zip(KEN_FRENCH_FF5_MONTHLY_URL)
     mom = _download_ken_french_zip(KEN_FRENCH_MOM_MONTHLY_URL)
     factors = _merge_factor_frames(ff5, mom)
-    cache.write(_CACHE_KIND, _CACHE_KEY, factors.to_dict("records"))
+    db.upsert_factor_returns(
+        factors.to_dict("records"),
+        source=_SOURCE,
+        period=_PERIOD,
+    )
     return factors
 
 

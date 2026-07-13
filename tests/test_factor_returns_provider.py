@@ -31,17 +31,21 @@ class _Response:
 def test_get_us_monthly_factors_downloads_parses_and_caches(monkeypatch):
     ff5 = _zip_csv("ff5.csv", "Header\n, Mkt-RF, SMB, HML, RMW, CMA, RF\n202501, 1.0, 2.0, 3.0, 4.0, 5.0, 0.1\n202502, 2.0, 3.0, 4.0, 5.0, 6.0, 0.1\nAnnual Factors: January-December\n")
     mom = _zip_csv("mom.csv", "Header\n, Mom\n202501, 7.0\n202502, 8.0\nAnnual Factors: January-December\n")
-    store = {}
+    store = []
 
-    def fake_read(kind, key):
-        return store.get((kind, key))
+    def fake_read(*, source, period):
+        assert source == "ken_french_us"
+        assert period == "monthly"
+        return store
 
-    def fake_write(kind, key, data):
-        store[(kind, key)] = data
-        return True
+    def fake_write(data, *, source, period):
+        assert source == "ken_french_us"
+        assert period == "monthly"
+        store[:] = data
+        return len(data)
 
-    monkeypatch.setattr(factor_returns.cache, "read", fake_read)
-    monkeypatch.setattr(factor_returns.cache, "write", fake_write)
+    monkeypatch.setattr(factor_returns.db, "get_factor_returns", fake_read)
+    monkeypatch.setattr(factor_returns.db, "upsert_factor_returns", fake_write)
 
     with patch.object(factor_returns, "urlopen", side_effect=[_Response(ff5), _Response(mom)]) as fetch:
         frame = factor_returns.get_us_monthly_factors(force_refresh=True)

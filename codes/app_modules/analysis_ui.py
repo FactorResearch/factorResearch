@@ -587,9 +587,95 @@ def _factor_research_card(data: dict) -> html.Div:
             body_children=rows,
         )
 
+    def _model_cell(key: str, result: dict) -> html.Div:
+        betas = result.get("betas") or {}
+        if result.get("error"):
+            stats = [html.Div(result["error"], className="factor-research-error")]
+        else:
+            stats = [
+                html.Div(className="factor-research-stat", children=[
+                    html.Span("Beta", className="factor-research-stat-label"),
+                    html.Span(_num(betas.get("mkt_rf")), className="factor-research-stat-value"),
+                ]),
+                html.Div(className="factor-research-stat", children=[
+                    html.Span("Alpha", className="factor-research-stat-label"),
+                    html.Span(_pct(result.get("alpha_annualized")), className="factor-research-stat-value"),
+                ]),
+                html.Div(className="factor-research-stat", children=[
+                    html.Span("R2", className="factor-research-stat-label"),
+                    html.Span(_pct(result.get("r_squared")), className="factor-research-stat-value"),
+                ]),
+                html.Div(className="factor-research-stat", children=[
+                    html.Span("Factors", className="factor-research-stat-label"),
+                    html.Span(str(len(result.get("factors") or [])), className="factor-research-stat-value"),
+                ]),
+            ]
+        return html.Div(className="factor-research-model", children=[
+            html.Div(model_labels[key], className="factor-research-model-title"),
+            html.Div(className="factor-research-stats", children=stats),
+        ])
+
+    def _attribution_panel(attribution: dict | None) -> html.Div:
+        if not attribution:
+            return html.Div()
+        factors = attribution.get("factor_contributions") or {}
+        rows = [
+            html.Div(className="factor-attribution-row", children=[
+                html.Span(label.upper(), className="factor-attribution-label"),
+                html.Span(_pct(value), className="factor-attribution-value"),
+            ])
+            for label, value in factors.items()
+        ]
+        rows.extend([
+            html.Div(className="factor-attribution-row", children=[
+                html.Span("Alpha", className="factor-attribution-label"),
+                html.Span(_pct(attribution.get("alpha")), className="factor-attribution-value"),
+            ]),
+            html.Div(className="factor-attribution-row", children=[
+                html.Span("Residual", className="factor-attribution-label"),
+                html.Span(_pct(attribution.get("residual")), className="factor-attribution-value"),
+            ]),
+            html.Div(className="factor-attribution-row factor-attribution-row--total", children=[
+                html.Span("Total Excess", className="factor-attribution-label"),
+                html.Span(_pct(attribution.get("total_excess_return")), className="factor-attribution-value"),
+            ]),
+        ])
+        return html.Div(className="factor-research-panel", children=[
+            html.Div("Return Attribution", className="factor-research-panel-title"),
+            html.Div(className="factor-attribution-grid", children=rows),
+        ])
+
+    def _rolling_panel(rows: list[dict]) -> html.Div:
+        if not rows:
+            return html.Div(className="factor-research-panel", children=[
+                html.Div("Rolling Attribution", className="factor-research-panel-title"),
+                html.Div("Needs at least 24 overlapping monthly observations.", className="factor-research-empty"),
+            ])
+        latest = rows[-1]
+        first = rows[0]
+        latest_betas = latest.get("betas") or {}
+        first_betas = first.get("betas") or {}
+        latest_attr = latest.get("return_attribution") or {}
+        items = [
+            ("Windows", str(len(rows))),
+            ("Latest Date", latest.get("end_date", "N/A")),
+            ("Latest Beta", _num(latest_betas.get("mkt_rf"))),
+            ("Beta Change", _num((latest_betas.get("mkt_rf") or 0) - (first_betas.get("mkt_rf") or 0))),
+            ("Latest Alpha", _pct(latest.get("alpha_annualized"))),
+            ("Latest Excess", _pct(latest_attr.get("total_excess_return"))),
+        ]
+        return html.Div(className="factor-research-panel", children=[
+            html.Div("Rolling Attribution", className="factor-research-panel-title"),
+            html.Div(className="factor-rolling-grid", children=[
+                html.Div(className="factor-rolling-cell", children=[
+                    html.Span(label, className="factor-rolling-label"),
+                    html.Span(value, className="factor-rolling-value"),
+                ])
+                for label, value in items
+            ]),
+        ])
+
     beta = (capm.get("betas") or {}).get("mkt_rf")
-    alpha = capm.get("alpha_annualized")
-    r_squared = capm.get("r_squared")
     beta_color = GREEN if beta is not None and beta < 1 else AMBER if beta is not None and beta <= 1.3 else RED
     model_labels = {
         "capm": "CAPM",
@@ -597,29 +683,32 @@ def _factor_research_card(data: dict) -> html.Div:
         "ff5": "Fama-French 5",
         "carhart4": "Carhart 4",
     }
-    rows = []
-    for key in ("capm", "ff3", "ff5", "carhart4"):
-        result = models.get(key) or {}
-        if result.get("error"):
-            rows.append(_metric_data_row(model_labels[key], result["error"]))
-            continue
-        betas = result.get("betas") or {}
-        factor_count = len(result.get("factors") or [])
-        rows.append(_metric_data_row(
-            model_labels[key],
-            f"Beta {_num(betas.get('mkt_rf'))} · Alpha {_pct(result.get('alpha_annualized'))} · R² {_pct(result.get('r_squared'))} · {factor_count} factors",
-        ))
-    rows.extend([
+    primary_key = fr.get("model") or next(
+        (key for key in ("carhart4", "ff5", "ff3", "capm") if models.get(key) and not models[key].get("error")),
+        "capm",
+    )
+    primary_model = models.get(primary_key) or capm
+    attribution = fr.get("return_attribution") or primary_model.get("return_attribution")
+    model_grid = html.Div(className="factor-research-model-grid", children=[
+        _model_cell(key, models.get(key) or {})
+        for key in ("capm", "ff3", "ff5", "carhart4")
+        if models.get(key)
+    ])
+    rows = [
+        model_grid,
+        _attribution_panel(attribution),
+        _rolling_panel(fr.get("rolling_attribution") or []),
         _metric_data_row("Primary Market Beta", html.Span(_num(beta), className=f"fw-700 {tone_class(beta_color)}")),
         _metric_data_row("Source", fr.get("source", "saved analysis")),
-    ])
+    ]
     return _metric_scorecard(
         title="Factor Research",
         score_text=_num(beta),
         score_color=beta_color,
-        status_text="\u2014 CAPM",
-        subtitle="V2.2 factor attribution",
+        status_text=f"\u2014 {model_labels.get(primary_key, primary_key)}",
+        subtitle="V2.2 factor research",
         body_children=rows,
+        card_class="factor-research-card",
     )
 
 

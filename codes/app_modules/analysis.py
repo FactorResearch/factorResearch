@@ -52,14 +52,28 @@ def _calculate_factor_research(hist, spy_hist=None) -> dict:
         if not ready_models:
             first_error = next(iter(models.values())).get("error", "No factor models could be calculated")
             raise ValueError(first_error)
+        primary_model_name = next(
+            (name for name in ("carhart4", "ff5", "ff3", "capm") if name in ready_models),
+            "capm",
+        )
+        rolling = factor_research.rolling_attribution_from_price_history(
+            hist,
+            factors,
+            model=primary_model_name,
+            window=36,
+            min_periods=24,
+        )
         return {
             "status": "ready",
             "source": "ken_french_us_monthly",
+            "model": primary_model_name,
             "models": models,
             "capm": models.get("capm"),
             "ff3": models.get("ff3"),
             "ff5": models.get("ff5"),
             "carhart4": models.get("carhart4"),
+            "return_attribution": ready_models[primary_model_name].get("return_attribution"),
+            "rolling_attribution": rolling[-12:],
             "message": "CAPM, Fama-French 3/5, and Carhart 4 calculated from monthly factor returns.",
         }
     except Exception as e:

@@ -175,6 +175,33 @@ def analyze_models_from_price_history(
     }
 
 
+def rolling_attribution_from_price_history(
+    price_history,
+    factor_returns: pd.DataFrame,
+    *,
+    model: str = "carhart4",
+    window: int = 36,
+    min_periods: int | None = None,
+    risk_free_rate: float = 0.0,
+    periods_per_year: int = PERIODS_PER_YEAR,
+) -> list[dict]:
+    """Run rolling factor attribution from stock prices plus factor returns."""
+    frame = _factor_price_return_frame(price_history, factor_returns)
+    if frame.empty:
+        return []
+    min_obs = min_periods or window
+    if len(frame) < min_obs:
+        return []
+    return rolling_attribution(
+        frame,
+        model=model,
+        window=window,
+        min_periods=min_obs,
+        risk_free_rate=risk_free_rate,
+        periods_per_year=periods_per_year,
+    )
+
+
 def fama_french_3(
     returns: pd.DataFrame,
     *,
