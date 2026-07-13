@@ -1,61 +1,135 @@
-"""Country/market configuration for the screener UI."""
+"""Feature-gated market registry and routing for the screener."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
 
 from codes.core import app_flags
 
-DEFAULT_SCREENER_COUNTRY = "US"
-
-_BASE_COUNTRIES = [
-    {
-        "code": "US",
-        "label": "United States",
-        "short_label": "U.S.",
-        "flag_src": "/assets/flags/us.svg",
-        "row_values": {"US", "USA", "United States", "United States of America", ""},
-    },
-]
-
-_OPTIONAL_COUNTRIES = [
-    {
-        "code": "CA",
-        "label": "Canada",
-        "short_label": "Canada",
-        "flag_src": "/assets/flags/ca.svg",
-        "row_values": {"CA", "CAN", "Canada"},
-        "requires_market": "CA",
-    },
-]
+DEFAULT_SCREENER_MARKET = "US"
+# Backward-compatible name for callers that still describe markets as countries.
+DEFAULT_SCREENER_COUNTRY = DEFAULT_SCREENER_MARKET
 
 
-def _enabled_markets() -> set[str]:
-    return app_flags.get_enabled_markets()
+@dataclass(frozen=True, slots=True)
+class ScreenerMarket:
+    code: str
+    slug: str
+    label: str
+    short_label: str
+    flag_src: str
+    row_values: frozenset[str]
+    route_aliases: frozenset[str] = frozenset()
+
+    @property
+    def path(self) -> str:
+        return f"/screener/{self.slug}"
+
+    def as_legacy_dict(self) -> dict:
+        return {
+            "code": self.code,
+            "slug": self.slug,
+            "label": self.label,
+            "short_label": self.short_label,
+            "flag_src": self.flag_src,
+            "row_values": set(self.row_values),
+            "requires_market": self.code,
+            "path": self.path,
+        }
 
 
-def _available_countries() -> list[dict]:
-    enabled = _enabled_markets()
-    countries = list(_BASE_COUNTRIES)
-    countries.extend(
-        country for country in _OPTIONAL_COUNTRIES
-        if country.get("requires_market", "").upper() in enabled
+# UI and routing metadata only. Provider, normalization, and release-quality
+# behavior remain in codes.data.providers so market presentation cannot bypass
+# the data-quality gates.
+MARKET_REGISTRY: tuple[ScreenerMarket, ...] = (
+    ScreenerMarket(
+        code="US",
+        slug="us",
+        label="United States",
+        short_label="U.S.",
+        flag_src="/assets/flags/us.svg",
+        row_values=frozenset({"", "us", "usa", "united states", "united states of america"}),
+        route_aliases=frozenset({"usa", "united-states"}),
+    ),
+    ScreenerMarket(
+        code="CA",
+        slug="ca",
+        label="Canada",
+        short_label="Canada",
+        flag_src="/assets/flags/ca.svg",
+        row_values=frozenset({"ca", "can", "canada"}),
+        route_aliases=frozenset({"can", "canada"}),
+    ),
+)
+
+
+def available_screener_markets() -> list[ScreenerMarket]:
+    """Return release-enabled markets in stable display order."""
+    enabled = app_flags.get_enabled_markets()
+    markets = [market for market in MARKET_REGISTRY if market.code in enabled]
+    if markets:
+        return markets
+    return [market for market in MARKET_REGISTRY if market.code == DEFAULT_SCREENER_MARKET]
+
+
+def default_screener_market() -> ScreenerMarket:
+    markets = available_screener_markets()
+    return next(
+        (market for market in markets if market.code == DEFAULT_SCREENER_MARKET),
+        markets[0],
     )
-    return countries
 
 
-SCREENER_COUNTRIES = _available_countries()
+def get_screener_market(value: str | None) -> ScreenerMarket:
+    """Resolve an enabled market code, slug, or route alias."""
+    key = str(value or "").strip().lower()
+    for market in available_screener_markets():
+        if key in {market.code.lower(), market.slug, *market.route_aliases}:
+            return market
+    return default_screener_market()
 
 
+def market_from_path(pathname: str | None) -> ScreenerMarket:
+    """Resolve `/screener/<market>` while retaining legacy code inputs."""
+    raw = str(pathname or "").strip()
+    if raw and "/" not in raw:
+        return get_screener_market(raw)
+
+    segments = [segment for segment in raw.split("/") if segment]
+    if len(segments) >= 2 and segments[0].lower() == "screener":
+        return get_screener_market(segments[1])
+    return default_screener_market()
+
+
+def market_path(value: str | None) -> str:
+    return get_screener_market(value).path
+
+
+def row_matches_market(row: dict, market_value: str | None) -> bool:
+    """Match canonical market fields, retaining blank legacy U.S. rows."""
+    market = get_screener_market(market_value)
+    row_market = (
+        row.get("market_code")
+        or row.get("country_code")
+        or row.get("country")
+        or row.get("market")
+        or ""
+    )
+    return str(row_market).strip().lower() in market.row_values
+
+
+# Compatibility API for existing provider and test callers. New screener code
+# should use the market-named functions above.
 def available_screener_countries() -> list[dict]:
-    """Return countries enabled by the current market feature flags."""
-    return _available_countries()
+    return [market.as_legacy_dict() for market in available_screener_markets()]
 
 
 def get_screener_country(code: str | None) -> dict:
-    """Return the configured screener country, falling back to the default."""
-    countries = {country["code"]: country for country in _available_countries()}
-    return countries.get(code or DEFAULT_SCREENER_COUNTRY, countries[DEFAULT_SCREENER_COUNTRY])
+    return get_screener_market(code).as_legacy_dict()
 
 
 def row_matches_country(row: dict, country_code: str | None) -> bool:
-    """Future-ready row filter that keeps legacy rows in the U.S. universe."""
-    country = get_screener_country(country_code)
-    row_country = row.get("country") or row.get("country_code") or row.get("market") or ""
-    return row_country in country["row_values"]
+    return row_matches_market(row, country_code)
+
+
+SCREENER_COUNTRIES = available_screener_countries()

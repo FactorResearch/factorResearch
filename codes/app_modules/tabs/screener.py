@@ -1,7 +1,5 @@
 """Screener tab callbacks."""
 
-import hashlib
-import json
 import math
 
 import dash
@@ -16,8 +14,8 @@ from codes.app_modules.config import (
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.screener_markets import (
-    get_screener_country,
-    row_matches_country,
+    market_from_path,
+    row_matches_market,
 )
 from codes.app_modules.session import get_portfolio_symbols
 from codes.app_modules.session import get_user_id
@@ -25,12 +23,10 @@ from codes.services import product_analytics
 
 last_progress_state = None
 last_progress_bar_state = None
-last_screener_state = None
 
 
-def _filter_results_by_country(results, country_code):
-    active = get_screener_country(country_code)["code"]
-    return [r for r in results if row_matches_country(r, active)]
+def _filter_results_by_market(results, market_code):
+    return [r for r in results if row_matches_market(r, market_code)]
 
 
 def _index_pill_buttons(selected_indices=None):
@@ -68,15 +64,16 @@ def capture_screener_click(n_clicks_list):
 @callback(
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
-    Input("screener-country-selector", "value"),
+    Input("url", "pathname"),
     prevent_initial_call=True
 )
-def reset_filters_for_country(active_country):
+def reset_filters_for_market(pathname):
+    market = market_from_path(pathname)
     try:
         product_analytics.track_event(
             get_user_id(),
             "screener_filter_changed",
-            {"filter": "country", "value": active_country},
+            {"filter": "country", "value": market.code},
         )
     except Exception:
         pass
@@ -109,6 +106,20 @@ def update_index_filter(n_clicks_list, selected_indices):
 )
 def render_index_filter_pills(selected_indices):
     return _index_pill_buttons(selected_indices)
+
+
+@callback(
+    Output({"type": "screener-market-link", "index": dash.ALL}, "className"),
+    Input("url", "pathname"),
+    State({"type": "screener-market-link", "index": dash.ALL}, "id"),
+    prevent_initial_call=False,
+)
+def style_screener_market_links(pathname, link_ids):
+    active_code = market_from_path(pathname).code
+    return [
+        "screener-country-tab" + (" active" if link_id.get("index") == active_code else "")
+        for link_id in (link_ids or [])
+    ]
 
 
 @callback(
@@ -197,7 +208,7 @@ def update_progress_bar(n):
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
-    Input("screener-country-selector", "value"),
+    Input("url",                       "pathname"),
     Input("page-load-interval",    "n_intervals"),
     Input("index-filter",          "data"),
     Input("sector-filter",         "value"),
@@ -206,13 +217,10 @@ def update_progress_bar(n):
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, active_country, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
-    global last_screener_state
+def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
     triggered_id = dash.ctx.triggered_id
-    if triggered_id == "page-load-interval":
-        last_screener_state = None
-    active_country = get_screener_country(active_country)["code"]
-    results    = _filter_results_by_country(screener.get_screener_results(), active_country)
+    active_market = market_from_path(pathname)
+    results = _filter_results_by_market(screener.get_screener_results(), active_market.code)
    
     prog       = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
@@ -222,39 +230,21 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
     
-    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "screener-country-selector"]:
+    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "url"]:
         page = 1
         page_reset = 1
-    # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
-    state_tuple = (
-        json.dumps([r["symbol"] for r in results], sort_keys=True),
-        active_country,
-        selected_indices or [],
-        sector_filter or "",
-        sort_col,
-        sort_asc,
-        sorted(viewed_set),
-        page
-    )
-    state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
-
-    dedupe_allowed = dash.ctx.triggered_id not in {"screener-country-selector", "page-load-interval"}
-    if dedupe_allowed and state_hash == last_screener_state:
-        return dash.no_update, dash.no_update, page_reset
-    last_screener_state = state_hash
     index_filtered_results = [r for r in results if row_matches_any_index(r, selected_indices)]
     sectors = sorted(set(r["sector"] for r in index_filtered_results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
         {"label": s, "value": s} for s in sectors
     ]
     if not results:
-        if active_country != "US":
-            country = get_screener_country(active_country)
+        if active_market.code != "US":
             return (
                 html.Div([
-                    html.Div(f"No {country['label']} screener data loaded yet.",
+                    html.Div(f"No {active_market.label} screener data loaded yet.",
                              className="clr-muted fw-600 mb-8"),
-                    html.Div("Import verified Canada data into the market database, then refresh this view.",
+                    html.Div(f"Load verified {active_market.label} data into the market database, then refresh this view.",
                              className="clr-muted fs-13"),
                 ], className="tac p-40"),
                 sector_options,
@@ -288,13 +278,13 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "screener-country-selector"}:
+    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "url"}:
         try:
             product_analytics.track_event(
                 get_user_id(),
                 "screener_run",
                 {
-                    "country": active_country,
+                    "country": active_market.code,
                     "indices": selected_indices or [],
                     "sector": sector_filter or "",
                     "sort_col": sort_col,
@@ -508,14 +498,15 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     State("screener-sort-store", "data"),
     State("index-filter", "data"),
     State("sector-filter", "value"),
-    State("screener-country-selector", "value"),
+    State("url", "pathname"),
     prevent_initial_call=True
 )
-def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, active_country):
+def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
-    results = _filter_results_by_country(screener.get_screener_results(), active_country)
+    market = market_from_path(pathname)
+    results = _filter_results_by_market(screener.get_screener_results(), market.code)
     filtered = [
         r for r in results
         if row_matches_any_index(r, selected_indices)

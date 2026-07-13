@@ -183,6 +183,22 @@ Legacy scoring-input bridge
 ↓
 Analysis engines
 
+Market discovery and routing
+
+-   `codes/app_modules/screener_markets.py` is the UI market registry.
+-   Every market has one stable ISO-style code, URL slug, display label, flag,
+    row aliases and canonical `/screener/<slug>` route.
+-   The route is the screener's source of truth. Market selection must not be
+    stored in callback globals, browser session state or per-market callbacks.
+-   Refresh, browser history, bookmarks and shared links must preserve the
+    selected market.
+-   The registry controls discovery only. A market appears only when its
+    `feature_flags.json` market gate is enabled; routing must never bypass the
+    provider, provenance, validation or release gates below.
+-   Adding a market must extend the registry and feature flag, not duplicate
+    screener callbacks. For example, the United Kingdom uses `GB` and
+    `/screener/gb`; France uses `FR` and `/screener/fr`.
+
 Important
 
 Do not force foreign markets to pretend they are SEC data. The canonical model

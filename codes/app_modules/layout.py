@@ -5,27 +5,34 @@ from dash import dcc, html
 from codes.engine import scorer
 
 from .config import BLUE
-from .screener_markets import DEFAULT_SCREENER_COUNTRY, available_screener_countries
+from .screener_markets import (
+    DEFAULT_SCREENER_MARKET,
+    available_screener_markets,
+    get_screener_market,
+)
 from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
-def _screener_country_selector():
-    return dcc.RadioItems(
-        id="screener-country-selector",
-        options=[
-            {
-                "label": html.Span([
-                    html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                    html.Span(country["short_label"], className="screener-country-label"),
-                ], className="screener-country-option"),
-                "value": country["code"],
-            }
-            for country in available_screener_countries()
-        ],
-        value=DEFAULT_SCREENER_COUNTRY,
+def _screener_market_links(active_market=DEFAULT_SCREENER_MARKET):
+    active_code = get_screener_market(active_market).code
+    return html.Nav(
+        id="screener-market-nav",
         className="screener-country-tabs",
-        inputClassName="screener-country-input",
-        labelClassName="screener-country-tab",
+        **{"aria-label": "Screener market"},
+        children=[
+            dcc.Link(
+                [
+                    html.Img(src=market.flag_src, alt="", className="screener-country-flag"),
+                    html.Span(market.short_label, className="screener-country-label"),
+                ],
+                id={"type": "screener-market-link", "index": market.code},
+                href=market.path,
+                refresh=False,
+                title=market.label,
+                className="screener-country-tab" + (" active" if market.code == active_code else ""),
+            )
+            for market in available_screener_markets()
+        ],
     )
 
 
@@ -147,7 +154,7 @@ def build_layout():
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),
             html.Div(className="screener-market-shell", children=[
-                _screener_country_selector(),
+                _screener_market_links(),
                 dcc.Loading(
                     id="screener-loading",
                     type="default",

@@ -55,23 +55,16 @@ def test_update_index_filter_allows_max_two_indices(monkeypatch):
     assert screener_tab.update_index_filter([1], ["sp500"]) == ["sp500", "dow30"]
 
 
-def test_screener_country_selector_uses_market_values(monkeypatch):
-    countries = [
-        {"code": "US", "label": "United States", "short_label": "U.S.", "flag_src": "/assets/flags/us.svg"},
-        {"code": "CA", "label": "Canada", "short_label": "Canada", "flag_src": "/assets/flags/ca.svg"},
-    ]
-    monkeypatch.setattr(layout, "available_screener_countries", lambda: countries)
+def test_screener_market_links_use_canonical_routes():
+    links = layout._screener_market_links().children
 
-    selector = layout._screener_country_selector()
-
-    assert selector.value == "US"
-    assert [option["value"] for option in selector.options] == ["US", "CA"]
-    assert selector.inputClassName == "screener-country-input"
-    assert selector.labelClassName == "screener-country-tab"
+    assert [link.href for link in links] == ["/screener/us", "/screener/ca"]
+    assert [link.id["index"] for link in links] == ["US", "CA"]
+    assert "active" in links[0].className
+    assert "active" not in links[1].className
 
 
 def test_render_screener_table_filters_by_index(monkeypatch):
-    screener_tab.last_screener_state = None
     monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="index-filter"))
     monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
     monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
@@ -112,8 +105,7 @@ def test_render_screener_table_filters_by_index(monkeypatch):
 
 
 def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
-    screener_tab.last_screener_state = None
-    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="screener-country-selector"))
+    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="url"))
     monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
     monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
     monkeypatch.setattr(
@@ -130,7 +122,7 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
 
     table_container, _sector_options, _page_reset = screener_tab.render_screener_table(
         0,
-        "CA",
+        "/screener/ca",
         1,
         [],
         "",
@@ -143,9 +135,8 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
     assert "Loading in background" not in str(table_container)
 
 
-def test_canada_country_switch_rerenders_even_when_state_hash_matches(monkeypatch):
-    screener_tab.last_screener_state = None
-    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="screener-country-selector"))
+def test_canada_route_rerenders_on_repeated_requests(monkeypatch):
+    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="url"))
     monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
     monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
     monkeypatch.setattr(
@@ -161,10 +152,10 @@ def test_canada_country_switch_rerenders_even_when_state_hash_matches(monkeypatc
     monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
 
     first, _sector_options, _page_reset = screener_tab.render_screener_table(
-        0, "CA", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
     )
     second, _sector_options, _page_reset = screener_tab.render_screener_table(
-        0, "CA", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
     )
 
     assert "No Canada screener data loaded yet" in str(first)

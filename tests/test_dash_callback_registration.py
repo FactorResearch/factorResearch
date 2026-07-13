@@ -16,17 +16,19 @@ def test_dash_registers_global_callbacks_on_first_request():
         client = app_module.server.test_client()
         headers = {"Origin": "http://localhost", "Referer": "http://localhost/"}
         index_response = client.get("/", headers=headers)
+        canada_route_response = client.get("/screener/ca", headers=headers)
         layout_response = client.get("/_dash-layout", headers=headers)
         dependencies_response = client.get("/_dash-dependencies", headers=headers)
 
         assert index_response.status_code == 200
+        assert canada_route_response.status_code == 200
         assert layout_response.status_code == 200
         assert dependencies_response.status_code == 200
 
         dependencies = json.loads(dependencies_response.data)
         outputs = {dependency["output"] for dependency in dependencies}
         assert any("screener-table-container.children" in output for output in outputs)
-        assert not any("screener-country-selector.value" in output for output in outputs)
+        assert not any("screener-market-link" in output and "href" in output for output in outputs)
         assert "screener-country-tabs-container.children" not in outputs
         assert len(outputs) > 20
 
@@ -34,6 +36,7 @@ def test_dash_registers_global_callbacks_on_first_request():
             dependency for dependency in dependencies
             if "screener-table-container.children" in dependency["output"]
         )
+        assert {"id": "url", "property": "pathname"} in table_dependency["inputs"]
         callback_response = client.post(
             "/_dash-update-component",
             headers=headers,
@@ -46,7 +49,7 @@ def test_dash_registers_global_callbacks_on_first_request():
                 ],
                 "inputs": [
                     {"id": "screener-ready-store", "property": "data", "value": 0},
-                    {"id": "screener-country-selector", "property": "value", "value": "CA"},
+                    {"id": "url", "property": "pathname", "value": "/screener/ca"},
                     {"id": "page-load-interval", "property": "n_intervals", "value": 1},
                     {"id": "index-filter", "property": "data", "value": []},
                     {"id": "sector-filter", "property": "value", "value": ""},
@@ -60,7 +63,7 @@ def test_dash_registers_global_callbacks_on_first_request():
                 "state": [
                     {"id": "screener-viewed-store", "property": "data", "value": []},
                 ],
-                "changedPropIds": ["screener-country-selector.value"],
+                "changedPropIds": ["url.pathname"],
             },
         )
 

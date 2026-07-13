@@ -23,7 +23,21 @@ Enable it with:
 }
 ```
 
-The screener country selector will show Canada only when `CA` is enabled.
+The screener market navigation will show Canada only when `CA` is enabled.
+Canada has the canonical route `/screener/ca`; refreshing, bookmarking or
+sharing that route must retain the Canada market. The route selects the market
+but does not bypass Canada data-quality or release gates.
+
+## Market Routing Contract
+
+- Market UI metadata lives in the typed registry at
+  `codes/app_modules/screener_markets.py`.
+- The URL is the selected-market state; no callback or browser store owns it.
+- Unknown or disabled market routes resolve to the enabled default market.
+- Future markets add registry metadata and a feature flag. They do not add a
+  market-specific table callback.
+- Provider adapters, canonical facts and provenance remain separate from the
+  UI registry, so enabling navigation cannot make unverified data scoreable.
 
 ## Data Sourcing Issues
 
