@@ -433,6 +433,9 @@ Release standard
 -   Do not publicly release Canada from provider-normalized data alone.
 -   Public Canada requires source-verified fundamentals, filing provenance,
     validation checks and no-score behavior for weak data.
+-   Canada must have a dedicated `README_CANADA.md` release runbook before
+    any publication decision; the same requirement applies to every future
+    country branch with its own country-specific README.
 
 #### United Kingdom
 
@@ -458,6 +461,9 @@ Release standard
 
 -   Public UK support requires Companies House/FCA/issuer-source provenance,
     not provider-only data.
+-   UK must have a dedicated `README_UK.md` release runbook before any
+    publication decision; the same requirement applies to every future
+    country branch with its own country-specific README.
 
 #### Germany
 
@@ -482,6 +488,9 @@ Release standard
 
 -   Public Germany support requires regulator/issuer-source provenance and
     tested German-language normalization.
+-   Germany must have a dedicated `README_GERMANY.md` release runbook before
+    any publication decision; the same requirement applies to every future
+    country branch with its own country-specific README.
 
 #### France
 
@@ -506,6 +515,9 @@ Release standard
 
 -   Public France support requires AMF/issuer-source provenance and tested
     French-language normalization.
+-   France must have a dedicated `README_FRANCE.md` release runbook before
+    any publication decision; the same requirement applies to every future
+    country branch with its own country-specific README.
 
 #### Netherlands
 
@@ -818,7 +830,9 @@ look-ahead bias.
 8.  Expensive APIs are deferred until justified by customer demand and
     revenue.
 9. every version/track after launch gets a new branch, never push to main branch 
-
+10. country implementation must be independent so if one country can go live first it will go live 
+11. every country branch must include its own country-specific release README before any publication decision
+12. this file should never get commited since it shows our future releases 
 Success Metric
 
 Build the complete architecture first.
