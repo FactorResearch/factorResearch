@@ -2,7 +2,8 @@
   "flag": "INTERNAL",
   "markets": {
     "US": true,
-    "CA": false
+    "CA": false,
+    "FR": false
   },
-  "_comment": "Canada is internal-only with no launch date. Keep CA=false until README.md release gates have written approval. INTERNAL and BETA disable billing checks and must never be published; public tiers are V1, V2, or ENTERPRISE."
+  "_comment": "Canada and France are internal-only with no launch date. Keep CA=false and FR=false until each country release README has written approval. INTERNAL and BETA disable billing checks and must never be published; public tiers are V1, V2, or ENTERPRISE."
 }

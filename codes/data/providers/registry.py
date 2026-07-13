@@ -14,6 +14,9 @@ from codes.data import db
 from .canada import CanadaProviderAdapter, is_canadian_symbol
 from .canada_db import CanadaDatabaseDataSource, materialize_canada_screener_projection
 from .canada_normalization import PUBLIC_CONFIDENCE, build_canada_scoring_facts
+from .france import FranceProviderAdapter, is_france_symbol
+from .france_db import FranceDatabaseDataSource, materialize_france_screener_projection
+from .france_normalization import build_france_scoring_facts
 from .screener_projection import FUNDAMENTAL_PROJECTION_VERSION
 
 
@@ -35,6 +38,14 @@ MARKET_PROVIDERS: tuple[MarketProviderRegistration, ...] = (
         provider_factory=lambda: CanadaProviderAdapter(CanadaDatabaseDataSource()),
         scoring_builder=build_canada_scoring_facts,
         projection_builder=materialize_canada_screener_projection,
+    ),
+    MarketProviderRegistration(
+        market_code="FR",
+        market_name="France",
+        symbol_matcher=is_france_symbol,
+        provider_factory=lambda: FranceProviderAdapter(FranceDatabaseDataSource()),
+        scoring_builder=build_france_scoring_facts,
+        projection_builder=materialize_france_screener_projection,
     ),
 )
 MARKET_PROJECTION_BUILDERS = {

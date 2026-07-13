@@ -60,6 +60,15 @@ MARKET_REGISTRY: tuple[ScreenerMarket, ...] = (
         row_values=frozenset({"ca", "can", "canada"}),
         route_aliases=frozenset({"can", "canada"}),
     ),
+    ScreenerMarket(
+        code="FR",
+        slug="fr",
+        label="France",
+        short_label="France",
+        flag_src="/assets/flags/fr.svg",
+        row_values=frozenset({"fr", "fra", "france", "french republic"}),
+        route_aliases=frozenset({"france", "euronext-paris", "paris"}),
+    ),
 )
 
 

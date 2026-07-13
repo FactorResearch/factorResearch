@@ -28,6 +28,14 @@ def test_disabled_or_unknown_market_routes_use_enabled_default(monkeypatch, tmp_
     assert screener_markets.market_from_path("/").code == "US"
 
 
+def test_france_route_is_available_only_when_france_is_enabled(monkeypatch, tmp_path):
+    _set_enabled_markets(monkeypatch, tmp_path, {"US": True, "CA": False, "FR": True})
+
+    assert screener_markets.market_from_path("/screener/fr").code == "FR"
+    assert screener_markets.market_from_path("/screener/france").code == "FR"
+    assert screener_markets.market_path("FR") == "/screener/fr"
+
+
 def test_market_row_matching_prefers_canonical_market_fields(monkeypatch, tmp_path):
     _set_enabled_markets(monkeypatch, tmp_path, {"US": True, "CA": True})
 
