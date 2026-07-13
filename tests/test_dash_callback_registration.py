@@ -27,7 +27,33 @@ def test_dash_registers_global_callbacks_on_first_request():
         outputs = {dependency["output"] for dependency in dependencies}
         assert any("screener-table-container.children" in output for output in outputs)
         assert any("screener-country-store.data" in output for output in outputs)
+        assert "screener-country-tabs-container.children" not in outputs
         assert len(outputs) > 20
+
+        country_dependency = next(
+            dependency for dependency in dependencies
+            if dependency["output"] == "screener-country-store.data"
+        )
+        country_response = client.post(
+            "/_dash-update-component",
+            headers=headers,
+            json={
+                "output": country_dependency["output"],
+                "outputs": {"id": "screener-country-store", "property": "data"},
+                "inputs": [{
+                    "id": '{"index":["ALL"],"type":"screener-country-tab"}',
+                    "property": "n_clicks",
+                    "value": [0, 1],
+                }],
+                "state": [],
+                "changedPropIds": [
+                    '{"index":"CA","type":"screener-country-tab"}.n_clicks',
+                ],
+            },
+        )
+
+        assert country_response.status_code == 200
+        assert country_response.get_json()["response"]["screener-country-store"]["data"] == "CA"
 
         table_dependency = next(
             dependency for dependency in dependencies

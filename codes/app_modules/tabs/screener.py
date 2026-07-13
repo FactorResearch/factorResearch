@@ -87,23 +87,22 @@ def capture_screener_click(n_clicks_list):
 
 @callback(
     Output("screener-country-store", "data"),
-    Output("screener-page-store", "data", allow_duplicate=True),
     Input({"type": "screener-country-tab", "index": dash.ALL}, "n_clicks"),
     prevent_initial_call=True
 )
 def switch_screener_country(n_clicks_list):
     triggered = dash.ctx.triggered_id
-    if not triggered:
-        return dash.no_update, dash.no_update
+    if not triggered or not any(n_clicks_list or []):
+        return dash.no_update
     country_code = triggered.get("index") if isinstance(triggered, dict) else None
     available_codes = {country["code"] for country in available_screener_countries()}
     if country_code not in available_codes:
-        return dash.no_update, dash.no_update
+        return dash.no_update
     try:
         product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": country_code})
     except Exception:
         pass
-    return country_code, 1
+    return country_code
 
 
 @callback(
@@ -145,12 +144,16 @@ def render_index_filter_pills(selected_indices):
 
 
 @callback(
-    Output("screener-country-tabs-container", "children"),
+    Output({"type": "screener-country-tab", "index": dash.ALL}, "className"),
     Input("screener-country-store", "data"),
     prevent_initial_call=False
 )
-def render_screener_country_tabs(active_country):
-    return _country_tab_buttons(active_country)
+def style_screener_country_tabs(active_country):
+    active = get_screener_country(active_country)["code"]
+    return [
+        "screener-country-tab" + (" active" if country["code"] == active else "")
+        for country in available_screener_countries()
+    ]
 
 
 @callback(

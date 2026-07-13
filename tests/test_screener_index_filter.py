@@ -81,7 +81,7 @@ def test_switch_screener_country_uses_triggered_country_even_with_stale_clicks(m
     monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id={"type": "screener-country-tab", "index": "CA"}))
     monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
 
-    assert screener_tab.switch_screener_country([0, 0]) == ("CA", 1)
+    assert screener_tab.switch_screener_country([0, 1]) == "CA"
 
 
 def test_switch_screener_country_rejects_disabled_country(monkeypatch):
@@ -91,7 +91,20 @@ def test_switch_screener_country_rejects_disabled_country(monkeypatch):
     monkeypatch.setattr(screener_tab, "available_screener_countries", lambda: countries)
     monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id={"type": "screener-country-tab", "index": "CA"}))
 
-    assert screener_tab.switch_screener_country([1]) == (screener_tab.dash.no_update, screener_tab.dash.no_update)
+    assert screener_tab.switch_screener_country([1]) is screener_tab.dash.no_update
+
+
+def test_country_tab_style_updates_without_recreating_buttons(monkeypatch):
+    countries = [
+        {"code": "US", "label": "United States", "short_label": "U.S.", "flag_src": "/assets/flags/us.svg"},
+        {"code": "CA", "label": "Canada", "short_label": "Canada", "flag_src": "/assets/flags/ca.svg"},
+    ]
+    monkeypatch.setattr(screener_tab, "available_screener_countries", lambda: countries)
+
+    assert screener_tab.style_screener_country_tabs("CA") == [
+        "screener-country-tab",
+        "screener-country-tab active",
+    ]
 
 
 def test_render_screener_table_filters_by_index(monkeypatch):
