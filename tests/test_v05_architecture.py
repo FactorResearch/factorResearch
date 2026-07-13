@@ -7,7 +7,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from codes import portfolio
-from codes.engine import backtest, factor_backtest
+from codes.engine import backtest, factor_backtest, factor_research
 from codes.core.engine_contracts import (
     EngineContract,
     EngineSchema,
@@ -186,11 +186,21 @@ def test_risk_metrics_exposes_v05_engine_contract():
     assert risk_metrics.validate_output(output) == []
 
 
+def test_factor_research_exposes_v22_engine_contract():
+    contract = factor_research.get_contract()
+
+    assert contract.name == "factor_research"
+    assert contract.supports(FeatureFlag.V2)
+    assert contract.interpretation_guide
+    assert factor_research.validate_input({"returns": pd.DataFrame({"asset_return": [0.01], "mkt_rf": [0.02]})}) == []
+
+
 def test_existing_calculation_modules_are_wired_to_shared_math():
     modules = [
         portfolio,
         backtest,
         factor_backtest,
+        factor_research,
         buffett,
         fcf_quality,
         growth_quality,

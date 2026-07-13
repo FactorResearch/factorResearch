@@ -8,3 +8,4 @@ from . import company_analysis
 from . import user_strategy
 from . import strategy_cache
 from . import factor_snapshot
+from . import factor_research
