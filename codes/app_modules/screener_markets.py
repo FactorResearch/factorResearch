@@ -43,6 +43,11 @@ def _available_countries() -> list[dict]:
 SCREENER_COUNTRIES = _available_countries()
 
 
+def available_screener_countries() -> list[dict]:
+    """Return countries enabled by the current market feature flags."""
+    return _available_countries()
+
+
 def get_screener_country(code: str | None) -> dict:
     """Return the configured screener country, falling back to the default."""
     countries = {country["code"]: country for country in _available_countries()}

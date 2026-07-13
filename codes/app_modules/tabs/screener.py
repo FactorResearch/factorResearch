@@ -16,7 +16,7 @@ from codes.app_modules.config import (
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.screener_markets import (
-    SCREENER_COUNTRIES,
+    available_screener_countries,
     get_screener_country,
     row_matches_country,
 )
@@ -32,7 +32,7 @@ last_screener_state = None
 def _country_tab_buttons(active_country):
     active = get_screener_country(active_country)["code"]
     buttons = []
-    for country in SCREENER_COUNTRIES:
+    for country in available_screener_countries():
         is_active = country["code"] == active
         buttons.append(html.Button(
             [
@@ -43,6 +43,7 @@ def _country_tab_buttons(active_country):
             className="screener-country-tab" + (" active" if is_active else ""),
             title=country["label"],
             n_clicks=0,
+            type="button",
         ))
     return buttons
 

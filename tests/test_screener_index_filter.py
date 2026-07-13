@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 from codes.app_modules.tabs import screener as screener_tab
+from codes.app_modules import layout
 from codes.data.us_indices import US_INDEX_OPTIONS, row_matches_any_index, row_matches_index
 
 
@@ -52,6 +53,23 @@ def test_update_index_filter_allows_max_two_indices(monkeypatch):
 
     monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id={"type": "index-filter-pill", "index": "dow30"}))
     assert screener_tab.update_index_filter([1], ["sp500"]) == ["sp500", "dow30"]
+
+
+def test_screener_country_tabs_are_non_submit_buttons(monkeypatch):
+    countries = [
+        {"code": "US", "label": "United States", "short_label": "U.S.", "flag_src": "/assets/flags/us.svg"},
+        {"code": "CA", "label": "Canada", "short_label": "Canada", "flag_src": "/assets/flags/ca.svg"},
+    ]
+    monkeypatch.setattr(screener_tab, "available_screener_countries", lambda: countries)
+    monkeypatch.setattr(layout, "available_screener_countries", lambda: countries)
+
+    rendered_buttons = screener_tab._country_tab_buttons("CA")
+    initial_buttons = layout._screener_country_tabs("US")
+
+    assert [button.type for button in rendered_buttons] == ["button", "button"]
+    assert [button.type for button in initial_buttons] == ["button", "button"]
+    assert "active" in rendered_buttons[1].className
+    assert "active" in initial_buttons[0].className
 
 
 def test_render_screener_table_filters_by_index(monkeypatch):

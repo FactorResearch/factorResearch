@@ -5,7 +5,7 @@ from dash import dcc, html
 from codes.engine import scorer
 
 from .config import BLUE
-from .screener_markets import DEFAULT_SCREENER_COUNTRY, SCREENER_COUNTRIES
+from .screener_markets import DEFAULT_SCREENER_COUNTRY, available_screener_countries
 from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
@@ -20,8 +20,9 @@ def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
             className="screener-country-tab" + (" active" if country["code"] == active_country else ""),
             title=country["label"],
             n_clicks=0,
+            type="button",
         )
-        for country in SCREENER_COUNTRIES
+        for country in available_screener_countries()
     ]
 
 
