@@ -158,3 +158,31 @@ def test_canada_ingest_worker_reports_status(tmp_path, monkeypatch, capsys):
     output = capsys.readouterr().out
     assert "SHOP.TO public_score_ready target=market_db" in output
     assert "confidence=regulatory_verified" in output
+
+
+def test_canada_ingest_worker_reports_all_missing_bundle_files(tmp_path, monkeypatch, capsys):
+    imported = []
+    monkeypatch.setattr(
+        canada_ingest_worker,
+        "import_canada_verified_csv_bundle",
+        lambda *args, **kwargs: imported.append((args, kwargs)),
+    )
+
+    exit_code = canada_ingest_worker.main([
+        "--symbol", "SHOP.TO",
+        "--company-csv", str(tmp_path / "company.csv"),
+        "--periods-csv", str(tmp_path / "periods.csv"),
+        "--documents-csv", str(tmp_path / "documents.csv"),
+        "--facts-csv", str(tmp_path / "facts.csv"),
+        "--shares-csv", str(tmp_path / "shares.csv"),
+    ])
+
+    error = capsys.readouterr().err
+    assert exit_code == 2
+    assert imported == []
+    assert "does not download SEDAR+ filings" in error
+    assert "missing company CSV" in error
+    assert "missing periods CSV" in error
+    assert "missing documents CSV" in error
+    assert "missing facts CSV" in error
+    assert "missing shares CSV" in error

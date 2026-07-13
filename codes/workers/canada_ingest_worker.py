@@ -58,6 +58,21 @@ def run_from_args(args: argparse.Namespace) -> int:
         facts_csv=args.facts_csv,
         shares_csv=args.shares_csv,
     )
+    missing = _missing_bundle_files(bundle)
+    if missing:
+        print(
+            "[CanadaIngest] input bundle is incomplete. This worker imports "
+            "existing verified exports; it does not download SEDAR+ filings.",
+            file=sys.stderr,
+        )
+        for label, path in missing:
+            print(f"  missing {label}: {path}", file=sys.stderr)
+        print(
+            "See docs/track_b_canada.md for the required CSV schemas.",
+            file=sys.stderr,
+        )
+        return 2
+
     result = import_canada_verified_csv_bundle(
         args.symbol,
         bundle,
@@ -76,6 +91,17 @@ def run_from_args(args: argparse.Namespace) -> int:
         f"issues={len(result.quality_report.issues)}"
     )
     return 0 if result.can_score or args.allow_internal else 2
+
+
+def _missing_bundle_files(bundle: CanadaVerifiedCsvBundle) -> list[tuple[str, Path]]:
+    files = (
+        ("company CSV", bundle.company_csv),
+        ("periods CSV", bundle.periods_csv),
+        ("documents CSV", bundle.documents_csv),
+        ("facts CSV", bundle.facts_csv),
+        ("shares CSV", bundle.shares_csv),
+    )
+    return [(label, path) for label, path in files if not path.is_file()]
 
 
 def main(argv: list[str] | None = None) -> int:
