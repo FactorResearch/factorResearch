@@ -58,3 +58,27 @@ def test_explicit_screener_click_can_leave_analyze_path():
     assert result[0] == {"display": "block"}
     assert result[1] == {"display": "none"}
     assert result[5] == "topbar-nav-btn tab-btn active"
+
+
+def test_unrelated_rerun_preserves_latest_portfolio_tab_click():
+    with patch.object(navigation.dash, "ctx", SimpleNamespace(triggered_id="url")):
+        result = navigation.switch_tabs(
+            1,
+            None,
+            1,
+            None,
+            None,
+            None,
+            None,
+            "/",
+            100,
+            None,
+            500,
+            None,
+            None,
+        )
+
+    assert result[0] == {"display": "none"}
+    assert result[2] == {"display": "block"}
+    assert result[5] == "topbar-nav-btn tab-btn"
+    assert result[7] == "topbar-nav-btn tab-btn active"
