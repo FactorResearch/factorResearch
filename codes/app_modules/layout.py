@@ -9,21 +9,24 @@ from .screener_markets import DEFAULT_SCREENER_COUNTRY, available_screener_count
 from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
-def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
-    return [
-        html.Button(
-            [
-                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                html.Span(country["short_label"], className="screener-country-label"),
-            ],
-            id={"type": "screener-country-tab", "index": country["code"]},
-            className="screener-country-tab" + (" active" if country["code"] == active_country else ""),
-            title=country["label"],
-            n_clicks=0,
-            type="button",
-        )
-        for country in available_screener_countries()
-    ]
+def _screener_country_selector():
+    return dcc.RadioItems(
+        id="screener-country-selector",
+        options=[
+            {
+                "label": html.Span([
+                    html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
+                    html.Span(country["short_label"], className="screener-country-label"),
+                ], className="screener-country-option"),
+                "value": country["code"],
+            }
+            for country in available_screener_countries()
+        ],
+        value=DEFAULT_SCREENER_COUNTRY,
+        className="screener-country-tabs",
+        inputClassName="screener-country-input",
+        labelClassName="screener-country-tab",
+    )
 
 
 def _screener_index_pills(selected=None):
@@ -144,12 +147,7 @@ def build_layout():
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),
             html.Div(className="screener-market-shell", children=[
-                html.Div(
-                    id="screener-country-tabs-container",
-                    className="screener-country-tabs",
-                    role="tablist",
-                    children=_screener_country_tabs(),
-                ),
+                _screener_country_selector(),
                 dcc.Loading(
                     id="screener-loading",
                     type="default",
@@ -368,7 +366,6 @@ def build_layout():
         dcc.Store(id="screener-cache"),
         dcc.Store(id="analysis-store"),
         dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
-        dcc.Store(id="screener-country-store", data=DEFAULT_SCREENER_COUNTRY, storage_type="memory"),
         dcc.Store(id="screener-page-store", data=1, storage_type="session"),  # current page in screener table
         dcc.Store(id="search-history-store"),
         dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table

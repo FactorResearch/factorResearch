@@ -26,34 +26,9 @@ def test_dash_registers_global_callbacks_on_first_request():
         dependencies = json.loads(dependencies_response.data)
         outputs = {dependency["output"] for dependency in dependencies}
         assert any("screener-table-container.children" in output for output in outputs)
-        assert any("screener-country-store.data" in output for output in outputs)
+        assert not any("screener-country-selector.value" in output for output in outputs)
         assert "screener-country-tabs-container.children" not in outputs
         assert len(outputs) > 20
-
-        country_dependency = next(
-            dependency for dependency in dependencies
-            if dependency["output"] == "screener-country-store.data"
-        )
-        country_response = client.post(
-            "/_dash-update-component",
-            headers=headers,
-            json={
-                "output": country_dependency["output"],
-                "outputs": {"id": "screener-country-store", "property": "data"},
-                "inputs": [{
-                    "id": '{"index":["ALL"],"type":"screener-country-tab"}',
-                    "property": "n_clicks",
-                    "value": [0, 1],
-                }],
-                "state": [],
-                "changedPropIds": [
-                    '{"index":"CA","type":"screener-country-tab"}.n_clicks',
-                ],
-            },
-        )
-
-        assert country_response.status_code == 200
-        assert country_response.get_json()["response"]["screener-country-store"]["data"] == "CA"
 
         table_dependency = next(
             dependency for dependency in dependencies
@@ -71,7 +46,7 @@ def test_dash_registers_global_callbacks_on_first_request():
                 ],
                 "inputs": [
                     {"id": "screener-ready-store", "property": "data", "value": 0},
-                    {"id": "screener-country-store", "property": "data", "value": "US"},
+                    {"id": "screener-country-selector", "property": "value", "value": "CA"},
                     {"id": "page-load-interval", "property": "n_intervals", "value": 1},
                     {"id": "index-filter", "property": "data", "value": []},
                     {"id": "sector-filter", "property": "value", "value": ""},
@@ -85,9 +60,10 @@ def test_dash_registers_global_callbacks_on_first_request():
                 "state": [
                     {"id": "screener-viewed-store", "property": "data", "value": []},
                 ],
-                "changedPropIds": ["page-load-interval.n_intervals"],
+                "changedPropIds": ["screener-country-selector.value"],
             },
         )
 
         assert callback_response.status_code == 200
         assert "Loading screener data" not in callback_response.get_data(as_text=True)
+        assert "No Canada screener data loaded yet" in callback_response.get_data(as_text=True)

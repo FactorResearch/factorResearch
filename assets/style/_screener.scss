@@ -184,6 +184,25 @@ body.light .screener-index-pill:hover {
   padding-top: 14px;
   z-index: 2;
 
+  > .dash-options-list-option {
+    position: relative;
+    display: block;
+    width: 42px;
+    margin: 0;
+    padding: 0;
+
+    @include m.phones {
+      width: auto;
+    }
+  }
+
+  .dash-options-list-option-wrapper {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
   @include m.phones {
     position: static;
     flex-direction: row;
@@ -195,6 +214,7 @@ body.light .screener-index-pill:hover {
 }
 
 .screener-country-tab {
+  box-sizing: border-box;
   position: relative;
   right: -1px;
   width: 42px;
@@ -214,6 +234,7 @@ body.light .screener-index-pill:hover {
   line-height: 1;
   padding: 9px 5px 12px;
   box-shadow: -5px 6px 16px rgba($black, 0.16);
+  cursor: pointer;
 
   @include m.phones {
     right: auto;
@@ -228,15 +249,32 @@ body.light .screener-index-pill:hover {
   }
 
   &:hover,
-  &.active {
+  .dash-options-list-option.selected & {
     border-color: rgba($blue, 0.7);
     background: linear-gradient(180deg, rgba($blue, 0.22), rgba($blue, 0.08));
     color: $text;
   }
 
-  &.active {
+  .dash-options-list-option.selected & {
     box-shadow: -6px 8px 18px rgba($blue, 0.14);
   }
+
+  .dash-options-list-option:has(.screener-country-input:focus-visible) & {
+    outline: 2px solid $blue;
+    outline-offset: 2px;
+  }
+}
+
+.screener-country-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.screener-country-option {
+  display: contents;
 }
 
 .screener-country-flag {

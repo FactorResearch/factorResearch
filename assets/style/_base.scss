@@ -128,7 +128,7 @@ body.light {
     color: $light-text-dim;
 
     &:hover,
-    &.active {
+    .dash-options-list-option.selected & {
       background: rgba($light-blue, 0.1);
       color: #16345f;
     }

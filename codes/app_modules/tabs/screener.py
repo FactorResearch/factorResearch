@@ -16,7 +16,6 @@ from codes.app_modules.config import (
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.screener_markets import (
-    available_screener_countries,
     get_screener_country,
     row_matches_country,
 )
@@ -27,25 +26,6 @@ from codes.services import product_analytics
 last_progress_state = None
 last_progress_bar_state = None
 last_screener_state = None
-
-
-def _country_tab_buttons(active_country):
-    active = get_screener_country(active_country)["code"]
-    buttons = []
-    for country in available_screener_countries():
-        is_active = country["code"] == active
-        buttons.append(html.Button(
-            [
-                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                html.Span(country["short_label"], className="screener-country-label"),
-            ],
-            id={"type": "screener-country-tab", "index": country["code"]},
-            className="screener-country-tab" + (" active" if is_active else ""),
-            title=country["label"],
-            n_clicks=0,
-            type="button",
-        ))
-    return buttons
 
 
 def _filter_results_by_country(results, country_code):
@@ -86,32 +66,20 @@ def capture_screener_click(n_clicks_list):
 
 
 @callback(
-    Output("screener-country-store", "data"),
-    Input({"type": "screener-country-tab", "index": dash.ALL}, "n_clicks"),
-    prevent_initial_call=True
-)
-def switch_screener_country(n_clicks_list):
-    triggered = dash.ctx.triggered_id
-    if not triggered or not any(n_clicks_list or []):
-        return dash.no_update
-    country_code = triggered.get("index") if isinstance(triggered, dict) else None
-    available_codes = {country["code"] for country in available_screener_countries()}
-    if country_code not in available_codes:
-        return dash.no_update
-    try:
-        product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": country_code})
-    except Exception:
-        pass
-    return country_code
-
-
-@callback(
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
-    Input("screener-country-store", "data"),
+    Input("screener-country-selector", "value"),
     prevent_initial_call=True
 )
 def reset_filters_for_country(active_country):
+    try:
+        product_analytics.track_event(
+            get_user_id(),
+            "screener_filter_changed",
+            {"filter": "country", "value": active_country},
+        )
+    except Exception:
+        pass
     return [], ""
 
 
@@ -141,19 +109,6 @@ def update_index_filter(n_clicks_list, selected_indices):
 )
 def render_index_filter_pills(selected_indices):
     return _index_pill_buttons(selected_indices)
-
-
-@callback(
-    Output({"type": "screener-country-tab", "index": dash.ALL}, "className"),
-    Input("screener-country-store", "data"),
-    prevent_initial_call=False
-)
-def style_screener_country_tabs(active_country):
-    active = get_screener_country(active_country)["code"]
-    return [
-        "screener-country-tab" + (" active" if country["code"] == active else "")
-        for country in available_screener_countries()
-    ]
 
 
 @callback(
@@ -242,7 +197,7 @@ def update_progress_bar(n):
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
-    Input("screener-country-store","data"),
+    Input("screener-country-selector", "value"),
     Input("page-load-interval",    "n_intervals"),
     Input("index-filter",          "data"),
     Input("sector-filter",         "value"),
@@ -267,7 +222,7 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
     
-    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "screener-country-store"]:
+    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "screener-country-selector"]:
         page = 1
         page_reset = 1
     # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
@@ -283,7 +238,7 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     )
     state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
 
-    dedupe_allowed = dash.ctx.triggered_id not in {"screener-country-store", "page-load-interval"}
+    dedupe_allowed = dash.ctx.triggered_id not in {"screener-country-selector", "page-load-interval"}
     if dedupe_allowed and state_hash == last_screener_state:
         return dash.no_update, dash.no_update, page_reset
     last_screener_state = state_hash
@@ -333,7 +288,7 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "screener-country-store"}:
+    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "screener-country-selector"}:
         try:
             product_analytics.track_event(
                 get_user_id(),
@@ -553,7 +508,7 @@ def render_screener_table(ready, active_country, n_load, selected_indices, secto
     State("screener-sort-store", "data"),
     State("index-filter", "data"),
     State("sector-filter", "value"),
-    State("screener-country-store", "data"),
+    State("screener-country-selector", "value"),
     prevent_initial_call=True
 )
 def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, active_country):
