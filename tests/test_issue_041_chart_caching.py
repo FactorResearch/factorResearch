@@ -128,7 +128,7 @@ def test_worker_precomputes_primary_analysis_charts(monkeypatch):
         "price_history": [{"Date": "2026-01-01", "Close": 100}],
         "spy_history": [{"Date": "2026-01-01", "Close": 50}],
     }
-    monkeypatch.setattr(chart_worker.db, "get_analysis", lambda ticker: data)
+    monkeypatch.setattr(chart_worker, "_load_analysis", lambda ticker: data)
 
     first = chart_worker.precompute_analysis_charts("AAPL")
     second = chart_worker.precompute_analysis_charts("AAPL")
