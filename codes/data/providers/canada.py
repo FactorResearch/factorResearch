@@ -225,6 +225,8 @@ def _statement_provenance(row: dict[str, Any]) -> StatementProvenance:
     return StatementProvenance(
         fact_name=str(row.get("fact_name") or row.get("field") or ""),
         source_document_id=str(row.get("source_document_id") or row.get("document_id") or ""),
+        fiscal_year=_int_or_none(row.get("fiscal_year") or row.get("year")),
+        fiscal_period=row.get("fiscal_period") or row.get("period"),
         source_url=row.get("source_url") or row.get("url"),
         confidence=row.get("confidence") or "insufficient_source_evidence",
         accounting_standard=row.get("accounting_standard"),

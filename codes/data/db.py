@@ -552,12 +552,13 @@ FROM market_shares_outstanding
 WHERE market_code = %(market_code)s AND symbol = %(symbol)s
 """
 _SELECT_MARKET_PROVENANCE = """
-SELECT DISTINCT ON (fact_name)
-    fact_name, source_document_id, source_url, confidence, accounting_standard,
+SELECT
+    fact_name, fiscal_year, fiscal_period, source_document_id, source_url,
+    confidence, accounting_standard,
     extraction_method, normalization_method
 FROM market_statement_facts
 WHERE market_code = %(market_code)s AND symbol = %(symbol)s
-ORDER BY fact_name, fiscal_year DESC
+ORDER BY fiscal_year DESC, fiscal_period, fact_name
 """
 _SELECT_MARKET_QUALITY = """
 SELECT * FROM market_quality_reports
@@ -868,7 +869,10 @@ def upsert_market_canonical_facts(
         )
     now = datetime.datetime.utcnow().isoformat()
     company = financials.company
-    provenance_by_fact = {item.fact_name: item for item in financials.provenance}
+    provenance_by_fact = {
+        (item.fact_name, item.fiscal_year, item.fiscal_period): item
+        for item in financials.provenance
+    }
     issuer = {"market_code": market, "symbol": t}
 
     with _conn() as con:
@@ -1176,7 +1180,11 @@ def _market_fact_rows(
             if fact_name in {"fiscal_year", "year", "fiscal_period", "period", "period_end", "end", "end_date", "currency"}:
                 continue
             numeric = _float_or_none(value)
-            provenance = provenance_by_fact.get(fact_name)
+            provenance = (
+                provenance_by_fact.get((fact_name, period.fiscal_year, period.fiscal_period))
+                or provenance_by_fact.get((fact_name, period.fiscal_year, None))
+                or provenance_by_fact.get((fact_name, None, None))
+            )
             if numeric is None or provenance is None or not provenance.source_document_id:
                 continue
             facts.append({

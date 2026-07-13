@@ -151,7 +151,7 @@ def _to_sec_facts(
     sec_facts: dict[str, Any] = {
         "source_market": "CA",
         "source_country": "Canada",
-        "source_regulator": "SEDAR+",
+        "source_regulator": _source_regulator(financials),
         "normalization_confidence": report.confidence,
         "can_score": report.can_score,
         "data_quality_issues": [asdict(issue) for issue in report.issues],
@@ -161,7 +161,13 @@ def _to_sec_facts(
         records = _records_for_field(financials, target_field)
         if records:
             sec_facts[target_field] = [
-                _sec_record(row, target_field, financials, provenance_by_field.get(target_field))
+                _sec_record(
+                    row,
+                    target_field,
+                    financials,
+                    _provenance_for_row(financials.provenance, target_field, row)
+                    or provenance_by_field.get(target_field),
+                )
                 for row in records
             ]
 
@@ -263,6 +269,31 @@ def _provenance_by_field(items: tuple[StatementProvenance, ...]) -> dict[str, St
             if item.fact_name == field or item.fact_name in aliases:
                 result.setdefault(field, item)
     return result
+
+
+def _provenance_for_row(
+    items: tuple[StatementProvenance, ...],
+    field: str,
+    row: dict[str, Any],
+) -> StatementProvenance | None:
+    year = row.get("fiscal_year") or row.get("year")
+    period = row.get("fiscal_period") or row.get("period") or "FY"
+    aliases = FIELD_ALIASES.get(field, (field,))
+    for item in items:
+        if item.fact_name not in aliases and item.fact_name != field:
+            continue
+        if item.fiscal_year == year and (item.fiscal_period or "FY") == period:
+            return item
+    return None
+
+
+def _source_regulator(financials: CanonicalFinancials) -> str:
+    sources = {document.source.upper() for document in financials.source_documents}
+    if any("SEC" in source or "EDGAR" in source for source in sources):
+        return "SEC EDGAR"
+    if any("SEDAR" in source for source in sources):
+        return "SEDAR+"
+    return "verified source"
 
 
 def _confidence_allowed(confidence: str, allow_internal: bool) -> bool:

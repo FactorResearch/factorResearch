@@ -62,6 +62,8 @@ class StatementProvenance:
     accounting_standard: str | None = None
     extraction_method: str | None = None
     normalization_method: str | None = None
+    fiscal_year: int | None = None
+    fiscal_period: str | None = None
 
 
 @dataclass(frozen=True)

@@ -156,7 +156,7 @@ def _load_facts(
     document_ids = {document.document_id for document in documents}
     period_keys = {(period.fiscal_year, period.fiscal_period) for period in periods}
     grouped: dict[tuple[str, int, str], dict] = {}
-    provenance_by_fact: dict[str, StatementProvenance] = {}
+    provenance_by_fact_period: dict[tuple[str, int, str], StatementProvenance] = {}
 
     for row in _read_csv(path):
         _assert_symbol(symbol, row, "facts CSV")
@@ -180,9 +180,11 @@ def _load_facts(
             "currency": (row.get("currency") or fallback_currency or "CAD").upper(),
         })
         item[fact_name] = _float_required(row.get("value"), f"value for {fact_name}")
-        provenance_by_fact.setdefault(fact_name, StatementProvenance(
+        provenance_by_fact_period.setdefault((fact_name, fiscal_year, fiscal_period), StatementProvenance(
             fact_name=fact_name,
             source_document_id=document_id,
+            fiscal_year=fiscal_year,
+            fiscal_period=fiscal_period,
             source_url=row.get("source_url") or row.get("url") or None,
             confidence=_confidence(row.get("confidence")),
             accounting_standard=row.get("accounting_standard") or None,
@@ -199,7 +201,7 @@ def _load_facts(
         _sort_statement_rows(statements["income"]),
         _sort_statement_rows(statements["balance"]),
         _sort_statement_rows(statements["cash_flow"]),
-        list(provenance_by_fact.values()),
+        list(provenance_by_fact_period.values()),
     )
 
 

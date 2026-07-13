@@ -390,6 +390,8 @@ Branch
 Primary sources to investigate
 
 -   SEDAR+
+-   SEDAR+ Data Distribution Service under a commercial data licence
+-   SEC EDGAR for Canadian cross-listed issuers with standardized annual XBRL
 -   issuer annual/interim reports
 -   TSX / TSXV listing and issuer metadata
 -   licensed provider only if it includes source-document provenance
@@ -402,6 +404,29 @@ Accounting and market issues
 -   Dual-listed issuers must map to one issuer identity.
 -   SEDAR+ does not provide the same simple CompanyFacts-style API as SEC
     EDGAR.
+-   Public SEDAR+ pages must not be scraped or used to construct the product
+    database. Full-market automation requires the licensed distribution feed
+    or a verified issuer-document pipeline.
+
+Implemented internal acquisition
+
+-   `python -m codes.workers.canada_ingest_worker --symbol SHOP.TO` acquires
+    eligible cross-listed issuers directly from official SEC endpoints and
+    writes normalized relational facts, source documents, per-period
+    provenance, shares, quality results and the public-confidence projection to
+    the market database without local JSON or CSV prerequisites.
+-   SEC ticker identity is checked against Canadian EDGAR incorporation/address
+    codes before any CompanyFacts import. Different dual-list symbols require
+    an explicit `--sec-ticker`; unresolved or non-Canadian collisions are
+    rejected without a database write.
+-   The adapter supports IFRS and US-GAAP, detects CAD or USD reporting units,
+    preserves restated annual contexts, extracts class-level shares from the
+    annual iXBRL filing when CompanyFacts omits dimensional share classes, and
+    refuses incomplete annual data.
+-   This path expands the verified internal audit set but does not satisfy full
+    TSX/TSXV coverage. Canada stays internal until at least 50 issuers, manual
+    audit sampling, coverage reporting, licensed redistribution review and all
+    market release gates pass.
 
 Release standard
 
