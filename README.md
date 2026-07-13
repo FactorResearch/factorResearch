@@ -476,9 +476,10 @@ Contact TMX Datalinx for issuer/security reference data, symbol status, corporat
 actions, and any delayed, end-of-day, or real-time market data required by the
 product:
 
-- Email: `marketdata@tmx.com`
-- [TMX Datalinx contact page](https://www.tmxinfoservices.com/contact-us)
-- [TMX pricing and contract documents](https://www.tmxinfoservices.com/market-data/pricing-and-contract-documents)
+- Who to email: TMX Datalinx Data Sales.
+- Email: `datasales@tmx.com`
+- [TMX Data Sales and product information](https://www.tmx.com/en/analytics/solutions)
+- [TMX Group contact directory](https://www.tmx.com/en/tmx-group/contact-us)
 
 Ask whether the application is an end user, vendor, distributor, or derived-data
 service under TMX's definitions. Do not assume that buying a data subscription
