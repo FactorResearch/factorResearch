@@ -2,6 +2,7 @@ import pandas as pd
 
 from codes import portfolio
 from codes.engine import institutional_portfolio
+from codes.services.permissions import Feature, PermissionResult
 
 
 def _history(start, step, periods=36):
@@ -106,3 +107,15 @@ def test_advanced_monte_carlo_chart_renders_all_methods():
     assert "Bootstrap median" in text
     assert "Fat-tail median" in text
     assert "Regime-aware median" in text
+
+
+def test_monte_carlo_plan_flag_separates_basic_and_pro():
+    from codes.app_modules.tabs import portfolio as portfolio_tab
+
+    basic = PermissionResult(True, Feature.PORTFOLIO_ANALYTICS, plan="free", status="trialing")
+    pro = PermissionResult(True, Feature.PORTFOLIO_ANALYTICS, plan="premium", status="active")
+    internal = PermissionResult(True, Feature.PORTFOLIO_ANALYTICS, plan="premium", status="internal")
+
+    assert portfolio_tab._use_pro_monte_carlo(basic) is False
+    assert portfolio_tab._use_pro_monte_carlo(pro) is True
+    assert portfolio_tab._use_pro_monte_carlo(internal) is True

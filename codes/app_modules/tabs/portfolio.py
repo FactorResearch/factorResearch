@@ -639,6 +639,13 @@ def _advanced_monte_carlo_chart(analytics: dict, port_name: str) -> html.Div:
     ])
 
 
+def _use_pro_monte_carlo(access) -> bool:
+    """Plan gate for V2.3 advanced Monte Carlo rendering."""
+    plan = str(getattr(access, "plan", "")).lower()
+    status = str(getattr(access, "status", "")).lower()
+    return plan == "premium" or status == "internal"
+
+
 def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.Div:
     """Weak-link analysis card (reused for side-by-side display)."""
     if bt.get("error"):
@@ -886,7 +893,9 @@ def run_simulation(n, active, compare):
                         className="text-danger"), None
     product_analytics.track_event(uid, "backtest_started", {"source": "portfolio", "portfolio_name": active, "compare": compare or ""})
 
-    def _build_sim_charts(port_name: str, color: str) -> list:
+    use_pro_monte_carlo = _use_pro_monte_carlo(access)
+
+    def _build_sim_charts(port_name: str, color: str, institutional_analytics: dict | None = None) -> list:
         sim = portfolio_engine.run_simulation(uid, port_name)
         if sim.get("error"):
             return [html.Div(f"❌ {sim['error']}", className="text-danger")]
@@ -950,7 +959,9 @@ def run_simulation(n, active, compare):
             fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
             components.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
         # ── Monte Carlo chart ──────────────────────────────────────────────
-        if not mc.get("error"):
+        if use_pro_monte_carlo and institutional_analytics:
+            components.append(_advanced_monte_carlo_chart(institutional_analytics, port_name))
+        elif not mc.get("error"):
             fig_mc = go.Figure()
             # SPY band (grey)
             fig_mc.add_trace(go.Scatter(
@@ -1135,12 +1146,13 @@ def run_simulation(n, active, compare):
         return result, None
     result = [
         html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
-        *_build_sim_charts(active, PALETTE[0]),
     ]
     p_obj = portfolio_engine.load_portfolio(uid, active)
+    institutional_analytics = None
     if p_obj:
         institutional_analytics = portfolio_engine.run_institutional_analytics(p_obj)
-        result.append(_advanced_monte_carlo_chart(institutional_analytics, active))
+    result.extend(_build_sim_charts(active, PALETTE[0], institutional_analytics))
+    if p_obj and institutional_analytics:
         result.append(_institutional_analytics_view(institutional_analytics))
     if not any(getattr(component, "className", None) == "text-danger"
                for component in result):
