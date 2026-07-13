@@ -3124,7 +3124,7 @@ ISSUE:
 
 # ISSUE_041 - Scalable chart rendering and graph artifact caching
 
-status: [ ]
+status: [x]
 
 category: performance / scalability / data-visualization
 
