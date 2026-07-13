@@ -133,6 +133,84 @@ CREATE TABLE IF NOT EXISTS composite_score_snapshots (
 CREATE INDEX IF NOT EXISTS idx_composite_snapshots_ticker_date
     ON composite_score_snapshots(ticker, snapshot_date DESC);
 
+CREATE TABLE IF NOT EXISTS canada_issuers (
+    symbol     TEXT PRIMARY KEY,
+    name       TEXT,
+    exchange   TEXT,
+    country    TEXT NOT NULL DEFAULT 'Canada',
+    currency   TEXT NOT NULL DEFAULT 'CAD',
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS canada_fiscal_periods (
+    symbol        TEXT NOT NULL,
+    fiscal_year   INTEGER NOT NULL,
+    fiscal_period TEXT NOT NULL,
+    period_end    TEXT NOT NULL,
+    currency      TEXT NOT NULL,
+    PRIMARY KEY (symbol, fiscal_year, fiscal_period)
+);
+
+CREATE TABLE IF NOT EXISTS canada_source_documents (
+    symbol      TEXT NOT NULL,
+    document_id TEXT NOT NULL,
+    source      TEXT NOT NULL,
+    url         TEXT,
+    filing_date TEXT,
+    period_end  TEXT,
+    form        TEXT,
+    confidence  TEXT NOT NULL,
+    ingested_at TEXT NOT NULL,
+    PRIMARY KEY (symbol, document_id)
+);
+
+CREATE TABLE IF NOT EXISTS canada_statement_facts (
+    symbol               TEXT NOT NULL,
+    statement_type       TEXT NOT NULL,
+    fact_name            TEXT NOT NULL,
+    fiscal_year          INTEGER NOT NULL,
+    fiscal_period        TEXT NOT NULL,
+    period_end           TEXT NOT NULL,
+    currency             TEXT NOT NULL,
+    value                DOUBLE PRECISION NOT NULL,
+    source_document_id   TEXT NOT NULL,
+    source_url           TEXT,
+    confidence           TEXT NOT NULL,
+    accounting_standard  TEXT,
+    extraction_method    TEXT,
+    normalization_method TEXT,
+    ingested_at          TEXT NOT NULL,
+    PRIMARY KEY (symbol, statement_type, fact_name, fiscal_year, fiscal_period)
+);
+
+CREATE INDEX IF NOT EXISTS idx_canada_statement_facts_symbol_year
+    ON canada_statement_facts(symbol, fiscal_year DESC);
+
+CREATE TABLE IF NOT EXISTS canada_shares_outstanding (
+    symbol             TEXT PRIMARY KEY,
+    shares_outstanding DOUBLE PRECISION NOT NULL,
+    as_of              TEXT NOT NULL,
+    source             TEXT NOT NULL,
+    updated_at         TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS canada_quality_reports (
+    symbol     TEXT PRIMARY KEY,
+    market     TEXT NOT NULL,
+    can_score  BOOLEAN NOT NULL,
+    confidence TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS canada_quality_issues (
+    symbol   TEXT NOT NULL,
+    code     TEXT NOT NULL,
+    field    TEXT,
+    severity TEXT NOT NULL,
+    message  TEXT NOT NULL,
+    PRIMARY KEY (symbol, code, field)
+);
+
 """
 _CREATE_USER_TABLES = """
 CREATE TABLE IF NOT EXISTS user_weights (
@@ -222,6 +300,133 @@ _SELECT_ANALYSIS = "SELECT data_json, updated_at FROM analysis_cache WHERE ticke
 _SELECT_ANALYSIS_TICKERS = "SELECT ticker FROM analysis_cache"
 _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
 _SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
+
+_UPSERT_CANADA_ISSUER = """
+INSERT INTO canada_issuers (symbol, name, exchange, country, currency, updated_at)
+VALUES (%(symbol)s, %(name)s, %(exchange)s, %(country)s, %(currency)s, %(updated_at)s)
+ON CONFLICT (symbol) DO UPDATE SET
+    name = excluded.name,
+    exchange = excluded.exchange,
+    country = excluded.country,
+    currency = excluded.currency,
+    updated_at = excluded.updated_at
+"""
+_DELETE_CANADA_PERIODS = "DELETE FROM canada_fiscal_periods WHERE symbol = %(symbol)s"
+_INSERT_CANADA_PERIOD = """
+INSERT INTO canada_fiscal_periods (symbol, fiscal_year, fiscal_period, period_end, currency)
+VALUES (%(symbol)s, %(fiscal_year)s, %(fiscal_period)s, %(period_end)s, %(currency)s)
+ON CONFLICT (symbol, fiscal_year, fiscal_period) DO UPDATE SET
+    period_end = excluded.period_end,
+    currency = excluded.currency
+"""
+_DELETE_CANADA_DOCUMENTS = "DELETE FROM canada_source_documents WHERE symbol = %(symbol)s"
+_INSERT_CANADA_DOCUMENT = """
+INSERT INTO canada_source_documents (
+    symbol, document_id, source, url, filing_date, period_end, form, confidence, ingested_at
+)
+VALUES (
+    %(symbol)s, %(document_id)s, %(source)s, %(url)s, %(filing_date)s,
+    %(period_end)s, %(form)s, %(confidence)s, %(ingested_at)s
+)
+ON CONFLICT (symbol, document_id) DO UPDATE SET
+    source = excluded.source,
+    url = excluded.url,
+    filing_date = excluded.filing_date,
+    period_end = excluded.period_end,
+    form = excluded.form,
+    confidence = excluded.confidence,
+    ingested_at = excluded.ingested_at
+"""
+_DELETE_CANADA_FACTS = "DELETE FROM canada_statement_facts WHERE symbol = %(symbol)s"
+_INSERT_CANADA_FACT = """
+INSERT INTO canada_statement_facts (
+    symbol, statement_type, fact_name, fiscal_year, fiscal_period, period_end,
+    currency, value, source_document_id, source_url, confidence,
+    accounting_standard, extraction_method, normalization_method, ingested_at
+)
+VALUES (
+    %(symbol)s, %(statement_type)s, %(fact_name)s, %(fiscal_year)s, %(fiscal_period)s,
+    %(period_end)s, %(currency)s, %(value)s, %(source_document_id)s, %(source_url)s,
+    %(confidence)s, %(accounting_standard)s, %(extraction_method)s,
+    %(normalization_method)s, %(ingested_at)s
+)
+ON CONFLICT (symbol, statement_type, fact_name, fiscal_year, fiscal_period) DO UPDATE SET
+    period_end = excluded.period_end,
+    currency = excluded.currency,
+    value = excluded.value,
+    source_document_id = excluded.source_document_id,
+    source_url = excluded.source_url,
+    confidence = excluded.confidence,
+    accounting_standard = excluded.accounting_standard,
+    extraction_method = excluded.extraction_method,
+    normalization_method = excluded.normalization_method,
+    ingested_at = excluded.ingested_at
+"""
+_UPSERT_CANADA_SHARES = """
+INSERT INTO canada_shares_outstanding (symbol, shares_outstanding, as_of, source, updated_at)
+VALUES (%(symbol)s, %(shares_outstanding)s, %(as_of)s, %(source)s, %(updated_at)s)
+ON CONFLICT (symbol) DO UPDATE SET
+    shares_outstanding = excluded.shares_outstanding,
+    as_of = excluded.as_of,
+    source = excluded.source,
+    updated_at = excluded.updated_at
+"""
+_UPSERT_CANADA_QUALITY = """
+INSERT INTO canada_quality_reports (symbol, market, can_score, confidence, updated_at)
+VALUES (%(symbol)s, %(market)s, %(can_score)s, %(confidence)s, %(updated_at)s)
+ON CONFLICT (symbol) DO UPDATE SET
+    market = excluded.market,
+    can_score = excluded.can_score,
+    confidence = excluded.confidence,
+    updated_at = excluded.updated_at
+"""
+_DELETE_CANADA_QUALITY_ISSUES = "DELETE FROM canada_quality_issues WHERE symbol = %(symbol)s"
+_INSERT_CANADA_QUALITY_ISSUE = """
+INSERT INTO canada_quality_issues (symbol, code, field, severity, message)
+VALUES (%(symbol)s, %(code)s, %(field)s, %(severity)s, %(message)s)
+ON CONFLICT (symbol, code, field) DO UPDATE SET
+    severity = excluded.severity,
+    message = excluded.message
+"""
+_SELECT_CANADA_ISSUER = "SELECT * FROM canada_issuers WHERE symbol = %(symbol)s"
+_SELECT_CANADA_PERIODS = """
+SELECT fiscal_year, fiscal_period, period_end, currency
+FROM canada_fiscal_periods
+WHERE symbol = %(symbol)s
+ORDER BY fiscal_year DESC, fiscal_period
+"""
+_SELECT_CANADA_FACTS = """
+SELECT *
+FROM canada_statement_facts
+WHERE symbol = %(symbol)s AND statement_type = %(statement_type)s
+ORDER BY fiscal_year DESC, fact_name
+"""
+_SELECT_CANADA_DOCUMENTS = """
+SELECT document_id, source, url, filing_date, period_end, form, confidence
+FROM canada_source_documents
+WHERE symbol = %(symbol)s
+ORDER BY filing_date DESC NULLS LAST, period_end DESC NULLS LAST, document_id
+"""
+_SELECT_CANADA_SHARES = """
+SELECT shares_outstanding, as_of, source
+FROM canada_shares_outstanding
+WHERE symbol = %(symbol)s
+"""
+_SELECT_CANADA_PROVENANCE = """
+SELECT DISTINCT ON (fact_name)
+    fact_name, source_document_id, source_url, confidence, accounting_standard,
+    extraction_method, normalization_method
+FROM canada_statement_facts
+WHERE symbol = %(symbol)s
+ORDER BY fact_name, fiscal_year DESC
+"""
+_SELECT_CANADA_QUALITY = "SELECT * FROM canada_quality_reports WHERE symbol = %(symbol)s"
+_SELECT_CANADA_QUALITY_ISSUES = """
+SELECT code, field, severity, message
+FROM canada_quality_issues
+WHERE symbol = %(symbol)s
+ORDER BY severity, code
+"""
 
 _UPSERT_SEC_8K = """
 INSERT INTO sec_8k_filings (
@@ -424,6 +629,226 @@ def get_sec_facts_meta(ticker: str) -> dict | None:
             {"ticker": ticker.upper()},
         ).fetchone()
     return dict(row) if row else None
+
+
+def upsert_canada_canonical_facts(symbol: str, financials, shares, quality_report) -> None:
+    """Persist normalized Canada facts in relational market-data tables."""
+    _ensure_init()
+    t = symbol.upper()
+    now = datetime.datetime.utcnow().isoformat()
+    company = financials.company
+    provenance_by_fact = {item.fact_name: item for item in financials.provenance}
+
+    with _conn() as con:
+        con.execute(_UPSERT_CANADA_ISSUER, {
+            "symbol": t,
+            "name": company.name,
+            "exchange": company.exchange,
+            "country": company.country or "Canada",
+            "currency": company.currency or "CAD",
+            "updated_at": now,
+        })
+
+        con.execute(_DELETE_CANADA_PERIODS, {"symbol": t})
+        for period in financials.periods:
+            con.execute(_INSERT_CANADA_PERIOD, {
+                "symbol": t,
+                "fiscal_year": period.fiscal_year,
+                "fiscal_period": period.fiscal_period,
+                "period_end": period.period_end,
+                "currency": period.currency or company.currency or "CAD",
+            })
+
+        con.execute(_DELETE_CANADA_DOCUMENTS, {"symbol": t})
+        for document in financials.source_documents:
+            con.execute(_INSERT_CANADA_DOCUMENT, {
+                "symbol": t,
+                "document_id": document.document_id,
+                "source": document.source,
+                "url": document.url,
+                "filing_date": document.filing_date,
+                "period_end": document.period_end,
+                "form": document.form,
+                "confidence": document.confidence,
+                "ingested_at": now,
+            })
+
+        con.execute(_DELETE_CANADA_FACTS, {"symbol": t})
+        for statement_type, rows in (
+            ("income", financials.income_statement),
+            ("balance", financials.balance_sheet),
+            ("cash_flow", financials.cash_flow),
+        ):
+            for fact in _canada_fact_rows(t, statement_type, rows, financials, provenance_by_fact, now):
+                con.execute(_INSERT_CANADA_FACT, fact)
+
+        if shares and shares.shares_outstanding and shares.as_of and shares.source:
+            con.execute(_UPSERT_CANADA_SHARES, {
+                "symbol": t,
+                "shares_outstanding": shares.shares_outstanding,
+                "as_of": shares.as_of,
+                "source": shares.source,
+                "updated_at": now,
+            })
+
+        con.execute(_UPSERT_CANADA_QUALITY, {
+            "symbol": t,
+            "market": quality_report.market,
+            "can_score": quality_report.can_score,
+            "confidence": quality_report.confidence,
+            "updated_at": now,
+        })
+        con.execute(_DELETE_CANADA_QUALITY_ISSUES, {"symbol": t})
+        for issue in quality_report.issues:
+            con.execute(_INSERT_CANADA_QUALITY_ISSUE, {
+                "symbol": t,
+                "code": issue.code,
+                "field": issue.field or "",
+                "severity": issue.severity,
+                "message": issue.message,
+            })
+
+
+def get_canada_company_profile(symbol: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_CANADA_ISSUER, {"symbol": symbol.upper()}).fetchone()
+    if not row:
+        return None
+    return {
+        "issuer_name": row["name"],
+        "exchange": row["exchange"],
+        "country": row["country"],
+        "currency": row["currency"],
+    }
+
+
+def get_canada_financial_periods(symbol: str) -> list[dict]:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_CANADA_PERIODS, {"symbol": symbol.upper()}).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_canada_statement_facts(symbol: str, statement_type: str) -> list[dict]:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(
+            _SELECT_CANADA_FACTS,
+            {"symbol": symbol.upper(), "statement_type": statement_type},
+        ).fetchall()
+    results: dict[tuple[int, str], dict] = {}
+    for row in rows:
+        key = (row["fiscal_year"], row["fiscal_period"])
+        item = results.setdefault(key, {
+            "fiscal_year": row["fiscal_year"],
+            "fiscal_period": row["fiscal_period"],
+            "period_end": row["period_end"],
+            "currency": row["currency"],
+        })
+        item[row["fact_name"]] = row["value"]
+    return list(results.values())
+
+
+def get_canada_filings(symbol: str) -> list[dict]:
+    return get_canada_source_documents(symbol)
+
+
+def get_canada_source_documents(symbol: str) -> list[dict]:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_CANADA_DOCUMENTS, {"symbol": symbol.upper()}).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_canada_shares_outstanding(symbol: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_CANADA_SHARES, {"symbol": symbol.upper()}).fetchone()
+    return dict(row) if row else None
+
+
+def get_canada_statement_provenance(symbol: str) -> list[dict]:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_CANADA_PROVENANCE, {"symbol": symbol.upper()}).fetchall()
+    return [dict(row) for row in rows]
+
+
+def get_canada_quality_report(symbol: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        report = con.execute(_SELECT_CANADA_QUALITY, {"symbol": symbol.upper()}).fetchone()
+        issues = con.execute(_SELECT_CANADA_QUALITY_ISSUES, {"symbol": symbol.upper()}).fetchall()
+    if not report:
+        return None
+    result = dict(report)
+    result["issues"] = [dict(issue) for issue in issues]
+    return result
+
+
+def _canada_fact_rows(
+    symbol: str,
+    statement_type: str,
+    rows,
+    financials,
+    provenance_by_fact: dict,
+    ingested_at: str,
+) -> list[dict]:
+    facts = []
+    for row in rows:
+        period = _canada_period_for_row(financials.periods, row)
+        if period is None:
+            continue
+        for fact_name, value in row.items():
+            if fact_name in {"fiscal_year", "year", "fiscal_period", "period", "period_end", "end", "end_date", "currency"}:
+                continue
+            numeric = _float_or_none(value)
+            provenance = provenance_by_fact.get(fact_name)
+            if numeric is None or provenance is None or not provenance.source_document_id:
+                continue
+            facts.append({
+                "symbol": symbol,
+                "statement_type": statement_type,
+                "fact_name": fact_name,
+                "fiscal_year": period.fiscal_year,
+                "fiscal_period": period.fiscal_period,
+                "period_end": period.period_end,
+                "currency": row.get("currency") or period.currency or financials.company.currency or "CAD",
+                "value": numeric,
+                "source_document_id": provenance.source_document_id,
+                "source_url": provenance.source_url,
+                "confidence": provenance.confidence,
+                "accounting_standard": provenance.accounting_standard,
+                "extraction_method": provenance.extraction_method,
+                "normalization_method": provenance.normalization_method,
+                "ingested_at": ingested_at,
+            })
+    return facts
+
+
+def _canada_period_for_row(periods, row: dict):
+    year = row.get("fiscal_year") or row.get("year")
+    end = row.get("period_end") or row.get("end") or row.get("end_date")
+    for period in periods:
+        if period.period_end == end or period.fiscal_year == year:
+            return period
+    return periods[0] if periods else None
+
+
+def _float_or_none(value) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
 
 _UPSERT_FACTOR_SCORE = """
 INSERT INTO factor_scores (ticker, factor_name, score, max_score, computed_at)

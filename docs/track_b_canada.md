@@ -40,3 +40,19 @@ The screener country selector will show Canada only when `CA` is enabled.
 Production data should be connected by implementing `CanadaDataSource` and
 injecting it into `CanadaProviderAdapter`. Do not add SEDAR+ scraping to model
 or analysis code.
+
+## Current Storage Path
+
+- Runtime Canada reads use `CanadaDatabaseDataSource`, which pulls normalized
+  issuer, period, statement fact, filing document, shares, and provenance rows
+  from the market database.
+- Canada facts are stored in relational tables:
+  `canada_issuers`, `canada_fiscal_periods`, `canada_statement_facts`,
+  `canada_source_documents`, `canada_shares_outstanding`,
+  `canada_quality_reports`, and `canada_quality_issues`.
+- New Canada data should enter through `ingest_verified_canada_financials()`
+  after source extraction has produced canonical financials with filing
+  documents and per-fact provenance.
+- Provider-normalized data remains internal-only unless explicitly ingested
+  with `allow_internal=True`; public scoring requires verified source
+  confidence and validation gates to pass.

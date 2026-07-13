@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 
 from .canada import CanadaProviderAdapter, is_canadian_symbol
+from .canada_db import CanadaDatabaseDataSource
 
 
 def _enabled_markets() -> set[str]:
@@ -23,7 +24,7 @@ def provider_for_symbol(symbol: str):
     if is_canadian_symbol(symbol):
         if not is_market_enabled("CA"):
             return None
-        return CanadaProviderAdapter()
+        return CanadaProviderAdapter(CanadaDatabaseDataSource())
     return None
 
 
