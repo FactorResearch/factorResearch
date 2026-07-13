@@ -1,6 +1,7 @@
 # Canada Branch Release Notes
 
 Status: internal validation; not approved for public Canada-market launch.
+There is no Canada launch date, and the committed market flag remains disabled.
 
 ## Added
 

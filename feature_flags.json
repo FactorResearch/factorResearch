@@ -2,7 +2,7 @@
   "flag": "INTERNAL",
   "markets": {
     "US": true,
-    "CA": true
+    "CA": false
   },
-  "_comment": "INTERNAL | BETA | V1 | V2 | ENTERPRISE. INTERNAL disables all billing checks (full access). NEVER push to main with flag=INTERNAL or flag=BETA — .githooks/pre-push blocks it."
+  "_comment": "Canada is internal-only with no launch date. Keep CA=false until README.md release gates have written approval. INTERNAL and BETA disable billing checks and must never be published; public tiers are V1, V2, or ENTERPRISE."
 }

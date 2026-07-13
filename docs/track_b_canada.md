@@ -2,6 +2,10 @@
 
 Branch: `canada`
 
+Status: internal validation only. There is no Canada launch date. The committed
+public-safe default is `"CA": false`; see the root `README.md` for every
+blocking release gate.
+
 ## Scope
 
 This branch starts Track B with Canada as the first Tier 1 market. It adds the
@@ -12,7 +16,7 @@ analysis engines to Canadian provider payloads.
 
 Canada is controlled by `feature_flags.json`.
 
-Enable it with:
+For local internal validation only, temporarily enable it with:
 
 ```json
 {
@@ -27,6 +31,9 @@ The screener market navigation will show Canada only when `CA` is enabled.
 Canada has the canonical route `/screener/ca`; refreshing, bookmarking or
 sharing that route must retain the Canada market. The route selects the market
 but does not bypass Canada data-quality or release gates.
+
+Set `CA` back to `false` before committing or deploying. Enabling navigation is
+not legal, data, product, or release approval.
 
 ## Market Routing Contract
 
