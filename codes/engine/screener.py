@@ -133,9 +133,16 @@ def get_sector_avg_return_12m(sector: str, exclude_symbol: str | None = None) ->
         return None
     return sum(r["return_12m"] for r in rows) / len(rows)
 
-def _minimal_row(symbol: str, name: str = "", sector: str = "") -> dict:
+def _minimal_row(
+    symbol: str,
+    name: str = "",
+    sector: str = "",
+    *,
+    market_code: str = "US",
+) -> dict:
     """Create a placeholder screener row before a stock has been analysed."""
     return {
+        "market_code":      market_code.upper(),
         "symbol":          symbol,
         "name":            name or symbol,
         "sector":          sector,
@@ -173,6 +180,7 @@ def _score_one(symbol: str) -> dict | None:
         comp = scorer.fundamental_only(g, q)
 
         return {
+            "market_code":      "US",
             "symbol":          symbol,
             "name":            security.sanitize_string(cached_sec.get("name", symbol), max_length=200) if cached_sec.get("name") else symbol,
             "sector":          cached_sec.get("sector", "Unknown"),
@@ -229,7 +237,7 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
     Updates: graham_pct, quality_pct, composite_score, verdict, graham_number,
              price, market_cap, and sets analyzed=True.
 
-    Also persists key metrics to the SQLite value_metrics store.
+    Also persists key metrics to the market database.
     """
     g        = analysis_result.get("graham",   {})
     q        = analysis_result.get("quality",  {})
@@ -253,6 +261,7 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
     buffett_iv    = b.get("intrinsic_value")
 
     new_row_data = {
+        "market_code":      str(analysis_result.get("market_code") or "US").upper(),
         "graham_pct":      round(g_pct, 1),
         "quality_pct":     round(q_pct, 1),
         "composite_score": round(composite, 1),
@@ -269,11 +278,15 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
 
     with _lock:
         for i, row in enumerate(_progress["results"]):
-            if row["symbol"] == symbol:
+            if (
+                row["symbol"] == symbol
+                and str(row.get("market_code") or "US").upper() == new_row_data["market_code"]
+            ):
                 _progress["results"][i] = {**row, **new_row_data}
                 break
         else:
             _progress["results"].append({
+                "market_code":      new_row_data["market_code"],
                 "symbol":          symbol,
                 "name":            analysis_result.get("name",   symbol),
                 "sector":          analysis_result.get("sector", "Unknown"),
@@ -288,7 +301,7 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
                 **new_row_data,
             })
 
-    # ── Persist to SQLite (non-blocking; failures are logged, not raised) ─────
+    # Persist to Postgres (non-blocking; failures are logged, not raised).
     try:
         _sync_progress_to_redis()
         db.upsert(
@@ -341,7 +354,7 @@ def load_universe_background(tickers: list[str] | None = None):
         rows = []
         for sym in symbols:
             entry = (ticker_map or {}).get(sym) or {}
-            rows.append(_minimal_row(sym, name=entry.get("name", sym)))
+            rows.append(_minimal_row(sym, name=entry.get("name", sym), market_code="US"))
 
         with _lock:
             _progress["results"] = rows
@@ -352,14 +365,15 @@ def load_universe_background(tickers: list[str] | None = None):
         _enrich_from_analysis_cache()
         _enrich_from_db()
         company_metadata.start_background_refresh(symbols)
+        _merge_persisted_market_screener_rows(backfill=True)
 
         with _lock:
             _progress["results"].sort(
                 key=lambda x: x.get("composite_score") or 0, reverse=True
             )
             _progress["running"] = False
-            _sync_progress_to_redis()
             _progress["phase"]   = ""
+        _sync_progress_to_redis()
         # ISSUE_001: instant, network-free sector fill from metadata cache
         with _lock:
             company_metadata.enrich_rows(_progress["results"])
@@ -375,7 +389,10 @@ def _enrich_from_analysis_cache() -> int:
         return 0
 
     with _lock:
-        idx_map = {row["symbol"]: i for i, row in enumerate(_progress["results"])}
+        idx_map = {
+            (str(row.get("market_code") or "US").upper(), row["symbol"]): i
+            for i, row in enumerate(_progress["results"])
+        }
 
     enriched = 0
     for sym in analysis_symbols:
@@ -414,11 +431,12 @@ def _enrich_from_analysis_cache() -> int:
         }
 
         with _lock:
-            i = idx_map.get(sym)
+            i = idx_map.get(("US", sym))
             if i is not None:
                 _progress["results"][i] = {**_progress["results"][i], **patch}
             else:
                 _progress["results"].append({
+                    "market_code":      "US",
                     "symbol":          sym,
                     "name":            data.get("name",   sym),
                     "sector":          data.get("sector", "Unknown"),
@@ -442,13 +460,13 @@ def _enrich_from_analysis_cache() -> int:
                     "analyzed":        True,
                     "updated_at":      updated_at,
                 })
-                idx_map[sym] = len(_progress["results"]) - 1
+                idx_map[("US", sym)] = len(_progress["results"]) - 1
         enriched += 1
 
     if enriched:
         print(f"  ✅ Enriched {enriched} screener rows from analysis DB")
     return enriched
-# ── Enrich screener rows from SQLite value_metrics store ─────────────────────
+# ── Enrich U.S. screener rows from persisted value_metrics ───────────────────
 
 def _enrich_from_db() -> int:
     """
@@ -456,8 +474,8 @@ def _enrich_from_db() -> int:
     composite_score, verdict) to screener rows that have not yet been enriched
     by a full analysis in the current session.
 
-    This is a fallback for rows whose JSON analysis cache has been cleared
-    but whose SQLite row remains intact.
+    This is a fallback for rows whose analysis cache has been cleared but whose
+    relational value_metrics row remains intact.
 
     Returns the number of rows enriched.
     """
@@ -471,13 +489,16 @@ def _enrich_from_db() -> int:
         return 0
 
     with _lock:
-        idx_map = {row["symbol"]: i for i, row in enumerate(_progress["results"])}
+        idx_map = {
+            (str(row.get("market_code") or "US").upper(), row["symbol"]): i
+            for i, row in enumerate(_progress["results"])
+        }
 
     enriched = 0
     for db_row in db_rows:
         sym = db_row["ticker"]
         with _lock:
-            i = idx_map.get(sym)
+            i = idx_map.get(("US", sym))
             if i is None:
                 continue
             existing = _progress["results"][i]
@@ -501,8 +522,65 @@ def _enrich_from_db() -> int:
                 enriched += 1
 
     if enriched:
-        print(f"  ✅ Enriched {enriched} screener rows from SQLite store")
+        print(f"  ✅ Enriched {enriched} screener rows from market DB")
     return enriched
+
+
+def _merge_persisted_market_screener_rows(*, backfill: bool = False) -> int:
+    """Merge enabled non-SEC market projections into shared screener state."""
+    try:
+        from codes.data.providers.registry import (
+            backfill_enabled_market_screener_projections,
+            configured_market_codes,
+        )
+
+        if backfill:
+            stats = backfill_enabled_market_screener_projections()
+            if stats["created"]:
+                print(
+                    f"  ✅ Backfilled {stats['created']} market screener "
+                    "projection(s) from existing verified facts"
+                )
+        market_codes = configured_market_codes()
+        persisted = db.get_market_screener_rows(market_codes)
+    except Exception as exc:
+        print(f"  [Market screener] load failed: {exc}")
+        return 0
+
+    with _lock:
+        index = {
+            (str(row.get("market_code") or "US").upper(), row["symbol"]): i
+            for i, row in enumerate(_progress["results"])
+        }
+        for persisted_row in persisted:
+            market_code = str(persisted_row.get("market_code") or "").upper()
+            symbol = str(persisted_row.get("symbol") or "").upper()
+            if not market_code or not symbol:
+                continue
+            normalized = {
+                **_minimal_row(
+                    symbol,
+                    name=persisted_row.get("name") or symbol,
+                    sector=persisted_row.get("sector") or "Unknown",
+                    market_code=market_code,
+                ),
+                **persisted_row,
+                "market_code": market_code,
+                "symbol": symbol,
+                "name": persisted_row.get("name") or symbol,
+                "sector": persisted_row.get("sector") or "Unknown",
+            }
+            key = (market_code, symbol)
+            existing_index = index.get(key)
+            if existing_index is None:
+                _progress["results"].append(normalized)
+                index[key] = len(_progress["results"]) - 1
+            elif not _progress["results"][existing_index].get("analyzed"):
+                _progress["results"][existing_index] = {
+                    **_progress["results"][existing_index],
+                    **normalized,
+                }
+    return len(persisted)
 
 
 # ── Load cached only (instant startup) ───────────────────────────────────────
@@ -510,36 +588,46 @@ def _enrich_from_db() -> int:
 def load_cached_only() -> list[dict]:
     """
     Build screener rows for the full universe instantly (no network).
-    Enriches already-analysed stocks from the analysis cache and SQLite store.
+    Enriches U.S. rows and merges verified projections for enabled markets.
     """
-    symbols = universe.get_universe()
-    if not symbols:
-        return []
+    symbols = universe.get_universe() or []
 
-    try:
-        ticker_map = sec_data.get_ticker_map()
-    except Exception:
-        ticker_map = {}
+    ticker_map = {}
+    if symbols:
+        try:
+            ticker_map = sec_data.get_ticker_map()
+        except Exception:
+            ticker_map = {}
 
     rows = [
-        _minimal_row(s, name=((ticker_map or {}).get(s) or {}).get("name", s))
+        _minimal_row(
+            s,
+            name=((ticker_map or {}).get(s) or {}).get("name", s),
+            market_code="US",
+        )
         for s in symbols
     ]
 
     with _lock:
         _progress["results"] = rows
 
-    _enrich_from_analysis_cache()
-    _enrich_from_db()
+    if symbols:
+        _enrich_from_analysis_cache()
+        _enrich_from_db()
+        company_metadata.enrich_rows(_progress["results"])
+
+    _merge_persisted_market_screener_rows(backfill=True)
 
     with _lock:
         _progress["results"].sort(
             key=lambda x: x.get("composite_score") or 0, reverse=True
         )
 
-    company_metadata.enrich_rows(_progress["results"])
     n    = len(_progress["results"])
-    n_db = db.count()
-    print(f"  ✅ {n} stocks ready ({n_db} rows in SQLite store)")
+    try:
+        n_db = db.count()
+    except Exception:
+        n_db = 0
+    print(f"  ✅ {n} stocks ready ({n_db} value rows in market DB)")
     _sync_progress_to_redis()
     return _progress["results"]

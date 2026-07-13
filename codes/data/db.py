@@ -133,25 +133,29 @@ CREATE TABLE IF NOT EXISTS composite_score_snapshots (
 CREATE INDEX IF NOT EXISTS idx_composite_snapshots_ticker_date
     ON composite_score_snapshots(ticker, snapshot_date DESC);
 
-CREATE TABLE IF NOT EXISTS canada_issuers (
-    symbol     TEXT PRIMARY KEY,
-    name       TEXT,
-    exchange   TEXT,
-    country    TEXT NOT NULL DEFAULT 'Canada',
-    currency   TEXT NOT NULL DEFAULT 'CAD',
-    updated_at TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS market_issuers (
+    market_code TEXT NOT NULL,
+    symbol      TEXT NOT NULL,
+    name        TEXT,
+    exchange    TEXT,
+    country     TEXT,
+    currency    TEXT,
+    updated_at  TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol)
 );
 
-CREATE TABLE IF NOT EXISTS canada_fiscal_periods (
-    symbol        TEXT NOT NULL,
-    fiscal_year   INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS market_fiscal_periods (
+    market_code  TEXT NOT NULL,
+    symbol       TEXT NOT NULL,
+    fiscal_year  INTEGER NOT NULL,
     fiscal_period TEXT NOT NULL,
-    period_end    TEXT NOT NULL,
-    currency      TEXT NOT NULL,
-    PRIMARY KEY (symbol, fiscal_year, fiscal_period)
+    period_end   TEXT NOT NULL,
+    currency     TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol, fiscal_year, fiscal_period)
 );
 
-CREATE TABLE IF NOT EXISTS canada_source_documents (
+CREATE TABLE IF NOT EXISTS market_source_documents (
+    market_code TEXT NOT NULL,
     symbol      TEXT NOT NULL,
     document_id TEXT NOT NULL,
     source      TEXT NOT NULL,
@@ -161,55 +165,166 @@ CREATE TABLE IF NOT EXISTS canada_source_documents (
     form        TEXT,
     confidence  TEXT NOT NULL,
     ingested_at TEXT NOT NULL,
-    PRIMARY KEY (symbol, document_id)
+    PRIMARY KEY (market_code, symbol, document_id)
 );
 
-CREATE TABLE IF NOT EXISTS canada_statement_facts (
-    symbol               TEXT NOT NULL,
-    statement_type       TEXT NOT NULL,
-    fact_name            TEXT NOT NULL,
-    fiscal_year          INTEGER NOT NULL,
-    fiscal_period        TEXT NOT NULL,
-    period_end           TEXT NOT NULL,
-    currency             TEXT NOT NULL,
-    value                DOUBLE PRECISION NOT NULL,
-    source_document_id   TEXT NOT NULL,
-    source_url           TEXT,
-    confidence           TEXT NOT NULL,
-    accounting_standard  TEXT,
-    extraction_method    TEXT,
+CREATE TABLE IF NOT EXISTS market_statement_facts (
+    market_code         TEXT NOT NULL,
+    symbol              TEXT NOT NULL,
+    statement_type      TEXT NOT NULL,
+    fact_name           TEXT NOT NULL,
+    fiscal_year         INTEGER NOT NULL,
+    fiscal_period       TEXT NOT NULL,
+    period_end          TEXT NOT NULL,
+    currency            TEXT NOT NULL,
+    value               DOUBLE PRECISION NOT NULL,
+    source_document_id  TEXT NOT NULL,
+    source_url          TEXT,
+    confidence          TEXT NOT NULL,
+    accounting_standard TEXT,
+    extraction_method   TEXT,
     normalization_method TEXT,
-    ingested_at          TEXT NOT NULL,
-    PRIMARY KEY (symbol, statement_type, fact_name, fiscal_year, fiscal_period)
+    ingested_at         TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol, statement_type, fact_name, fiscal_year, fiscal_period)
 );
 
-CREATE INDEX IF NOT EXISTS idx_canada_statement_facts_symbol_year
-    ON canada_statement_facts(symbol, fiscal_year DESC);
+CREATE INDEX IF NOT EXISTS idx_market_statement_facts_market_symbol_year
+    ON market_statement_facts(market_code, symbol, fiscal_year DESC);
 
-CREATE TABLE IF NOT EXISTS canada_shares_outstanding (
-    symbol             TEXT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS market_shares_outstanding (
+    market_code       TEXT NOT NULL,
+    symbol            TEXT NOT NULL,
     shares_outstanding DOUBLE PRECISION NOT NULL,
-    as_of              TEXT NOT NULL,
-    source             TEXT NOT NULL,
-    updated_at         TEXT NOT NULL
+    as_of             TEXT NOT NULL,
+    source            TEXT NOT NULL,
+    updated_at        TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol)
 );
 
-CREATE TABLE IF NOT EXISTS canada_quality_reports (
-    symbol     TEXT PRIMARY KEY,
-    market     TEXT NOT NULL,
-    can_score  BOOLEAN NOT NULL,
-    confidence TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+CREATE TABLE IF NOT EXISTS market_quality_reports (
+    market_code TEXT NOT NULL,
+    symbol      TEXT NOT NULL,
+    can_score   BOOLEAN NOT NULL,
+    confidence  TEXT NOT NULL,
+    updated_at  TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol)
 );
 
-CREATE TABLE IF NOT EXISTS canada_quality_issues (
-    symbol   TEXT NOT NULL,
-    code     TEXT NOT NULL,
-    field    TEXT,
-    severity TEXT NOT NULL,
-    message  TEXT NOT NULL,
-    PRIMARY KEY (symbol, code, field)
+CREATE TABLE IF NOT EXISTS market_quality_issues (
+    market_code TEXT NOT NULL,
+    symbol      TEXT NOT NULL,
+    code        TEXT NOT NULL,
+    field       TEXT NOT NULL DEFAULT '',
+    severity    TEXT NOT NULL,
+    message     TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol, code, field)
 );
+
+CREATE TABLE IF NOT EXISTS market_screener_rows (
+    market_code       TEXT NOT NULL,
+    symbol            TEXT NOT NULL,
+    name              TEXT,
+    sector            TEXT,
+    currency          TEXT,
+    graham_score      REAL NOT NULL,
+    graham_max        REAL NOT NULL,
+    graham_pct        REAL NOT NULL,
+    quality_score     REAL NOT NULL,
+    quality_max       REAL NOT NULL,
+    quality_pct       REAL NOT NULL,
+    composite_score   REAL NOT NULL,
+    verdict           TEXT NOT NULL,
+    verdict_label     TEXT NOT NULL,
+    roe               REAL,
+    op_margin         REAL,
+    eps_years         INTEGER NOT NULL DEFAULT 0,
+    div_years         INTEGER NOT NULL DEFAULT 0,
+    graham_number     REAL,
+    buffett_iv        REAL,
+    market_cap        REAL,
+    price             REAL,
+    analyzed          BOOLEAN NOT NULL DEFAULT FALSE,
+    score_scope       TEXT NOT NULL DEFAULT 'fundamental',
+    projection_version TEXT NOT NULL DEFAULT 'fundamental-v1',
+    data_confidence   TEXT NOT NULL,
+    updated_at        TEXT NOT NULL,
+    PRIMARY KEY (market_code, symbol)
+);
+
+ALTER TABLE market_screener_rows
+    ADD COLUMN IF NOT EXISTS projection_version TEXT NOT NULL DEFAULT 'fundamental-v1';
+
+CREATE INDEX IF NOT EXISTS idx_market_screener_rows_market_score
+    ON market_screener_rows(market_code, composite_score DESC);
+
+-- Backward-compatible, idempotent migration from the Canada v1 tables. The
+-- old tables are deliberately retained until operators verify the migration.
+DO $market_migration$
+BEGIN
+    IF to_regclass('canada_issuers') IS NOT NULL THEN
+        INSERT INTO market_issuers
+            (market_code, symbol, name, exchange, country, currency, updated_at)
+        SELECT 'CA', symbol, name, exchange, country, currency, updated_at
+        FROM canada_issuers
+        ON CONFLICT (market_code, symbol) DO NOTHING;
+    END IF;
+
+    IF to_regclass('canada_fiscal_periods') IS NOT NULL THEN
+        INSERT INTO market_fiscal_periods
+            (market_code, symbol, fiscal_year, fiscal_period, period_end, currency)
+        SELECT 'CA', symbol, fiscal_year, fiscal_period, period_end, currency
+        FROM canada_fiscal_periods
+        ON CONFLICT (market_code, symbol, fiscal_year, fiscal_period) DO NOTHING;
+    END IF;
+
+    IF to_regclass('canada_source_documents') IS NOT NULL THEN
+        INSERT INTO market_source_documents
+            (market_code, symbol, document_id, source, url, filing_date, period_end, form, confidence, ingested_at)
+        SELECT 'CA', symbol, document_id, source, url, filing_date, period_end, form, confidence, ingested_at
+        FROM canada_source_documents
+        ON CONFLICT (market_code, symbol, document_id) DO NOTHING;
+    END IF;
+
+    IF to_regclass('canada_statement_facts') IS NOT NULL THEN
+        INSERT INTO market_statement_facts (
+            market_code, symbol, statement_type, fact_name, fiscal_year, fiscal_period,
+            period_end, currency, value, source_document_id, source_url, confidence,
+            accounting_standard, extraction_method, normalization_method, ingested_at
+        )
+        SELECT
+            'CA', symbol, statement_type, fact_name, fiscal_year, fiscal_period,
+            period_end, currency, value, source_document_id, source_url, confidence,
+            accounting_standard, extraction_method, normalization_method, ingested_at
+        FROM canada_statement_facts
+        ON CONFLICT (market_code, symbol, statement_type, fact_name, fiscal_year, fiscal_period)
+        DO NOTHING;
+    END IF;
+
+    IF to_regclass('canada_shares_outstanding') IS NOT NULL THEN
+        INSERT INTO market_shares_outstanding
+            (market_code, symbol, shares_outstanding, as_of, source, updated_at)
+        SELECT 'CA', symbol, shares_outstanding, as_of, source, updated_at
+        FROM canada_shares_outstanding
+        ON CONFLICT (market_code, symbol) DO NOTHING;
+    END IF;
+
+    IF to_regclass('canada_quality_reports') IS NOT NULL THEN
+        INSERT INTO market_quality_reports
+            (market_code, symbol, can_score, confidence, updated_at)
+        SELECT 'CA', symbol, can_score, confidence, updated_at
+        FROM canada_quality_reports
+        ON CONFLICT (market_code, symbol) DO NOTHING;
+    END IF;
+
+    IF to_regclass('canada_quality_issues') IS NOT NULL THEN
+        INSERT INTO market_quality_issues
+            (market_code, symbol, code, field, severity, message)
+        SELECT 'CA', symbol, code, COALESCE(field, ''), severity, message
+        FROM canada_quality_issues
+        ON CONFLICT (market_code, symbol, code, field) DO NOTHING;
+    END IF;
+END
+$market_migration$;
 
 """
 _CREATE_USER_TABLES = """
@@ -301,34 +416,42 @@ _SELECT_ANALYSIS_TICKERS = "SELECT ticker FROM analysis_cache"
 _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
 _SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
 
-_UPSERT_CANADA_ISSUER = """
-INSERT INTO canada_issuers (symbol, name, exchange, country, currency, updated_at)
-VALUES (%(symbol)s, %(name)s, %(exchange)s, %(country)s, %(currency)s, %(updated_at)s)
-ON CONFLICT (symbol) DO UPDATE SET
+_UPSERT_MARKET_ISSUER = """
+INSERT INTO market_issuers (market_code, symbol, name, exchange, country, currency, updated_at)
+VALUES (%(market_code)s, %(symbol)s, %(name)s, %(exchange)s, %(country)s, %(currency)s, %(updated_at)s)
+ON CONFLICT (market_code, symbol) DO UPDATE SET
     name = excluded.name,
     exchange = excluded.exchange,
     country = excluded.country,
     currency = excluded.currency,
     updated_at = excluded.updated_at
 """
-_DELETE_CANADA_PERIODS = "DELETE FROM canada_fiscal_periods WHERE symbol = %(symbol)s"
-_INSERT_CANADA_PERIOD = """
-INSERT INTO canada_fiscal_periods (symbol, fiscal_year, fiscal_period, period_end, currency)
-VALUES (%(symbol)s, %(fiscal_year)s, %(fiscal_period)s, %(period_end)s, %(currency)s)
-ON CONFLICT (symbol, fiscal_year, fiscal_period) DO UPDATE SET
+_DELETE_MARKET_PERIODS = """
+DELETE FROM market_fiscal_periods
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_INSERT_MARKET_PERIOD = """
+INSERT INTO market_fiscal_periods
+    (market_code, symbol, fiscal_year, fiscal_period, period_end, currency)
+VALUES
+    (%(market_code)s, %(symbol)s, %(fiscal_year)s, %(fiscal_period)s, %(period_end)s, %(currency)s)
+ON CONFLICT (market_code, symbol, fiscal_year, fiscal_period) DO UPDATE SET
     period_end = excluded.period_end,
     currency = excluded.currency
 """
-_DELETE_CANADA_DOCUMENTS = "DELETE FROM canada_source_documents WHERE symbol = %(symbol)s"
-_INSERT_CANADA_DOCUMENT = """
-INSERT INTO canada_source_documents (
-    symbol, document_id, source, url, filing_date, period_end, form, confidence, ingested_at
+_DELETE_MARKET_DOCUMENTS = """
+DELETE FROM market_source_documents
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_INSERT_MARKET_DOCUMENT = """
+INSERT INTO market_source_documents (
+    market_code, symbol, document_id, source, url, filing_date, period_end, form, confidence, ingested_at
 )
 VALUES (
-    %(symbol)s, %(document_id)s, %(source)s, %(url)s, %(filing_date)s,
+    %(market_code)s, %(symbol)s, %(document_id)s, %(source)s, %(url)s, %(filing_date)s,
     %(period_end)s, %(form)s, %(confidence)s, %(ingested_at)s
 )
-ON CONFLICT (symbol, document_id) DO UPDATE SET
+ON CONFLICT (market_code, symbol, document_id) DO UPDATE SET
     source = excluded.source,
     url = excluded.url,
     filing_date = excluded.filing_date,
@@ -337,20 +460,23 @@ ON CONFLICT (symbol, document_id) DO UPDATE SET
     confidence = excluded.confidence,
     ingested_at = excluded.ingested_at
 """
-_DELETE_CANADA_FACTS = "DELETE FROM canada_statement_facts WHERE symbol = %(symbol)s"
-_INSERT_CANADA_FACT = """
-INSERT INTO canada_statement_facts (
-    symbol, statement_type, fact_name, fiscal_year, fiscal_period, period_end,
+_DELETE_MARKET_FACTS = """
+DELETE FROM market_statement_facts
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_INSERT_MARKET_FACT = """
+INSERT INTO market_statement_facts (
+    market_code, symbol, statement_type, fact_name, fiscal_year, fiscal_period, period_end,
     currency, value, source_document_id, source_url, confidence,
     accounting_standard, extraction_method, normalization_method, ingested_at
 )
 VALUES (
-    %(symbol)s, %(statement_type)s, %(fact_name)s, %(fiscal_year)s, %(fiscal_period)s,
+    %(market_code)s, %(symbol)s, %(statement_type)s, %(fact_name)s, %(fiscal_year)s, %(fiscal_period)s,
     %(period_end)s, %(currency)s, %(value)s, %(source_document_id)s, %(source_url)s,
     %(confidence)s, %(accounting_standard)s, %(extraction_method)s,
     %(normalization_method)s, %(ingested_at)s
 )
-ON CONFLICT (symbol, statement_type, fact_name, fiscal_year, fiscal_period) DO UPDATE SET
+ON CONFLICT (market_code, symbol, statement_type, fact_name, fiscal_year, fiscal_period) DO UPDATE SET
     period_end = excluded.period_end,
     currency = excluded.currency,
     value = excluded.value,
@@ -362,70 +488,161 @@ ON CONFLICT (symbol, statement_type, fact_name, fiscal_year, fiscal_period) DO U
     normalization_method = excluded.normalization_method,
     ingested_at = excluded.ingested_at
 """
-_UPSERT_CANADA_SHARES = """
-INSERT INTO canada_shares_outstanding (symbol, shares_outstanding, as_of, source, updated_at)
-VALUES (%(symbol)s, %(shares_outstanding)s, %(as_of)s, %(source)s, %(updated_at)s)
-ON CONFLICT (symbol) DO UPDATE SET
+_UPSERT_MARKET_SHARES = """
+INSERT INTO market_shares_outstanding
+    (market_code, symbol, shares_outstanding, as_of, source, updated_at)
+VALUES
+    (%(market_code)s, %(symbol)s, %(shares_outstanding)s, %(as_of)s, %(source)s, %(updated_at)s)
+ON CONFLICT (market_code, symbol) DO UPDATE SET
     shares_outstanding = excluded.shares_outstanding,
     as_of = excluded.as_of,
     source = excluded.source,
     updated_at = excluded.updated_at
 """
-_UPSERT_CANADA_QUALITY = """
-INSERT INTO canada_quality_reports (symbol, market, can_score, confidence, updated_at)
-VALUES (%(symbol)s, %(market)s, %(can_score)s, %(confidence)s, %(updated_at)s)
-ON CONFLICT (symbol) DO UPDATE SET
-    market = excluded.market,
+_DELETE_MARKET_SHARES = """
+DELETE FROM market_shares_outstanding
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_UPSERT_MARKET_QUALITY = """
+INSERT INTO market_quality_reports (market_code, symbol, can_score, confidence, updated_at)
+VALUES (%(market_code)s, %(symbol)s, %(can_score)s, %(confidence)s, %(updated_at)s)
+ON CONFLICT (market_code, symbol) DO UPDATE SET
     can_score = excluded.can_score,
     confidence = excluded.confidence,
     updated_at = excluded.updated_at
 """
-_DELETE_CANADA_QUALITY_ISSUES = "DELETE FROM canada_quality_issues WHERE symbol = %(symbol)s"
-_INSERT_CANADA_QUALITY_ISSUE = """
-INSERT INTO canada_quality_issues (symbol, code, field, severity, message)
-VALUES (%(symbol)s, %(code)s, %(field)s, %(severity)s, %(message)s)
-ON CONFLICT (symbol, code, field) DO UPDATE SET
+_DELETE_MARKET_QUALITY_ISSUES = """
+DELETE FROM market_quality_issues
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_INSERT_MARKET_QUALITY_ISSUE = """
+INSERT INTO market_quality_issues (market_code, symbol, code, field, severity, message)
+VALUES (%(market_code)s, %(symbol)s, %(code)s, %(field)s, %(severity)s, %(message)s)
+ON CONFLICT (market_code, symbol, code, field) DO UPDATE SET
     severity = excluded.severity,
     message = excluded.message
 """
-_SELECT_CANADA_ISSUER = "SELECT * FROM canada_issuers WHERE symbol = %(symbol)s"
-_SELECT_CANADA_PERIODS = """
+_SELECT_MARKET_ISSUER = """
+SELECT * FROM market_issuers
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_SELECT_MARKET_PERIODS = """
 SELECT fiscal_year, fiscal_period, period_end, currency
-FROM canada_fiscal_periods
-WHERE symbol = %(symbol)s
+FROM market_fiscal_periods
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
 ORDER BY fiscal_year DESC, fiscal_period
 """
-_SELECT_CANADA_FACTS = """
+_SELECT_MARKET_FACTS = """
 SELECT *
-FROM canada_statement_facts
-WHERE symbol = %(symbol)s AND statement_type = %(statement_type)s
+FROM market_statement_facts
+WHERE market_code = %(market_code)s
+  AND symbol = %(symbol)s
+  AND statement_type = %(statement_type)s
 ORDER BY fiscal_year DESC, fact_name
 """
-_SELECT_CANADA_DOCUMENTS = """
+_SELECT_MARKET_DOCUMENTS = """
 SELECT document_id, source, url, filing_date, period_end, form, confidence
-FROM canada_source_documents
-WHERE symbol = %(symbol)s
+FROM market_source_documents
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
 ORDER BY filing_date DESC NULLS LAST, period_end DESC NULLS LAST, document_id
 """
-_SELECT_CANADA_SHARES = """
+_SELECT_MARKET_SHARES = """
 SELECT shares_outstanding, as_of, source
-FROM canada_shares_outstanding
-WHERE symbol = %(symbol)s
+FROM market_shares_outstanding
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
 """
-_SELECT_CANADA_PROVENANCE = """
+_SELECT_MARKET_PROVENANCE = """
 SELECT DISTINCT ON (fact_name)
     fact_name, source_document_id, source_url, confidence, accounting_standard,
     extraction_method, normalization_method
-FROM canada_statement_facts
-WHERE symbol = %(symbol)s
+FROM market_statement_facts
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
 ORDER BY fact_name, fiscal_year DESC
 """
-_SELECT_CANADA_QUALITY = "SELECT * FROM canada_quality_reports WHERE symbol = %(symbol)s"
-_SELECT_CANADA_QUALITY_ISSUES = """
+_SELECT_MARKET_QUALITY = """
+SELECT * FROM market_quality_reports
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_SELECT_MARKET_QUALITY_ISSUES = """
 SELECT code, field, severity, message
-FROM canada_quality_issues
-WHERE symbol = %(symbol)s
+FROM market_quality_issues
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
 ORDER BY severity, code
+"""
+
+_UPSERT_MARKET_SCREENER_ROW = """
+INSERT INTO market_screener_rows (
+    market_code, symbol, name, sector, currency,
+    graham_score, graham_max, graham_pct,
+    quality_score, quality_max, quality_pct,
+    composite_score, verdict, verdict_label, roe, op_margin,
+    eps_years, div_years, graham_number, buffett_iv, market_cap, price,
+    analyzed, score_scope, projection_version, data_confidence, updated_at
+)
+VALUES (
+    %(market_code)s, %(symbol)s, %(name)s, %(sector)s, %(currency)s,
+    %(graham_score)s, %(graham_max)s, %(graham_pct)s,
+    %(quality_score)s, %(quality_max)s, %(quality_pct)s,
+    %(composite_score)s, %(verdict)s, %(verdict_label)s, %(roe)s, %(op_margin)s,
+    %(eps_years)s, %(div_years)s, %(graham_number)s, %(buffett_iv)s,
+    %(market_cap)s, %(price)s, %(analyzed)s, %(score_scope)s,
+    %(projection_version)s,
+    %(data_confidence)s, %(updated_at)s
+)
+ON CONFLICT (market_code, symbol) DO UPDATE SET
+    name = excluded.name,
+    sector = excluded.sector,
+    currency = excluded.currency,
+    graham_score = excluded.graham_score,
+    graham_max = excluded.graham_max,
+    graham_pct = excluded.graham_pct,
+    quality_score = excluded.quality_score,
+    quality_max = excluded.quality_max,
+    quality_pct = excluded.quality_pct,
+    composite_score = excluded.composite_score,
+    verdict = excluded.verdict,
+    verdict_label = excluded.verdict_label,
+    roe = excluded.roe,
+    op_margin = excluded.op_margin,
+    eps_years = excluded.eps_years,
+    div_years = excluded.div_years,
+    graham_number = excluded.graham_number,
+    buffett_iv = excluded.buffett_iv,
+    market_cap = excluded.market_cap,
+    price = excluded.price,
+    analyzed = excluded.analyzed,
+    score_scope = excluded.score_scope,
+    projection_version = excluded.projection_version,
+    data_confidence = excluded.data_confidence,
+    updated_at = excluded.updated_at
+"""
+_DELETE_MARKET_SCREENER_ROW = """
+DELETE FROM market_screener_rows
+WHERE market_code = %(market_code)s AND symbol = %(symbol)s
+"""
+_SELECT_MARKET_SCREENER_ROWS = """
+SELECT * FROM market_screener_rows
+ORDER BY market_code, composite_score DESC, symbol
+"""
+_SELECT_MARKET_SCREENER_ROWS_FOR_MARKETS = """
+SELECT * FROM market_screener_rows
+WHERE market_code = ANY(%(market_codes)s)
+ORDER BY market_code, composite_score DESC, symbol
+"""
+_SELECT_MARKET_SYMBOLS_MISSING_SCREENER = """
+SELECT quality.market_code, quality.symbol
+FROM market_quality_reports AS quality
+LEFT JOIN market_screener_rows AS screener
+  ON screener.market_code = quality.market_code
+ AND screener.symbol = quality.symbol
+WHERE quality.can_score = TRUE
+  AND quality.confidence = ANY(%(confidences)s)
+  AND quality.market_code = ANY(%(market_codes)s)
+  AND (
+      screener.symbol IS NULL
+      OR screener.projection_version <> %(projection_version)s
+  )
+ORDER BY quality.market_code, quality.symbol
 """
 
 _UPSERT_SEC_8K = """
@@ -631,38 +848,53 @@ def get_sec_facts_meta(ticker: str) -> dict | None:
     return dict(row) if row else None
 
 
-def upsert_canada_canonical_facts(symbol: str, financials, shares, quality_report) -> None:
-    """Persist normalized Canada facts in relational market-data tables."""
+def upsert_market_canonical_facts(
+    market_code: str,
+    symbol: str,
+    financials,
+    shares,
+    quality_report,
+    *,
+    screener_row: dict | None = None,
+) -> None:
+    """Persist one normalized issuer and its public screener projection atomically."""
     _ensure_init()
+    market = _normalize_market_code(market_code)
     t = symbol.upper()
+    report_market = _normalize_market_code(quality_report.market)
+    if report_market != market:
+        raise ValueError(
+            f"Quality report market {report_market} does not match target market {market}."
+        )
     now = datetime.datetime.utcnow().isoformat()
     company = financials.company
     provenance_by_fact = {item.fact_name: item for item in financials.provenance}
+    issuer = {"market_code": market, "symbol": t}
 
     with _conn() as con:
-        con.execute(_UPSERT_CANADA_ISSUER, {
-            "symbol": t,
+        con.execute(_UPSERT_MARKET_ISSUER, {
+            **issuer,
             "name": company.name,
             "exchange": company.exchange,
-            "country": company.country or "Canada",
-            "currency": company.currency or "CAD",
+            "country": company.country,
+            "currency": company.currency,
             "updated_at": now,
         })
 
-        con.execute(_DELETE_CANADA_PERIODS, {"symbol": t})
+        con.execute(_DELETE_MARKET_PERIODS, issuer)
         for period in financials.periods:
-            con.execute(_INSERT_CANADA_PERIOD, {
-                "symbol": t,
+            con.execute(_INSERT_MARKET_PERIOD, {
+                **issuer,
                 "fiscal_year": period.fiscal_year,
                 "fiscal_period": period.fiscal_period,
                 "period_end": period.period_end,
-                "currency": period.currency or company.currency or "CAD",
+                "currency": period.currency or company.currency,
             })
 
-        con.execute(_DELETE_CANADA_DOCUMENTS, {"symbol": t})
+        con.execute(_DELETE_MARKET_DOCUMENTS, issuer)
         for document in financials.source_documents:
-            con.execute(_INSERT_CANADA_DOCUMENT, {
-                "symbol": t,
+            con.execute(_INSERT_MARKET_DOCUMENT, {
+                **issuer,
                 "document_id": document.document_id,
                 "source": document.source,
                 "url": document.url,
@@ -673,47 +905,83 @@ def upsert_canada_canonical_facts(symbol: str, financials, shares, quality_repor
                 "ingested_at": now,
             })
 
-        con.execute(_DELETE_CANADA_FACTS, {"symbol": t})
+        con.execute(_DELETE_MARKET_FACTS, issuer)
         for statement_type, rows in (
             ("income", financials.income_statement),
             ("balance", financials.balance_sheet),
             ("cash_flow", financials.cash_flow),
         ):
-            for fact in _canada_fact_rows(t, statement_type, rows, financials, provenance_by_fact, now):
-                con.execute(_INSERT_CANADA_FACT, fact)
+            for fact in _market_fact_rows(
+                market,
+                t,
+                statement_type,
+                rows,
+                financials,
+                provenance_by_fact,
+                now,
+            ):
+                con.execute(_INSERT_MARKET_FACT, fact)
 
+        con.execute(_DELETE_MARKET_SHARES, issuer)
         if shares and shares.shares_outstanding and shares.as_of and shares.source:
-            con.execute(_UPSERT_CANADA_SHARES, {
-                "symbol": t,
+            con.execute(_UPSERT_MARKET_SHARES, {
+                **issuer,
                 "shares_outstanding": shares.shares_outstanding,
                 "as_of": shares.as_of,
                 "source": shares.source,
                 "updated_at": now,
             })
 
-        con.execute(_UPSERT_CANADA_QUALITY, {
-            "symbol": t,
-            "market": quality_report.market,
+        con.execute(_UPSERT_MARKET_QUALITY, {
+            **issuer,
             "can_score": quality_report.can_score,
             "confidence": quality_report.confidence,
             "updated_at": now,
         })
-        con.execute(_DELETE_CANADA_QUALITY_ISSUES, {"symbol": t})
+        con.execute(_DELETE_MARKET_QUALITY_ISSUES, issuer)
         for issue in quality_report.issues:
-            con.execute(_INSERT_CANADA_QUALITY_ISSUE, {
-                "symbol": t,
+            con.execute(_INSERT_MARKET_QUALITY_ISSUE, {
+                **issuer,
                 "code": issue.code,
                 "field": issue.field or "",
                 "severity": issue.severity,
                 "message": issue.message,
             })
 
+        # A failed or newly incomplete import must remove any older public row.
+        con.execute(_DELETE_MARKET_SCREENER_ROW, issuer)
+        if quality_report.can_score and screener_row is not None:
+            con.execute(
+                _UPSERT_MARKET_SCREENER_ROW,
+                _market_screener_params(market, t, screener_row, now),
+            )
 
-def get_canada_company_profile(symbol: str) -> dict | None:
+
+def upsert_canada_canonical_facts(
+    symbol: str,
+    financials,
+    shares,
+    quality_report,
+    *,
+    screener_row: dict | None = None,
+) -> None:
+    """Backward-compatible Canada wrapper around generic market storage."""
+    upsert_market_canonical_facts(
+        "CA",
+        symbol,
+        financials,
+        shares,
+        quality_report,
+        screener_row=screener_row,
+    )
+
+
+def get_market_company_profile(market_code: str, symbol: str) -> dict | None:
+    params = _market_key(market_code, symbol)
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        row = con.execute(_SELECT_CANADA_ISSUER, {"symbol": symbol.upper()}).fetchone()
+        row = con.execute(_SELECT_MARKET_ISSUER, params).fetchone()
     if not row:
         return None
     return {
@@ -724,22 +992,36 @@ def get_canada_company_profile(symbol: str) -> dict | None:
     }
 
 
-def get_canada_financial_periods(symbol: str) -> list[dict]:
+def get_canada_company_profile(symbol: str) -> dict | None:
+    return get_market_company_profile("CA", symbol)
+
+
+def get_market_financial_periods(market_code: str, symbol: str) -> list[dict]:
+    params = _market_key(market_code, symbol)
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        rows = con.execute(_SELECT_CANADA_PERIODS, {"symbol": symbol.upper()}).fetchall()
+        rows = con.execute(_SELECT_MARKET_PERIODS, params).fetchall()
     return [dict(row) for row in rows]
 
 
-def get_canada_statement_facts(symbol: str, statement_type: str) -> list[dict]:
+def get_canada_financial_periods(symbol: str) -> list[dict]:
+    return get_market_financial_periods("CA", symbol)
+
+
+def get_market_statement_facts(
+    market_code: str,
+    symbol: str,
+    statement_type: str,
+) -> list[dict]:
+    params = {
+        **_market_key(market_code, symbol),
+        "statement_type": statement_type,
+    }
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        rows = con.execute(
-            _SELECT_CANADA_FACTS,
-            {"symbol": symbol.upper(), "statement_type": statement_type},
-        ).fetchall()
+        rows = con.execute(_SELECT_MARKET_FACTS, params).fetchall()
     results: dict[tuple[int, str], dict] = {}
     for row in rows:
         key = (row["fiscal_year"], row["fiscal_period"])
@@ -753,40 +1035,60 @@ def get_canada_statement_facts(symbol: str, statement_type: str) -> list[dict]:
     return list(results.values())
 
 
+def get_canada_statement_facts(symbol: str, statement_type: str) -> list[dict]:
+    return get_market_statement_facts("CA", symbol, statement_type)
+
+
 def get_canada_filings(symbol: str) -> list[dict]:
     return get_canada_source_documents(symbol)
 
 
-def get_canada_source_documents(symbol: str) -> list[dict]:
+def get_market_source_documents(market_code: str, symbol: str) -> list[dict]:
+    params = _market_key(market_code, symbol)
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        rows = con.execute(_SELECT_CANADA_DOCUMENTS, {"symbol": symbol.upper()}).fetchall()
+        rows = con.execute(_SELECT_MARKET_DOCUMENTS, params).fetchall()
     return [dict(row) for row in rows]
 
 
-def get_canada_shares_outstanding(symbol: str) -> dict | None:
+def get_canada_source_documents(symbol: str) -> list[dict]:
+    return get_market_source_documents("CA", symbol)
+
+
+def get_market_shares_outstanding(market_code: str, symbol: str) -> dict | None:
+    params = _market_key(market_code, symbol)
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        row = con.execute(_SELECT_CANADA_SHARES, {"symbol": symbol.upper()}).fetchone()
+        row = con.execute(_SELECT_MARKET_SHARES, params).fetchone()
     return dict(row) if row else None
 
 
-def get_canada_statement_provenance(symbol: str) -> list[dict]:
+def get_canada_shares_outstanding(symbol: str) -> dict | None:
+    return get_market_shares_outstanding("CA", symbol)
+
+
+def get_market_statement_provenance(market_code: str, symbol: str) -> list[dict]:
+    params = _market_key(market_code, symbol)
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        rows = con.execute(_SELECT_CANADA_PROVENANCE, {"symbol": symbol.upper()}).fetchall()
+        rows = con.execute(_SELECT_MARKET_PROVENANCE, params).fetchall()
     return [dict(row) for row in rows]
 
 
-def get_canada_quality_report(symbol: str) -> dict | None:
+def get_canada_statement_provenance(symbol: str) -> list[dict]:
+    return get_market_statement_provenance("CA", symbol)
+
+
+def get_market_quality_report(market_code: str, symbol: str) -> dict | None:
+    params = _market_key(market_code, symbol)
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        report = con.execute(_SELECT_CANADA_QUALITY, {"symbol": symbol.upper()}).fetchone()
-        issues = con.execute(_SELECT_CANADA_QUALITY_ISSUES, {"symbol": symbol.upper()}).fetchall()
+        report = con.execute(_SELECT_MARKET_QUALITY, params).fetchone()
+        issues = con.execute(_SELECT_MARKET_QUALITY_ISSUES, params).fetchall()
     if not report:
         return None
     result = dict(report)
@@ -794,7 +1096,70 @@ def get_canada_quality_report(symbol: str) -> dict | None:
     return result
 
 
-def _canada_fact_rows(
+def get_canada_quality_report(symbol: str) -> dict | None:
+    return get_market_quality_report("CA", symbol)
+
+
+def get_market_screener_rows(market_codes: list[str] | tuple[str, ...] | None = None) -> list[dict]:
+    """Return durable public screener projections from the market database."""
+    _ensure_init()
+    sql = _SELECT_MARKET_SCREENER_ROWS
+    params = None
+    if market_codes is not None:
+        normalized = sorted({_normalize_market_code(code) for code in market_codes})
+        if not normalized:
+            return []
+        sql = _SELECT_MARKET_SCREENER_ROWS_FOR_MARKETS
+        params = {"market_codes": normalized}
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(sql, params).fetchall()
+    return [dict(row) for row in rows]
+
+
+def list_market_symbols_missing_screener(
+    market_codes: list[str] | tuple[str, ...],
+    confidences: list[str] | tuple[str, ...],
+    projection_version: str,
+) -> list[dict]:
+    """Return verified issuers that need a backward-compatible projection."""
+    markets = sorted({_normalize_market_code(code) for code in market_codes})
+    if not markets or not confidences:
+        return []
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_MARKET_SYMBOLS_MISSING_SCREENER, {
+            "market_codes": markets,
+            "confidences": list(confidences),
+            "projection_version": projection_version,
+        }).fetchall()
+    return [dict(row) for row in rows]
+
+
+def upsert_market_screener_row(market_code: str, symbol: str, row: dict) -> None:
+    """Persist a typed screener projection without rewriting canonical facts."""
+    _ensure_init()
+    market = _normalize_market_code(market_code)
+    ticker = str(symbol or "").strip().upper()
+    if not ticker:
+        raise ValueError("Market screener symbol is required.")
+    now = datetime.datetime.utcnow().isoformat()
+    with _conn() as con:
+        con.execute(
+            _UPSERT_MARKET_SCREENER_ROW,
+            _market_screener_params(market, ticker, row, now),
+        )
+
+
+def delete_market_screener_row(market_code: str, symbol: str) -> None:
+    _ensure_init()
+    with _conn() as con:
+        con.execute(_DELETE_MARKET_SCREENER_ROW, _market_key(market_code, symbol))
+
+
+def _market_fact_rows(
+    market_code: str,
     symbol: str,
     statement_type: str,
     rows,
@@ -804,7 +1169,7 @@ def _canada_fact_rows(
 ) -> list[dict]:
     facts = []
     for row in rows:
-        period = _canada_period_for_row(financials.periods, row)
+        period = _market_period_for_row(financials.periods, row)
         if period is None:
             continue
         for fact_name, value in row.items():
@@ -815,13 +1180,14 @@ def _canada_fact_rows(
             if numeric is None or provenance is None or not provenance.source_document_id:
                 continue
             facts.append({
+                "market_code": market_code,
                 "symbol": symbol,
                 "statement_type": statement_type,
                 "fact_name": fact_name,
                 "fiscal_year": period.fiscal_year,
                 "fiscal_period": period.fiscal_period,
                 "period_end": period.period_end,
-                "currency": row.get("currency") or period.currency or financials.company.currency or "CAD",
+                "currency": row.get("currency") or period.currency or financials.company.currency,
                 "value": numeric,
                 "source_document_id": provenance.source_document_id,
                 "source_url": provenance.source_url,
@@ -834,7 +1200,7 @@ def _canada_fact_rows(
     return facts
 
 
-def _canada_period_for_row(periods, row: dict):
+def _market_period_for_row(periods, row: dict):
     year = row.get("fiscal_year") or row.get("year")
     end = row.get("period_end") or row.get("end") or row.get("end_date")
     for period in periods:
@@ -848,6 +1214,78 @@ def _float_or_none(value) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _normalize_market_code(value: str) -> str:
+    code = str(value or "").strip().upper()
+    if len(code) != 2 or not code.isalpha():
+        raise ValueError(f"Invalid ISO market code: {value!r}.")
+    return code
+
+
+def _market_key(market_code: str, symbol: str) -> dict[str, str]:
+    ticker = str(symbol or "").strip().upper()
+    if not ticker:
+        raise ValueError("Market symbol is required.")
+    return {
+        "market_code": _normalize_market_code(market_code),
+        "symbol": ticker,
+    }
+
+
+def _market_screener_params(
+    market_code: str,
+    symbol: str,
+    row: dict,
+    updated_at: str,
+) -> dict:
+    required = (
+        "graham_score",
+        "graham_max",
+        "graham_pct",
+        "quality_score",
+        "quality_max",
+        "quality_pct",
+        "composite_score",
+        "verdict",
+        "verdict_label",
+        "data_confidence",
+    )
+    missing = [key for key in required if row.get(key) is None]
+    if missing:
+        raise ValueError(
+            "Market screener projection is missing required fields: "
+            + ", ".join(missing)
+        )
+    return {
+        "market_code": _normalize_market_code(market_code),
+        "symbol": symbol.upper(),
+        "name": row.get("name") or symbol.upper(),
+        "sector": row.get("sector"),
+        "currency": row.get("currency"),
+        "graham_score": row["graham_score"],
+        "graham_max": row["graham_max"],
+        "graham_pct": row["graham_pct"],
+        "quality_score": row["quality_score"],
+        "quality_max": row["quality_max"],
+        "quality_pct": row["quality_pct"],
+        "composite_score": row["composite_score"],
+        "verdict": row["verdict"],
+        "verdict_label": row["verdict_label"],
+        "roe": row.get("roe"),
+        "op_margin": row.get("op_margin"),
+        "eps_years": int(row.get("eps_years") or 0),
+        "div_years": int(row.get("div_years") or 0),
+        "graham_number": row.get("graham_number"),
+        "buffett_iv": row.get("buffett_iv"),
+        "market_cap": row.get("market_cap"),
+        "price": row.get("price"),
+        "analyzed": bool(row.get("analyzed", False)),
+        "score_scope": row.get("score_scope") or "fundamental",
+        "projection_version": row.get("projection_version") or "fundamental-v1",
+        "data_confidence": row["data_confidence"],
+        "updated_at": row.get("updated_at") or updated_at,
+    }
 
 
 _UPSERT_FACTOR_SCORE = """

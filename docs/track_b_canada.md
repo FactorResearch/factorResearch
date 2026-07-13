@@ -65,10 +65,20 @@ or analysis code.
 - Runtime Canada reads use `CanadaDatabaseDataSource`, which pulls normalized
   issuer, period, statement fact, filing document, shares, and provenance rows
   from the market database.
-- Canada facts are stored in relational tables:
-  `canada_issuers`, `canada_fiscal_periods`, `canada_statement_facts`,
-  `canada_source_documents`, `canada_shares_outstanding`,
-  `canada_quality_reports`, and `canada_quality_issues`.
+- All countries use the database configured by `DATABASE_MARKET_URL`; user and
+  account state remains in `DATABASE_USERS_URL`.
+- Country data shares normalized relational tables keyed by `market_code`:
+  `market_issuers`, `market_fiscal_periods`, `market_statement_facts`,
+  `market_source_documents`, `market_shares_outstanding`,
+  `market_quality_reports`, and `market_quality_issues`.
+- Public, quality-approved screener projections use typed columns in
+  `market_screener_rows`. No market payload or screener row is persisted as a
+  JSON file or JSON database column.
+- Existing `canada_*` tables are copied into the generic tables idempotently at
+  database initialization. They remain untouched as rollback data, and missing
+  public screener rows are calculated from those verified facts at app startup.
+  Screener rows carry a projection version; bumping it recalculates stale rows
+  from canonical facts without a user analysis rerun or source re-import.
 - New Canada data should enter through `ingest_verified_canada_financials()`
   after source extraction has produced canonical financials with filing
   documents and per-fact provenance.
@@ -76,12 +86,27 @@ or analysis code.
   with `allow_internal=True`; public scoring requires verified source
   confidence and validation gates to pass.
 
+## Database Boundary
+
+Use one physical market database and shared tables keyed by `market_code` for
+Canada, the United States, the United Kingdom, France, and later markets. This
+keeps cross-market queries and migrations consistent without creating a pool,
+backup job, and schema lifecycle for every country. PostgreSQL table
+partitioning by `market_code` can be added when measured volume requires it.
+
+Use a separate physical country database only when a source licence prohibits
+co-mingling, a jurisdiction imposes data-residency requirements, or production
+load demonstrates that independent scaling is necessary. Provider adapters and
+the market-code storage API preserve that future split boundary.
+
 ## Verified CSV Import
 
 The first production ingestion boundary is a verified CSV export bundle. This
 is for licensed feed exports, issuer-extracted financial statements, or an
 internal SEDAR+ document extraction job after it has produced structured facts.
 The importer does not scrape SEDAR+ and does not write JSON data files.
+Successful public-confidence imports write canonical facts and their screener
+projection in one transaction, so the Canada tab is populated after refresh.
 
 Run:
 

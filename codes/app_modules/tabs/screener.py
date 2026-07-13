@@ -363,15 +363,23 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         # Graham Number cell — populated after full analysis
         gn    = r.get("graham_number")
         price = r.get("price")
-        if gn:
-            intrinsic_score = min(105, max(0, int((gn or 0) / (price or 1) * 50))) if gn and price else 0
+        currency = r.get("currency") or "USD"
+        grade = None
+        intrinsic_score = None
+        if gn and price:
+            intrinsic_score = min(105, max(0, int(gn / price * 50)))
             grade = "A" if intrinsic_score >= 80 else "B" if intrinsic_score >= 65 else "C" if intrinsic_score >= 50 else "D" if intrinsic_score >= 35 else "F"
-            grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED, "F": RED}.get(grade, MUTED)
             grade_class = {"A": "clr-green", "B": "clr-blue", "C": "clr-amber", "D": "clr-red", "F": "clr-red"}.get(grade, "clr-muted")
             gn_cell = html.Td([
                 html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
                 html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
             ], title=f"Intrinsic Value Estimate · #{intrinsic_score}/105")
+        elif gn:
+            gn_cell = html.Td(
+                f"{currency} {gn:,.2f}",
+                className="text-xs",
+                title="Fundamental fair value; live price not loaded",
+            )
         else:
             gn_cell = html.Td("—", className="text-xs text-muted",
                               title="Run full analysis to calculate Intrinsic Value")
@@ -409,7 +417,6 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
         ]))
         # ── Accordion item (mobile) ─────────────────────────────────────
-        acc_gn_color  = (GREEN if (price and gn  and price <= gn)  else MUTED) if gn  else MUTED
         acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
         acc_biv_class = "clr-green" if (price and biv and price <= biv) else "clr-muted"
         acc_rows = [
@@ -424,7 +431,10 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                                 className=f"score-pill {get_score_class(r['composite_score'])}")],
                      className="accordion-row"),
             html.Div([html.Span("Intrinsic",  className="accordion-label"),
-                      html.Span(f"{grade} {intrinsic_score}/{105}"  if gn  else "—",
+                      html.Span(
+                          f"{grade} {intrinsic_score}/105"
+                          if gn and price
+                          else f"{currency} {gn:,.2f}" if gn else "—",
                                 className="accordion-value")],  className="accordion-row"),
             html.Div([html.Span("Moat", className="accordion-label"),
                       html.Span(f"${biv:.0f}" if biv else "—",

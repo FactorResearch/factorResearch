@@ -183,6 +183,25 @@ Legacy scoring-input bridge
 ↓
 Analysis engines
 
+Market data storage
+
+-   Use one physical `factorresearch_market` PostgreSQL database for market
+    data and keep user/account data in the separate users database.
+-   Store canonical international data in shared relational `market_*` tables
+    keyed by `market_code`; do not create one database or one table family per
+    country and do not persist market payloads as JSON files.
+-   Store public screener projections in typed relational columns and create
+    them in the same transaction as a quality-approved canonical import.
+-   On deployment, migrate legacy country tables idempotently and backfill
+    missing or version-stale projections from verified facts. Users must not
+    rerun analyses to receive a new market feature.
+-   PostgreSQL partitioning by `market_code` is the first scale-out option.
+    Split a country into its own physical database only for licensing
+    isolation, data-residency obligations, or demonstrated production load.
+-   Provider adapters and market-keyed repository APIs must hide physical
+    placement so a later database split does not change analysis engines or UI
+    callbacks.
+
 Market discovery and routing
 
 -   `codes/app_modules/screener_markets.py` is the UI market registry.

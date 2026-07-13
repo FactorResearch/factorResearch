@@ -171,6 +171,8 @@ def test_canada_verified_data_builds_score_ready_facts():
     assert result.sec_facts["revenue"][0]["source_document_id"] == "sedar-2025-ar"
     assert result.sec_facts["net_inc"][0]["accounting_standard"] == "IFRS"
     assert result.sec_facts["shares"][0]["source"] == "fixture"
+    assert result.sec_facts["bvps"][0]["value"] == 500_000 / 1234
+    assert result.sec_facts["bvps"][0]["normalization_method"] == "equity_divided_by_shares_outstanding"
 
 
 def test_canada_provider_normalized_data_is_internal_only():

@@ -27,6 +27,7 @@ FIELD_ALIASES = {
     "revenue": ("revenue", "sales"),
     "earnings": ("earnings", "net_income", "net_inc"),
     "net_inc": ("net_inc", "net_income", "earnings"),
+    "eps": ("eps", "basic_eps", "diluted_eps", "earnings_per_share"),
     "op_income": ("op_income", "operating_income"),
     "ebit": ("ebit",),
     "cur_ast": ("cur_ast", "current_assets"),
@@ -36,6 +37,7 @@ FIELD_ALIASES = {
     "tot_lib": ("tot_lib", "total_liabilities", "liabilities"),
     "total_assets": ("total_assets", "assets"),
     "equity": ("equity", "shareholders_equity", "total_equity"),
+    "bvps": ("bvps", "book_value_per_share"),
     "ppe": ("ppe", "ppe_net", "property_plant_equipment"),
     "retained_earnings": ("retained_earnings",),
     "op_cf": ("op_cf", "operating_cash_flow", "cashflow"),
@@ -173,7 +175,30 @@ def _to_sec_facts(
         "source": shares.source,
         "confidence": report.confidence,
     }]
+    if "bvps" not in sec_facts:
+        derived_bvps = _derive_latest_bvps(sec_facts, shares)
+        if derived_bvps:
+            sec_facts["bvps"] = [derived_bvps]
     return sec_facts
+
+
+def _derive_latest_bvps(
+    sec_facts: dict[str, Any],
+    shares: CanonicalSharesOutstanding,
+) -> dict[str, Any] | None:
+    equity = (sec_facts.get("equity") or [None])[0]
+    share_count = shares.shares_outstanding
+    if not equity or not share_count or share_count <= 0:
+        return None
+    value = equity.get("value")
+    if value is None:
+        return None
+    return {
+        **equity,
+        "value": value / share_count,
+        "source": shares.source,
+        "normalization_method": "equity_divided_by_shares_outstanding",
+    }
 
 
 def _records_for_field(financials: CanonicalFinancials, field: str) -> list[dict[str, Any]]:

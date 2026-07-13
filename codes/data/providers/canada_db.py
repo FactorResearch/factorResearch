@@ -8,7 +8,12 @@ from codes.data import db
 
 from . import CanonicalFinancials, CanonicalSharesOutstanding
 from .canada import CanadaDataSource, normalize_canada_symbol
-from .canada_normalization import CanadaNormalizationResult, build_canada_scoring_facts
+from .canada_normalization import (
+    PUBLIC_CONFIDENCE,
+    CanadaNormalizationResult,
+    build_canada_scoring_facts,
+)
+from .screener_projection import build_fundamental_screener_projection
 
 
 class CanadaDatabaseDataSource(CanadaDataSource):
@@ -60,13 +65,51 @@ def ingest_verified_canada_financials(
     source = _SingleIssuerCanadaSource(normalized_symbol, financials, shares)
     provider = CanadaProviderAdapter(source)
     result = build_canada_scoring_facts(provider, normalized_symbol, allow_internal=allow_internal)
+    screener_row = _public_screener_projection(result, financials)
     db.upsert_canada_canonical_facts(
         normalized_symbol,
         financials,
         shares,
         result.quality_report,
+        screener_row=screener_row,
     )
     return result
+
+
+def materialize_canada_screener_projection(symbol: str) -> bool:
+    """Backfill a verified Canada row from already-persisted canonical facts."""
+    normalized_symbol = normalize_canada_symbol(symbol)
+    provider = CanadaProviderAdapter(CanadaDatabaseDataSource())
+    result = build_canada_scoring_facts(provider, normalized_symbol)
+    if not result.can_score or result.quality_report.confidence not in PUBLIC_CONFIDENCE:
+        db.delete_market_screener_row("CA", normalized_symbol)
+        return False
+
+    financials = provider.get_financials(normalized_symbol)
+    row = _public_screener_projection(result, financials)
+    if row is None:
+        db.delete_market_screener_row("CA", normalized_symbol)
+        return False
+    db.upsert_market_screener_row("CA", normalized_symbol, row)
+    return True
+
+
+def _public_screener_projection(
+    result: CanadaNormalizationResult,
+    financials: CanonicalFinancials,
+) -> dict | None:
+    if not result.can_score or result.quality_report.confidence not in PUBLIC_CONFIDENCE:
+        return None
+    company = financials.company
+    return build_fundamental_screener_projection(
+        market_code="CA",
+        symbol=result.symbol,
+        name=company.name,
+        sector=None,
+        currency=company.currency or "CAD",
+        sec_facts=result.sec_facts,
+        data_confidence=result.quality_report.confidence,
+    )
 
 
 class _SingleIssuerCanadaSource:

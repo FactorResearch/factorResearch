@@ -31,6 +31,7 @@ from codes.data.providers.canada_ingestion import (  # noqa: E402
     CanadaVerifiedCsvBundle,
     import_canada_verified_csv_bundle,
 )
+from codes.data.providers.canada_normalization import PUBLIC_CONFIDENCE  # noqa: E402
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -62,9 +63,15 @@ def run_from_args(args: argparse.Namespace) -> int:
         bundle,
         allow_internal=args.allow_internal,
     )
-    status = "score_ready" if result.can_score else "stored_quality_failed"
+    if result.can_score and result.quality_report.confidence in PUBLIC_CONFIDENCE:
+        status = "public_score_ready"
+    elif result.can_score:
+        status = "stored_internal_only"
+    else:
+        status = "stored_quality_failed"
     print(
         f"[CanadaIngest] {result.symbol} {status} "
+        "target=market_db "
         f"confidence={result.quality_report.confidence} "
         f"issues={len(result.quality_report.issues)}"
     )

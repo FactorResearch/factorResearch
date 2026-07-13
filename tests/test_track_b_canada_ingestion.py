@@ -125,7 +125,10 @@ def test_canada_verified_csv_import_persists_without_json_files(tmp_path, monkey
         return ingest_verified_canada_financials(symbol, financials, shares, allow_internal=allow_internal)
 
     monkeypatch.setattr("codes.data.providers.canada_ingestion.ingest_verified_canada_financials", _save)
-    monkeypatch.setattr("codes.data.providers.canada_db.db.upsert_canada_canonical_facts", lambda *args: None)
+    monkeypatch.setattr(
+        "codes.data.providers.canada_db.db.upsert_canada_canonical_facts",
+        lambda *args, **kwargs: None,
+    )
 
     result = import_canada_verified_csv_bundle("shop:tsx", _bundle(tmp_path))
 
@@ -136,7 +139,10 @@ def test_canada_verified_csv_import_persists_without_json_files(tmp_path, monkey
 
 
 def test_canada_ingest_worker_reports_status(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr("codes.data.providers.canada_db.db.upsert_canada_canonical_facts", lambda *args: None)
+    monkeypatch.setattr(
+        "codes.data.providers.canada_db.db.upsert_canada_canonical_facts",
+        lambda *args, **kwargs: None,
+    )
     bundle = _bundle(tmp_path)
 
     exit_code = canada_ingest_worker.main([
@@ -149,4 +155,6 @@ def test_canada_ingest_worker_reports_status(tmp_path, monkeypatch, capsys):
     ])
 
     assert exit_code == 0
-    assert "SHOP.TO score_ready confidence=regulatory_verified" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "SHOP.TO public_score_ready target=market_db" in output
+    assert "confidence=regulatory_verified" in output

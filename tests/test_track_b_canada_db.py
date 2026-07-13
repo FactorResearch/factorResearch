@@ -121,6 +121,23 @@ def _shares():
     )
 
 
+def _screener_row():
+    return {
+        "name": "Shopify Inc.",
+        "currency": "CAD",
+        "graham_score": 25,
+        "graham_max": 105,
+        "graham_pct": 23.8,
+        "quality_score": 55,
+        "quality_max": 100,
+        "quality_pct": 55,
+        "composite_score": 38.5,
+        "verdict": "PENDING",
+        "verdict_label": "pending",
+        "data_confidence": "regulatory_verified",
+    }
+
+
 def test_canada_canonical_facts_are_persisted_relationally(monkeypatch):
     conn = _FakeConn()
     monkeypatch.setattr(db, "_market_initialized", True)
@@ -131,21 +148,32 @@ def test_canada_canonical_facts_are_persisted_relationally(monkeypatch):
         _financials(),
         _shares(),
         DataQualityReport("CA", True, "regulatory_verified"),
+        screener_row=_screener_row(),
     )
 
     sql_text = "\n".join(sql for sql, _params in conn.calls)
-    assert "canada_issuers" in sql_text
-    assert "canada_statement_facts" in sql_text
-    assert "canada_shares_outstanding" in sql_text
+    assert "market_issuers" in sql_text
+    assert "market_statement_facts" in sql_text
+    assert "market_shares_outstanding" in sql_text
+    assert "market_screener_rows" in sql_text
     assert "data_json" not in sql_text
     fact_params = [
         params
         for sql, params in conn.calls
-        if "canada_statement_facts" in sql and params and "fact_name" in params
+        if "market_statement_facts" in sql and params and "fact_name" in params
     ]
     assert {params["fact_name"] for params in fact_params} >= {"revenue", "net_inc", "total_assets"}
+    assert all(params["market_code"] == "CA" for params in fact_params)
     assert all(params["currency"] == "CAD" for params in fact_params)
     assert all(params["source_document_id"] == "sedar-shop-2025" for params in fact_params)
+    screener_params = [
+        params
+        for sql, params in conn.calls
+        if "INSERT INTO market_screener_rows" in sql
+    ][0]
+    assert screener_params["market_code"] == "CA"
+    assert screener_params["symbol"] == "SHOP.TO"
+    assert screener_params["data_confidence"] == "regulatory_verified"
 
 
 def test_canada_database_source_reads_normalized_rows(monkeypatch):
@@ -173,11 +201,12 @@ def test_canada_database_source_reads_normalized_rows(monkeypatch):
 def test_ingest_verified_canada_financials_stores_quality_report(monkeypatch):
     saved = {}
 
-    def _save(symbol, financials, shares, quality_report):
+    def _save(symbol, financials, shares, quality_report, *, screener_row=None):
         saved["symbol"] = symbol
         saved["financials"] = financials
         saved["shares"] = shares
         saved["quality_report"] = quality_report
+        saved["screener_row"] = screener_row
 
     monkeypatch.setattr(db, "upsert_canada_canonical_facts", _save)
 
@@ -187,3 +216,30 @@ def test_ingest_verified_canada_financials_stores_quality_report(monkeypatch):
     assert saved["symbol"] == "SHOP.TO"
     assert saved["quality_report"].can_score is True
     assert saved["quality_report"].confidence == "regulatory_verified"
+    assert saved["screener_row"]["market_code"] == "CA"
+    assert saved["screener_row"]["symbol"] == "SHOP.TO"
+    assert saved["screener_row"]["currency"] == "CAD"
+    assert saved["screener_row"]["data_confidence"] == "regulatory_verified"
+    assert saved["screener_row"]["analyzed"] is True
+    assert saved["screener_row"]["projection_version"] == "fundamental-v1"
+
+
+def test_internal_canada_import_is_not_added_to_public_screener(monkeypatch):
+    saved = {}
+
+    def _save(symbol, financials, shares, quality_report, *, screener_row=None):
+        saved["quality_report"] = quality_report
+        saved["screener_row"] = screener_row
+
+    monkeypatch.setattr(db, "upsert_canada_canonical_facts", _save)
+
+    result = ingest_verified_canada_financials(
+        "SHOP.TO",
+        _financials("provider_normalized_internal_only"),
+        _shares(),
+        allow_internal=True,
+    )
+
+    assert result.can_score is True
+    assert saved["quality_report"].confidence == "provider_normalized_internal_only"
+    assert saved["screener_row"] is None
