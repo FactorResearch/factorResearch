@@ -19,9 +19,7 @@ agency-agents/*
 .ev.example
 .codex/
 .agents
-.github
 mockup/
 roadMap.md
 AI_CONTEXT.md
-.githooks
 *.png
