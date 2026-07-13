@@ -558,6 +558,60 @@ def _factor_momentum_card(data: dict) -> html.Div:
     )
 
 
+def _factor_research_card(data: dict) -> html.Div:
+    fr = data.get("factor_research") or {}
+    if not fr:
+        return html.Div()
+
+    capm = fr.get("capm") or {}
+    betas = capm.get("betas") or {}
+    attribution = capm.get("return_attribution") or {}
+    status = fr.get("status", "pending")
+
+    def _pct(value, decimals=1):
+        return f"{value * 100:.{decimals}f}%" if value is not None else "N/A"
+
+    def _num(value, decimals=2):
+        return f"{value:.{decimals}f}" if value is not None else "N/A"
+
+    if status != "ready":
+        rows = [
+            _metric_data_row("Status", fr.get("message", "Factor Research is waiting for enough return history.")),
+            _metric_data_row("Models", "CAPM, Fama-French 3/5, Carhart 4"),
+        ]
+        return _metric_scorecard(
+            title="Factor Research",
+            status_text="\u2014 Pending",
+            status_color=AMBER,
+            subtitle="V2.2 attribution engine",
+            body_children=rows,
+        )
+
+    beta = betas.get("mkt_rf")
+    alpha = capm.get("alpha_annualized")
+    r_squared = capm.get("r_squared")
+    factor_total = attribution.get("factor_total")
+    total_excess = attribution.get("total_excess_return")
+    beta_color = GREEN if beta is not None and beta < 1 else AMBER if beta is not None and beta <= 1.3 else RED
+    rows = [
+        _metric_data_row("Model", "CAPM vs SPY"),
+        _metric_data_row("Market Beta", html.Span(_num(beta), className=f"fw-700 {tone_class(beta_color)}")),
+        _metric_data_row("Annualized Alpha", _pct(alpha)),
+        _metric_data_row("R-Squared", _pct(r_squared)),
+        _metric_data_row("Market Factor Contribution", _pct(factor_total)),
+        _metric_data_row("Total Excess Return", _pct(total_excess)),
+        _metric_data_row("Next Models", "Fama-French 3/5 and Carhart 4 need factor datasets"),
+    ]
+    return _metric_scorecard(
+        title="Factor Research",
+        score_text=_num(beta),
+        score_color=beta_color,
+        status_text="\u2014 CAPM",
+        subtitle="V2.2 factor attribution",
+        body_children=rows,
+    )
+
+
 def _alternative_data_card(data: dict) -> html.Div:
     """Alternative Data card: provider-ready Phase E signals."""
     ad = data.get("alternative_data") or {}
@@ -1155,6 +1209,7 @@ _stat(
     piotroski_card = _piotroski_card(data)
     altman_card = _altman_card(data)
     risk_card = _risk_card(data)
+    factor_research_card = _factor_research_card(data)
     fcf_quality_card = _fcf_quality_card(data)
     market_fear_card = _market_fear_card(data)
     regime_card = _regime_card(data)
@@ -1177,7 +1232,7 @@ _stat(
             "Moat & Momentum",
             [html.Div(className="moment_quality_row", children=[buffett_card, momentum_card])],
         ),
-        ("analysis-risk", "Risk", [risk_card]),
+        ("analysis-risk", "Risk", [html.Div(className="card-row", children=[risk_card, factor_research_card])]),
         (
             "analysis-scorecards",
             "Scorecards",

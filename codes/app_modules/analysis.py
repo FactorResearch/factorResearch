@@ -5,10 +5,12 @@ import threading
 import time as _time
 from concurrent.futures import ThreadPoolExecutor
 
+import pandas as pd
+
 from codes import security
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
-from codes.engine import factor_engine, scorer, screener, market_fear
+from codes.engine import factor_engine, factor_research, scorer, screener, market_fear
 from codes.models import (
     graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt,
     buffett, earnings_revision, profitability as profitability_model,
@@ -35,6 +37,47 @@ _market_fear_lock = threading.Lock()
 _COMOMENTUM_TTL = 3600  # seconds
 _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
+
+
+def _calculate_factor_research(hist, spy_hist) -> dict:
+    """Visible V2.2 output from normalized stock/SPY return history."""
+    if hist is None or spy_hist is None or hist.empty or spy_hist.empty:
+        return {
+            "status": "data_unavailable",
+            "message": "Factor Research appears when stock and benchmark history are available.",
+            "available_models": ["capm"],
+            "pending_models": ["ff3", "ff5", "carhart4"],
+        }
+    try:
+        stock = hist.copy()
+        spy = spy_hist.copy()
+        stock["Date"] = pd.to_datetime(stock["Date"])
+        spy["Date"] = pd.to_datetime(spy["Date"])
+        stock["asset_return"] = stock.sort_values("Date")["Close"].pct_change()
+        spy["mkt_rf"] = spy.sort_values("Date")["Close"].pct_change()
+        frame = (
+            stock[["Date", "asset_return"]]
+            .merge(spy[["Date", "mkt_rf"]], on="Date", how="inner")
+            .dropna()
+        )
+        if len(frame) < 12:
+            raise ValueError("Insufficient overlapping return history")
+        capm = factor_research.capm(frame)
+        return {
+            "status": "ready",
+            "model": "capm",
+            "capm": capm,
+            "available_models": ["capm"],
+            "pending_models": ["ff3", "ff5", "carhart4"],
+            "message": "CAPM uses existing SPY benchmark history. Fama-French and Carhart require factor datasets.",
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Factor Research unavailable: {type(e).__name__}",
+            "available_models": [],
+            "pending_models": ["capm", "ff3", "ff5", "carhart4"],
+        }
 
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
@@ -259,6 +302,7 @@ def analyze_stock(symbol: str) -> dict:
             risk_result = risk_metrics.score(hist, spy_hist)
         except Exception as e:
             print(f"Risk metrics calculation failed: {e}")
+    factor_research_result = _calculate_factor_research(hist, spy_hist)
     greenblatt_result = greenblatt.compute_single(price, sec_facts)
     buffett_result = buffett.score(price, sec_facts)
     # Profitability score (P1)
@@ -432,6 +476,7 @@ def analyze_stock(symbol: str) -> dict:
         "piotroski":   piotroski_result,
         "altman":      altman_result,
         "risk":        risk_result,
+        "factor_research": factor_research_result,
         "greenblatt":  greenblatt_result,
         "buffett":     buffett_result,
         "earnings_revision": earnings_revision_result,

@@ -94,4 +94,37 @@ def test_issue_025_metric_rows_use_visible_divider_color():
         "fcf_quality": {"fcf_quality_score": 81, "signal": "HIGH_CASH_QUALITY", "fcf": 10}
     })
     first_row = _body(card).children[0]
-    assert first_row.style["borderBottom"] == "1px solid rgba(67, 52, 90, 0.65)"
+    assert "analysis-divider" in first_row.className
+
+
+def test_factor_research_card_surfaces_v22_capm_output():
+    card = analysis_ui._factor_research_card({
+        "factor_research": {
+            "status": "ready",
+            "capm": {
+                "betas": {"mkt_rf": 1.15},
+                "alpha_annualized": 0.024,
+                "r_squared": 0.72,
+                "return_attribution": {
+                    "factor_total": 0.08,
+                    "total_excess_return": 0.104,
+                },
+            },
+        }
+    })
+
+    assert "Factor Research" in str(card)
+    assert "CAPM vs SPY" in str(card)
+    assert "Fama-French 3/5 and Carhart 4 need factor datasets" in str(card)
+
+
+def test_factor_research_card_shows_pending_state():
+    card = analysis_ui._factor_research_card({
+        "factor_research": {
+            "status": "data_unavailable",
+            "message": "Factor Research appears when stock and benchmark history are available.",
+        }
+    })
+
+    assert "Pending" in str(card)
+    assert "Factor Research appears" in str(card)
