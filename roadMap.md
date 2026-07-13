@@ -818,7 +818,8 @@ look-ahead bias.
 8.  Expensive APIs are deferred until justified by customer demand and
     revenue.
 9. every version/track after launch gets a new branch, never push to main branch 
-
+10. country implementation must be independent so if one country can go live first it will go live 
+11. this file should never get commited since it shows our future releases 
 Success Metric
 
 Build the complete architecture first.
