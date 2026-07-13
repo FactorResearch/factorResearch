@@ -1,11 +1,10 @@
 """Rendering helpers for the stock analysis view and shared charts."""
 
 from dash import dcc, html
-import pandas as pd
 import plotly.graph_objects as go
 from urllib.parse import quote
 
-from codes.data import db
+from codes.services import chart_service
 
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
 from .css_classes import tone_class
@@ -72,15 +71,13 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
 
 
 def _composite_trend_chart(symbol: str, color: str):
-    try:
-        history = db.list_composite_score_history(symbol)
-    except Exception:
-        history = []
-    if len(history) < 2:
+    dataset = chart_service.get_composite_trend_dataset(symbol)
+    series = (dataset.get("series") or [{}])[0]
+    scores = series.get("y") or []
+    dates = series.get("x") or []
+    if len(scores) < 2:
         return html.Div("Composite trend will appear after the next score update.", className="composite-trend-empty")
 
-    scores = [row["composite_score"] for row in history]
-    dates = [row["snapshot_date"] for row in history]
     change = scores[-1] - scores[0]
     direction = "↑" if change > 0 else "↓" if change < 0 else "→"
     figure = go.Figure(go.Scatter(
@@ -1281,7 +1278,7 @@ _stat(
     growth_quality_card = _growth_quality_card(data)
     factor_momentum_card = _factor_momentum_card(data)
     alternative_data_card = _alternative_data_card(data)
-    div_chart = _div_chart(g.get("div_history", []), symbol)
+    div_chart = _div_chart(g.get("div_history", []), symbol, data)
     graham_details = _graham_details_card(g, b_data)
     buffett_details = _buffett_details_card(data)
     sections = [
@@ -1336,8 +1333,8 @@ _stat(
                 html.Div(
                     className="charts-grid",
                     children=[
-                        _eps_chart(g.get("eps_history", []), symbol),
-                        _price_chart(data.get("price_history"), data.get("spy_history"), symbol),
+                        _eps_chart(g.get("eps_history", []), symbol, data),
+                        _price_chart(data.get("price_history"), data.get("spy_history"), symbol, data),
                     ],
                 ),
                 div_chart,
@@ -1455,85 +1452,68 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
         html.Div(rows),
     ])
 
-def _eps_chart(eps_history: list, symbol: str) -> html.Div:
-    if not eps_history:
+def _eps_chart(eps_history: list, symbol: str, data: dict | None = None) -> html.Div:
+    dataset = chart_service.get_analysis_chart_dataset(data or {"symbol": symbol, "graham": {"eps_history": eps_history}}, "eps_history")
+    series = (dataset.get("series") or [{}])[0]
+    if not series.get("x"):
         return html.Div(className="empty-card", children=[
             html.Div("EPS History", className="empty-card-title"),
             html.Div("No EPS data", className="empty-title"),
             html.Div("Insufficient data available", className="empty-msg"),
         ])
-    df = pd.DataFrame(eps_history).sort_values("year")
-    colors = [GREEN if v >= 0 else RED for v in df["value"]]
+    y_values = series.get("y") or []
+    colors = [GREEN if (v or 0) >= 0 else RED for v in y_values]
     fig = go.Figure(go.Bar(
-        x=df["year"].astype(str), y=df["value"],
+        x=series.get("x"), y=y_values,
         marker_color=colors,
-        text=[format_currency(v) for v in df["value"]],
+        text=[format_currency(v) for v in y_values],
         textposition="outside",
         textfont=dict(size=12, color=WHITE) 
     ))
-    fig.update_layout(**_chart_layout(f"{symbol} EPS History (10yr)"))
+    fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} EPS History (10yr)"))
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
 
-def _price_chart(price_history_dict, spy_history_dict, symbol: str) -> html.Div:
-    # Convert stored dict data back to DataFrames
-    hist = pd.DataFrame(price_history_dict) if price_history_dict else pd.DataFrame()
-    spy_hist = pd.DataFrame(spy_history_dict) if spy_history_dict else pd.DataFrame()
-    if hist.empty:
+def _price_chart(price_history_dict, spy_history_dict, symbol: str, data: dict | None = None) -> html.Div:
+    dataset = chart_service.get_analysis_chart_dataset(
+        data or {"symbol": symbol, "price_history": price_history_dict, "spy_history": spy_history_dict},
+        "price_history",
+    )
+    series = dataset.get("series") or []
+    if not series:
         return html.Div(className="empty-card", children=[
             html.Div("Price History", className="empty-card-title"),
             html.Div("No price data", className="empty-title"),
             html.Div("Insufficient history available", className="empty-msg"),
         ])
     fig = go.Figure()
-    def _normalise(df):
-        df = df.copy()
-        df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
-        df = df.dropna()
-        if df.empty or df["Close"].iloc[0] <= 0:
-            return df
-        df["norm"] = df["Close"] / df["Close"].iloc[0] * 100
-        return df
-    hist = _normalise(hist)
-    if not hist.empty:
+    for item in series:
+        is_spy = item.get("name") == "SPY"
         fig.add_trace(go.Scatter(
-            x=hist["Date"], y=hist["norm"], name=symbol,
-            line=dict(color=BLUE, width=2)
+            x=item.get("x"), y=item.get("y"), name=item.get("name") or symbol,
+            line=dict(color=MUTED if is_spy else BLUE, width=1.5 if is_spy else 2, dash="dot" if is_spy else None)
         ))
-    if not spy_hist.empty:
-        spy_hist = _normalise(spy_hist)
-        if not spy_hist.empty:
-            fig.add_trace(go.Scatter(
-                x=spy_hist["Date"], y=spy_hist["norm"], name="SPY",
-                line=dict(color=MUTED, width=1.5, dash="dot")
-            ))
-    fig.update_layout(**_chart_layout(f"{symbol} vs SPY (10yr normalised)"))
+    fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} vs SPY (10yr normalised)"))
     fig.update_yaxes(title_text="Index (100 = start)")
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
 
-def _div_chart(div_history: list, symbol: str) -> html.Div:
-    if not div_history:
+def _div_chart(div_history: list, symbol: str, data: dict | None = None) -> html.Div:
+    dataset = chart_service.get_analysis_chart_dataset(data or {"symbol": symbol, "graham": {"div_history": div_history}}, "dividend_history")
+    series = (dataset.get("series") or [{}])[0]
+    if not series.get("x"):
         return html.Div(className="empty-card", children=[
             html.Div("Dividend History", className="empty-card-title"),
             html.Div("No dividends", className="empty-title"),
             html.Div("This company has not paid dividends", className="empty-msg"),
         ])
-    df = pd.DataFrame(div_history).sort_values("year")
-    df = df[df["value"] > 0]
-    if df.empty:
-        return html.Div(className="empty-card", children=[
-            html.Div("Dividend History", className="empty-card-title"),
-            html.Div("No dividends", className="empty-title"),
-            html.Div("No dividend payments on record", className="empty-msg"),
-        ])
     fig = go.Figure(go.Bar(
-        x=df["year"].astype(str),
-        y=df["value"] / 1e6,
+        x=series.get("x"),
+        y=series.get("y"),
         marker_color=BLUE,
-        text=[format_currency(v) for v in df["value"]],
+        text=[format_currency(v) for v in series.get("raw_y", [])],
         textposition="outside",
         textfont=dict(size=20, color=WHITE) 
     ))
-    fig.update_layout(**_chart_layout(f"{symbol} Dividend Payments (USD Millions)"))
+    fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} Dividend Payments (USD Millions)"))
     return dcc.Graph(figure=fig, config={"displayModeBar": False})
 
 def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:

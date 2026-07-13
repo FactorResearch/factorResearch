@@ -26,6 +26,7 @@ from flask import render_template
 from codes.data import sec_data
 from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
+from codes.routes.charts import chart_pages
 from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
@@ -51,6 +52,7 @@ if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
 server.register_blueprint(analyze_pages)
+server.register_blueprint(chart_pages)
 try:
     ensure_schema_if_configured()
 except Exception as e:
