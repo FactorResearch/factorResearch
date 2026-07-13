@@ -64,7 +64,7 @@ body.light .metric-row-divider--analysis {
 
 .factor-research-model-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr));
   gap: 10px;
 }
 
@@ -156,7 +156,7 @@ body.light .factor-rolling-label {
 
 @media (max-width: 1180px) {
   .factor-research-model-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 135px), 1fr));
   }
 }
 
