@@ -28,6 +28,21 @@ class CanonicalFiscalPeriod:
 
 
 @dataclass(frozen=True)
+class CanonicalSharesOutstanding:
+    symbol: str
+    shares_outstanding: float | None
+    as_of: str | None = None
+    source: str | None = None
+
+
+@dataclass(frozen=True)
+class CanonicalCurrency:
+    code: str
+    display_name: str | None = None
+    source: str | None = None
+
+
+@dataclass(frozen=True)
 class CanonicalFinancials:
     company: CanonicalCompany
     periods: tuple[CanonicalFiscalPeriod, ...]

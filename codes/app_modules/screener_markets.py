@@ -1,8 +1,10 @@
 """Country/market configuration for the screener UI."""
 
+import os
+
 DEFAULT_SCREENER_COUNTRY = "US"
 
-SCREENER_COUNTRIES = [
+_BASE_COUNTRIES = [
     {
         "code": "US",
         "label": "United States",
@@ -12,10 +14,39 @@ SCREENER_COUNTRIES = [
     },
 ]
 
+_OPTIONAL_COUNTRIES = [
+    {
+        "code": "CA",
+        "label": "Canada",
+        "short_label": "Canada",
+        "flag_src": "/assets/flags/ca.svg",
+        "row_values": {"CA", "CAN", "Canada"},
+        "requires_market": "CA",
+    },
+]
+
+
+def _enabled_markets() -> set[str]:
+    raw = os.environ.get("ENABLED_MARKETS", "US")
+    return {part.strip().upper() for part in raw.split(",") if part.strip()}
+
+
+def _available_countries() -> list[dict]:
+    enabled = _enabled_markets()
+    countries = list(_BASE_COUNTRIES)
+    countries.extend(
+        country for country in _OPTIONAL_COUNTRIES
+        if country.get("requires_market", "").upper() in enabled
+    )
+    return countries
+
+
+SCREENER_COUNTRIES = _available_countries()
+
 
 def get_screener_country(code: str | None) -> dict:
     """Return the configured screener country, falling back to the default."""
-    countries = {country["code"]: country for country in SCREENER_COUNTRIES}
+    countries = {country["code"]: country for country in _available_countries()}
     return countries.get(code or DEFAULT_SCREENER_COUNTRY, countries[DEFAULT_SCREENER_COUNTRY])
 
 
