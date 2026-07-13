@@ -72,6 +72,16 @@ def test_screener_country_tabs_are_non_submit_buttons(monkeypatch):
     assert "active" in initial_buttons[0].className
 
 
+def test_screener_country_state_does_not_persist_across_page_loads():
+    country_store = next(
+        child for child in layout.build_layout().children
+        if getattr(child, "id", None) == "screener-country-store"
+    )
+
+    assert country_store.data == "US"
+    assert country_store.storage_type == "memory"
+
+
 def test_switch_screener_country_uses_triggered_country_even_with_stale_clicks(monkeypatch):
     countries = [
         {"code": "US", "label": "United States", "short_label": "U.S.", "flag_src": "/assets/flags/us.svg"},

@@ -368,7 +368,7 @@ def build_layout():
         dcc.Store(id="screener-cache"),
         dcc.Store(id="analysis-store"),
         dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
-        dcc.Store(id="screener-country-store", data=DEFAULT_SCREENER_COUNTRY, storage_type="session"),
+        dcc.Store(id="screener-country-store", data=DEFAULT_SCREENER_COUNTRY, storage_type="memory"),
         dcc.Store(id="screener-page-store", data=1, storage_type="session"),  # current page in screener table
         dcc.Store(id="search-history-store"),
         dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table
