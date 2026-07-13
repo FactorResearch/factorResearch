@@ -54,6 +54,22 @@ Potential inputs require a written rights review before production use:
 Public availability is not a commercial-data licence. Do not scrape source
 sites; recheck current terms and product contacts before contracting.
 
+## Licensing Contact Directory
+
+Contacts below were verified against official sites on 2026-07-13. Recheck them
+immediately before sending a request or signing an agreement.
+
+- Euronext Licensing Department: email `databyeuronext@euronext.com`; use the
+  [Euronext data-licensing support page](https://connect2.euronext.com/en/ecap/support).
+  This is the commercial contact for Euronext Paris reference, corporate-action,
+  price, display, redistribution, and derived-data rights.
+- Euronext reference-data licensing: use the [Euronext Data Shop reference-data
+  page](https://live.euronext.com/en/datashop/reference-data) and its official
+  licensing form when requesting the exact product and territory.
+- AMF filings/reuse questions: use the [AMF contact page](https://www.amf-france.org/en/contact-us).
+  AMF publishes official contact forms rather than a general market-data
+  licensing inbox. An AMF response does not replace an Euronext data licence.
+
 ## Data Contract And Import
 
 Each issuer bundle must contain `company.csv`, `periods.csv`, `documents.csv`,
