@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from codes import security
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
+from codes.data.providers.registry import require_symbol_market_enabled, scoring_facts_for_symbol
 from codes.engine import factor_engine, scorer, screener, market_fear
 from codes.models import (
     graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt,
@@ -153,6 +154,10 @@ def analyze_stock(symbol: str) -> dict:
     symbol = validate_ticker(symbol)
     if not symbol:
         return {"error": "Invalid ticker format."}
+    try:
+        require_symbol_market_enabled(symbol)
+    except ValueError as exc:
+        return {"error": str(exc)}
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
@@ -176,9 +181,10 @@ def analyze_stock(symbol: str) -> dict:
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
         return cached
-    # Fetch SEC fundamentals — lazy: returns cache instantly when not stale
+    # International symbols read verified normalized facts from the market DB;
+    # U.S. symbols retain the existing SEC-only path.
     try:
-        sec_facts = sec_data.get_financials(symbol)
+        sec_facts = scoring_facts_for_symbol(symbol) or sec_data.get_financials(symbol)
     except ValueError as e:
         err_msg = str(e)
         # Provide a more actionable message for foreign-listed tickers that
@@ -196,14 +202,19 @@ def analyze_stock(symbol: str) -> dict:
         return {"error": "Could not retrieve data for this ticker. Please try again shortly."}
     # Quality score (no price) — early calculation
     q = quality.score(sec_facts)
-    # Now try to get price
-    try:
-        price = api_fetcher.get_price(symbol)
-    except Exception as e:
-        if _is_rate_limit_error(e):
-            message = getattr(e, "user_message", str(e))
-            return {"error": message}
-        raise
+    # International prices require a licensed source with explicit quote
+    # currency, unit, and adjustment metadata. Until that evidence is stored,
+    # run fundamentals without price-based outputs.
+    if sec_facts.get("source_market", "US") == "US":
+        try:
+            price = api_fetcher.get_price(symbol)
+        except Exception as e:
+            if _is_rate_limit_error(e):
+                message = getattr(e, "user_message", str(e))
+                return {"error": message}
+            raise
+    else:
+        price = None
     # Earnings revision score
     earnings_revision_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price:
@@ -420,6 +431,7 @@ def analyze_stock(symbol: str) -> dict:
             pass
     result = {
         "symbol":    symbol,
+        "market_code": sec_facts.get("source_market", "US"),
         "name":      security.sanitize_string(sec_facts["name"], max_length=200),
         "sector":    sec_facts["sector"],
         "price":     price,

@@ -149,6 +149,8 @@ def _to_sec_facts(
 ) -> dict[str, Any]:
     provenance_by_field = _provenance_by_field(financials.provenance)
     sec_facts: dict[str, Any] = {
+        "name": financials.company.name or financials.company.symbol,
+        "sector": None,
         "source_market": "CA",
         "source_country": "Canada",
         "source_regulator": _source_regulator(financials),

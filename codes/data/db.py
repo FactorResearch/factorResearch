@@ -140,9 +140,17 @@ CREATE TABLE IF NOT EXISTS market_issuers (
     exchange    TEXT,
     country     TEXT,
     currency    TEXT,
+    regulator_id TEXT,
+    security_type TEXT,
+    accounting_standard TEXT,
     updated_at  TEXT NOT NULL,
     PRIMARY KEY (market_code, symbol)
 );
+
+ALTER TABLE market_issuers
+    ADD COLUMN IF NOT EXISTS regulator_id TEXT,
+    ADD COLUMN IF NOT EXISTS security_type TEXT,
+    ADD COLUMN IF NOT EXISTS accounting_standard TEXT;
 
 CREATE TABLE IF NOT EXISTS market_fiscal_periods (
     market_code  TEXT NOT NULL,
@@ -417,13 +425,22 @@ _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
 _SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
 
 _UPSERT_MARKET_ISSUER = """
-INSERT INTO market_issuers (market_code, symbol, name, exchange, country, currency, updated_at)
-VALUES (%(market_code)s, %(symbol)s, %(name)s, %(exchange)s, %(country)s, %(currency)s, %(updated_at)s)
+INSERT INTO market_issuers (
+    market_code, symbol, name, exchange, country, currency,
+    regulator_id, security_type, accounting_standard, updated_at
+)
+VALUES (
+    %(market_code)s, %(symbol)s, %(name)s, %(exchange)s, %(country)s, %(currency)s,
+    %(regulator_id)s, %(security_type)s, %(accounting_standard)s, %(updated_at)s
+)
 ON CONFLICT (market_code, symbol) DO UPDATE SET
     name = excluded.name,
     exchange = excluded.exchange,
     country = excluded.country,
     currency = excluded.currency,
+    regulator_id = excluded.regulator_id,
+    security_type = excluded.security_type,
+    accounting_standard = excluded.accounting_standard,
     updated_at = excluded.updated_at
 """
 _DELETE_MARKET_PERIODS = """
@@ -882,6 +899,9 @@ def upsert_market_canonical_facts(
             "exchange": company.exchange,
             "country": company.country,
             "currency": company.currency,
+            "regulator_id": getattr(company, "regulator_id", None),
+            "security_type": getattr(company, "security_type", None),
+            "accounting_standard": getattr(company, "accounting_standard", None),
             "updated_at": now,
         })
 
@@ -993,6 +1013,9 @@ def get_market_company_profile(market_code: str, symbol: str) -> dict | None:
         "exchange": row["exchange"],
         "country": row["country"],
         "currency": row["currency"],
+        "regulator_id": row.get("regulator_id"),
+        "security_type": row.get("security_type"),
+        "accounting_standard": row.get("accounting_standard"),
     }
 
 

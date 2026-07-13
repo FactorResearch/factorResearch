@@ -17,6 +17,9 @@ class CanonicalCompany:
     exchange: str | None = None
     country: str | None = None
     currency: str | None = None
+    regulator_id: str | None = None
+    security_type: str | None = None
+    accounting_standard: str | None = None
 
 
 @dataclass(frozen=True)
