@@ -56,3 +56,35 @@ or analysis code.
 - Provider-normalized data remains internal-only unless explicitly ingested
   with `allow_internal=True`; public scoring requires verified source
   confidence and validation gates to pass.
+
+## Verified CSV Import
+
+The first production ingestion boundary is a verified CSV export bundle. This
+is for licensed feed exports, issuer-extracted financial statements, or an
+internal SEDAR+ document extraction job after it has produced structured facts.
+The importer does not scrape SEDAR+ and does not write JSON data files.
+
+Run:
+
+```bash
+python -m codes.workers.canada_ingest_worker \
+  --symbol SHOP.TO \
+  --company-csv company.csv \
+  --periods-csv periods.csv \
+  --documents-csv documents.csv \
+  --facts-csv facts.csv \
+  --shares-csv shares.csv
+```
+
+Required files:
+
+- `company.csv`: `symbol,name,exchange,country,currency`
+- `periods.csv`: `symbol,fiscal_year,fiscal_period,period_end,currency`
+- `documents.csv`: `document_id,source,url,filing_date,period_end,form,confidence`
+- `facts.csv`: `symbol,statement_type,fact_name,fiscal_year,fiscal_period,period_end,currency,value,source_document_id,source_url,confidence,accounting_standard,extraction_method,normalization_method`
+- `shares.csv`: `symbol,shares_outstanding,as_of,source`
+
+Allowed `statement_type` values are `income`, `balance`, and `cash_flow`.
+Allowed confidence values are `regulatory_verified`, `issuer_verified`,
+`licensed_source_verified`, `cross_checked`, and
+`provider_normalized_internal_only`.
