@@ -48,7 +48,7 @@ def _analyses():
     }
 
 
-def test_institutional_portfolio_calculates_v23_surface_area():
+def test_institutional_portfolio_calculates_v3_surface_area():
     result = institutional_portfolio.analyze_portfolio(
         _portfolio(),
         analyses=_analyses(),
@@ -61,7 +61,7 @@ def test_institutional_portfolio_calculates_v23_surface_area():
         benchmark_history=_history(300, 2),
     )
 
-    assert result["engine_version"] == "2.3.0"
+    assert result["engine_version"] == "3.0.0"
     assert result["benchmark"]["selected"] == "QQQ"
     assert result["exposures"]["sector"]["Technology"] > 70
     assert "United States" in result["exposures"]["country"]

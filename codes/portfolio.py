@@ -842,7 +842,7 @@ def run_simulation(
 
 
 def run_institutional_analytics(portfolio: dict, benchmark_symbol: str = "SPY") -> dict:
-    """Compute V2.3 analytics for the current request; results are not cached."""
+    """Compute V3 analytics for the current request; results are not cached."""
     holdings = portfolio.get("holdings", {}) if portfolio else {}
     analyses = {}
     histories = {}

@@ -1,4 +1,4 @@
-"""V2.3 institutional portfolio analytics.
+"""V3 institutional portfolio analytics.
 
 All functions are stateless: callers provide holdings, cached company analysis,
 and optional price histories. Results are computed for the current request and
@@ -13,7 +13,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-VERSION = "2.3.0"
+VERSION = "3.0.0"
 
 
 def analyze_portfolio(

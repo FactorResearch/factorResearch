@@ -701,7 +701,7 @@ def _institutional_analytics_view(analytics: dict) -> html.Div:
     ) or "N/A"
 
     return html.Div(className="scorecard institutional-analytics-card", children=[
-        html.Div("V2.3 Institutional Portfolio Analytics", className="scorecard-header"),
+        html.Div("V3 Institutional Portfolio Analytics", className="scorecard-header"),
         html.Div(className="institutional-grid", children=[
             _exposure_panel("Sector Exposure", exposures.get("sector")),
             _exposure_panel("Industry Exposure", exposures.get("industry")),
@@ -836,7 +836,7 @@ def _advanced_monte_carlo_chart(
             showlegend=False,
         ))
     fig.update_layout(**_chart_layout(
-        f"{port_name} — Pro Monte Carlo Projection (V2.3 Advanced Models)",
+        f"{port_name} — Pro Monte Carlo Projection (V3 Advanced Models)",
         many_traces=True,
     ))
     fig.update_xaxes(title_text="Months Forward")
@@ -848,7 +848,7 @@ def _advanced_monte_carlo_chart(
 
 
 def _use_pro_monte_carlo(access) -> bool:
-    """Plan gate for V2.3 advanced Monte Carlo rendering."""
+    """Plan gate for V3 advanced Monte Carlo rendering."""
     plan = str(getattr(access, "plan", "")).lower()
     status = str(getattr(access, "status", "")).lower()
     return plan == "premium" or status == "internal"
