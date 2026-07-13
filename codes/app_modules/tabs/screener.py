@@ -632,7 +632,7 @@ def register_clientside_callbacks(app):
             return window.dash_clientside.no_update;
         }
         """,
-        Output("screener-table-container", "id"),
+        Output("screener-scroll-restore-sink", "children"),
         Input("tab-screener", "style"),
         Input("tab-analyze", "style"),
         Input("tab-portfolio", "style"),

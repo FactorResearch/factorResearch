@@ -378,6 +378,7 @@ def build_layout():
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
+        html.Div(id="screener-scroll-restore-sink", style={"display": "none"}),
         # interval disabled=True once loading finishes to stop constant re-renders
         dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
         # fires once 600ms after page load to render already-cached screener data
