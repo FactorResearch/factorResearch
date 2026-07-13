@@ -569,11 +569,15 @@ def _institutional_analytics_view(analytics: dict) -> html.Div:
     ])
 
 
-def _advanced_monte_carlo_chart(analytics: dict, port_name: str) -> html.Div:
-    monte_carlo = (analytics or {}).get("advanced_monte_carlo") or {}
+def _advanced_monte_carlo_chart(
+    analytics: dict,
+    port_name: str,
+    benchmark_monte_carlo: dict | None = None,
+) -> html.Div:
+    advanced_monte_carlo = (analytics or {}).get("advanced_monte_carlo") or {}
     available = {
         method: result
-        for method, result in monte_carlo.items()
+        for method, result in advanced_monte_carlo.items()
         if result and not result.get("error") and (result.get("series") or {}).get("months")
     }
     if not available:
@@ -593,7 +597,46 @@ def _advanced_monte_carlo_chart(analytics: dict, port_name: str) -> html.Div:
         "fat_tail": AMBER,
         "regime_aware": "#e040fb",
     }
+
+    first_series = next(iter(available.values())).get("series") or {}
+    months = first_series.get("months") or []
+
+    def _projected_returns(values: list[float]) -> list[float]:
+        if not values:
+            return []
+        base = float(values[0] or 0)
+        if base <= 0:
+            return []
+        return [round(((float(value) / base) - 1) * 100, 2) for value in values]
+
     fig = go.Figure()
+    if benchmark_monte_carlo and not benchmark_monte_carlo.get("error") and months:
+        spy_p10 = _projected_returns(benchmark_monte_carlo.get("spy_p10") or [])
+        spy_p50 = _projected_returns(benchmark_monte_carlo.get("spy_p50") or [])
+        spy_p90 = _projected_returns(benchmark_monte_carlo.get("spy_p90") or [])
+        if (
+            len(spy_p10) == len(months)
+            and len(spy_p50) == len(months)
+            and len(spy_p90) == len(months)
+        ):
+            fig.add_trace(go.Scatter(
+                x=months + months[::-1],
+                y=spy_p90 + spy_p10[::-1],
+                fill="toself",
+                fillcolor="rgba(158,158,158,0.12)",
+                line={"color": "rgba(0,0,0,0)"},
+                name="SPY projected range",
+                showlegend=True,
+                hoverinfo="skip",
+            ))
+            fig.add_trace(go.Scatter(
+                x=months,
+                y=spy_p50,
+                mode="lines",
+                name="SPY projected median",
+                line={"color": MUTED, "width": 1.8, "dash": "dot"},
+                hovertemplate="SPY<br>Month %{x}<br>P50 %{y:.1f}%<extra></extra>",
+            ))
     for method, result in available.items():
         series = result.get("series") or {}
         months = series.get("months") or []
@@ -960,7 +1003,7 @@ def run_simulation(n, active, compare):
             components.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
         # ── Monte Carlo chart ──────────────────────────────────────────────
         if use_pro_monte_carlo and institutional_analytics:
-            components.append(_advanced_monte_carlo_chart(institutional_analytics, port_name))
+            components.append(_advanced_monte_carlo_chart(institutional_analytics, port_name, mc))
         elif not mc.get("error"):
             fig_mc = go.Figure()
             # SPY band (grey)

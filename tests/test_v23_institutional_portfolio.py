@@ -99,10 +99,21 @@ def test_advanced_monte_carlo_chart_renders_all_methods():
         },
     )
 
-    chart = portfolio_tab._advanced_monte_carlo_chart(analytics, "Institutional")
+    monte_carlo = {
+        "error": None,
+        "spy_p10": [100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88,
+                    87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76],
+        "spy_p50": [100 + index for index in range(25)],
+        "spy_p90": [100 + index * 2 for index in range(25)],
+    }
+
+    chart = portfolio_tab._advanced_monte_carlo_chart(analytics, "Institutional", monte_carlo)
     text = str(chart)
+    trace_names = {trace.name for trace in chart.children[1].figure.data}
 
     assert "Pro Monte Carlo" in text
+    assert "SPY projected median" in trace_names
+    assert "SPY projected range" in trace_names
     assert "GBM median" in text
     assert "Bootstrap median" in text
     assert "Fat-tail median" in text
