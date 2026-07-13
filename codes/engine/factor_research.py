@@ -141,6 +141,20 @@ def capm(
     )
 
 
+def capm_from_price_history(
+    price_history,
+    benchmark_history,
+    *,
+    risk_free_rate: float = 0.0,
+    periods_per_year: int = PERIODS_PER_YEAR,
+) -> dict:
+    """Build CAPM attribution from normalized Date/Close price history."""
+    frame = _price_return_frame(price_history, benchmark_history)
+    if len(frame) < 12:
+        return _empty_result("capm", "Insufficient overlapping return history")
+    return capm(frame, risk_free_rate=risk_free_rate, periods_per_year=periods_per_year)
+
+
 def fama_french_3(
     returns: pd.DataFrame,
     *,
@@ -341,6 +355,30 @@ def _prepare_factor_table(
         return pd.DataFrame()
     table = table[required].apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
     return table.dropna()
+
+
+def _price_return_frame(price_history, benchmark_history) -> pd.DataFrame:
+    stock = _history_frame(price_history)
+    benchmark = _history_frame(benchmark_history)
+    if stock.empty or benchmark.empty:
+        return pd.DataFrame()
+    stock["asset_return"] = stock["Close"].pct_change()
+    benchmark["mkt_rf"] = benchmark["Close"].pct_change()
+    return (
+        stock[["Date", "asset_return"]]
+        .merge(benchmark[["Date", "mkt_rf"]], on="Date", how="inner")
+        .dropna()
+    )
+
+
+def _history_frame(history) -> pd.DataFrame:
+    frame = pd.DataFrame(history) if history is not None else pd.DataFrame()
+    if frame.empty or "Date" not in frame.columns or "Close" not in frame.columns:
+        return pd.DataFrame()
+    frame = frame.copy()
+    frame["Date"] = pd.to_datetime(frame["Date"], errors="coerce")
+    frame["Close"] = pd.to_numeric(frame["Close"], errors="coerce")
+    return frame.dropna(subset=["Date", "Close"]).sort_values("Date").reset_index(drop=True)
 
 
 def _period_rf(table: pd.DataFrame, *, risk_free_rate: float, periods_per_year: int) -> pd.Series | float:

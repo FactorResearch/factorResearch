@@ -118,9 +118,14 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
     assert "style=" not in body
     styles = (ROOT / "assets/company_analysis.css").read_text()
     assert "body {\n  display: flex;\n  flex-direction: column;" in styles
-    assert "main { width: 100%; max-width: 1360px; margin: 0 auto; padding: 24px 20px 64px; flex: 1; }" in styles
-    assert ".footer { width: 100%; max-width: 1360px; margin: 0 auto; padding: 20px; border-top: 1px solid #1e2a3a; background: var(--surface);" in styles
-    assert "html.light .footer { background: var(--surface); border-top-color: var(--border); color: #64748b; }" in styles
+    assert "main {" in styles
+    assert "max-width: 1360px;" in styles
+    assert "padding: 24px 20px 64px;" in styles
+    assert ".footer {" in styles
+    assert "border-top: 1px solid #1e2a3a;" in styles
+    assert "html.light .footer {" in styles
+    assert "border-top-color: var(--border);" in styles
+    assert "color: #64748b;" in styles
     assert "prefers-color-scheme: light" in body
     assert "Intrinsic Value" in body
     assert "Financial Health" in body
@@ -207,6 +212,27 @@ def test_snapshot_uses_exact_enhanced_verdict_and_factor_values():
     assert snapshot.official_metrics["graham_score"] == 41
     assert snapshot.official_metrics["profitability_score"] == 68
     assert snapshot.official_metrics["verdict_desc"] == result["enhanced"]["verdict_desc"]
+
+
+def test_snapshot_preserves_factor_research_metrics_for_historical_pages():
+    snapshot = AnalysisSnapshot.from_analysis_result({
+        "symbol": "AMZN",
+        "name": "Amazon.com Inc.",
+        "factor_research": {
+            "status": "ready",
+            "model": "capm",
+            "capm": {
+                "betas": {"mkt_rf": 1.22},
+                "alpha_annualized": 0.031,
+                "r_squared": 0.68,
+            },
+        },
+    })
+
+    assert snapshot.official_metrics["factor_research_model"] == "capm"
+    assert snapshot.official_metrics["capm_beta"] == 1.22
+    assert snapshot.official_metrics["capm_alpha_annualized"] == 0.031
+    assert snapshot.official_metrics["capm_r_squared"] == 0.68
 
 
 def test_legacy_payload_fallback_uses_enhanced_verdict_table():

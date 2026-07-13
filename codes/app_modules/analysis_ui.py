@@ -4,6 +4,7 @@ from dash import dcc, html
 import plotly.graph_objects as go
 from urllib.parse import quote
 
+from codes.engine import factor_research
 from codes.services import chart_service
 
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
@@ -559,7 +560,7 @@ def _factor_momentum_card(data: dict) -> html.Div:
 
 
 def _factor_research_card(data: dict) -> html.Div:
-    fr = data.get("factor_research") or {}
+    fr = data.get("factor_research") or _legacy_factor_research(data)
     if not fr:
         return html.Div()
 
@@ -610,6 +611,24 @@ def _factor_research_card(data: dict) -> html.Div:
         subtitle="V2.2 factor attribution",
         body_children=rows,
     )
+
+
+def _legacy_factor_research(data: dict) -> dict:
+    """Derive V2.2 CAPM for cached analyses saved before the field existed."""
+    capm = factor_research.capm_from_price_history(data.get("price_history"), data.get("spy_history"))
+    if capm.get("error"):
+        return {
+            "status": "data_unavailable",
+            "message": "This saved analysis predates V2.2 factor fields and lacks enough benchmark history for backfill.",
+        }
+    return {
+        "status": "ready",
+        "model": "capm",
+        "capm": capm,
+        "available_models": ["capm"],
+        "pending_models": ["ff3", "ff5", "carhart4"],
+        "message": "CAPM was backfilled from saved stock and SPY histories.",
+    }
 
 
 def _alternative_data_card(data: dict) -> html.Div:

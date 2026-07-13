@@ -5,8 +5,6 @@ import threading
 import time as _time
 from concurrent.futures import ThreadPoolExecutor
 
-import pandas as pd
-
 from codes import security
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
@@ -49,20 +47,9 @@ def _calculate_factor_research(hist, spy_hist) -> dict:
             "pending_models": ["ff3", "ff5", "carhart4"],
         }
     try:
-        stock = hist.copy()
-        spy = spy_hist.copy()
-        stock["Date"] = pd.to_datetime(stock["Date"])
-        spy["Date"] = pd.to_datetime(spy["Date"])
-        stock["asset_return"] = stock.sort_values("Date")["Close"].pct_change()
-        spy["mkt_rf"] = spy.sort_values("Date")["Close"].pct_change()
-        frame = (
-            stock[["Date", "asset_return"]]
-            .merge(spy[["Date", "mkt_rf"]], on="Date", how="inner")
-            .dropna()
-        )
-        if len(frame) < 12:
-            raise ValueError("Insufficient overlapping return history")
-        capm = factor_research.capm(frame)
+        capm = factor_research.capm_from_price_history(hist, spy_hist)
+        if capm.get("error"):
+            raise ValueError(capm["error"])
         return {
             "status": "ready",
             "model": "capm",

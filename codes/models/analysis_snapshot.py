@@ -142,6 +142,9 @@ class AnalysisSnapshot:
         risk = result.get("risk") or {}
         regime = result.get("regime") or {}
         market_fear = result.get("market_fear") or {}
+        factor_research = result.get("factor_research") or {}
+        capm = factor_research.get("capm") or {}
+        capm_betas = capm.get("betas") or {}
         altman = result.get("altman") or {}
         piotroski = result.get("piotroski") or {}
         beneish = result.get("beneish") or {}
@@ -189,6 +192,11 @@ class AnalysisSnapshot:
                 "beneish_m_score": _first_num(beneish.get("m_score"), beneish.get("score")),
                 "ohlson_o_score": _first_num(ohlson.get("o_score"), ohlson.get("score")),
                 "profitability_score": _first_num(enhanced.get("profitability_pct"), profitability.get("score"), profitability.get("total_score")),
+                "factor_research_status": factor_research.get("status"),
+                "factor_research_model": factor_research.get("model"),
+                "capm_beta": _first_num(capm_betas.get("mkt_rf")),
+                "capm_alpha_annualized": _first_num(capm.get("alpha_annualized")),
+                "capm_r_squared": _first_num(capm.get("r_squared")),
                 "value_trap_warning": bool(enhanced.get("value_trap_warning")),
                 "compounder_flag": bool(enhanced.get("compounder_flag")),
                 "altman_cap_applied": bool(enhanced.get("altman_cap_applied")),

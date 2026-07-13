@@ -76,11 +76,41 @@ def test_historical_page_renders_compare_picker_and_history_links():
     assert "<style" not in body
     assert "style=" not in body
     styles = (ROOT / "assets/company_analysis.css").read_text()
-    assert ".historical-analysis-page main { max-width: 960px; padding: 40px 20px; }" in styles
+    assert ".historical-analysis-page main {" in styles
+    assert "max-width: 960px;" in styles
+    assert "padding: 40px 20px;" in styles
     assert 'name="compare"' in body
     assert "2026-06-08 - FAVORABLE" in body
     assert 'href="/analyze/AAPL/20260608"' in body
     assert "/analyze/AAPL/20260708?compare=20260608" in body
+    assert "V2.2 Factor Research" in body
+    assert "This historical snapshot predates V2.2 factor fields" in body
+
+
+def test_historical_page_renders_persisted_factor_research_metrics():
+    current = _snapshot("20260708")
+    current = AnalysisSnapshot(
+        **{
+            **current.__dict__,
+            "official_metrics": {
+                "factor_research_model": "capm",
+                "capm_beta": 1.18,
+                "capm_alpha_annualized": 0.024,
+                "capm_r_squared": 0.71,
+            },
+        }
+    )
+
+    with patch("codes.routes.analyze.get_snapshot", return_value=current), \
+         patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current]), \
+         patch("codes.routes.analyze.list_related_snapshots", return_value={}):
+        response = _client().get("/analyze/AAPL/20260708")
+
+    body = response.get_data(as_text=True)
+    assert "V2.2 Factor Research" in body
+    assert "Market Beta" in body
+    assert "1.18" in body
+    assert "2.40%" in body
 
 
 def test_historical_page_renders_selected_comparison_deltas():

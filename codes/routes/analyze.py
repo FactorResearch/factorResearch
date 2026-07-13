@@ -255,6 +255,12 @@ def _fmt_delta(value, suffix: str = "") -> str:
     return f"{sign}{value:.2f}{suffix}"
 
 
+def _fmt_pct(value) -> str:
+    if value is None:
+        return "N/A"
+    return f"{float(value) * 100:.2f}%"
+
+
 def _delta(current, previous) -> float | None:
     if current is None or previous is None:
         return None
@@ -384,6 +390,35 @@ def _comparison_section(snapshot, comparison) -> str:
         + "</div>"
         "</section>"
     )
+
+
+def _snapshot_factor_research_section(snapshot) -> str:
+    metrics = snapshot.official_metrics or {}
+    beta = metrics.get("capm_beta")
+    alpha = metrics.get("capm_alpha_annualized")
+    r_squared = metrics.get("capm_r_squared")
+    has_capm = any(value is not None for value in (beta, alpha, r_squared))
+    if has_capm:
+        body = (
+            '<div class="grid">'
+            f'<div class="metric"><div class="label">Model</div><div class="value">{html.escape(str(metrics.get("factor_research_model") or "CAPM"))}</div></div>'
+            f'<div class="metric"><div class="label">Market Beta</div><div class="value">{_fmt(beta)}</div></div>'
+            f'<div class="metric"><div class="label">Annualized Alpha</div><div class="value">{_fmt_pct(alpha)}</div></div>'
+            f'<div class="metric"><div class="label">R-Squared</div><div class="value">{_fmt_pct(r_squared)}</div></div>'
+            "</div>"
+            '<p class="muted">Fama-French 3/5 and Carhart 4 require external factor datasets.</p>'
+        )
+    else:
+        body = (
+            '<p class="muted">This historical snapshot predates V2.2 factor fields. '
+            'The page is still compatible, but exact CAPM beta/alpha cannot be reconstructed '
+            'from immutable snapshot metrics alone.</p>'
+            '<div class="grid">'
+            '<div class="metric"><div class="label">Available Now</div><div class="value">CAPM</div></div>'
+            '<div class="metric"><div class="label">Requires Factor Data</div><div class="value">FF3 / FF5 / Carhart</div></div>'
+            "</div>"
+        )
+    return '<section class="panel"><h2>V2.2 Factor Research</h2>' + body + "</section>"
 
 
 def _related_link_list(items, *, include_sector: bool = False) -> str:
@@ -675,6 +710,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     <div class="metric"><div class="label">Market Fear Score</div><div class="value">{_fmt(snapshot.market_fear_score, "/100")}</div></div>
   </section>
   {_history_picker(snapshot, history, compare_date or None)}
+  {_snapshot_factor_research_section(snapshot)}
   {_comparison_section(snapshot, comparison)}
   {_history_links(snapshot, history)}
   {_related_links_section(snapshot, related)}
