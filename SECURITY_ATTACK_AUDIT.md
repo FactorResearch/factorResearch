@@ -19,7 +19,7 @@ No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis I
 |---|---:|
 | Critical | 0 |
 | High | 0 open / 2 resolved |
-| Medium | 3 |
+| Medium | 2 open / 1 resolved |
 | Low | 3 |
 
 The highest risks are a materially vulnerable pinned Python dependency set and unauthenticated resource-exhaustion paths with neither global body limits nor effective route-level throttling.
@@ -87,7 +87,7 @@ tests prove oversized requests never reach webhook verification and a sixth
 waitlist request returns `429` before persistence. Closure evidence: focused
 suite `55 passed, 2 skipped`; full gate `1017 passed, 2 skipped`.
 
-### SEC-003 - Medium - Configured Trusted Hosts Are Not Enforced
+### SEC-003 - Resolved (formerly Medium) - Configured Trusted Hosts Were Not Enforced
 
 **Affected:** `codes/app.py:51`, `codes/core/production_readiness.py`
 
@@ -98,6 +98,13 @@ The application sets `server.config["TRUSTED_HOSTS"]`, but the pinned Flask `3.0
 **Remediation:** Upgrade Flask/Werkzeug to versions that enforce trusted hosts, add explicit early host rejection as defense in depth, configure the edge proxy allowlist, and test hosts with ports, case, trailing dots, IPv6, and forwarded-host headers.
 
 **Regression gate:** Unknown `Host` and untrusted forwarded host values return `400` before session or route processing in production mode.
+
+**Resolution (2026-07-14):** Flask/Werkzeug were upgraded to versions that
+enforce `TRUSTED_HOSTS`, and the app now invokes native host validation in its
+first request hook before authentication, CSRF, or session mutation. Regression
+tests prove an unknown host returns `400` without a session cookie while a
+configured host with a port remains valid. Closure evidence: focused suite
+`36 passed, 2 skipped`; full gate `1019 passed, 2 skipped`.
 
 ### SEC-004 - Medium - JWT Issuer And Audience Validation Is Incomplete
 

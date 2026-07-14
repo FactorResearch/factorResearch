@@ -76,6 +76,14 @@ secret_key = os.environ.get("FLASK_SECRET_KEY")
 if not secret_key and is_production():
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
+
+
+@server.before_request
+def reject_untrusted_host():
+    # Accessing request.host invokes Flask/Werkzeug's TRUSTED_HOSTS validation.
+    flask.request.host
+
+
 server.register_blueprint(analyze_pages)
 server.register_blueprint(chart_pages)
 
@@ -156,7 +164,7 @@ def finish_request_metrics(response):
     started = getattr(flask.g, "request_started", time.perf_counter())
     route = flask.request.url_rule.rule if flask.request.url_rule else "unmatched"
     performance_metrics.record_request(route, flask.request.method, response.status_code, (time.perf_counter() - started) * 1000)
-    response.headers["X-Request-ID"] = flask.g.request_id
+    response.headers["X-Request-ID"] = getattr(flask.g, "request_id", uuid.uuid4().hex)
     return response
 
 
