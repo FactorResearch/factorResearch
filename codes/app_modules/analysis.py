@@ -12,7 +12,7 @@ from codes.data.providers.registry import require_symbol_market_enabled, scoring
 from codes.engine import factor_engine, scorer, screener, market_fear
 from codes.models import (
     graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt,
-    buffett, earnings_revision, profitability as profitability_model,
+    buffett, beneish, dechow, fraud_dashboard, earnings_revision, profitability as profitability_model,
     fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model,
     growth_quality as growth_quality_model, accounting_quality as accounting_quality_model,
     regime as regime_model,
@@ -191,7 +191,27 @@ def _compute_accounting_quality_for_result(symbol: str, sec_facts: dict, result:
     return "accounting_quality", accounting_quality_result, updates
 
 
+def _compute_beneish_for_result(symbol: str, sec_facts: dict, result: dict) -> tuple[str, dict, dict]:
+    return "beneish", beneish.score(sec_facts), {}
+
+
+def _compute_dechow_for_result(symbol: str, sec_facts: dict, result: dict) -> tuple[str, dict, dict]:
+    return "dechow", dechow.score(sec_facts), {}
+
+
+def _refresh_fraud_dashboard(result: dict) -> dict:
+    dashboard = fraud_dashboard.build(
+        accounting_quality_result=result.get("accounting_quality"),
+        beneish_result=result.get("beneish"),
+        dechow_result=result.get("dechow"),
+    )
+    result["fraud_dashboard"] = dashboard
+    return dashboard
+
+
 _CACHED_ANALYSIS_ENRICHERS = {
+    "beneish": _compute_beneish_for_result,
+    "dechow": _compute_dechow_for_result,
     "accounting_quality": _compute_accounting_quality_for_result,
 }
 
@@ -235,6 +255,8 @@ def enrich_cached_analysis_if_needed(symbol: str, result: dict) -> dict:
 
     if not updated:
         return result
+
+    _refresh_fraud_dashboard(result)
 
     try:
         db.upsert_analysis(symbol, result)
@@ -404,6 +426,8 @@ def analyze_stock(symbol: str) -> dict:
     # ── New quant modules ─────────────────────────────────────────────────
     piotroski_result = piotroski.score(sec_facts)
     altman_result = altman.score(price, sec_facts)
+    beneish_result = beneish.score(sec_facts)
+    dechow_result = dechow.score(sec_facts)
     risk_result = {"risk_score": 50, "risk_score_max": 100, "risk_criteria": []}
     if hist is not None and not hist.empty:
         try:
@@ -453,6 +477,11 @@ def analyze_stock(symbol: str) -> dict:
         ).get_accounting_quality_score()
     except Exception as e:
         print(f"Accounting quality calculation failed: {e}")
+    fraud_dashboard_result = fraud_dashboard.build(
+        accounting_quality_result=accounting_quality_result,
+        beneish_result=beneish_result,
+        dechow_result=dechow_result,
+    )
     # Insider Activity (P4)
     insider_activity_result = None
     transactions = []
@@ -595,6 +624,8 @@ def analyze_stock(symbol: str) -> dict:
         # ── New ──────────────────────────────────────────
         "piotroski":   piotroski_result,
         "altman":      altman_result,
+        "beneish":     beneish_result,
+        "dechow":      dechow_result,
         "risk":        risk_result,
         "greenblatt":  greenblatt_result,
         "buffett":     buffett_result,
@@ -604,6 +635,7 @@ def analyze_stock(symbol: str) -> dict:
         "capital_allocation": capital_allocation_result,
         "growth_quality": growth_quality_result,
         "accounting_quality": accounting_quality_result,
+        "fraud_dashboard": fraud_dashboard_result,
         "insider_activity":   insider_activity_result,
         "factor_momentum": factor_momentum_result,
         "alternative_data": alternative_data_result,

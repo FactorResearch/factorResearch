@@ -66,6 +66,41 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
                 "explanation": "Receivables are growing faster than sales.",
             }
         }),
+        analysis_ui._beneish_card({
+            "beneish": {
+                "m_score": -1.62,
+                "risk_label": "High",
+                "threshold": -1.78,
+                "n_available": 8,
+                "dsri": 1.21,
+                "gmi": 1.03,
+                "tata": 0.051,
+                "note": "Full 8-variable Beneish coverage.",
+            }
+        }),
+        analysis_ui._dechow_card({
+            "dechow": {
+                "f_score": 66,
+                "misstatement_probability": 0.66,
+                "risk_label": "High",
+                "n_available": 7,
+                "rsst_accruals": 0.081,
+                "soft_assets": 0.71,
+                "flags": ["share_issuance"],
+                "note": "Full Dechow variable coverage.",
+            }
+        }),
+        analysis_ui._fraud_dashboard_card({
+            "fraud_dashboard": {
+                "fraud_risk_score": 72,
+                "fraud_risk_level": "High",
+                "accounting_quality_score": 41,
+                "beneish_m_score": -1.55,
+                "dechow_f_score": 66,
+                "red_flag_count": 3,
+                "red_flags": ["aggressive_accruals", "DSRI", "share_issuance"],
+            }
+        }),
         analysis_ui._factor_momentum_card({
             "factor_momentum": {"factor_momentum_score": 68, "signal": "Bullish", "return_3m": 5.2}
         }),

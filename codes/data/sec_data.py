@@ -1001,9 +1001,28 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
 
     # Balance sheet quality inputs (buffett.py balance-sheet sub-check)
     goodwill_df = _try_concepts(facts, ["Goodwill"])
+    intangible_assets_df = _try_concepts(facts, [
+        "FiniteLivedIntangibleAssetsNet",
+        "IndefiniteLivedIntangibleAssetsExcludingGoodwill",
+        "IntangibleAssetsNetExcludingGoodwill",
+        "IntangibleAssetsNetIncludingGoodwill",
+        "OtherIntangibleAssetsNet",
+    ])
     inventory_df = _try_concepts(facts, [
         "InventoryNet",
         "InventoryNetIncludingGoodwill",
+    ])
+    receivables_df = _try_concepts(facts, [
+        "AccountsReceivableNetCurrent",
+        "ReceivablesNetCurrent",
+        "AccountsNotesAndLoansReceivableNetCurrent",
+        "AccountsReceivableNet",
+    ])
+    marketable_securities_df = _try_concepts(facts, [
+        "AvailableForSaleSecuritiesCurrent",
+        "MarketableSecuritiesCurrent",
+        "ShortTermInvestments",
+        "AvailableForSaleDebtSecuritiesCurrent",
     ])
 
     # ── Income statement ──────────────────────────────────────────────────────
@@ -1022,6 +1041,21 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
     r_and_d_df = _try_concepts(facts, [
         "ResearchAndDevelopmentExpense",
         "ResearchAndDevelopmentExpenseExcludingAcquiredInProcessCost",
+    ])
+    depreciation_df = _try_concepts(facts, [
+        "DepreciationDepletionAndAmortization",
+        "DepreciationAndAmortization",
+        "Depreciation",
+        "DepreciationAmortizationAndAccretionNet",
+    ])
+    sga_expense_df = _try_concepts(facts, [
+        "SellingGeneralAndAdministrativeExpense",
+        "SellingAndMarketingExpense",
+        "GeneralAndAdministrativeExpense",
+    ])
+    continuing_ops_income_df = _try_concepts(facts, [
+        "IncomeLossFromContinuingOperationsAfterTax",
+        "IncomeLossFromContinuingOperationsIncludingPortionAttributableToNoncontrollingInterest",
     ])
 
     # ── Acquisitions (M&A spend, cash outflow) ────────────────────────────────
@@ -1088,11 +1122,15 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
         "retained_earnings": retained_earnings_df.to_dict("records"),
         "ppe_net":           ppe_net_df.to_dict("records"),
         "goodwill":          goodwill_df.to_dict("records"),
+        "intangible_assets": intangible_assets_df.to_dict("records"),
         "inventory":         inventory_df.to_dict("records"),
+        "receivables":       receivables_df.to_dict("records"),
+        "marketable_securities": marketable_securities_df.to_dict("records"),
         "cash":              cash_df.to_dict("records"),
 
         # Income statement
         "net_inc":           net_inc_df.to_dict("records"),
+        "income_from_continuing_operations": continuing_ops_income_df.to_dict("records"),
         "revenue":           rev_df.to_dict("records"),
         "gross_profit":      gross_profit_df.to_dict("records"),
         "op_income":         operating_inc_df.to_dict("records"),
@@ -1101,6 +1139,8 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
         "op_cf":             operating_cf_df.to_dict("records"),
         "capex":             capex_df.to_dict("records"),
         "r_and_d":           r_and_d_df.to_dict("records"),
+        "depreciation":      depreciation_df.to_dict("records"),
+        "sga_expense":       sga_expense_df.to_dict("records"),
         "acquisitions":      acquisitions_df.to_dict("records"),
         "dividends":         div_df.to_dict("records"),
     }

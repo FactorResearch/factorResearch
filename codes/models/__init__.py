@@ -2,6 +2,9 @@ from . import piotroski   # first — graham depends on it
 from . import graham
 from . import buffett
 from . import altman
+from . import beneish
+from . import dechow
+from . import fraud_dashboard
 from . import greenblatt
 from . import quality
 from . import momentum

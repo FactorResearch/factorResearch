@@ -532,6 +532,133 @@ def _accounting_quality_card(data: dict) -> html.Div:
     )
 
 
+def _beneish_card(data: dict) -> html.Div:
+    """Beneish M-Score card: earnings-manipulation probability diagnostic."""
+    ben = data.get("beneish") or {}
+    if not ben:
+        return html.Div()
+
+    m_score = ben.get("m_score")
+    if m_score is None:
+        return html.Div()
+
+    risk = ben.get("risk_label", "Unknown")
+    sig_color = {
+        "Low": GREEN,
+        "Moderate": AMBER,
+        "High": RED,
+        "Unknown": MUTED,
+    }.get(risk, MUTED)
+
+    def _fmt(v, decimals=2, suffix=""):
+        return f"{v:.{decimals}f}{suffix}" if v is not None else "N/A"
+
+    metrics = [
+        ("M-Score", _fmt(m_score, 2)),
+        ("Threshold", _fmt(ben.get("threshold"), 2)),
+        ("Coverage", f"{ben.get('n_available', 0)}/8"),
+        ("DSRI", _fmt(ben.get("dsri"), 2)),
+        ("GMI", _fmt(ben.get("gmi"), 2)),
+        ("TATA", _fmt(ben.get("tata"), 3)),
+    ]
+
+    metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
+    metric_rows.append(html.Div(ben.get("note", ""), className="fs-12 clr-muted fsi pt-8"))
+
+    return _metric_scorecard(
+        title="Beneish M-Score",
+        score_text=f"{m_score:.2f}",
+        score_color=sig_color,
+        status_text=f"\u2014 {risk} Risk",
+        body_children=metric_rows,
+    )
+
+
+def _dechow_card(data: dict) -> html.Div:
+    """Dechow F-Score card: misstatement-probability diagnostic."""
+    dec = data.get("dechow") or {}
+    if not dec:
+        return html.Div()
+
+    score = dec.get("f_score")
+    if score is None:
+        return html.Div()
+
+    risk = dec.get("risk_label", "Unknown")
+    sig_color = {
+        "Low": GREEN,
+        "Moderate": AMBER,
+        "High": RED,
+        "Unknown": MUTED,
+    }.get(risk, MUTED)
+
+    def _fmt(v, decimals=2, suffix=""):
+        return f"{v:.{decimals}f}{suffix}" if v is not None else "N/A"
+
+    metrics = [
+        ("F-Score", _fmt(score, 0, "/100")),
+        ("Probability", _fmt((dec.get("misstatement_probability") or 0) * 100, 1, "%")),
+        ("Coverage", f"{dec.get('n_available', 0)}/7"),
+        ("RSST Accruals", _fmt(dec.get("rsst_accruals"), 3)),
+        ("Soft Assets", _fmt((dec.get("soft_assets") or 0) * 100, 1, "%") if dec.get("soft_assets") is not None else "N/A"),
+        ("Flags", str(len(dec.get("flags") or []))),
+    ]
+    metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
+    metric_rows.append(html.Div(dec.get("note", ""), className="fs-12 clr-muted fsi pt-8"))
+
+    return _metric_scorecard(
+        title="Dechow F-Score",
+        score_text=f"{score:.0f}/100",
+        score_color=sig_color,
+        status_text=f"\u2014 {risk} Risk",
+        body_children=metric_rows,
+    )
+
+
+def _fraud_dashboard_card(data: dict) -> html.Div:
+    """Advanced Fraud Dashboard: aggregated forensic accounting view."""
+    fd = data.get("fraud_dashboard") or {}
+    if not fd:
+        return html.Div()
+
+    score = fd.get("fraud_risk_score")
+    if score is None:
+        return html.Div()
+
+    risk = fd.get("fraud_risk_level", "Unknown")
+    sig_color = {
+        "Low": GREEN,
+        "Moderate": AMBER,
+        "High": RED,
+        "Unknown": MUTED,
+    }.get(risk, MUTED)
+
+    red_flags = fd.get("red_flags") or []
+    metrics = [
+        ("Fraud Risk", f"{score:.0f}/100"),
+        ("Accounting Quality", f"{fd.get('accounting_quality_score'):.0f}/100" if fd.get("accounting_quality_score") is not None else "N/A"),
+        ("Beneish M-Score", f"{fd.get('beneish_m_score'):.2f}" if fd.get("beneish_m_score") is not None else "N/A"),
+        ("Dechow F-Score", f"{fd.get('dechow_f_score'):.0f}/100" if fd.get("dechow_f_score") is not None else "N/A"),
+        ("Red Flags", str(fd.get("red_flag_count", 0))),
+    ]
+    metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
+    if red_flags:
+        metric_rows.append(
+            html.Div(
+                ", ".join(str(flag).replace("_", " ") for flag in red_flags[:6]),
+                className="fs-12 clr-muted fsi pt-8",
+            )
+        )
+
+    return _metric_scorecard(
+        title="Advanced Fraud Dashboard",
+        score_text=f"{score:.0f}/100",
+        score_color=sig_color,
+        status_text=f"\u2014 {risk} Fraud Risk",
+        body_children=metric_rows,
+    )
+
+
 def _insider_activity_card(data: dict) -> html.Div:
     """Insider buying/selling activity card."""
     ia = data.get("insider_activity") or {}
@@ -1208,6 +1335,8 @@ _stat(
     
     piotroski_card = _piotroski_card(data)
     altman_card = _altman_card(data)
+    beneish_card = _beneish_card(data)
+    dechow_card = _dechow_card(data)
     risk_card = _risk_card(data)
     fcf_quality_card = _fcf_quality_card(data)
     market_fear_card = _market_fear_card(data)
@@ -1215,6 +1344,7 @@ _stat(
     capital_allocation_card = _capital_allocation_card(data)
     growth_quality_card = _growth_quality_card(data)
     accounting_quality_card = _accounting_quality_card(data)
+    fraud_dashboard_card = _fraud_dashboard_card(data)
     factor_momentum_card = _factor_momentum_card(data)
     alternative_data_card = _alternative_data_card(data)
     div_chart = _div_chart(g.get("div_history", []), symbol, data)
@@ -1239,11 +1369,13 @@ _stat(
             [html.Div(className="card-row", children=[quality_card, graham_card])],
         ),
         (
-            "analysis-health",
-            "Financial Health",
+            "analysis-accounting",
+            "Accounting",
             [html.Div(className="quant_row", children=[piotroski_card, altman_card])]
-            + ([html.Div(className="card-row", children=[accounting_quality_card])]
-               if data.get("accounting_quality") else [])
+            + ([html.Div(className="card-row", children=[accounting_quality_card, beneish_card])]
+               if data.get("accounting_quality") or data.get("beneish") else [])
+            + ([html.Div(className="card-row", children=[dechow_card, fraud_dashboard_card])]
+               if data.get("dechow") or data.get("fraud_dashboard") else [])
             if p_data and a_data else [],
         ),
         (

@@ -29,6 +29,7 @@ def test_enrich_cached_analysis_if_needed_adds_new_model_and_persists():
         "symbol": "ACME",
         "name": "Acme Inc.",
         "sector": "Technology",
+        "beneish": None,
         "piotroski": {"signals": [{"id": "F4", "signal": 1}]},
         "fcf_quality": {"accrual_ratio": -0.03, "total_score": 80, "total_max": 100},
         "growth_quality": {
@@ -47,6 +48,9 @@ def test_enrich_cached_analysis_if_needed_adds_new_model_and_persists():
 
     assert result["accounting_quality"]["accounting_quality_score"] >= 80
     assert result["accounting_quality"]["manipulation_risk"] == "Low"
+    assert "beneish" in result and result["beneish"]["m_score"] is not None
+    assert "dechow" in result and result["dechow"]["f_score"] is not None
+    assert "fraud_dashboard" in result and result["fraud_dashboard"]["fraud_risk_score"] is not None
     upsert_analysis.assert_called_once()
     persist_scores.assert_called_once()
     persisted_payload = persist_scores.call_args.args[1]
@@ -85,15 +89,23 @@ def test_enrich_cached_analysis_if_needed_builds_missing_dependencies():
     assert "piotroski" in result
     assert "fcf_quality" in result
     assert "growth_quality" in result
+    assert "beneish" in result
+    assert "dechow" in result
     assert "accounting_quality" in result
+    assert "fraud_dashboard" in result
     payload = persist_scores.call_args.args[1]
-    assert {"piotroski", "fcf_quality", "growth_quality", "accounting_quality"} <= set(payload)
+    assert {"piotroski", "fcf_quality", "growth_quality", "beneish", "accounting_quality"} <= set(payload)
 
 
 def test_backfill_cached_analysis_models_updates_only_missing_rows():
     rows = {
         "MISS": {"symbol": "MISS", "name": "Missing", "sector": "Tech"},
-        "DONE": {"symbol": "DONE", "accounting_quality": {"accounting_quality_score": 70}},
+        "DONE": {
+            "symbol": "DONE",
+            "accounting_quality": {"accounting_quality_score": 70},
+            "beneish": {"m_score": -2.4},
+            "dechow": {"f_score": 18},
+        },
     }
     sec = {
         **_sec(),
@@ -121,4 +133,7 @@ def test_backfill_cached_analysis_models_updates_only_missing_rows():
         updated = stock_analysis.backfill_cached_analysis_models()
 
     assert updated == 1
+    assert "beneish" in rows["MISS"]
+    assert "dechow" in rows["MISS"]
+    assert "fraud_dashboard" in rows["MISS"]
     assert "accounting_quality" in rows["MISS"]
