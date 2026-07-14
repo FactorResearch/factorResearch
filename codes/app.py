@@ -194,6 +194,7 @@ def cached_company_logo():
 
 
 @server.route("/account/delete", methods=["POST"])
+@auth.require_auth
 def delete_account():
     user_id = get_user_id()
 

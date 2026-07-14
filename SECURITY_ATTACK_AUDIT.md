@@ -20,7 +20,7 @@ No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis I
 | Critical | 0 |
 | High | 0 open / 2 resolved |
 | Medium | 0 open / 3 resolved |
-| Low | 3 |
+| Low | 2 open / 1 resolved |
 
 The highest risks are a materially vulnerable pinned Python dependency set and unauthenticated resource-exhaustion paths with neither global body limits nor effective route-level throttling.
 
@@ -141,7 +141,7 @@ The live Firefox desktop/tablet/mobile, light/dark, and 200%-zoom matrix loaded
 and operated with zero accessibility violations or overflow. Closure evidence:
 focused suite `34 passed, 2 skipped`; full gate `1022 passed, 2 skipped`.
 
-### SEC-006 - Low - Unauthenticated Account Deletion Returns 500
+### SEC-006 - Resolved (formerly Low) - Unauthenticated Account Deletion Returned 500
 
 **Affected:** `codes/app.py:187`, `codes/app_modules/session.py:22`
 
@@ -150,6 +150,12 @@ In production mode, `POST /account/delete` with a valid same-origin header and n
 **Impact:** Incorrect security semantics, noisy error telemetry, and a cheap error-generation path.
 
 **Remediation:** Apply `@require_auth` or translate missing authentication to `401` before any deletion work. Add unauthenticated, wrong-user, expired-session, and successful-erasure route tests.
+
+**Resolution (2026-07-14):** `/account/delete` now requires authentication at
+the route boundary before user resolution or database access. Regression tests
+prove unauthenticated requests return `401` with zero deletion calls and the
+authenticated multi-store erasure flow still returns its deletion summary.
+Closure evidence: focused suite `8 passed`; full gate `1024 passed, 2 skipped`.
 
 ### SEC-007 - Low - Unsupported Methods Are Misreported As Server Errors
 
