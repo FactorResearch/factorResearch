@@ -3,6 +3,8 @@ Comprehensive Security Module
 """
 
 import os
+import base64
+import hashlib
 import hmac
 import logging
 import json
@@ -46,6 +48,7 @@ _STRIPE_WEBHOOK_PATH = "/billing/webhook"
 
 _TICKER_RE = re.compile(r"^(?=.*[A-Z])[A-Z][A-Z0-9.-]{0,9}$", re.IGNORECASE)
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+_INLINE_SCRIPT_RE = re.compile(r"<script\b[^>]*>(.*?)</script>", re.IGNORECASE | re.DOTALL)
 
 
 def validate_ticker(value: Any) -> bool:
@@ -287,9 +290,18 @@ def init_security(app: flask.Flask) -> None:
         )
         response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
         response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+        script_hashes = ""
+        if response.mimetype == "text/html":
+            hashes = {
+                base64.b64encode(hashlib.sha256(script.encode()).digest()).decode()
+                for script in _INLINE_SCRIPT_RE.findall(response.get_data(as_text=True))
+                if script.strip()
+            }
+            script_hashes = " " + " ".join(f"'sha256-{value}'" for value in sorted(hashes)) if hashes else ""
         response.headers.setdefault(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "default-src 'self'; script-src 'self' https://browser.sentry-cdn.com https://www.clarity.ms"
+            f"{script_hashes}; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; "
             "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img.logo.dev; connect-src 'self'; "
             "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
         )

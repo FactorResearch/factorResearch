@@ -19,7 +19,7 @@ No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis I
 |---|---:|
 | Critical | 0 |
 | High | 0 open / 2 resolved |
-| Medium | 1 open / 2 resolved |
+| Medium | 0 open / 3 resolved |
 | Low | 3 |
 
 The highest risks are a materially vulnerable pinned Python dependency set and unauthenticated resource-exhaustion paths with neither global body limits nor effective route-level throttling.
@@ -123,13 +123,23 @@ rejects incomplete Clerk claim context. Real signed-token tests prove valid
 RS256 tokens pass while wrong algorithm, issuer, and audience fail. Closure
 evidence: focused suite `16 passed`; full gate `1021 passed, 2 skipped`.
 
-### SEC-005 - Medium - CSP Relies On `unsafe-inline`
+### SEC-005 - Resolved (formerly Medium) - CSP Relied On Executable `unsafe-inline`
 
 **Affected:** `codes/security.py:295`
 
 The live response includes `script-src 'self' 'unsafe-inline'` and `style-src 'self' 'unsafe-inline'`. Output-escaping probes did not produce reflected XSS, and `object-src`, `base-uri`, and `frame-ancestors` are restrictive. Nevertheless, inline script permission removes a major containment layer if a future template or component introduces an injection sink.
 
 **Remediation:** Move inline boot scripts to static assets or use per-response nonces/hashes, remove `unsafe-inline` from `script-src`, and evaluate style nonces/hashes separately. Add CSP reporting during rollout.
+
+**Resolution (2026-07-14):** The security middleware now hashes every nonempty
+inline script in each HTML response and emits those exact CSP hashes. Executable
+`script-src 'unsafe-inline'` is removed. Stylesheets are restricted to self and
+Google Fonts; the remaining `style-src-attr 'unsafe-inline'` is narrowly scoped
+to Dash's generated style attributes rather than permitting inline executable
+scripts or style elements. Regression tests verify every inline script hash.
+The live Firefox desktop/tablet/mobile, light/dark, and 200%-zoom matrix loaded
+and operated with zero accessibility violations or overflow. Closure evidence:
+focused suite `34 passed, 2 skipped`; full gate `1022 passed, 2 skipped`.
 
 ### SEC-006 - Low - Unauthenticated Account Deletion Returns 500
 
