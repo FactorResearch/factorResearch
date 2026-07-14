@@ -20,7 +20,7 @@ No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis I
 | Critical | 0 |
 | High | 0 open / 2 resolved |
 | Medium | 0 open / 3 resolved |
-| Low | 2 open / 1 resolved |
+| Low | 1 open / 2 resolved |
 
 The highest risks are a materially vulnerable pinned Python dependency set and unauthenticated resource-exhaustion paths with neither global body limits nor effective route-level throttling.
 
@@ -157,7 +157,7 @@ prove unauthenticated requests return `401` with zero deletion calls and the
 authenticated multi-store erasure flow still returns its deletion summary.
 Closure evidence: focused suite `8 passed`; full gate `1024 passed, 2 skipped`.
 
-### SEC-007 - Low - Unsupported Methods Are Misreported As Server Errors
+### SEC-007 - Resolved (formerly Low) - Unsupported Methods Are Misreported As Server Errors
 
 **Affected:** `codes/error_pages.py:56`
 
@@ -166,6 +166,13 @@ Closure evidence: focused suite `8 passed`; full gate `1024 passed, 2 skipped`.
 **Impact:** False server-error alerts and inaccurate client behavior; this did not enable TRACE reflection.
 
 **Remediation:** Preserve the original safe HTTP status for untemplated `4xx` responses, add a generic `405` page, and reject unsupported methods at the edge.
+
+**Resolution (2026-07-14):** The shared error renderer now preserves the
+original HTTP status for errors without a branded template and emits only the
+standard status phrase, preventing exception-detail disclosure. Regression
+tests prove `TRACE` and `CONNECT` remain `405`, and an untemplated `418` remains
+`418` without exposing its internal description. Closure evidence: focused
+suite `9 passed`; full gate `1026 passed, 2 skipped`.
 
 ### SEC-008 - Low - Access Tokens Are Copied Into Client-Side Session Cookies
 
