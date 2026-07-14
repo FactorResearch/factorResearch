@@ -154,6 +154,13 @@ def pool_health() -> dict:
         return {f"pool_{index + 1}": pool.stats() for index, pool in enumerate(_pools.values())}
 
 
+def delete_user_snapshots(user_id: str) -> int:
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM custom_analysis_snapshots WHERE user_id = %s", (user_id,))
+            return cur.rowcount
+
+
 def ensure_schema_if_configured() -> bool:
     if not _database_url():
         print("Analysis snapshot schema skipped: no analytics database URL configured.")

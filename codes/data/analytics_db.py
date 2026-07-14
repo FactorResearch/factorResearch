@@ -125,6 +125,16 @@ def insert_event(*, user_id: str | None, anonymous_id: str | None, event_name: s
         con.execute(_INSERT_EVENT, payload)
 
 
+def delete_identity_events(identity: str) -> int:
+    ensure_schema()
+    with _conn() as con:
+        result = con.execute(
+            "DELETE FROM analytics_events WHERE user_id = %(identity)s OR anonymous_id = %(identity)s",
+            {"identity": identity},
+        )
+    return result.rowcount
+
+
 def list_recent_events(limit: int = 50) -> list[dict]:
     ensure_schema()
     with _conn() as con:

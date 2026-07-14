@@ -1831,6 +1831,16 @@ def init_user_db() -> None:
         con.execute(_CREATE_USER_TABLES)
 
 
+def delete_user_records(user_id: str) -> dict[str, int]:
+    """Delete all user-owned account, entitlement, usage, and strategy records."""
+    _ensure_user_init()
+    deleted = {}
+    with _users_conn() as con:
+        for table in ("user_weights", "user_usage", "subscriptions"):
+            deleted[table] = con.execute(f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}).rowcount
+    return deleted
+
+
 def _ensure_init() -> None:
     global _market_initialized
     if not _market_initialized:

@@ -188,7 +188,13 @@ def cached_company_logo():
 def delete_account():
     user_id = get_user_id()
 
+    from codes.data import analytics_db, db
+    from codes.services.analysis_snapshot_service import delete_user_snapshots
+
     summary = portfolio_engine.delete_all_user_data(user_id)
+    summary["database_records"] = db.delete_user_records(user_id)
+    summary["analytics_events"] = analytics_db.delete_identity_events(user_id)
+    summary["custom_snapshots"] = delete_user_snapshots(user_id)
     security.audit_log_access("DELETE_ACCOUNT", "user_data", user_id)
 
     # Purge in-memory/session-scoped state tied to this user
