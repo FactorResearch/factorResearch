@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 # Verifies backups are actually restorable — not just that pg_dump succeeded.
 #
-# For each of the 4 databases:
+# For each of the 3 authoritative databases:
 #   1. Find the most recent encrypted backup
-#   2. Decrypt it to a temp file (never touches disk unencrypted longer than needed)
-#   3. Restore into a throwaway scratch database
-#   4. Run sanity checks (row counts on key tables)
-#   5. Drop the scratch database
+#   2. Stream-decrypt into a throwaway scratch database
+#   3. Run sanity checks (row counts on key tables)
+#   4. Drop the scratch database even when restore or checks fail
 #
 # Requires: BACKUP_ENCRYPTION_KEY, PGHOST/PGPORT/PGUSER/PGPASSWORD (or a
 # restore-target connection URL) with CREATEDB privilege.
@@ -51,7 +50,7 @@ FAILED=0
 for db_name in "${!SANITY_TABLES[@]}"; do
     echo "=== Restore test: $db_name ==="
 
-    latest_enc=$(find "$BACKUP_DIR" -name "${db_name}_*.sql.enc" | sort | tail -n 1)
+    latest_enc=$(find "$BACKUP_DIR" -name "${db_name}_*.dump.enc" | sort | tail -n 1)
     if [ -z "$latest_enc" ]; then
         echo "❌ No backup found for $db_name"
         FAILED=1
@@ -59,26 +58,21 @@ for db_name in "${!SANITY_TABLES[@]}"; do
     fi
     echo "Using backup: $latest_enc"
 
-    tmp_dump=$(mktemp)
     scratch_db="restoretest_${db_name}_$(date +%s)"
 
-    # Decrypt
-    if ! openssl enc -d -aes-256-cbc -pbkdf2 \
-        -in "$latest_enc" -out "$tmp_dump" \
-        -pass "pass:${BACKUP_ENCRYPTION_KEY}"; then
-        echo "❌ Decryption failed for $db_name"
-        rm -f "$tmp_dump"
+    if ! createdb -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" "$scratch_db"; then
+        echo "❌ Could not create scratch database for $db_name"
         FAILED=1
         continue
     fi
 
-    # Create scratch DB, restore into it
-    createdb -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" "$scratch_db"
-    if ! pg_restore -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" \
-        -d "$scratch_db" --no-owner --no-privileges "$tmp_dump"; then
+    # No decrypted database dump is ever written to disk.
+    if ! openssl enc -d -aes-256-cbc -pbkdf2 -in "$latest_enc" \
+        -pass env:BACKUP_ENCRYPTION_KEY | pg_restore \
+        -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" \
+        -d "$scratch_db" --no-owner --no-privileges --exit-on-error; then
         echo "❌ pg_restore failed for $db_name"
         dropdb -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" "$scratch_db" || true
-        rm -f "$tmp_dump"
         FAILED=1
         continue
     fi
@@ -95,9 +89,8 @@ for db_name in "${!SANITY_TABLES[@]}"; do
         echo "✅ $db_name restored OK — $table has $row_count rows"
     fi
 
-    # Cleanup — never leave scratch DB or plaintext dump behind
+    # Cleanup — never leave the scratch database behind.
     dropdb -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" "$scratch_db"
-    rm -f "$tmp_dump"
 done
 
 if [ "$FAILED" -ne 0 ]; then
