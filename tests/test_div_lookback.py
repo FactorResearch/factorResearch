@@ -9,7 +9,7 @@ if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
 """Tests for ISSUE-001: Dividend history lookback extended to 30 years."""
-from codes.sec_data import _annual_df, _try_concepts
+from codes.data.sec_data import _annual_df, _try_concepts
 
 
 def _make_facts(n_years: int) -> dict:

@@ -15,7 +15,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from codes import scorer
+from codes.engine import scorer
 
 
 def _base_args(**overrides):

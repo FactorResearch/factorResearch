@@ -30,26 +30,32 @@ def _state(provider: str) -> tuple[dict, threading.BoundedSemaphore]:
 def call(provider: str, operation: str, callback: Callable, *, default=None, timeout: float | None = None):
     state, semaphore = _state(provider)
     now = time.monotonic()
-    if state["failures"] >= _FAILURE_THRESHOLD and now - state["opened_at"] < _RECOVERY_SECONDS:
-        return default
+    wait_seconds = timeout or _DEFAULT_TIMEOUT
+    with _guard:
+        if state["failures"] >= _FAILURE_THRESHOLD and now - state["opened_at"] < _RECOVERY_SECONDS:
+            return default
 
     def execute():
-        if not semaphore.acquire(timeout=timeout or _DEFAULT_TIMEOUT):
-            raise TimeoutError(f"{provider} concurrency limit")
-        try:
-            future = _executor.submit(callback)
-            return future.result(timeout=timeout or _DEFAULT_TIMEOUT)
-        finally:
-            semaphore.release()
+        def invoke():
+            if not semaphore.acquire(timeout=wait_seconds):
+                raise TimeoutError(f"{provider} concurrency limit")
+            try:
+                return callback()
+            finally:
+                semaphore.release()
+
+        return _executor.submit(invoke).result(timeout=wait_seconds)
 
     try:
-        result = singleflight.run(f"provider:{provider}:{operation}", execute, timeout=max(int(timeout or _DEFAULT_TIMEOUT), 1))
-        state.update(failures=0, opened_at=0.0)
+        result = singleflight.run(f"provider:{provider}:{operation}", execute, timeout=max(int(wait_seconds), 1))
+        with _guard:
+            state.update(failures=0, opened_at=0.0)
         return result
     except Exception as exc:
-        state["failures"] += 1
-        if state["failures"] >= _FAILURE_THRESHOLD:
-            state["opened_at"] = time.monotonic()
+        with _guard:
+            state["failures"] += 1
+            if state["failures"] >= _FAILURE_THRESHOLD:
+                state["opened_at"] = time.monotonic()
         print(f"{provider} {operation} failed: {exc}")
         return default
 

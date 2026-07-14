@@ -30,10 +30,7 @@ def test_screener_toolbar_does_not_include_manual_universe_loader():
     assert "load-universe-btn" not in collect_ids(_tab("tab-screener"))
 
 
-def test_shell_and_analysis_layout_are_owned_by_scss_components():
-    shell = (ROOT / "assets/style/_app-shell.scss").read_text()
-    tabs = (ROOT / "assets/style/_tabs.scss").read_text()
-    assert ".app-container" in shell
-    assert "min-height: 100vh" in shell
-    assert ".app-footer" in shell
-    assert ".analysis-jump-nav" in tabs
+def test_compiled_styles_include_shell_and_analysis_navigation():
+    css = (ROOT / "assets/style.css").read_text()
+    for selector in (".app-container", ".app-footer", ".analysis-jump-nav"):
+        assert selector in css

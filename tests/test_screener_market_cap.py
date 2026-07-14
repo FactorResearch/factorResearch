@@ -98,8 +98,9 @@ class TestEnrichFromAnalysisCacheMarketCap:
 
     def test_uses_top_level_market_cap_when_present(self):
         cached = _make_analysis("MSFT", market_cap=3_000_000.0, graham_market_cap=900_000.0)
-        with patch("codes.engine.screener.db.list_analysis_tickers", return_value=["MSFT"]), \
-             patch("codes.engine.screener.db.get_analysis_entry", return_value={"data": cached, "updated_at": "2026-07-14"}):
+        with patch("codes.engine.screener.db.list_analysis_entries", return_value={
+            "MSFT": {"data": cached, "updated_at": "2026-07-14"}
+        }):
             screener._enrich_from_analysis_cache()
         row = next(r for r in screener._progress["results"] if r["symbol"] == "MSFT")
         assert row["market_cap"] == 3_000_000.0
@@ -108,16 +109,18 @@ class TestEnrichFromAnalysisCacheMarketCap:
         """Legacy cached analyses lack the top-level 'market_cap' key entirely."""
         cached = _make_analysis("MSFT", market_cap=None, graham_market_cap=900_000.0)
         del cached["market_cap"]  # simulate pre-upgrade cached blob
-        with patch("codes.engine.screener.db.list_analysis_tickers", return_value=["MSFT"]), \
-             patch("codes.engine.screener.db.get_analysis_entry", return_value={"data": cached, "updated_at": "2026-07-14"}):
+        with patch("codes.engine.screener.db.list_analysis_entries", return_value={
+            "MSFT": {"data": cached, "updated_at": "2026-07-14"}
+        }):
             screener._enrich_from_analysis_cache()
         row = next(r for r in screener._progress["results"] if r["symbol"] == "MSFT")
         assert row["market_cap"] == 900_000.0
 
     def test_new_symbol_appended_with_market_cap(self):
         cached = _make_analysis("TSLA", market_cap=1_800_000.0)
-        with patch("codes.engine.screener.db.list_analysis_tickers", return_value=["TSLA"]), \
-             patch("codes.engine.screener.db.get_analysis_entry", return_value={"data": cached, "updated_at": "2026-07-14"}):
+        with patch("codes.engine.screener.db.list_analysis_entries", return_value={
+            "TSLA": {"data": cached, "updated_at": "2026-07-14"}
+        }):
             screener._enrich_from_analysis_cache()
         row = next(r for r in screener._progress["results"] if r["symbol"] == "TSLA")
         assert row["market_cap"] == 1_800_000.0

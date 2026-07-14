@@ -6,12 +6,14 @@ import hashlib
 import json
 import threading
 import time
+from collections import OrderedDict
 from collections.abc import Callable
 
 from codes.core.redis_client import get_redis, json_get, json_set
 
-_memory: dict[str, tuple[float, object]] = {}
+_memory: OrderedDict[str, tuple[float, object]] = OrderedDict()
 _lock = threading.Lock()
+_MAX_MEMORY_ENTRIES = 1024
 _hits = 0
 _misses = 0
 
@@ -46,13 +48,21 @@ def get_or_compute(
     with _lock:
         local = _memory.get(key)
         if local and local[0] > now:
+            if hasattr(_memory, "move_to_end"):
+                _memory.move_to_end(key)
             _hits += 1
             return local[1], True
+        if local:
+            _memory.pop(key, None)
 
     _misses += 1
     result = callback()
     with _lock:
         _memory[key] = (now + ttl, result)
+        if hasattr(_memory, "move_to_end"):
+            _memory.move_to_end(key)
+            while len(_memory) > _MAX_MEMORY_ENTRIES:
+                _memory.popitem(last=False)
     if redis is not None:
         json_set(redis, key, result, ex=ttl)
     return result, False

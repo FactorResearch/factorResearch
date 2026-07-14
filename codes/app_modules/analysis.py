@@ -68,6 +68,14 @@ def _component(timings: dict[str, float], name: str, symbol: str, inputs, callba
     return result
 
 
+def _optional_component(timings, name, symbol, inputs, callback):
+    try:
+        return _component(timings, name, symbol, inputs, callback)
+    except Exception as exc:
+        print(f"{name.replace('_', ' ').title()} calculation failed: {exc}")
+        return None
+
+
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
     global _spy_history, _spy_history_loaded, _spy_history_ts
@@ -160,9 +168,19 @@ def _attach_market_fear(result: dict) -> dict:
     return result
 
 
-def is_production() -> bool:
-    
-    return os.environ.get("FLASK_ENV", "").lower() == "production"
+def _fetch_secondary_inputs(symbol: str) -> tuple[list, list, list, list]:
+    requests = (
+        ("finnhub", f"insiders:{symbol}", lambda: api_fetcher.get_insider_transactions(symbol)),
+        ("sec", f"8k:{symbol}", lambda: sec_data.get_recent_8k_filings(symbol)),
+        ("finnhub", f"ownership:{symbol}", lambda: api_fetcher.get_institutional_ownership_trends(symbol)),
+        ("finnhub", f"patents:{symbol}", lambda: api_fetcher.get_patent_trends(symbol)),
+    )
+    with ThreadPoolExecutor(max_workers=len(requests), thread_name_prefix="analysis-provider") as executor:
+        futures = [
+            executor.submit(provider_gateway.call, provider, key, fetch, default=[])
+            for provider, key, fetch in requests
+        ]
+        return tuple(future.result() for future in futures)
 
 
 def _set_cache_metadata(result: dict, cache_hit: bool, cache_source: str) -> dict:
@@ -184,6 +202,25 @@ def _cache_is_current(result: dict) -> bool:
     except (TypeError, ValueError):
         return False
     return age < ANALYSIS_MAX_AGE_SECONDS
+
+
+def _persist_analysis_result(
+    symbol: str,
+    result: dict,
+    *,
+    defer_secondary: bool,
+    shares_out: float | None,
+) -> None:
+    db.upsert_analysis(symbol, result)
+    if defer_secondary:
+        analysis_jobs.enqueue({"type": "secondary-analysis", "symbol": symbol, "shares_out": shares_out})
+    try:
+        save_standard_snapshot(result, analysis_type=AnalysisType.STANDARD)
+    except Exception as exc:
+        print(f"Analysis snapshot save failed for {symbol}: {type(exc).__name__}: {exc}")
+    with _analysis_cache_lock:
+        _analysis_cache[symbol] = result
+    performance_metrics.record_analysis(result["performance"]["pipeline_ms"], False)
 
 
 def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary: bool = False) -> dict:
@@ -324,55 +361,26 @@ def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary:
             print(f"Risk metrics calculation failed: {e}")
     greenblatt_result = _component(timings, "greenblatt", symbol, [price, sec_facts], lambda: greenblatt.compute_single(price, sec_facts))
     buffett_result = _component(timings, "buffett", symbol, [price, sec_facts], lambda: buffett.score(price, sec_facts))
-    # Profitability score (P1)
-    profitability_result = None
-    try:
-        profitability_result = _component(
-            timings, "profitability", symbol, sec_facts,
-            lambda: profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score(),
-        )
-    except Exception as e:
-        print(f"Profitability calculation failed: {e}")
-    # FCF Quality score (P1)
-    fcf_quality_result = None
-    try:
-        fcf_quality_result = _component(
-            timings, "fcf_quality", symbol, sec_facts,
-            lambda: fcf_quality_model.FCFQualityAnalyzer(symbol, sec_facts).get_fcf_quality_score(),
-        )
-    except Exception as e:
-        print(f"FCF quality calculation failed: {e}")
-
-    # Capital Allocation score (P2)
-    capital_allocation_result = None
-    try:
-        capital_allocation_result = capital_allocation_model.CapitalAllocationAnalyzer(
-            symbol, sec_facts, price
-        ).get_capital_allocation_score()
-    except Exception as e:
-        print(f"Capital allocation calculation failed: {e}")
-    # Growth Quality score (P2)
-    growth_quality_result = None
-    try:
-        growth_quality_result = growth_quality_model.GrowthQualityAnalyzer(
-            symbol, sec_facts
-        ).get_growth_quality_score()
-    except Exception as e:
-        print(f"Growth quality calculation failed: {e}")
+    profitability_result = _optional_component(
+        timings, "profitability", symbol, sec_facts,
+        lambda: profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score(),
+    )
+    fcf_quality_result = _optional_component(
+        timings, "fcf_quality", symbol, sec_facts,
+        lambda: fcf_quality_model.FCFQualityAnalyzer(symbol, sec_facts).get_fcf_quality_score(),
+    )
+    capital_allocation_result = _optional_component(
+        timings, "capital_allocation", symbol, [sec_facts, price],
+        lambda: capital_allocation_model.CapitalAllocationAnalyzer(symbol, sec_facts, price).get_capital_allocation_score(),
+    )
+    growth_quality_result = _optional_component(
+        timings, "growth_quality", symbol, sec_facts,
+        lambda: growth_quality_model.GrowthQualityAnalyzer(symbol, sec_facts).get_growth_quality_score(),
+    )
     transactions, sec_8k_filings, ownership_trends, patent_trends = [], [], [], []
     if not defer_secondary:
         provider_started = _time.perf_counter()
-        with ThreadPoolExecutor(max_workers=4, thread_name_prefix="analysis-provider") as executor:
-            provider_futures = {
-                "transactions": executor.submit(provider_gateway.call, "finnhub", f"insiders:{symbol}", lambda: api_fetcher.get_insider_transactions(symbol), default=[]),
-                "sec_8k": executor.submit(provider_gateway.call, "sec", f"8k:{symbol}", lambda: sec_data.get_recent_8k_filings(symbol), default=[]),
-                "ownership": executor.submit(provider_gateway.call, "finnhub", f"ownership:{symbol}", lambda: api_fetcher.get_institutional_ownership_trends(symbol), default=[]),
-                "patents": executor.submit(provider_gateway.call, "finnhub", f"patents:{symbol}", lambda: api_fetcher.get_patent_trends(symbol), default=[]),
-            }
-            transactions = provider_futures["transactions"].result()
-            sec_8k_filings = provider_futures["sec_8k"].result()
-            ownership_trends = provider_futures["ownership"].result()
-            patent_trends = provider_futures["patents"].result()
+        transactions, sec_8k_filings, ownership_trends, patent_trends = _fetch_secondary_inputs(symbol)
         timings["secondary_providers"] = round((_time.perf_counter() - provider_started) * 1000, 2)
 
     insider_activity_result = None
@@ -536,29 +544,19 @@ def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary:
         composite_source.get("composite_score", 0),
         composite_source.get("verdict"),
     )
-    db.upsert_analysis(symbol, result)
-    if defer_secondary:
-        analysis_jobs.enqueue({"type": "secondary-analysis", "symbol": symbol, "shares_out": shares_out})
-    try:
-        save_standard_snapshot(result, analysis_type=AnalysisType.STANDARD)
-    except Exception as e:
-        print(f"Analysis snapshot save failed for {symbol}: {type(e).__name__}: {e}")
-    
-    # 1A: Update in-memory cache
-    with _analysis_cache_lock:
-        _analysis_cache[symbol] = result
-
-    performance_metrics.record_analysis(result["performance"]["pipeline_ms"], False)
+    _persist_analysis_result(
+        symbol,
+        result,
+        defer_secondary=defer_secondary,
+        shares_out=shares_out,
+    )
     return result
 
 
 def _complete_secondary_analysis(symbol: str, shares_out: float | None) -> None:
     """Fetch display-only enrichment after the primary analysis is visible."""
     try:
-        transactions = provider_gateway.call("finnhub", f"insiders:{symbol}", lambda: api_fetcher.get_insider_transactions(symbol), default=[])
-        sec_8k = provider_gateway.call("sec", f"8k:{symbol}", lambda: sec_data.get_recent_8k_filings(symbol), default=[])
-        ownership = provider_gateway.call("finnhub", f"ownership:{symbol}", lambda: api_fetcher.get_institutional_ownership_trends(symbol), default=[])
-        patents = provider_gateway.call("finnhub", f"patents:{symbol}", lambda: api_fetcher.get_patent_trends(symbol), default=[])
+        transactions, sec_8k, ownership, patents = _fetch_secondary_inputs(symbol)
         current = db.get_analysis(symbol) or {}
         current["insider_activity"] = insider_activity_model.get_insider_score(symbol, transactions, shares_outstanding=shares_out)
         current["alternative_data"] = alternative_data_model.get_alternative_data_score(

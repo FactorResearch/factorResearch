@@ -7,6 +7,7 @@ import hashlib
 import json
 import threading
 import time
+import weakref
 from collections import OrderedDict
 from dataclasses import dataclass
 from typing import Any, Callable
@@ -24,7 +25,7 @@ LOCK_TTL_SECONDS = 30
 _LOCAL_MAX_ENTRIES = 256
 
 _local_cache: OrderedDict[str, dict] = OrderedDict()
-_local_locks: dict[str, threading.Lock] = {}
+_local_locks = weakref.WeakValueDictionary()
 _local_guard = threading.Lock()
 
 

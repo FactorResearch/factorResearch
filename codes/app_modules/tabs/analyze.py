@@ -10,7 +10,8 @@ from dash.exceptions import PreventUpdate
 
 from codes.engine import screener
 from codes.data import db
-from codes.app_modules.analysis import analyze_stock_primary as analyze_stock, _is_rate_limit_error, is_production
+from codes.app_modules.analysis import analyze_stock_primary as analyze_stock, _is_rate_limit_error
+from codes.core.config import is_production
 from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id

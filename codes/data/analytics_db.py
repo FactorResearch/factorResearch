@@ -8,6 +8,7 @@ import json
 import os
 
 from dotenv import load_dotenv
+from codes.core.db_pool import ConnectionPool
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ except ImportError:  # pragma: no cover
 
 
 _initialized = False
+_pool = None
 
 _CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS analytics_events (
@@ -85,14 +87,14 @@ def _db_url() -> str:
 
 @contextmanager
 def _conn():
+    global _pool
     if psycopg is None:
         raise RuntimeError("psycopg is required for analytics event storage.")
-    con = psycopg.connect(_db_url())
-    try:
+    if _pool is None:
+        url = _db_url()
+        _pool = ConnectionPool(lambda: psycopg.connect(url), max_size=int(os.environ.get("ANALYTICS_DATABASE_POOL_SIZE", "2")))
+    with _pool.connection() as con:
         yield con
-        con.commit()
-    finally:
-        con.close()
 
 
 def ensure_schema() -> None:

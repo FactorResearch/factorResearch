@@ -24,6 +24,7 @@ except Exception:
 from codes import auth
 from codes import billing
 from codes import security
+from codes.core.config import is_production
 from flask import render_template
 from codes.data import sec_data
 from codes.engine import screener, universe
@@ -40,7 +41,6 @@ from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
-from codes.app_modules.analysis import is_production
 from codes.app_modules.layout import build_layout
 from codes.app_modules.rate_limit import clear_rate_limits_for_user
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
@@ -69,7 +69,7 @@ trusted_hosts = [host.strip() for host in os.environ.get("TRUSTED_HOSTS", "").sp
 if trusted_hosts:
     server.config["TRUSTED_HOSTS"] = trusted_hosts
 secret_key = os.environ.get("FLASK_SECRET_KEY")
-if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
+if not secret_key and is_production():
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
 server.register_blueprint(analyze_pages)
@@ -214,7 +214,7 @@ security.init_security(server)
 # Initialize Flask-Limiter if available (best-effort; dev may omit package)
 if Limiter is not None:
     rate_limit_storage = os.environ.get("RATELIMIT_STORAGE_URI") or os.environ.get("REDIS_URL")
-    if os.environ.get("FLASK_ENV", "").lower() == "production" and not rate_limit_storage:
+    if is_production() and not rate_limit_storage:
         raise RuntimeError("RATELIMIT_STORAGE_URI or REDIS_URL is required in production.")
     limiter = Limiter(
         app=server,
@@ -224,12 +224,6 @@ if Limiter is not None:
     )
 else:
     limiter = None
-
-@server.after_request
-def _log_errors(response):
-    # Security headers are now handled by security.init_security()
-    # This function is kept for backward compatibility and additional logging
-    return response
 
 # Patch Dash's internal callback handler to log exceptions minimally (no stack traces)
 _orig_dispatch = app.server.dispatch_request if hasattr(app.server, 'dispatch_request') else None
@@ -264,56 +258,7 @@ app.index_string = app.index_string.replace(
 
 app.index_string = app.index_string.replace(
     '</head>',
-    '<script>'
-    '(function(){'
-    '  let savedScroll = 0;'
-    '  window.addEventListener("orientationchange", function(){'
-    '    savedScroll = window.scrollY;'
-    '  });'
-    '  window.addEventListener("resize", function(){'
-    '    if (savedScroll > 0) {'
-    '      requestAnimationFrame(function(){'
-    '        window.scrollTo(0, savedScroll);'
-    '      });'
-    '    }'
-    '  });'
-    '})();'
-    '</script></head>'
-)
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<script>'
-    '(function(){'
-    '  function normalizeHiddenDropdownFocusTargets(root){'
-    '    const scope = root && root.querySelectorAll ? root : document;'
-    '    scope.querySelectorAll(".dash-dropdown-focus-target[aria-hidden=true]")'
-    '      .forEach(function(target){ target.tabIndex = -1; });'
-    '  }'
-    '  document.addEventListener("DOMContentLoaded", function(){'
-    '    normalizeHiddenDropdownFocusTargets(document);'
-    '    new MutationObserver(function(records){'
-    '      records.forEach(function(record){'
-    '        record.addedNodes.forEach(normalizeHiddenDropdownFocusTargets);'
-    '      });'
-    '    }).observe(document.body, {childList: true, subtree: true});'
-    '  });'
-    '})();'
-    '</script></head>'
-)
-app.index_string = app.index_string.replace(
-    '</head>',
     build_head_snippets() + '</head>'
-)
-
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<script>'
-    'const APP_VERSION = "v8.6";'  # bump this on each deploy
-    'if (localStorage.getItem("app_version") !== APP_VERSION) {'
-    '    localStorage.setItem("app_version", APP_VERSION);'
-    '    location.reload(true);'
-    '}'
-    '</script></head>'
 )
 
 app.layout = build_layout()

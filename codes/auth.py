@@ -16,7 +16,6 @@ Environment variables required:
 """
 
 import os
-import json
 import secrets
 import requests
 from functools import wraps
@@ -30,6 +29,7 @@ from jose.exceptions import JWTError
 # Import Flask and related libraries
 import flask
 from flask import redirect, request, session, url_for
+from codes.core.config import is_production
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -263,7 +263,7 @@ def _verify_supabase_token(token: str) -> Optional[str]:
 
 
 def _is_dev_mode() -> bool:
-    return os.environ.get("FLASK_ENV", "").lower() != "production"
+    return not is_production()
 
 
 def get_dev_persona() -> Optional[dict]:
@@ -488,10 +488,10 @@ def configure_secure_cookies(app_server):
       HttpOnly=true     (No JavaScript access)
       SameSite=Lax|Strict (CSRF protection)
     """
-    is_production = os.environ.get("FLASK_ENV", "").lower() == "production"
+    production = is_production()
     
     app_server.config.update(
-        SESSION_COOKIE_SECURE=is_production,  # HTTPS only in production
+        SESSION_COOKIE_SECURE=production,  # HTTPS only in production
         SESSION_COOKIE_HTTPONLY=True,  # Never expose to JavaScript
         SESSION_COOKIE_SAMESITE="Lax",  # CSRF protection (use "Strict" if no cross-site forms)
         SESSION_COOKIE_NAME="intrinsic_iq_session",  # Explicit cookie name
@@ -504,7 +504,7 @@ def configure_secure_cookies(app_server):
         """Mark session as permanent to enforce lifetime."""
         session.permanent = True
     
-    secure_str = "Secure" if is_production else "insecure (dev mode)"
+    secure_str = "Secure" if production else "insecure (dev mode)"
     print(f"[AUTH] Secure cookies configured ({secure_str})")
 
 
@@ -533,7 +533,7 @@ def init_auth(app_server):
     """
     print(f"\n[AUTH] Initializing authentication (provider={AUTH_PROVIDER})")
 
-    if os.environ.get("FLASK_ENV", "").lower() == "production" and not AUTH_PROVIDER:
+    if is_production() and not AUTH_PROVIDER:
         raise RuntimeError("AUTH_PROVIDER must be configured in production.")
 
     configure_secure_cookies(app_server)

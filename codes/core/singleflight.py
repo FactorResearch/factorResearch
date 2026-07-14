@@ -5,19 +5,27 @@ from __future__ import annotations
 import json
 import threading
 import time
+import weakref
 from collections.abc import Callable
 from typing import TypeVar
 
 from codes.core.redis_client import get_redis
 
 T = TypeVar("T")
-_locks: dict[str, threading.Lock] = {}
+_locks = weakref.WeakValueDictionary()
 _local_results: dict[str, tuple[float, object]] = {}
 _locks_guard = threading.Lock()
+_MAX_LOCAL_KEYS = 1024
 
 
 def _local_lock(key: str) -> threading.Lock:
     with _locks_guard:
+        now = time.monotonic()
+        expired = [name for name, entry in _local_results.items() if entry[0] <= now]
+        for name in expired:
+            _local_results.pop(name, None)
+        while len(_local_results) >= _MAX_LOCAL_KEYS:
+            _local_results.pop(next(iter(_local_results)))
         return _locks.setdefault(key, threading.Lock())
 
 

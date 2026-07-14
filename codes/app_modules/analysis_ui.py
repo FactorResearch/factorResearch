@@ -297,24 +297,16 @@ def _fcf_quality_card(data: dict) -> html.Div:
         "EARNINGS_QUALITY_RISK": RED,
     }.get(signal, MUTED)
 
-    def _fmt(v, fmt=",.2f", prefix="", suffix=""):
-        if v is None:
-            return "N/A"
-        try:
-            return f"{prefix}{v:{fmt}}{suffix}"
-        except (ValueError, TypeError):
-            return "N/A"
-
     metrics = [
-        ("FCF",              _fmt(fcf.get("fcf"), ",.0f", "$")),
-        ("Operating CF",     _fmt(fcf.get("operating_cash_flow"), ",.0f", "$")),
-        ("CapEx",            _fmt(fcf.get("capex"), ",.0f", "$")),
-        ("FCF Margin",       _fmt(fcf.get("fcf_margin"), ".1f", suffix="%")),
-        ("FCF Conversion",   _fmt(fcf.get("fcf_conversion"), ".1f", suffix="%")),
-        ("FCF Stability CV", _fmt(fcf.get("fcf_stability"), ".3f")),
-        ("Growth Consist.",  _fmt(fcf.get("fcf_growth_consistency"), ".0%") if fcf.get("fcf_growth_consistency") is not None else "N/A"),
-        ("Accrual Ratio",    _fmt(fcf.get("accrual_ratio"), ".4f")),
-        ("FCF CAGR 5yr",     _fmt(fcf.get("fcf_cagr_5y"), ".1f", suffix="%")),
+        ("FCF",              _model_metric(fcf.get("fcf"), ",.0f", prefix="$")),
+        ("Operating CF",     _model_metric(fcf.get("operating_cash_flow"), ",.0f", prefix="$")),
+        ("CapEx",            _model_metric(fcf.get("capex"), ",.0f", prefix="$")),
+        ("FCF Margin",       _model_metric(fcf.get("fcf_margin"), ".1f", "%")),
+        ("FCF Conversion",   _model_metric(fcf.get("fcf_conversion"), ".1f", "%")),
+        ("FCF Stability CV", _model_metric(fcf.get("fcf_stability"), ".3f")),
+        ("Growth Consist.",  _model_metric(fcf.get("fcf_growth_consistency"), ".0%")),
+        ("Accrual Ratio",    _model_metric(fcf.get("accrual_ratio"), ".4f")),
+        ("FCF CAGR 5yr",     _model_metric(fcf.get("fcf_cagr_5y"), ".1f", "%")),
     ]
 
     metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
@@ -460,22 +452,13 @@ def _insider_activity_card(data: dict) -> html.Div:
         ("Sell Transactions",   str(ia.get("n_sell_transactions", 0))),
         ("Distinct Buyers",     str(ia.get("n_distinct_buyers",   0))),
     ]
-    rows = [
-        html.Div(className="metric-row-divider d-flex jc-between py-4 fs-12",
-                 children=[
-            html.Span(lbl, className="text-muted"),
-            html.Span(val, className="clr-text fw-600"),
-        ])
-        for lbl, val in metrics
-    ]
-    return html.Div(className="scorecard", children=[
-        html.Div(className="d-flex ai-center gap-10 pt-14 px-18 pb-10", children=[
-            html.Span("Insider Activity", className="fs-14 fw-700 clr-text"),
-            html.Span(f"{score:.0f}/100", className=f"fs-22 fw-800 {tone_class(sig_color)}"),
-            html.Span(f"\u2014 {signal}", className=f"fs-13 {tone_class(sig_color)}"),
-        ]),
-        html.Div(rows, className="px-xl pb-2xl"),
-    ])
+    return _metric_scorecard(
+        title="Insider Activity",
+        score_text=f"{score:.0f}/100",
+        score_color=sig_color,
+        status_text=f"\u2014 {signal}",
+        body_children=[_metric_data_row(label, value) for label, value in metrics],
+    )
 
 
 def _factor_momentum_card(data: dict) -> html.Div:
@@ -851,11 +834,11 @@ def _comomentum_card(data: dict) -> html.Div:
     )
 
 
-def _model_metric(value, fmt=".2f", suffix="") -> str:
+def _model_metric(value, fmt=".2f", suffix="", prefix="") -> str:
     if value is None:
         return "N/A"
     try:
-        return f"{value:{fmt}}{suffix}"
+        return f"{prefix}{value:{fmt}}{suffix}"
     except (TypeError, ValueError):
         return "N/A"
 
@@ -1438,20 +1421,6 @@ def build_analysis_charts(data: dict) -> list:
     ]
 
 
-def _stat(label, value, tooltip=None):
-    return html.Div([
-        html.Div(label, className="stat-label" + (" ch stat-label-tooltip" if tooltip else ""),
-                 title=tooltip or ""),
-        html.Div(value, className="stat-value")
-    ], className="stat-item")
-
-def _pillar(label, score, weight):
-    return html.Div([
-        html.Div(f"{score}%", className="pillar-value") if isinstance(score, (int, float)) else html.Div(score, className="pillar-value"),
-        html.Div(label, className="pillar-label"),
-        html.Div(f"({weight})", className="pillar-weight"),
-    ])
-
 def _grade_color(grade: str) -> str:
     return {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(grade, MUTED)
 def format_currency(val) -> str:
@@ -1486,21 +1455,6 @@ def _fmt_updated(v) -> str:
         return parsed.strftime("%b %d, %Y")
     except (TypeError, ValueError, OverflowError):
         return str(v)[:10] or "Not available"
-def _verdict_color(label: str) -> str:
-    return {
-        "strong-buy": GREEN,
-        "high-conviction": GREEN,
-        "buy": BLUE,
-        "favorable": BLUE,
-        "watch": AMBER,
-        "balanced": AMBER,
-        "hold": MUTED,
-        "caution": MUTED,
-        "avoid": RED,
-        "unfavorable": RED,
-        "pending": MUTED,
-    }.get(label, MUTED)
-
 def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
     rows = []
     for c in criteria:

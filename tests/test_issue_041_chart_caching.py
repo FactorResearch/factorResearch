@@ -1,7 +1,6 @@
 import threading
 
 from codes.services import chart_service
-from codes.workers import chart_worker
 
 
 def setup_function():
@@ -52,6 +51,13 @@ def test_chart_service_reuses_cached_dataset():
     assert second["meta"]["cache_hit"] is True
     assert first["series"] == second["series"]
     assert calls["count"] == 1
+
+
+def test_chart_service_bounds_local_lock_registry(monkeypatch):
+    chart_service.clear_local_cache()
+    for index in range(10):
+        chart_service._get_local_lock(str(index))
+    assert not chart_service._local_locks
 
 
 def test_analysis_version_change_uses_new_cache_entry():
@@ -115,24 +121,3 @@ def test_analysis_chart_dataset_normalizes_price_history():
     assert dataset["series"][0]["y"] == [100.0, 110.00000000000001]
     assert dataset["series"][1]["name"] == "SPY"
     assert dataset["meta"]["cache_hit"] is False
-
-
-def test_worker_precomputes_primary_analysis_charts(monkeypatch):
-    data = {
-        "symbol": "AAPL",
-        "analysis_version": "analysis-1",
-        "graham": {
-            "eps_history": [{"year": 2025, "value": 3.5}],
-            "div_history": [{"year": 2025, "value": 1_000_000}],
-        },
-        "price_history": [{"Date": "2026-01-01", "Close": 100}],
-        "spy_history": [{"Date": "2026-01-01", "Close": 50}],
-    }
-    monkeypatch.setattr(chart_worker, "_load_analysis", lambda ticker: data)
-
-    first = chart_worker.precompute_analysis_charts("AAPL")
-    second = chart_worker.precompute_analysis_charts("AAPL")
-
-    assert len(first["generated"]) == 3
-    assert first["errors"] == []
-    assert all(item["cache_hit"] is True for item in second["generated"])

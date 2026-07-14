@@ -15,7 +15,7 @@ if _ROOT not in sys.path:
 
 import math
 import pytest
-from codes import altman
+from codes.models import altman
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

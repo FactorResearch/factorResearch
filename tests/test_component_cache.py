@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+from collections import OrderedDict
 
 from codes.services import component_cache
 
@@ -30,3 +31,12 @@ def test_component_cache_invalidates_changed_inputs(monkeypatch):
     component_cache.get_or_compute("quality", "AAPL", "1", {"facts": 2}, compute)
 
     assert compute.call_count == 2
+
+
+def test_component_cache_bounds_local_entries(monkeypatch):
+    monkeypatch.setattr(component_cache, "get_redis", lambda: None)
+    monkeypatch.setattr(component_cache, "_memory", OrderedDict())
+    monkeypatch.setattr(component_cache, "_MAX_MEMORY_ENTRIES", 3)
+    for index in range(10):
+        component_cache.get_or_compute("quality", str(index), "1", index, lambda: index)
+    assert len(component_cache._memory) == 3
