@@ -19,6 +19,7 @@ from codes.services import product_analytics
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
 from codes.app_modules.css_classes import tone_class
+from codes.app_modules.company_identity import company_logo
 
 PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
@@ -243,18 +244,24 @@ def render_portfolio_holdings(active, refresh):
             )
 
             rows.append(html.Tr([
-                html.Td(sym, className="pcol-symbol"),
+                html.Td(html.Div([
+                    company_logo(sym, h.get("company") or sym, "company-logo company-logo--table"),
+                    html.Span(sym),
+                ], className="portfolio-symbol-identity"), className="pcol-symbol"),
                 html.Td(
                     html.Div(className="flex align-items-center gap-sm", children=[
-                        dcc.Input(
-                            id={"type": "shares-edit-input", "index": f"{active}|{sym}"},
-                            type="number",
-                            value=h["shares"],
-                            min=5,
-                            step=1,
-                            debounce=False,
-                            className="shares-input",
-                        ),
+                        html.Label(className="shares-input-label", children=[
+                            html.Span(f"Shares of {sym}", className="sr-only"),
+                            dcc.Input(
+                                id={"type": "shares-edit-input", "index": f"{active}|{sym}"},
+                                type="number",
+                                value=h["shares"],
+                                min=5,
+                                step=1,
+                                debounce=False,
+                                className="shares-input",
+                            ),
+                        ]),
                         html.Button(
                             "✓",
                             id={"type": "shares-save-btn", "index": f"{active}|{sym}"},
@@ -297,7 +304,7 @@ def render_portfolio_holdings(active, refresh):
                 disabled=(count == 0),
             ),
         ])
-        body = html.Div([summary_cards, table, actions])
+        body = html.Div([summary_cards, actions, table], className="portfolio-body")
     return html.Div([header, body])
 
 # ── Remove holding ────────────────────────────────────────────────────────────
@@ -612,7 +619,11 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
             f"{active} vs {compare} vs SPY — 10yr Backtest (actual $)", many_traces=True
         ))
         fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
-        sections.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
+        sections.append(dcc.Graph(
+            figure=fig_bt,
+            config={"displayModeBar": False, "responsive": True},
+            className="portfolio-graph",
+        ))
     elif bt_a.get("error"):
         sections.append(html.Div(f"❌ {active}: {bt_a['error']}", className="text-danger"))
     elif bt_b.get("error"):
@@ -650,7 +661,11 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
             many_traces=True
         ))
         fig_mc.update_yaxes(title_text="Projected Value ($)", tickprefix="$")
-        sections.append(dcc.Graph(figure=fig_mc, config={"displayModeBar": False}))
+        sections.append(dcc.Graph(
+            figure=fig_mc,
+            config={"displayModeBar": False, "responsive": True},
+            className="portfolio-graph",
+        ))
 
     # ── Side-by-side holdings tables ─────────────────────────────────────
     sections.append(_two_col(
@@ -772,7 +787,11 @@ def run_simulation(n, active, compare):
             ))
             fig_bt.update_layout(**_chart_layout(f"{port_name} — 10yr Backtest vs SPY (actual $)", many_traces=True))
             fig_bt.update_yaxes(title_text="Portfolio Value ($)", tickprefix="$")
-            components.append(dcc.Graph(figure=fig_bt, config={"displayModeBar": False}))
+            components.append(dcc.Graph(
+                figure=fig_bt,
+                config={"displayModeBar": False, "responsive": True},
+                className="portfolio-graph",
+            ))
         # ── Monte Carlo chart ──────────────────────────────────────────────
         if not mc.get("error"):
             fig_mc = go.Figure()
@@ -812,7 +831,11 @@ def run_simulation(n, active, compare):
                 f"{port_name} — 2yr Monte Carlo Projection (1,000 paths)", many_traces=True
             ))
             fig_mc.update_yaxes(title_text="Projected Value ($)", tickprefix="$")
-            components.append(dcc.Graph(figure=fig_mc, config={"displayModeBar": False}))
+            components.append(dcc.Graph(
+                figure=fig_mc,
+                config={"displayModeBar": False, "responsive": True},
+                className="portfolio-graph",
+            ))
         # ── Holdings detail table ──────────────────────────────────────────
         if not bt.get("error") and bt.get("holdings_detail"):
             detail_rows = []

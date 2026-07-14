@@ -1,54 +1,99 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap');
+@use '../colors' as c;
 
-// ── Brand Palette (Dark) ────────────────────────────────────────────────────
-$bg: #0d1117;
-$surface: #161d2a;
-$card: #1e2a3a;
-$card-raised: #1e2a3a;
-$border: #43345a;
-$border-glow: #1e3a5f;
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
-$green: #00e676;
-$green-dim: #00c853;
-$green-glow: rgba(0, 230, 118, 0.15);
-$red: #ff1744;
-$red-dim: #d50000;
-$red-glow: rgba(255, 23, 68, 0.10);
-$amber: #ffab00;
-$amber-glow: rgba(255, 171, 0, 0.10);
-$warning: #ffab00;
-$warning-bg: rgba(255, 171, 0, 0.10);
-$positive: #00e676;
-$positive-bg: rgba(0, 230, 118, 0.12);
-$negative: #ff1744;
-$negative-bg: rgba(255, 23, 68, 0.10);
-$cyan: #00b8d4;
-$blue: #1677ff;
-$blue-bright: #448aff;
-$blue-glow: rgba(22, 119, 255, 0.2);
-$cyan: #00b8d4;
-$black:#0000;
-$text: #e8eaf0;
-$text-dim: #8899aa;
-$text-muted: #4a5568;
-$white: #fff;
+$font-base: 'Manrope', 'Segoe UI', sans-serif;
+$font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
 
-$font-mono: 'DM Mono', 'Fira Code', monospace;
-$font-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+$bg: c.$ink-950;
+$surface: c.$ink-900;
+$surface-soft: c.$ink-850;
+$card: rgba(c.$ink-850, 0.92);
+$card-raised: rgba(c.$ink-800, 0.94);
+$border: rgba(c.$ink-500, 0.28);
+$border-strong: rgba(c.$ink-400, 0.38);
+$text: c.$ink-100;
+$text-dim: c.$ink-400;
+$text-muted: c.$ink-500;
+$white: c.$white;
 
-$tablet: 1024px;
-$mobile: 768px;
-$small-mobile: 480px;
+$blue: c.$navy-600;
+$blue-bright: c.$info-500;
+$cyan: c.$teal-500;
+$green: c.$success-500;
+$green-dim: c.$success-600;
+$red: c.$danger-500;
+$red-dim: c.$danger-600;
+$amber: c.$gold-500;
+$warning: c.$warning-500;
+$positive: c.$success-500;
+$negative: c.$danger-500;
+$black: transparent;
 
-// ── Light Theme (applied via .light class on body) ──────────────────────────
-$light-bg: #ffffff;
-$light-surface: #f7f8fa;
-$light-card: #ffffff;
-$light-border: #cbd5e1;
-$light-text: #0f172a;
-$light-text-dim: #475569;
-$light-text-muted: #64748b;
-$light-positive: #087f3f;
-$light-negative: #c62828;
-$light-amber: #946200;
-$light-blue: #075fc7;
+$green-glow: rgba(c.$success-500, 0.18);
+$red-glow: rgba(c.$danger-500, 0.16);
+$amber-glow: rgba(c.$gold-500, 0.18);
+$blue-glow: rgba(c.$info-500, 0.18);
+$border-glow: rgba(c.$ink-300, 0.12);
+
+$light-bg: #f4efe7;
+$light-surface: #fbf7f1;
+$light-card: #fffdfa;
+$light-border: #d6cbbd;
+$light-text: #1c2736;
+$light-text-dim: #5b6776;
+$light-text-muted: #7c8896;
+$light-positive: #215f4d;
+$light-negative: #a44c45;
+$light-amber: #8b6621;
+$light-blue: #255f98;
+
+$radius-sm: 2px;
+$radius-md: 3px;
+$radius-lg: 5px;
+$radius-xl: 6px;
+
+:root {
+  --fr-bg: #{$bg};
+  --fr-surface: #{$surface};
+  --fr-surface-soft: #{$surface-soft};
+  --fr-card: #{$card};
+  --fr-card-raised: #{$card-raised};
+  --fr-border: #{$border};
+  --fr-border-strong: #{$border-strong};
+  --fr-text: #{$text};
+  --fr-text-dim: #{$text-dim};
+  --fr-text-muted: #{$text-muted};
+  --fr-accent: #{$blue-bright};
+  --fr-accent-soft: #{$cyan};
+  --fr-positive: #{$green};
+  --fr-warning: #{$amber};
+  --fr-danger: #{$red};
+  --fr-shadow-lg: 0 24px 60px #{c.$shadow-dark};
+  --fr-shadow-md: 0 16px 36px #{c.$shadow-soft};
+  --fr-shadow-sm: 0 8px 20px #{c.$shadow-light};
+  --fr-radius-card: #{$radius-lg};
+  --fr-radius-pill: 6px;
+}
+
+html.light,
+body.light {
+  --fr-bg: #{$light-bg};
+  --fr-surface: #{$light-surface};
+  --fr-surface-soft: #{$light-card};
+  --fr-card: #{$light-card};
+  --fr-card-raised: #{$white};
+  --fr-border: rgba(28, 39, 54, 0.12);
+  --fr-border-strong: rgba(28, 39, 54, 0.18);
+  --fr-text: #{$light-text};
+  --fr-text-dim: #{$light-text-dim};
+  --fr-text-muted: #{$light-text-muted};
+  --fr-accent: #{$light-blue};
+  --fr-accent-soft: #{c.$teal-600};
+  --fr-positive: #{$light-positive};
+  --fr-warning: #{$light-amber};
+  --fr-danger: #{$light-negative};
+  --fr-shadow-lg: 0 20px 44px rgba(36, 43, 53, 0.12);
+  --fr-shadow-md: 0 14px 30px rgba(36, 43, 53, 0.08);
+  --fr-shadow-sm: 0 8px 18px rgba(36, 43, 53, 0.06);
+}

@@ -9,7 +9,7 @@ from dash.exceptions import PreventUpdate
 
 from codes.engine import screener
 from codes.app_modules.analysis import analyze_stock, _is_rate_limit_error, is_production
-from codes.app_modules.analysis_ui import _build_analysis_content
+from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes.services import permissions
@@ -27,6 +27,48 @@ _ANALYZE_PATH_RE = re.compile(
 clientside_callback(
     """
     function(children, hash, tabStyle) {
+        window.requestAnimationFrame(function() {
+            var links = Array.from(document.querySelectorAll('.analysis-jump-link'));
+            var sections = links.map(function(link) {
+                return document.getElementById(link.getAttribute('href').slice(1));
+            }).filter(Boolean);
+            if (window.factorResearchScrollHandler) {
+                window.removeEventListener('scroll', window.factorResearchScrollHandler);
+            }
+            var ticking = false;
+            function updateActiveSection() {
+                ticking = false;
+                var marker = 150;
+                var active = sections[0];
+                sections.forEach(function(section) {
+                    if (section.getBoundingClientRect().top <= marker) active = section;
+                });
+                if (!active) return;
+                links.forEach(function(link) {
+                    var isActive = link.getAttribute('href') === '#' + active.id;
+                    link.classList.toggle('active', isActive);
+                    if (isActive) link.setAttribute('aria-current', 'true');
+                    else link.removeAttribute('aria-current');
+                });
+            }
+            links.forEach(function(link) {
+                link.onclick = function(event) {
+                    event.preventDefault();
+                    var target = document.getElementById(link.getAttribute('href').slice(1));
+                    if (!target) return;
+                    target.scrollIntoView({behavior: 'smooth', block: 'start'});
+                    window.history.replaceState(null, '', link.getAttribute('href'));
+                    window.requestAnimationFrame(updateActiveSection);
+                };
+            });
+            window.factorResearchScrollHandler = function() {
+                if (ticking) return;
+                ticking = true;
+                window.requestAnimationFrame(updateActiveSection);
+            };
+            window.addEventListener('scroll', window.factorResearchScrollHandler, {passive: true});
+            updateActiveSection();
+        });
         if (!hash || hash.length < 2) {
             return window.dash_clientside.no_update;
         }
@@ -50,7 +92,7 @@ clientside_callback(
         function scrollWhenReady() {
             var target = findTarget();
             if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                target.scrollIntoView({ behavior: 'auto', block: 'start' });
                 return;
             }
             attempts += 1;
@@ -95,13 +137,13 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
     Output("screener-viewed-store",   "data"),
     Output("upgrade-funnel-store",    "data"),
     Input("analyze-btn",          "n_clicks"),
-    Input("screener-click-ticker","data"),
+    Input("screener-open-analysis-symbol","data"),
     Input("url",                  "pathname"),
     State("ticker-input",         "value"),
     State("screener-viewed-store","data"),
     prevent_initial_call=False
 )
-def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_list):
+def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, viewed_list):
     """
     Single callback: fetch + score + render.
     Because analysis-content is a child of dcc.Loading(id='analysis-loading'),
@@ -109,8 +151,8 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
     """
     triggered = dash.ctx.triggered_id
     route_ticker = _ticker_from_analyze_path(pathname)
-    if triggered == "screener-click-ticker" and clicked_ticker:
-        ticker = clicked_ticker
+    if triggered == "screener-open-analysis-symbol" and open_analysis_symbol:
+        ticker = open_analysis_symbol
     elif route_ticker and (triggered in ("url", None) or not ticker_input_value):
         ticker = route_ticker
     else:
@@ -236,3 +278,37 @@ def run_analysis(n_clicks, clicked_ticker, pathname, ticker_input_value, viewed_
         viewed_updated,
         dash.no_update,
     )
+
+
+@callback(
+    Output("analysis-charts-content", "children"),
+    Input("analysis-charts-summary", "n_clicks"),
+    State("analysis-store", "data"),
+    prevent_initial_call=True,
+)
+def render_analysis_charts_on_demand(n_clicks, analysis):
+    if not n_clicks or not analysis:
+        return dash.no_update
+    return build_analysis_charts(analysis)
+
+
+clientside_callback(
+    """
+    function(children) {
+        function resizeCharts() {
+            if (!window.Plotly) return;
+            document.querySelectorAll('#analysis-charts-content .js-plotly-plot')
+                .forEach(function(graph) { window.Plotly.Plots.resize(graph); });
+        }
+        window.requestAnimationFrame(function() {
+            resizeCharts();
+            window.setTimeout(resizeCharts, 120);
+            window.setTimeout(resizeCharts, 350);
+        });
+        return Date.now();
+    }
+    """,
+    Output("analysis-chart-resize-trigger", "children"),
+    Input("analysis-charts-content", "children"),
+    prevent_initial_call=True,
+)
