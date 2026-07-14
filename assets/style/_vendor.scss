@@ -1,69 +1,277 @@
-@use 'tokens' as *;
 @use 'helpers' as *;
-// ── Dropdown (Dash DCC) ───────────────────────────────────────────────────────
-.Select-control {
-  background: $card !important;
-  border: 1px solid $border !important;
-  border-radius: 4px !important;
-  @include mono(12px);
-  color: $text !important;
-}
+@use 'tokens' as *;
 
-.Select-menu-outer {
-  background: $card-raised !important;
-  border: 1px solid $border-glow !important;
-  border-radius: 4px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
-}
+button.dash-dropdown {
+  color-scheme: dark;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--fr-border) !important;
+  border-radius: $radius-md !important;
+  background: var(--fr-card-raised) !important;
+  color: var(--fr-text) !important;
+  box-shadow: none !important;
 
-.Select-option {
-  background: transparent !important;
-  color: $text-dim !important;
-  @include mono(12px);
-  padding: 8px 12px !important;
+  &:hover {
+    border-color: var(--fr-border-strong) !important;
+  }
 
-  &:hover,
-  &.is-focused {
-    background: rgba($blue-bright, 0.08) !important;
-    color: $text !important;
+  &:focus-visible,
+  &[data-state='open'] {
+    border-color: var(--fr-accent) !important;
+    outline: 0;
+    box-shadow: 0 0 0 3px $blue-glow !important;
+  }
+
+  .dash-dropdown-value,
+  .dash-dropdown-value-item,
+  .dash-dropdown-trigger-icon {
+    color: var(--fr-text) !important;
   }
 }
 
-.Select-value-label {
-  color: $text !important;
+.dash-dropdown-content {
+  @include panel(true);
+  background-color: $surface-soft !important;
+  box-sizing: border-box;
+  width: min(var(--radix-popover-trigger-width), calc(100vw - 24px));
+  min-width: min(var(--radix-popover-trigger-width), calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
+  z-index: 1000;
+  padding: 8px;
+  color: var(--fr-text) !important;
+
+  .dash-dropdown-search-container {
+    padding: 4px 4px 8px;
+  }
+
+  .dash-dropdown-search {
+    appearance: none;
+    width: 100%;
+    min-height: 42px;
+    padding: 0 12px 0 36px;
+    border-radius: $radius-sm !important;
+    background-color: $surface-soft !important;
+    background-image: none !important;
+    color: var(--fr-text) !important;
+    color-scheme: dark;
+    -webkit-text-fill-color: var(--fr-text) !important;
+  }
+
+  .dash-dropdown-search-icon {
+    color: var(--fr-text-muted);
+  }
+
+  .dash-dropdown-options {
+    display: grid;
+    gap: 3px;
+  }
+
+  .dash-dropdown-option {
+    min-height: 40px;
+    padding: 9px 10px;
+    border-radius: $radius-sm;
+    color: var(--fr-text-dim) !important;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-within {
+      background: $blue-glow;
+      color: var(--fr-text) !important;
+    }
+
+    &.selected,
+    &[aria-selected='true'] {
+      background: $green-glow;
+      color: var(--fr-positive) !important;
+    }
+  }
+
+  .dash-options-list-option-checkbox {
+    accent-color: var(--fr-accent-soft);
+  }
 }
 
-// ── Scrollbar ────────────────────────────────────────────────────────────────
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.Select,
+.dash-dropdown {
+  color: var(--fr-text);
+
+  .Select-control {
+    min-height: 48px;
+    border: 1px solid var(--fr-border) !important;
+    border-radius: $radius-md !important;
+    background: var(--fr-card-raised) !important;
+    color: var(--fr-text) !important;
+    box-shadow: none !important;
+  }
+
+  &.is-focused,
+  &.is-open {
+    > .Select-control {
+      border-color: var(--fr-accent) !important;
+      box-shadow: 0 0 0 3px $blue-glow !important;
+    }
+  }
+
+  &.is-disabled {
+    opacity: 0.55;
+
+    > .Select-control {
+      cursor: not-allowed;
+    }
+  }
+
+  .Select-placeholder,
+  .Select-value,
+  .Select-value-label,
+  .Select-input {
+    min-height: 46px;
+    line-height: 46px !important;
+  }
+
+  .Select-placeholder {
+    color: var(--fr-text-muted) !important;
+  }
+
+  .Select-value-label {
+    color: var(--fr-text) !important;
+  }
+
+  .Select-input {
+    > input {
+      min-height: 0;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--fr-text) !important;
+      box-shadow: none !important;
+    }
+  }
+
+  .Select-arrow {
+    border-top-color: var(--fr-text-muted);
+  }
+
+  .Select-clear-zone {
+    color: var(--fr-text-muted);
+
+    &:hover {
+      color: var(--fr-danger);
+    }
+  }
+
+  .Select-menu-outer {
+    @include panel(true);
+    z-index: 1000;
+    margin-top: 6px;
+    overflow: hidden;
+    color: var(--fr-text);
+  }
+
+  .Select-menu {
+    max-height: 280px;
+  }
+
+  .Select-option {
+    padding: 11px 14px;
+    background: transparent;
+    color: var(--fr-text-dim);
+
+    &.is-focused,
+    &:hover {
+      background: $blue-glow;
+      color: var(--fr-text);
+    }
+
+    &.is-selected {
+      background: $green-glow;
+      color: var(--fr-positive);
+    }
+  }
+
+  .Select-noresults {
+    padding: 14px;
+    color: var(--fr-text-muted);
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: $bg;
+input {
+  color-scheme: dark;
+
+  &::placeholder {
+    color: var(--fr-text-muted);
+    opacity: 1;
+  }
+
+  &:focus {
+    border-color: var(--fr-accent) !important;
+    outline: 0;
+    box-shadow: 0 0 0 3px $blue-glow !important;
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    box-shadow: 0 0 0 1000px $surface-soft inset !important;
+    -webkit-text-fill-color: var(--fr-text) !important;
+    caret-color: var(--fr-text);
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: $border;
-  border-radius: 3px;
-}
+body.light {
+  input,
+  button.dash-dropdown,
+  .dash-dropdown-content {
+    background-color: $light-card !important;
 
-::-webkit-scrollbar-thumb:hover {
-  background: $text-muted;
-}
+    color-scheme: light;
+    background: $light-surface !important;
+  }
 
-// ── Selection ────────────────────────────────────────────────────────────────
-::selection {
-  background: rgba($blue-bright, 0.25);
-  color: $text;
-}
+  .dash-dropdown-content {
+    .dash-dropdown-search {
+      background-color: $light-card !important;
+      -webkit-text-fill-color: $light-text !important;
+    }
 
-.sort-header-btn {
-  background: none;
-  border: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  padding: 0;
-  white-space: nowrap;
+    .dash-dropdown-option {
+      &:hover,
+      &:focus-within {
+        background: rgba($light-blue, 0.08);
+      }
+
+      &.selected,
+      &[aria-selected='true'] {
+        background: rgba($light-positive, 0.1);
+      }
+    }
+  }
+
+  .Select,
+  .dash-dropdown {
+    .Select-control,
+    .Select-menu-outer {
+      background: $light-surface !important;
+    }
+
+    .Select-option {
+      &.is-focused,
+      &:hover {
+        background: rgba($light-blue, 0.08);
+      }
+
+      &.is-selected {
+        background: rgba($light-positive, 0.1);
+      }
+    }
+  }
+
+  input {
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus {
+      box-shadow: 0 0 0 1000px $light-card inset !important;
+      -webkit-text-fill-color: $light-text !important;
+      caret-color: $light-text;
+    }
+  }
 }
