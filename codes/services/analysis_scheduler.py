@@ -4,13 +4,16 @@ import os
 import threading
 import time
 
+from codes.core.config import is_production
+
 _started = False
 _lock = threading.Lock()
 
 
 def _enabled() -> bool:
-    # Enable this in one designated process, not every Gunicorn web worker.
-    return os.environ.get("ANALYSIS_BACKGROUND_JOBS") == "1"
+    if os.environ.get("ANALYSIS_BACKGROUND_JOBS") != "1":
+        return False
+    return not is_production() or os.environ.get("PROCESS_ROLE") == "analysis-worker"
 
 
 def _popular_symbols() -> list[str]:
@@ -63,3 +66,14 @@ def start_background_maintenance() -> bool:
         threading.Thread(target=analysis_jobs.work_forever, name="analysis-jobs", daemon=True).start()
         _started = True
     return True
+
+
+def run_forever() -> None:
+    if not start_background_maintenance():
+        raise RuntimeError("Analysis worker role is not enabled")
+    while True:
+        time.sleep(3600)
+
+
+if __name__ == "__main__":
+    run_forever()
