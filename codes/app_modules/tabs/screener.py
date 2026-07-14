@@ -5,10 +5,12 @@ import math
 import dash
 from dash import Input, Output, State, callback, html
 
+from codes.data import db
 from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
 from codes.engine import screener
 from codes.engine.scorer import verdict_for_score
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
+from codes.app_modules.company_identity import company_logo
 from codes.app_modules.config import (
     AMBER, BLUE, GREEN, MUTED, RED, PAGE_SIZE,
     get_score_class, get_verdict_class,
@@ -43,22 +45,275 @@ def _index_pill_buttons(selected_indices=None):
     ]
 
 
-# ── Screener ticker-click → store ─────────────────────────────────────────────
+def _quick_peek_row(symbol: str) -> dict | None:
+    for row in screener.get_screener_results():
+        if row.get("symbol") == symbol:
+            return row
+    return None
+
+
+def _quick_peek_takeaway(row: dict, analysis: dict | None) -> str:
+    if analysis:
+        enhanced = analysis.get("enhanced") or {}
+        verdict = (enhanced.get("verdict") or "").replace("_", " ").title()
+        score = enhanced.get("composite_score")
+        buffett = analysis.get("buffett") or {}
+        risk = analysis.get("risk") or {}
+        price = analysis.get("price")
+        intrinsic = buffett.get("intrinsic_value")
+        if price and intrinsic:
+            if price <= intrinsic and (score or 0) >= 70:
+                return f"{verdict or 'Favorable'} setup with price below modeled moat value."
+            if price > intrinsic and (score or 0) < 50:
+                return "Quality may exist, but valuation and score both need work."
+        if risk.get("sharpe") is not None and risk.get("sharpe", 0) < 0.5:
+            return "Fundamentals may be acceptable, but risk-adjusted returns are currently weak."
+        if score is not None:
+            return f"Composite score sits at {score:.0f}/100 with a {verdict.lower() or 'mixed'} profile."
+    if row.get("analyzed"):
+        return "Cached summary available. Open the full report for full factor detail."
+    return "Not fully analyzed yet. Use this quick peek for triage, then open the full report if it survives the first pass."
+
+
+def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
+    if not analysis:
+        return [
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Valuation", className="quick-peek-section-title"),
+                    html.Div("Quick view only. Full valuation detail appears after a full analysis run.", className="quick-peek-section-copy"),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Accounting", className="quick-peek-section-title"),
+                    html.Div("Accounting diagnostics are not available yet for this cached screener row.", className="quick-peek-section-copy"),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Risk", className="quick-peek-section-title"),
+                    html.Div("Use the screener score as a first filter, then open the full report for drawdown and safety detail.", className="quick-peek-section-copy"),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Growth", className="quick-peek-section-title"),
+                    html.Div("Growth quality and capital allocation become available after full analysis.", className="quick-peek-section-copy"),
+                ],
+            ),
+        ]
+
+    graham = analysis.get("graham") or {}
+    buffett = analysis.get("buffett") or {}
+    piotroski = analysis.get("piotroski") or {}
+    fcf_quality = analysis.get("fcf_quality") or {}
+    altman = analysis.get("altman") or {}
+    risk = analysis.get("risk") or {}
+    growth_quality = analysis.get("growth_quality") or {}
+    capital_allocation = analysis.get("capital_allocation") or {}
+    earnings_revision = analysis.get("earnings_revision") or {}
+    price = analysis.get("price")
+    intrinsic = buffett.get("intrinsic_value")
+
+    valuation_copy = "Intrinsic value not available yet."
+    if price and intrinsic:
+        direction = "below" if price <= intrinsic else "above"
+        valuation_copy = f"Price is {direction} moat value. P/E {graham.get('pe', 0):.1f}x and P/B {graham.get('pb', 0):.2f}x frame the current setup."
+
+    accounting_bits = []
+    if piotroski.get("f_score") is not None:
+        accounting_bits.append(f"F-Score {piotroski['f_score']}/9")
+    if fcf_quality.get("fcf_quality_score") is not None:
+        accounting_bits.append(f"FCF quality {fcf_quality['fcf_quality_score']:.0f}/100")
+    if altman.get("zone_label"):
+        accounting_bits.append(altman["zone_label"])
+    accounting_copy = " · ".join(accounting_bits) or "Accounting diagnostics are limited for this report."
+
+    risk_bits = []
+    if risk.get("beta") is not None:
+        risk_bits.append(f"Beta {risk['beta']:.2f}")
+    if risk.get("sharpe") is not None:
+        risk_bits.append(f"Sharpe {risk['sharpe']:.2f}")
+    if altman.get("z_score") is not None:
+        risk_bits.append(f"Altman {altman['z_score']:.2f}")
+    risk_copy = " · ".join(risk_bits) or "Open full analysis for risk detail."
+
+    growth_bits = []
+    if growth_quality.get("growth_quality_score") is not None:
+        growth_bits.append(f"Growth quality {growth_quality['growth_quality_score']:.0f}/100")
+    if capital_allocation.get("capital_allocation_score") is not None:
+        growth_bits.append(f"Capital allocation {capital_allocation['capital_allocation_score']:.0f}/100")
+    if earnings_revision.get("total_score") is not None:
+        growth_bits.append(f"Revisions {earnings_revision['total_score']:.0f}/100")
+    growth_copy = " · ".join(growth_bits) or "Growth signals not available yet."
+
+    return [
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Valuation", className="quick-peek-section-title"),
+                html.Div(valuation_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Accounting", className="quick-peek-section-title"),
+                html.Div(accounting_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Risk", className="quick-peek-section-title"),
+                html.Div(risk_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Growth", className="quick-peek-section-title"),
+                html.Div(growth_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+    ]
+
+
+def _build_quick_peek(symbol: str) -> html.Div:
+    row = _quick_peek_row(symbol) or {"symbol": symbol, "name": symbol, "sector": "Unknown", "composite_score": 0}
+    analysis = db.get_analysis(symbol)
+    enhanced = (analysis or {}).get("enhanced") or {}
+    buffett = (analysis or {}).get("buffett") or {}
+    price = (analysis or {}).get("price") or row.get("price")
+    moat_value = buffett.get("intrinsic_value") or row.get("buffett_iv")
+    verdict = enhanced.get("verdict")
+    verdict_label = enhanced.get("verdict_label")
+    score = enhanced.get("composite_score")
+
+    if verdict is None:
+        if row.get("analyzed"):
+            verdict, verdict_label, _ = verdict_for_score(row.get("composite_score", 0), enhanced=False)
+        else:
+            verdict, verdict_label = "Pending", "pending"
+    if score is None:
+        score = row.get("composite_score", 0)
+
+    metric_items = [
+        ("Composite", f"{score:.0f}/100"),
+        ("Verdict", verdict.replace("_", " ").title()),
+        ("Price", f"{price:,.2f}" if price else "—"),
+        ("Market Cap", _fmt_market_cap((analysis or {}).get("market_cap") or row.get("market_cap"))),
+        ("Moat Value", f"{moat_value:,.2f}" if moat_value else "—"),
+    ]
+
+    return html.Div(
+        className="quick-peek-card",
+        children=[
+            html.Div(
+                className="quick-peek-identity",
+                children=[
+                    company_logo(symbol, row.get("name") or symbol, "company-logo company-logo--quick-peek"),
+                    html.Div(className="quick-peek-identity-copy", children=[
+                        html.Div(symbol, className="quick-peek-symbol"),
+                        html.H4(row.get("name") or symbol, className="quick-peek-company"),
+                        html.Div(
+                            f"Updated {_fmt_updated((analysis or {}).get('updated_at') or row.get('updated_at'))}",
+                            className="quick-peek-updated",
+                        ),
+                    ]),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-metrics",
+                children=[
+                    html.Div(
+                        className="quick-peek-metric",
+                        children=[
+                            html.Div(label, className="quick-peek-metric-label"),
+                            html.Div(value, className="quick-peek-metric-value"),
+                        ],
+                    )
+                    for label, value in metric_items
+                ],
+            ),
+            html.Div(
+                className="quick-peek-actions",
+                children=[
+                    html.Button(
+                        "Open Full Analysis",
+                        id="quick-peek-open-analysis-btn",
+                        className="quick-peek-open-analysis-btn",
+                        n_clicks=0,
+                        type="button",
+                    )
+                ],
+            ),
+        ],
+    )
+
+
+# ── Screener ticker-click → quick peek ───────────────────────────────────────
 @callback(
-    Output("screener-click-ticker", "data"),
-    Input({"type": "screener-ticker-btn", "index": dash.ALL}, "n_clicks"),
+    Output("screener-quick-peek-symbol", "data"),
+    Input(
+        {"type": "screener-ticker-btn", "index": dash.ALL, "source": dash.ALL},
+        "n_clicks",
+    ),
+    Input("quick-peek-close-btn", "n_clicks"),
+    Input("quick-peek-backdrop", "n_clicks"),
     prevent_initial_call=True
 )
-def capture_screener_click(n_clicks_list):
-    # Find which button was just clicked
+def manage_quick_peek(n_clicks_list, close_clicks, backdrop_clicks):
     triggered = dash.ctx.triggered_id
-    if not triggered or not any(n for n in n_clicks_list if n):
+    if isinstance(triggered, str) and triggered in {
+        "quick-peek-close-btn",
+        "quick-peek-backdrop",
+    }:
+        return None
+    triggered_value = dash.ctx.triggered[0].get("value") if dash.ctx.triggered else None
+    if not isinstance(triggered_value, (int, float)) or triggered_value <= 0:
         return dash.no_update
+    if not isinstance(triggered, dict) or "index" not in triggered:
+        return dash.no_update
+    symbol = triggered["index"]
     try:
-        product_analytics.track_event(get_user_id(), "stock_viewed", {"symbol": triggered["index"], "source": "screener"})
+        product_analytics.track_event(get_user_id(), "stock_viewed", {"symbol": symbol, "source": "screener"})
     except Exception:
         pass
-    return triggered["index"]  # the symbol string
+    return symbol
+
+
+@callback(
+    Output("screener-quick-peek-shell", "className"),
+    Output("screener-quick-peek-content", "children"),
+    Input("screener-quick-peek-symbol", "data"),
+    prevent_initial_call=False,
+)
+def render_quick_peek(symbol):
+    if not symbol:
+        return "quick-peek-shell", html.Div(
+            "Select a stock to open a quick summary without leaving the screener.",
+            className="quick-peek-empty",
+        )
+    return "quick-peek-shell is-open", _build_quick_peek(symbol)
+
+
+@callback(
+    Output("screener-open-analysis-symbol", "data"),
+    Output("screener-quick-peek-symbol", "data", allow_duplicate=True),
+    Input("quick-peek-open-analysis-btn", "n_clicks"),
+    State("screener-quick-peek-symbol", "data"),
+    prevent_initial_call=True,
+)
+def open_full_analysis_from_peek(n_clicks, symbol):
+    if not n_clicks or not symbol:
+        return dash.no_update, dash.no_update
+    return symbol, None
 
 
 @callback(
@@ -352,11 +607,14 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         # n_clicks on <td> not <button> — iOS Safari drops touch on <button> inside <table>
         ticker_cell = html.Td(
             html.Div([
-                html.Span(sym, className="ticker-link-btn"),
-                html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
-                if badges else html.Div(),
-            ]),
-            id={"type": "screener-ticker-btn", "index": sym},
+                company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
+                html.Div([
+                    html.Span(sym, className="ticker-link-btn"),
+                    html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
+                    if badges else html.Div(),
+                ]),
+            ], className="ticker-identity"),
+            id={"type": "screener-ticker-btn", "index": sym, "source": "table"},
             n_clicks=0,
             className="ticker-cell ticker-cell-touch cp",
         )
@@ -445,7 +703,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         if badges:
             acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
         acc_rows.append(
-            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym},
+            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym, "source": "mobile"},
                      n_clicks=0, className="accordion-analyze-btn")
         )
         accordion_items.append(html.Details(
@@ -453,6 +711,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             children=[
                 html.Summary(className="accordion-summary", children=[
                     html.Span(f"#{i}", className="accordion-rank"),
+                    company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
                     html.Span(sym, className="ticker-link-btn"),
                     html.Div([html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")],
                              className="accordion-summary-right"),
@@ -477,7 +736,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         html.Button(
             "◀ Prev",
             id={"type": "screener-page-btn", "index": "prev"},
-            className="pagination-btn",
+            className="pagination-btn pagination-btn--prev",
             n_clicks=0,
             disabled=(page <= 1),
         ),
@@ -488,7 +747,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         html.Button(
             "Next ▶",
             id={"type": "screener-page-btn", "index": "next"},
-            className="pagination-btn",
+            className="pagination-btn pagination-btn--next",
             n_clicks=0,
             disabled=(page >= total_pages),
         ),

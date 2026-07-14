@@ -1,0 +1,115 @@
+@use '../media';
+@use 'helpers' as *;
+@use 'tokens' as *;
+
+.legal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+
+  &:target {
+    display: flex;
+  }
+
+  .legal-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba($bg, 0.72);
+    backdrop-filter: blur(8px);
+  }
+
+  .legal-modal-card {
+    @include panel(true);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(760px, 100%);
+    max-height: min(82vh, 760px);
+    overflow: hidden;
+  }
+
+  .legal-modal-header,
+  .legal-modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    background: var(--fr-surface-soft);
+  }
+
+  .legal-modal-header {
+    border-bottom: 1px solid var(--fr-border);
+
+    h2 {
+      @include heading(24px, 800);
+      margin: 3px 0 0;
+    }
+  }
+
+  .legal-modal-kicker {
+    @include mono(11px, 600);
+    margin: 0;
+    color: var(--fr-text-muted);
+    text-transform: uppercase;
+  }
+
+  .legal-modal-body {
+    overflow-y: auto;
+    padding: 22px;
+
+    h3 {
+      margin: 24px 0 8px;
+      color: var(--fr-text);
+    }
+
+    p {
+      color: var(--fr-text-dim);
+    }
+
+    .legal-modal-lead {
+      color: var(--fr-text);
+    }
+  }
+
+  .legal-modal-actions {
+    border-top: 1px solid var(--fr-border);
+  }
+
+  .legal-modal-close,
+  .legal-modal-primary,
+  .legal-modal-secondary {
+    @include focus-ring;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 8px 14px;
+    border: 1px solid var(--fr-border);
+    border-radius: $radius-sm;
+    color: var(--fr-text-dim);
+    font-weight: 800;
+  }
+
+  .legal-modal-primary {
+    border-color: transparent;
+    background: var(--fr-accent);
+    color: $white;
+  }
+}
+
+@include media.phones {
+  .legal-modal-overlay {
+    padding: 12px;
+
+    .legal-modal-header,
+    .legal-modal-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+}
