@@ -132,6 +132,58 @@ Includes
 -   Return attribution
 -   Rolling attribution
 
+## V2.3 Accounting Intelligence [ ]
+
+Goal
+
+Build a dedicated accounting and forensic-analysis layer that makes
+statement-quality risk obvious without forcing users to inspect many small
+cards.
+
+This version should consolidate accounting diagnostics into one coherent
+section designed to expand over time.
+
+Core engine
+
+-   Accounting Quality Engine
+-   Accounting Quality Score
+-   Accounting Grade
+-   Accounting Risk Level
+-   Manipulation Risk
+-   Plain-English explanation
+-   Individual warning flags
+
+Version 2.3.1
+
+-   Beneish M-Score
+-   Manipulation Risk
+
+Version 2.3.2
+
+-   Dechow F-Score
+-   Advanced Fraud Dashboard
+
+Layout / UX requirements
+
+-   The analysis page must have a dedicated `Accounting` section.
+-   Accounting models must be grouped into a scalable section, not scattered
+    as many peer-level cards.
+-   The section must be designed to support future forensic engines without a
+    page redesign.
+-   Desktop, tablet and mobile layouts must all preserve clear accounting
+    hierarchy.
+-   Light mode and dark mode must both be first-class, not dark-first with a
+    weak light fallback.
+
+Data / architecture requirements
+
+-   Reuse outputs from Piotroski, FCF Quality, Growth Quality and related
+    engines where appropriate instead of duplicating logic.
+-   Every new accounting model must support cached-analysis backfill for
+    already analyzed stocks in Postgres.
+-   Users must not need to rerun manual analysis to receive newly added
+    accounting diagnostics on existing cached analyses.
+
 ## V3 Institutional Portfolio Analytics [x]
 
 -   Sector exposure
