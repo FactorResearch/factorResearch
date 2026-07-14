@@ -94,6 +94,19 @@ CREATE TABLE IF NOT EXISTS analysis_cache (
     data_json  TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS company_logo_cache (
+    provider_key TEXT PRIMARY KEY,
+    symbol       TEXT NOT NULL,
+    company_name TEXT NOT NULL,
+    mime_type    TEXT NOT NULL,
+    image_bytes  BYTEA NOT NULL,
+    content_hash TEXT NOT NULL,
+    fetched_at   TIMESTAMPTZ NOT NULL,
+    expires_at   TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_company_logo_cache_expiry
+    ON company_logo_cache(expires_at);
 CREATE TABLE IF NOT EXISTS factor_scores (
     ticker       TEXT NOT NULL,
     factor_name  TEXT NOT NULL,
@@ -1844,6 +1857,63 @@ def get(ticker: str) -> dict | None:
         con.row_factory = dict_row
         row = con.execute(_SELECT_VALUE_METRICS, {"ticker": ticker.upper()}).fetchone()
     return dict(row) if row else None
+
+
+def get_company_logo(provider_key: str) -> dict | None:
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(
+            """
+            SELECT provider_key, symbol, company_name, mime_type, image_bytes,
+                   content_hash, fetched_at, expires_at
+            FROM company_logo_cache
+            WHERE provider_key = %(provider_key)s AND expires_at > NOW()
+            """,
+            {"provider_key": provider_key},
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def upsert_company_logo(
+    provider_key: str,
+    symbol: str,
+    company_name: str,
+    mime_type: str,
+    image_bytes: bytes,
+    content_hash: str,
+    expires_at: datetime.datetime,
+) -> None:
+    _ensure_init()
+    with _conn() as con:
+        con.execute(
+            """
+            INSERT INTO company_logo_cache (
+                provider_key, symbol, company_name, mime_type, image_bytes,
+                content_hash, fetched_at, expires_at
+            ) VALUES (
+                %(provider_key)s, %(symbol)s, %(company_name)s, %(mime_type)s,
+                %(image_bytes)s, %(content_hash)s, NOW(), %(expires_at)s
+            )
+            ON CONFLICT (provider_key) DO UPDATE SET
+                symbol = excluded.symbol,
+                company_name = excluded.company_name,
+                mime_type = excluded.mime_type,
+                image_bytes = excluded.image_bytes,
+                content_hash = excluded.content_hash,
+                fetched_at = excluded.fetched_at,
+                expires_at = excluded.expires_at
+            """,
+            {
+                "provider_key": provider_key,
+                "symbol": symbol,
+                "company_name": company_name,
+                "mime_type": mime_type,
+                "image_bytes": image_bytes,
+                "content_hash": content_hash,
+                "expires_at": expires_at,
+            },
+        )
 
 
 def get_all(order_by: str = "market_cap") -> list[dict]:

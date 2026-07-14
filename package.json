@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "audit:a11y": "node scripts/audit-accessibility.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/cli": "^4.12.1"
+  }
+}

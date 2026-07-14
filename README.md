@@ -192,6 +192,10 @@ REDIS_URL=redis://localhost:6379/0
 
 # SEC asks automated clients to identify the organization and a contact.
 SEC_USER_AGENT="Your Legal Company Name monitored-contact@your-domain.example"
+
+# Optional: enables ticker logos in analysis, screener, Quick Peek, and portfolio.
+# Logo.dev's free commercial tier requires the attribution rendered by the app.
+LOGO_DEV_PUBLISHABLE_KEY=pk_replace_with_your_publishable_key
 ```
 
 Do not use the same production URL for `DATABASE_MARKET_URL` and
