@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 
 const webdriverUrl = process.env.WEBDRIVER_URL || 'http://127.0.0.1:4444';
 const appUrl = process.env.A11Y_APP_URL || 'http://127.0.0.1:8051/';
-const outputPath = process.env.A11Y_OUTPUT || 'artifacts/production-proof/10-accessibility/axe-results.json';
+const outputPath = process.env.A11Y_OUTPUT || 'artifacts/production-proof/10-accessibility/accessibility-audit-results.json';
 const axeSource = await fs.readFile(new URL('../node_modules/axe-core/axe.min.js', import.meta.url), 'utf8');
 
 async function request(method, path, body) {

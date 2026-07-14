@@ -9,7 +9,7 @@
 - Every route/width is tested in light and dark themes against WCAG 2.0, 2.1, and 2.2 A/AA axe rules.
 - Horizontal document overflow fails the audit, including a 200% mobile scenario.
 - The audit verifies a reduced-motion media rule exists.
-- Machine-readable output is retained as `axe-results.json`; a nonzero exit blocks certification.
+- Machine-readable output is retained as `accessibility-audit-results.json`; a nonzero exit blocks certification.
 
 ## Manual and External Gates
 
