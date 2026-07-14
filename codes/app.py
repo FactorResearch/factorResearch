@@ -256,6 +256,8 @@ def startup():
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener.load_cached_only()
+    from codes.services.analysis_scheduler import start_background_maintenance
+    start_background_maintenance()
     print(f"✅ {len(results)} cached stocks ready\n")
 
 startup()

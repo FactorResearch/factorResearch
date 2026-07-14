@@ -1,0 +1,58 @@
+"""Background refresh for shared context and configured popular symbols."""
+
+import os
+import threading
+import time
+
+_started = False
+_lock = threading.Lock()
+
+
+def _enabled() -> bool:
+    # Enable this in one designated process, not every Gunicorn web worker.
+    return os.environ.get("ANALYSIS_BACKGROUND_JOBS") == "1"
+
+
+def _popular_symbols() -> list[str]:
+    configured = [item.strip().upper() for item in os.environ.get("PRECOMPUTE_SYMBOLS", "").split(",") if item.strip()]
+    if configured:
+        return configured[: int(os.environ.get("PRECOMPUTE_LIMIT", "20"))]
+    from codes.data import db
+    return db.list_analysis_tickers()[: int(os.environ.get("PRECOMPUTE_LIMIT", "20"))]
+
+
+def run_maintenance_once() -> None:
+    from codes.app_modules.analysis import (
+        _get_comomentum_result,
+        _get_market_fear_result,
+        _get_spy_history_lazy,
+        analyze_stock,
+    )
+
+    _get_spy_history_lazy()
+    _get_market_fear_result()
+    _get_comomentum_result()
+    for symbol in _popular_symbols():
+        try:
+            analyze_stock(symbol, force_refresh=True)
+        except Exception as exc:
+            print(f"Background analysis refresh failed for {symbol}: {exc}")
+
+
+def _worker() -> None:
+    interval = max(int(os.environ.get("ANALYSIS_REFRESH_SECONDS", "3600")), 300)
+    while True:
+        run_maintenance_once()
+        time.sleep(interval)
+
+
+def start_background_maintenance() -> bool:
+    global _started
+    if not _enabled():
+        return False
+    with _lock:
+        if _started:
+            return False
+        threading.Thread(target=_worker, name="analysis-maintenance", daemon=True).start()
+        _started = True
+    return True

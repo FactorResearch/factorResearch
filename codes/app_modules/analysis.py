@@ -3,6 +3,7 @@
 import os
 import threading
 import time as _time
+import datetime as _datetime
 from concurrent.futures import ThreadPoolExecutor
 
 from codes import security
@@ -21,6 +22,7 @@ from codes.models import (
 )
 from codes.models.analysis_snapshot import AnalysisType
 from codes.services.analysis_snapshot_service import save_standard_snapshot
+from codes.services import performance_metrics
 
 from .config import validate_ticker
 
@@ -38,6 +40,8 @@ _market_fear_lock = threading.Lock()
 _COMOMENTUM_TTL = 3600  # seconds
 _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
+ANALYSIS_VERSION = "2026.07-opt1"
+ANALYSIS_MAX_AGE_SECONDS = int(os.environ.get("ANALYSIS_MAX_AGE_SECONDS", 30 * 86400))
 
 
 def _timed(timings: dict[str, float], name: str, callback):
@@ -46,6 +50,14 @@ def _timed(timings: dict[str, float], name: str, callback):
         return callback()
     finally:
         timings[name] = round((_time.perf_counter() - started) * 1000, 2)
+
+
+def _provider_value(label: str, callback, default):
+    try:
+        return callback()
+    except Exception as exc:
+        print(f"{label} failed: {exc}")
+        return default
 
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
@@ -81,20 +93,19 @@ def _get_comomentum_result() -> dict | None:
     try:
         results = screener.get_screener_results()
         candidates = [
-            r["symbol"] for r in results
+            (r["symbol"], r["return_12m"]) for r in results
             if r.get("analyzed") and r.get("return_12m") is not None
         ]
-        candidates.sort(
-            key=lambda s: next(r["return_12m"] for r in results if r["symbol"] == s),
-            reverse=True,
-        )
-        top_symbols = candidates[:_COMOMENTUM_TOP_N]
+        top_symbols = [symbol for symbol, _return in sorted(candidates, key=lambda item: item[1], reverse=True)[:_COMOMENTUM_TOP_N]]
         result = None
         if len(top_symbols) >= 2:
             price_histories = {}
-            for sym in top_symbols:
+            workers = min(int(os.environ.get("COMOMENTUM_WORKERS", "4")), len(top_symbols))
+            with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="comomentum") as executor:
+                histories = {sym: executor.submit(api_fetcher.get_price_history, sym, 3) for sym in top_symbols}
+            for sym, future in histories.items():
                 try:
-                    h = api_fetcher.get_price_history(sym, years=3)
+                    h = future.result()
                     if h is not None and not h.empty:
                         price_histories[sym] = h
                 except Exception as e:
@@ -149,10 +160,24 @@ def _set_cache_metadata(result: dict, cache_hit: bool, cache_source: str) -> dic
     if isinstance(result, dict):
         result["cache_hit"] = cache_hit
         result["cache_source"] = cache_source
+        result["cache_stale"] = not _cache_is_current(result) if cache_hit else False
     return result
 
 
-def analyze_stock(symbol: str) -> dict:
+def _cache_is_current(result: dict) -> bool:
+    if result.get("analysis_version") != ANALYSIS_VERSION:
+        return False
+    generated_at = result.get("generated_at")
+    if not generated_at:
+        return False
+    try:
+        age = _time.time() - _datetime.datetime.fromisoformat(generated_at).timestamp()
+    except (TypeError, ValueError):
+        return False
+    return age < ANALYSIS_MAX_AGE_SECONDS
+
+
+def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
     Optimizations:
@@ -174,16 +199,17 @@ def analyze_stock(symbol: str) -> dict:
         return {"error": str(exc)}
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
-        if symbol in _analysis_cache:
+        if not force_refresh and symbol in _analysis_cache:
             cached_memory = _set_cache_metadata(_analysis_cache[symbol], True, "memory")
             _attach_market_fear(cached_memory)
             try:
                 save_standard_snapshot(cached_memory, analysis_type=AnalysisType.STANDARD)
             except Exception as e:
                 print(f"Analysis snapshot save failed for {symbol}: {type(e).__name__}: {e}")
+            performance_metrics.record_analysis((_time.perf_counter() - analysis_started) * 1000, True)
             return cached_memory
     # Then try disk cache
-    cached = db.get_analysis(symbol)
+    cached = None if force_refresh else db.get_analysis(symbol)
 
     if cached:
         _set_cache_metadata(cached, True, "database")
@@ -194,6 +220,7 @@ def analyze_stock(symbol: str) -> dict:
             print(f"Analysis snapshot save failed for {symbol}: {type(e).__name__}: {e}")
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
+        performance_metrics.record_analysis((_time.perf_counter() - analysis_started) * 1000, True)
         return cached
     # International symbols read verified normalized facts from the market DB;
     # U.S. symbols retain the existing SEC-only path.
@@ -241,6 +268,7 @@ def analyze_stock(symbol: str) -> dict:
     
     # 1B: Parallelize price history fetches with ThreadPoolExecutor
     if price:
+        history_started = _time.perf_counter()
         with ThreadPoolExecutor(max_workers=2) as executor:
             # Fetch stock history + use lazy-loaded SPY history
             hist_future = executor.submit(
@@ -260,6 +288,7 @@ def analyze_stock(symbol: str) -> dict:
                 spy_hist = spy_hist_future.result(timeout=30)
             except Exception as e:
                 print(f"SPY history fetch failed: {e}")
+        timings["price_histories"] = round((_time.perf_counter() - history_started) * 1000, 2)
     # 1G: Calculate Graham score WITH price (if available), eliminating redundant call
     g = _timed(timings, "graham", lambda: graham.score(price, sec_facts) if price else graham.score(None, sec_facts))
     # Momentum score (needs price history)
@@ -321,12 +350,24 @@ def analyze_stock(symbol: str) -> dict:
         ).get_growth_quality_score()
     except Exception as e:
         print(f"Growth quality calculation failed: {e}")
-    # Insider Activity (P4)
+    # Independent secondary providers share one bounded pool.
+    provider_started = _time.perf_counter()
+    with ThreadPoolExecutor(max_workers=4, thread_name_prefix="analysis-provider") as executor:
+        provider_futures = {
+            "transactions": executor.submit(_provider_value, "Insider activity fetch", lambda: api_fetcher.get_insider_transactions(symbol), []),
+            "sec_8k": executor.submit(_provider_value, "SEC 8-K fetch", lambda: sec_data.get_recent_8k_filings(symbol), []),
+            "ownership": executor.submit(_provider_value, "Institutional ownership fetch", lambda: api_fetcher.get_institutional_ownership_trends(symbol), []),
+            "patents": executor.submit(_provider_value, "Patent activity fetch", lambda: api_fetcher.get_patent_trends(symbol), []),
+        }
+        transactions = provider_futures["transactions"].result()
+        sec_8k_filings = provider_futures["sec_8k"].result()
+        ownership_trends = provider_futures["ownership"].result()
+        patent_trends = provider_futures["patents"].result()
+    timings["secondary_providers"] = round((_time.perf_counter() - provider_started) * 1000, 2)
+
     insider_activity_result = None
-    transactions = []
     shares_out = None
     try:
-        transactions = api_fetcher.get_insider_transactions(symbol)
         sh_recs = sec_facts.get("shares", [])
         if sh_recs:
             try:
@@ -353,21 +394,6 @@ def analyze_stock(symbol: str) -> dict:
     # Alternative Data (Phase E display-only framework)
     alternative_data_result = None
     try:
-        sec_8k_filings = []
-        ownership_trends = []
-        patent_trends = []
-        try:
-            sec_8k_filings = sec_data.get_recent_8k_filings(symbol)
-        except Exception as e:
-            print(f"SEC 8-K fetch failed for {symbol}: {e}")
-        try:
-            ownership_trends = api_fetcher.get_institutional_ownership_trends(symbol)
-        except Exception as e:
-            print(f"Institutional ownership fetch failed for {symbol}: {e}")
-        try:
-            patent_trends = api_fetcher.get_patent_trends(symbol)
-        except Exception as e:
-            print(f"Patent activity fetch failed for {symbol}: {e}")
         alternative_data_result = alternative_data_model.get_alternative_data_score(
             symbol,
             sec_8k_filings=sec_8k_filings,
@@ -407,7 +433,10 @@ def analyze_stock(symbol: str) -> dict:
     bias_result = None
     if hist is not None and not hist.empty and spy_hist is not None and not spy_hist.empty:
         try:
-            spy_benchmark_result = spy_benchmark_model.compute_benchmark(hist, spy_hist)
+            spy_benchmark_result = _timed(
+                timings, "spy_benchmark",
+                lambda: spy_benchmark_model.compute_benchmark(hist, spy_hist),
+            )
         except Exception as e:
             print(f"SPY benchmark calculation failed: {e}")
     if spy_benchmark_result and not spy_benchmark_result.get("error") \
@@ -441,6 +470,8 @@ def analyze_stock(symbol: str) -> dict:
         except (KeyError, TypeError, ValueError, IndexError):
             pass
     result = {
+        "analysis_version": ANALYSIS_VERSION,
+        "generated_at": _datetime.datetime.now(_datetime.timezone.utc).isoformat(),
         "symbol":    symbol,
         "market_code": sec_facts.get("source_market", "US"),
         "name":      security.sanitize_string(sec_facts["name"], max_length=200),
@@ -502,5 +533,6 @@ def analyze_stock(symbol: str) -> dict:
     # 1A: Update in-memory cache
     with _analysis_cache_lock:
         _analysis_cache[symbol] = result
-    
+
+    performance_metrics.record_analysis(result["performance"]["pipeline_ms"], False)
     return result
