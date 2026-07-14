@@ -336,7 +336,7 @@ def build_layout():
             html.Div(id="portfolio-sim-results", children=[]),
         ]),
         # ── Tab: Factor Lab ─────────────────────────────────────────────────────
-        html.Div(id="tab-factorlab", className="main-content", style={"display": "none"}, children=[
+        html.Div(id="tab-factorlab", className="main-content is-hidden", children=[
             html.Div(className="app-header mb-24", children=[
                 html.Div("🧪", className="app-header-icon"),
                 html.Div(className="app-header-content", children=[
@@ -408,7 +408,7 @@ def build_layout():
                 html.Div(id="fb-results", children=[])
             ]),
         ]),
-        html.Div(id="tab-pricing", className="main-content", style={"display": "none"}, children=[]),
+        html.Div(id="tab-pricing", className="main-content is-hidden", children=[]),
 
         _legal_modal("legal-terms", "Terms of Service", "/terms", _legal_terms_content()),
         _legal_modal("legal-privacy", "Privacy Policy", "/privacy", _legal_privacy_content()),
@@ -437,7 +437,7 @@ def build_layout():
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
-        html.Div(id="screener-scroll-restore-sink", style={"display": "none"}),
+        html.Div(id="screener-scroll-restore-sink", className="is-hidden"),
         # interval disabled=True once loading finishes to stop constant re-renders
         dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
         # fires once 600ms after page load to render already-cached screener data

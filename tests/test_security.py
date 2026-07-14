@@ -322,7 +322,10 @@ class TestSecurityHeaders:
         assert response.headers["X-Content-Type-Options"] == "nosniff"
         assert response.headers["X-Frame-Options"] == "DENY"
         assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
-        assert response.headers["Access-Control-Allow-Origin"] == "none"
+        assert "Access-Control-Allow-Origin" not in response.headers
+        assert response.headers["Cross-Origin-Opener-Policy"] == "same-origin"
+        assert response.headers["Cross-Origin-Resource-Policy"] == "same-origin"
+        assert "frame-ancestors 'none'" in response.headers["Content-Security-Policy"]
 
 
 class TestLogging:

@@ -35,7 +35,6 @@ fi
 DBS=(
     "factorresearch_users:${DATABASE_USERS_URL:-}"
     "factorresearch_market:${DATABASE_MARKET_URL:-}"
-    "factorresearch_jobs:${DATABASE_JOBS_URL:-}"
     "factorresearch_analytics:${DATABASE_ANALYTICS_URL:-}"
 )
 

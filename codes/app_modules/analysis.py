@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from codes import security
 from codes.core import singleflight
+from codes.core.model_registry import MODELS
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
 from codes.data.providers.registry import require_symbol_market_enabled, scoring_facts_for_symbol
@@ -46,10 +47,7 @@ _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
 ANALYSIS_VERSION = "2026.07-opt1"
 ANALYSIS_MAX_AGE_SECONDS = int(os.environ.get("ANALYSIS_MAX_AGE_SECONDS", 30 * 86400))
-_MODEL_VERSIONS = {
-    "quality": "1", "graham": "1", "piotroski": "1", "altman": "1",
-    "greenblatt": "1", "buffett": "1", "profitability": "1", "fcf_quality": "1",
-}
+_MODEL_VERSIONS = {key: model.version for key, model in MODELS.items()}
 
 
 def _timed(timings: dict[str, float], name: str, callback):
@@ -483,6 +481,7 @@ def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary:
             pass
     result = {
         "analysis_version": ANALYSIS_VERSION,
+        "model_versions": _MODEL_VERSIONS,
         "generated_at": _datetime.datetime.now(_datetime.timezone.utc).isoformat(),
         "symbol":    symbol,
         "market_code": sec_facts.get("source_market", "US"),

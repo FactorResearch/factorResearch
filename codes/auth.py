@@ -488,15 +488,14 @@ def configure_secure_cookies(app_server):
       HttpOnly=true     (No JavaScript access)
       SameSite=Lax|Strict (CSRF protection)
     """
-    # Determine if running in production (no debug mode)
-    is_production = not app_server.debug or os.environ.get("FLASK_ENV") == "production"
+    is_production = os.environ.get("FLASK_ENV", "").lower() == "production"
     
     app_server.config.update(
         SESSION_COOKIE_SECURE=is_production,  # HTTPS only in production
         SESSION_COOKIE_HTTPONLY=True,  # Never expose to JavaScript
         SESSION_COOKIE_SAMESITE="Lax",  # CSRF protection (use "Strict" if no cross-site forms)
         SESSION_COOKIE_NAME="intrinsic_iq_session",  # Explicit cookie name
-        PERMANENT_SESSION_LIFETIME=timedelta(days=30),  # Session expiry
+        PERMANENT_SESSION_LIFETIME=timedelta(hours=24),
         SESSION_REFRESH_EACH_REQUEST=True,  # Refresh session on each request
     )
     

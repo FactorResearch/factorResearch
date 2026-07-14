@@ -13,16 +13,9 @@ from unittest.mock import patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "codes"))
 
-from data.api_fetcher import RateLimitError
+from codes.data.api_fetcher import RateLimitError
 
-# codes.app runs startup() at import time (sec_data.get_ticker_map(),
-# universe.get_universe(), screener.load_cached_only()), which makes
-# network calls. Stub those out before import so this test is isolated
-# from network/SEC availability — unrelated to the change under test.
-with patch("codes.data.sec_data.get_ticker_map", return_value={}), \
-     patch("codes.engine.universe.get_universe", return_value=[]), \
-     patch("codes.engine.screener.load_cached_only", return_value=[]):
-    import codes.app as app
+from codes.app_modules import analysis as app
 
 
 def _make_sec_facts(symbol="AAPL"):
@@ -40,10 +33,10 @@ def test_rate_limit_error_surfaced_as_result_error():
     )
 
     with patch.object(app, "_analysis_cache", {}), \
-         patch("codes.app.cache.read", return_value=None), \
-         patch("codes.app.sec_data.get_financials", return_value=sec_facts), \
-         patch("codes.app.quality.score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
-         patch("codes.app.api_fetcher.get_price", side_effect=err):
+         patch.object(app.db, "get_analysis", return_value=None), \
+         patch.object(app, "scoring_facts_for_symbol", return_value=sec_facts), \
+         patch.object(app.quality, "score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
+         patch.object(app.api_fetcher, "get_price", side_effect=err):
 
         result = app.analyze_stock("AAPL")
 
@@ -61,13 +54,13 @@ def test_price_history_rate_limit_aborts_with_error():
     )
 
     with patch.object(app, "_analysis_cache", {}), \
-         patch("codes.app.cache.read", return_value=None), \
-         patch("codes.app.sec_data.get_financials", return_value=sec_facts), \
-         patch("codes.app.quality.score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
-         patch("codes.app.api_fetcher.get_price", return_value=150.0), \
-         patch("codes.app.earnings_revision.get_revision_score",
+         patch.object(app.db, "get_analysis", return_value=None), \
+         patch.object(app, "scoring_facts_for_symbol", return_value=sec_facts), \
+         patch.object(app.quality, "score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
+         patch.object(app.api_fetcher, "get_price", return_value=150.0), \
+         patch.object(app.earnings_revision, "get_revision_score",
                return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
-         patch("codes.app.api_fetcher.get_price_history", side_effect=err), \
+         patch.object(app.api_fetcher, "get_price_history", side_effect=err), \
          patch.object(app, "_get_spy_history_lazy", return_value=None):
 
         result = app.analyze_stock("AMGN")
@@ -83,10 +76,10 @@ def test_rate_limit_error_does_not_propagate_as_exception():
     )
 
     with patch.object(app, "_analysis_cache", {}), \
-         patch("codes.app.cache.read", return_value=None), \
-         patch("codes.app.sec_data.get_financials", return_value=sec_facts), \
-         patch("codes.app.quality.score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
-         patch("codes.app.api_fetcher.get_price", side_effect=err):
+         patch.object(app.db, "get_analysis", return_value=None), \
+         patch.object(app, "scoring_facts_for_symbol", return_value=sec_facts), \
+         patch.object(app.quality, "score", return_value={"total_score": 0, "total_max": 100, "criteria": []}), \
+         patch.object(app.api_fetcher, "get_price", side_effect=err):
 
         try:
             result = app.analyze_stock("MSFT")

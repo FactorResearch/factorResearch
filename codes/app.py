@@ -65,16 +65,15 @@ app = dash.Dash(
     ]
 )
 server = app.server
+trusted_hosts = [host.strip() for host in os.environ.get("TRUSTED_HOSTS", "").split(",") if host.strip()]
+if trusted_hosts:
+    server.config["TRUSTED_HOSTS"] = trusted_hosts
 secret_key = os.environ.get("FLASK_SECRET_KEY")
 if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
 server.register_blueprint(analyze_pages)
 server.register_blueprint(chart_pages)
-try:
-    ensure_schema_if_configured()
-except Exception as e:
-    print(f"Analysis snapshot schema init failed: {type(e).__name__}: {e}")
 
 
 auth.init_auth(server)
@@ -196,12 +195,12 @@ def update_analytics_preference():
 
 @server.route("/sitemap-analysis.xml")
 def analysis_sitemap():
-    base_url = flask.request.url_root.rstrip("/")
+    base_url = (os.environ.get("PUBLIC_BASE_URL") or flask.request.url_root).rstrip("/")
     return flask.Response(generate_analysis_sitemap(base_url), mimetype="application/xml")
 
 @server.route("/robots.txt")
 def robots_txt():
-    base_url = flask.request.url_root.rstrip("/")
+    base_url = (os.environ.get("PUBLIC_BASE_URL") or flask.request.url_root).rstrip("/")
     body = (
         "User-agent: *\n"
         "Allow: /analyze/\n"
@@ -214,7 +213,15 @@ security.init_security(server)
 
 # Initialize Flask-Limiter if available (best-effort; dev may omit package)
 if Limiter is not None:
-    limiter = Limiter(app=server, key_func=get_remote_address, default_limits=[])
+    rate_limit_storage = os.environ.get("RATELIMIT_STORAGE_URI") or os.environ.get("REDIS_URL")
+    if os.environ.get("FLASK_ENV", "").lower() == "production" and not rate_limit_storage:
+        raise RuntimeError("RATELIMIT_STORAGE_URI or REDIS_URL is required in production.")
+    limiter = Limiter(
+        app=server,
+        key_func=get_remote_address,
+        default_limits=[],
+        storage_uri=rate_limit_storage or "memory://",
+    )
 else:
     limiter = None
 
@@ -235,6 +242,7 @@ def _logging_callback(self, *args, **kwargs):
             try:
                 return func(*a, **kw)
             except Exception as e:
+                performance_metrics.record_failure(f"callback:{func.__name__}", e)
                 # Log only exception type and short message to avoid leaking secrets
                 print(f"[CALLBACK ERROR] in {func.__name__}: {type(e).__name__}: {str(e)}", flush=True)
                 # Raise a generic error to avoid exposing internal details to UI
@@ -315,7 +323,9 @@ screener_tab.register_clientside_callbacks(app)
 def startup():
     print("\n🚀 Graham Score — Quant Edition")
     from codes.data import db
-    db.init_db()
+    if not is_production() or os.environ.get("RUN_SCHEMA_MIGRATIONS_ON_STARTUP") == "1":
+        db.init_db()
+        ensure_schema_if_configured()
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener.load_cached_only()
@@ -323,7 +333,8 @@ def startup():
     start_background_maintenance()
     print(f"✅ {len(results)} cached stocks ready\n")
 
-startup()
+if os.environ.get("APP_SKIP_STARTUP") != "1":
+    startup()
 
 if __name__ == "__main__":
    

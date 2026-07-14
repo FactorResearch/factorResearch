@@ -1,4 +1,5 @@
 from unittest.mock import Mock, call
+import json
 
 from codes.app_modules import analysis
 from codes.app_modules.tabs.analyze import (
@@ -21,6 +22,18 @@ def test_client_payload_omits_chart_history():
     })
 
     assert payload == {"symbol": "AAPL", "quality": {"score": 80}}
+
+
+def test_initial_analysis_payload_stays_below_contract_budget():
+    payload = _client_analysis_payload({
+        "symbol": "AAPL",
+        "name": "Apple Inc.",
+        "price_history": {"Close": {str(i): i for i in range(5000)}},
+        "spy_history": {"Close": {str(i): i for i in range(5000)}},
+        "quality": {"criteria": [{"label": "durable", "passed": True}] * 20},
+    })
+
+    assert len(json.dumps(payload).encode("utf-8")) <= 64 * 1024
 
 
 def test_chart_callback_loads_history_from_server_cache(monkeypatch):
@@ -50,15 +63,18 @@ def test_legacy_cache_is_served_and_marked_stale(monkeypatch):
 def test_performance_snapshot_reports_percentiles(monkeypatch):
     monkeypatch.setattr(performance_metrics, "_samples", performance_metrics.deque(maxlen=500))
     monkeypatch.setattr(performance_metrics, "_payloads", performance_metrics.deque(maxlen=500))
+    monkeypatch.setattr(performance_metrics, "_failures", performance_metrics.Counter())
     for duration in (10, 20, 30, 40, 50):
         performance_metrics.record_analysis(duration, duration <= 20)
     performance_metrics.record_payload(1000)
+    performance_metrics.record_failure("provider:sec", TimeoutError())
 
     result = performance_metrics.snapshot()
     assert result["p50_ms"] == 30
     assert result["p95_ms"] == 50
     assert result["cache_hit_rate"] == 0.4
     assert result["avg_payload_bytes"] == 1000
+    assert result["failures"] == {"provider:sec:TimeoutError": 1}
 
 
 def test_background_maintenance_refreshes_shared_context_and_popular_symbols(monkeypatch):

@@ -315,18 +315,18 @@ def init_security(app: flask.Flask) -> None:
         response.headers.setdefault(
             "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
         )
-        if IS_PRODUCTION:
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img.logo.dev; connect-src 'self'; "
+            "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+        )
+        if _is_production():
             response.headers.setdefault(
                 "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
             )
-        return response
-
-    @app.after_request
-    def _cors_headers(response):
-        # No cross-origin API surface today (Dash serves its own frontend).
-        # Deny by default; add allow-list here if a JS client on another
-        # origin needs to call this API later.
-        response.headers.setdefault("Access-Control-Allow-Origin", "none")
         return response
     
     SECURITY_LOGGER.info("Security module initialized (CSRF + headers)")

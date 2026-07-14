@@ -28,17 +28,25 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt pytest
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install frontend audit dependencies
+        run: npm ci
+
       - name: Compile application
         run: python -m compileall -q codes
 
-      - name: Run stable shared regression tests
-        run: |
-          pytest -q \
-            tests/test_security.py \
-            tests/test_app_flags_markets.py \
-            tests/test_market_provider_registry.py \
-            tests/test_screener_market_routing.py \
-            tests/test_track_b_canada_db.py \
-            tests/test_track_b_canada_ingestion.py \
-            tests/test_track_b_canada_provider.py \
-            tests/test_track_b_canada_sec.py
+      - name: Compile styles
+        run: npx --yes sass assets/style.scss /tmp/factorresearch.css --no-source-map
+
+      - name: Run full regression suite
+        env:
+          APP_SKIP_STARTUP: "1"
+          APP_FEATURE_FLAG: V1
+        run: pytest -q
+
+      - name: Check repository diff
+        run: git diff --check

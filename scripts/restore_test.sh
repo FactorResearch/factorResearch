@@ -41,12 +41,10 @@ fi
 
 # name -> a table expected to have rows, used as a minimal sanity check
 declare -A SANITY_TABLES=(
-    ["factorresearch_users"]="value_metrics"
+    ["factorresearch_users"]="subscriptions"
     ["factorresearch_market"]="sec_facts_meta"
-    ["factorresearch_jobs"]="value_metrics"
-    ["factorresearch_analytics"]="value_metrics"
+    ["factorresearch_analytics"]="analysis_snapshots"
 )
-# ^ adjust table names above to match what actually exists per DB
 
 FAILED=0
 

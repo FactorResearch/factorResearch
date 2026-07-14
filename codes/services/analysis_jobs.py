@@ -16,6 +16,9 @@ def _dispatch(job: dict) -> None:
     if job.get("type") == "secondary-analysis":
         from codes.app_modules.analysis import _complete_secondary_analysis
         _complete_secondary_analysis(job["symbol"], job.get("shares_out"))
+    elif job.get("type") == "refresh-analysis":
+        from codes.app_modules.analysis import analyze_stock
+        analyze_stock(job["symbol"], force_refresh=True, defer_secondary=True)
 
 
 def enqueue(job: dict) -> None:
@@ -27,6 +30,17 @@ def enqueue(job: dict) -> None:
         except Exception:
             pass
     _local_executor.submit(_dispatch, job)
+
+
+def enqueue_existing_stock_backfill(symbols: list[str] | None = None) -> int:
+    """Queue an idempotent refresh for every previously analyzed stock."""
+    if symbols is None:
+        from codes.data import db
+        symbols = db.list_analysis_tickers()
+    normalized = sorted({str(symbol).strip().upper() for symbol in symbols if str(symbol).strip()})
+    for symbol in normalized:
+        enqueue({"type": "refresh-analysis", "symbol": symbol})
+    return len(normalized)
 
 
 def work_forever() -> None:
