@@ -68,8 +68,11 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
                 "signals": [{"label": "Web traffic", "description": "Pending provider", "status": "STUB"}],
             }
         }),
-        analysis_ui._options_signal_card({
-            "options_signal": {"bias": "CALL", "signal": "FAVORABLE_CALL", "edge_score": 65, "risk_score": 40}
+        analysis_ui._greenblatt_card({"greenblatt": {"earnings_yield": 8.2, "roic": 17.5}}),
+        analysis_ui._profitability_card({"profitability": {"profitability_score": 72, "signal": "STRONG"}}),
+        analysis_ui._benchmark_bias_card({
+            "spy_benchmark": {"probability_outperform": 0.64, "cagr_target": 12, "cagr_spy": 9},
+            "bias": {"bias": "outperform", "confidence": 0.7},
         }),
         analysis_ui._regime_card({
             "regime": {
@@ -80,6 +83,9 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
                 "drawdown_depth": -4.0,
             },
             "regime_overlay": {"regime_multiplier": 1.0, "max_equity_exposure": 1.0, "adjusted_score": 62},
+        }),
+        analysis_ui._comomentum_card({
+            "regime": {"comomentum_percentile": 82.4},
         }),
     ]
 
@@ -97,67 +103,22 @@ def test_issue_025_metric_rows_use_visible_divider_color():
     assert "analysis-divider" in first_row.className
 
 
-def test_factor_research_card_surfaces_v22_capm_output():
-    card = analysis_ui._factor_research_card({
-        "factor_research": {
-            "status": "ready",
-            "models": {
-                "capm": {"factors": ["mkt_rf"], "betas": {"mkt_rf": 1.15}, "alpha_annualized": 0.024, "r_squared": 0.72},
-                "ff3": {"factors": ["mkt_rf", "smb", "hml"], "betas": {"mkt_rf": 1.1}, "alpha_annualized": 0.018, "r_squared": 0.74},
-                "ff5": {"factors": ["mkt_rf", "smb", "hml", "rmw", "cma"], "betas": {"mkt_rf": 1.0}, "alpha_annualized": 0.015, "r_squared": 0.76},
-                "carhart4": {
-                    "factors": ["mkt_rf", "smb", "hml", "mom"],
-                    "betas": {"mkt_rf": 1.05},
-                    "alpha_annualized": 0.012,
-                    "r_squared": 0.75,
-                    "return_attribution": {
-                        "factor_contributions": {"mkt_rf": 0.05, "mom": 0.01},
-                        "alpha": 0.012,
-                        "residual": 0.001,
-                        "total_excess_return": 0.073,
-                    },
-                },
-            },
-            "model": "carhart4",
-            "return_attribution": {
-                "factor_contributions": {"mkt_rf": 0.05, "mom": 0.01},
-                "alpha": 0.012,
-                "residual": 0.001,
-                "total_excess_return": 0.073,
-            },
-            "rolling_attribution": [
-                {
-                    "end_date": "2026-06-30",
-                    "alpha_annualized": 0.01,
-                    "betas": {"mkt_rf": 0.95},
-                    "return_attribution": {"total_excess_return": 0.06},
-                },
-                {
-                    "end_date": "2026-07-31",
-                    "alpha_annualized": 0.012,
-                    "betas": {"mkt_rf": 1.05},
-                    "return_attribution": {"total_excess_return": 0.073},
-                },
-            ],
-            "source": "ken_french_us_monthly",
-        }
-    })
+def test_comomentum_card_explains_legacy_cache_state():
+    card = analysis_ui._comomentum_card({"regime": {}})
 
-    assert "Factor Research" in str(card)
-    assert "Fama-French 3" in str(card)
-    assert "Fama-French 5" in str(card)
-    assert "Carhart 4" in str(card)
-    assert "Return Attribution" in str(card)
-    assert "Rolling Attribution" in str(card)
+    assert "Unavailable" in str(card)
+    assert "fresh analysis" in str(card)
 
 
-def test_factor_research_card_shows_pending_state():
-    card = analysis_ui._factor_research_card({
-        "factor_research": {
-            "status": "data_unavailable",
-            "message": "Factor Research appears when stock and benchmark history are available.",
-        }
-    })
+def test_comomentum_card_formats_percentile_and_signal():
+    card = analysis_ui._comomentum_card({"regime": {"comomentum_percentile": 82.4}})
 
-    assert "Pending" in str(card)
-    assert "Factor Research appears" in str(card)
+    assert "82nd pct" in str(card)
+    assert "HIGH" in str(card)
+
+
+def test_market_fear_card_does_not_leave_an_empty_grid_slot():
+    card = analysis_ui._market_fear_card({"market_fear": {"error": "provider unavailable"}})
+
+    assert "Market Fear Gauge" in str(card)
+    assert "Unavailable" in str(card)

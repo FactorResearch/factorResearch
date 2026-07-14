@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 from codes.app_modules.tabs import screener as screener_tab
+from codes.app_modules import layout
 from codes.data.us_indices import US_INDEX_OPTIONS, row_matches_any_index, row_matches_index
 
 
@@ -54,8 +55,16 @@ def test_update_index_filter_allows_max_two_indices(monkeypatch):
     assert screener_tab.update_index_filter([1], ["sp500"]) == ["sp500", "dow30"]
 
 
+def test_screener_market_links_use_canonical_routes():
+    links = layout._screener_market_links().children
+
+    assert [link.href for link in links] == ["/screener/us", "/screener/ca"]
+    assert [link.id["index"] for link in links] == ["US", "CA"]
+    assert "active" in links[0].className
+    assert "active" not in links[1].className
+
+
 def test_render_screener_table_filters_by_index(monkeypatch):
-    screener_tab.last_screener_state = None
     monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="index-filter"))
     monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
     monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
@@ -93,3 +102,62 @@ def test_render_screener_table_filters_by_index(monkeypatch):
     ]
     tracked.assert_called_once()
     assert tracked.call_args.args[2]["indices"] == ["sp500"]
+
+
+def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
+    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="url"))
+    monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_progress",
+        lambda: {"running": True, "total": 100, "done": 10, "current": "AAPL"},
+    )
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_screener_results",
+        lambda: [_row("AAPL")],
+    )
+    monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
+
+    table_container, _sector_options, _page_reset = screener_tab.render_screener_table(
+        0,
+        "/screener/ca",
+        1,
+        [],
+        "",
+        {"col": "composite_score", "asc": False},
+        1,
+        [],
+    )
+
+    assert "No Canada screener data loaded yet" in str(table_container)
+    assert "Loading in background" not in str(table_container)
+
+
+def test_canada_route_rerenders_on_repeated_requests(monkeypatch):
+    monkeypatch.setattr(screener_tab.dash, "ctx", SimpleNamespace(triggered_id="url"))
+    monkeypatch.setattr(screener_tab, "get_user_id", lambda: "u1")
+    monkeypatch.setattr(screener_tab, "get_portfolio_symbols", lambda: {})
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_progress",
+        lambda: {"running": False, "total": 0, "done": 0, "current": ""},
+    )
+    monkeypatch.setattr(
+        screener_tab.screener,
+        "get_screener_results",
+        lambda: [_row("AAPL")],
+    )
+    monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
+
+    first, _sector_options, _page_reset = screener_tab.render_screener_table(
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+    )
+    second, _sector_options, _page_reset = screener_tab.render_screener_table(
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+    )
+
+    assert "No Canada screener data loaded yet" in str(first)
+    assert "No Canada screener data loaded yet" in str(second)
+    assert second is not screener_tab.dash.no_update

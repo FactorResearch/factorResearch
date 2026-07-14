@@ -20,85 +20,34 @@ from dash import Input, Output, State, callback, clientside_callback
     Input("tab-portfolio-btn",    "n_clicks"),
     Input("tab-factorlab-btn",    "n_clicks"),
     Input("tab-pricing-btn",      "n_clicks"),
-    Input("screener-click-ticker","data"),
+    Input("screener-open-analysis-symbol","data"),
     Input("upgrade-funnel-store", "data"),
     Input("url",                  "pathname"),
-    State("tab-screener-btn",     "n_clicks_timestamp"),
-    State("tab-analyze-btn",      "n_clicks_timestamp"),
-    State("tab-portfolio-btn",    "n_clicks_timestamp"),
-    State("tab-factorlab-btn",    "n_clicks_timestamp"),
-    State("tab-pricing-btn",      "n_clicks_timestamp"),
     prevent_initial_call=False
 )
-def switch_tabs(
-    n_screener,
-    n_analyze,
-    n_portfolio,
-    n_factorlab,
-    n_pricing,
-    clicked_ticker,
-    upgrade_context,
-    pathname,
-    ts_screener=None,
-    ts_analyze=None,
-    ts_portfolio=None,
-    ts_factorlab=None,
-    ts_pricing=None,
-):
+def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open_analysis_symbol, upgrade_context, pathname):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
-
-    def _result(tab: str):
-        return (
-            SHOW if tab == "screener" else HIDE,
-            SHOW if tab == "analyze" else HIDE,
-            SHOW if tab == "portfolio" else HIDE,
-            SHOW if tab == "factorlab" else HIDE,
-            SHOW if tab == "pricing" else HIDE,
-            ACTIVE if tab == "screener" else IDLE,
-            ACTIVE if tab == "analyze" else IDLE,
-            ACTIVE if tab == "portfolio" else IDLE,
-            ACTIVE if tab == "factorlab" else IDLE,
-            ACTIVE if tab == "pricing" else IDLE,
-        )
-
-    def _latest_clicked_tab() -> str | None:
-        timestamps = {
-            "screener": ts_screener,
-            "analyze": ts_analyze,
-            "portfolio": ts_portfolio,
-            "factorlab": ts_factorlab,
-            "pricing": ts_pricing,
-        }
-        normalized = {}
-        for tab, value in timestamps.items():
-            try:
-                normalized[tab] = int(value or -1)
-            except (TypeError, ValueError):
-                normalized[tab] = -1
-        tab, timestamp = max(normalized.items(), key=lambda item: item[1])
-        return tab if timestamp >= 0 else None
-
-    if triggered == "screener-click-ticker" and clicked_ticker:
-        return _result("analyze")
+    if triggered == "screener-open-analysis-symbol" and open_analysis_symbol:
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "upgrade-funnel-store" and upgrade_context:
-        return _result("pricing")
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if triggered == "tab-screener-btn" and n_screener:
-        return _result("screener")
+        return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if triggered == "tab-analyze-btn":
-        return _result("analyze")
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "tab-portfolio-btn":
-        return _result("portfolio")
+        return HIDE, HIDE, SHOW, HIDE, HIDE, IDLE, IDLE, ACTIVE, IDLE, IDLE
     if triggered == "tab-factorlab-btn":
-        return _result("factorlab")
+        return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if triggered == "tab-pricing-btn":
-        return _result("pricing")
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if (pathname or "").startswith("/analyze/"):
-        return _result("analyze")
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if (pathname or "") == "/pricing":
-        return _result("pricing")
-    return _result(_latest_clicked_tab() or "screener")
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
 
 
 # ── Theme Toggle ────────────────────────────────────────────────────────────
@@ -107,14 +56,10 @@ def _make_theme_js(target_theme):
     function(n) {{
         if (!n) return "";
         localStorage.setItem("fr-theme", "{target_theme}");
-        if ("{target_theme}" === "light") {{
-            document.body.classList.add("light");
-        }} else if ("{target_theme}" === "dark") {{
-            document.body.classList.remove("light");
-        }} else {{
-            var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-            document.body.classList.toggle("light", prefersLight);
-        }}
+        var light = "{target_theme}" === "light" ||
+            ("{target_theme}" === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
+        document.documentElement.classList.toggle("light", light);
+        document.body.classList.toggle("light", light);
         document.querySelectorAll(".theme-btn").forEach(function(btn) {{
             btn.classList.toggle("active", btn.dataset.theme === "{target_theme}");
         }});
@@ -134,14 +79,10 @@ clientside_callback(
     """
     function() {
         var theme = localStorage.getItem("fr-theme") || "system";
-        if (theme === "light") {
-            document.body.classList.add("light");
-        } else if (theme === "dark") {
-            document.body.classList.remove("light");
-        } else {
-            var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-            document.body.classList.toggle("light", prefersLight);
-        }
+        var light = theme === "light" ||
+            (theme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
+        document.documentElement.classList.toggle("light", light);
+        document.body.classList.toggle("light", light);
         document.querySelectorAll(".theme-btn").forEach(function(btn) {
             btn.classList.toggle("active", btn.dataset.theme === theme);
         });
