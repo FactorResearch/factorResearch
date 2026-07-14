@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -76,10 +77,11 @@ def consume_one(redis, timeout: int = 5) -> bool:
     return True
 
 
-def work_forever() -> None:
+def work_forever(stop_event: threading.Event | None = None) -> None:
     """Consume jobs in the designated background process."""
+    stop_event = stop_event or threading.Event()
     recovered = False
-    while True:
+    while not stop_event.is_set():
         redis = get_redis()
         if redis is None:
             if is_production():
@@ -90,7 +92,7 @@ def work_forever() -> None:
             if not recovered:
                 recover_interrupted_jobs(redis)
                 recovered = True
-            consume_one(redis)
+            consume_one(redis, timeout=1)
         except Exception as exc:
             print(f"Analysis job worker error: {exc}")
             if is_production():

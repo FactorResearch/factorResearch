@@ -1,6 +1,7 @@
 """Background refresh for shared context and configured popular symbols."""
 
 import os
+import signal
 import threading
 import time
 
@@ -8,6 +9,7 @@ from codes.core.config import is_production
 
 _started = False
 _lock = threading.Lock()
+_stop_event = threading.Event()
 
 
 def _enabled() -> bool:
@@ -49,9 +51,9 @@ def run_maintenance_once() -> None:
 
 def _worker() -> None:
     interval = max(int(os.environ.get("ANALYSIS_REFRESH_SECONDS", "3600")), 300)
-    while True:
+    while not _stop_event.is_set():
         run_maintenance_once()
-        time.sleep(interval)
+        _stop_event.wait(interval)
 
 
 def start_background_maintenance() -> bool:
@@ -63,16 +65,20 @@ def start_background_maintenance() -> bool:
             return False
         from codes.services import analysis_jobs
         threading.Thread(target=_worker, name="analysis-maintenance", daemon=True).start()
-        threading.Thread(target=analysis_jobs.work_forever, name="analysis-jobs", daemon=True).start()
+        threading.Thread(target=analysis_jobs.work_forever, args=(_stop_event,), name="analysis-jobs", daemon=True).start()
         _started = True
     return True
 
 
 def run_forever() -> None:
+    def stop(_signum, _frame):
+        _stop_event.set()
+
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
     if not start_background_maintenance():
         raise RuntimeError("Analysis worker role is not enabled")
-    while True:
-        time.sleep(3600)
+    _stop_event.wait()
 
 
 if __name__ == "__main__":
