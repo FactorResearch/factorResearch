@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import dash
 import functools
 import flask
+from markupsafe import escape
 try:
     from flask_limiter import Limiter
     from flask_limiter.util import get_remote_address
@@ -32,6 +33,7 @@ from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
+from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
@@ -45,6 +47,12 @@ app = dash.Dash(
     title="FactorResearch",
     suppress_callback_exceptions=True,
     assets_folder='../assets',
+    # Source SCSS and standalone-route styles stay directly addressable, but
+    # must not be injected into the interactive Dash shell.
+    assets_ignore=(
+        r".*\.scss$|"
+        r"^(company_analysis|error_pages|landing|legal_pages|waitlist)\.css$"
+    ),
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
 )
 server = app.server
@@ -64,6 +72,33 @@ auth.init_auth(server)
 billing.init_billing(server)
 register_landing_pages(server)
 register_error_pages(server)
+
+
+@server.route("/company-logo")
+def cached_company_logo():
+    symbol = flask.request.args.get("symbol", "?").strip().upper()[:24]
+    company_name = flask.request.args.get("name", symbol).strip()[:160] or symbol
+    logo = get_or_fetch_logo(symbol, company_name)
+    if logo:
+        response = flask.Response(bytes(logo["image_bytes"]), mimetype=logo["mime_type"])
+        response.set_etag(logo["content_hash"])
+        response.cache_control.public = True
+        response.cache_control.max_age = 86400
+        return response.make_conditional(flask.request)
+
+    initials = escape(symbol[:2] or "?")
+    svg = (
+        '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">'
+        '<rect width="96" height="96" fill="#16243a"/>'
+        f'<text x="48" y="56" text-anchor="middle" fill="#9cafc7" '
+        f'font-family="sans-serif" font-size="28" font-weight="700">{initials}</text></svg>'
+    )
+    response = flask.Response(svg, mimetype="image/svg+xml")
+    response.cache_control.public = True
+    response.cache_control.max_age = 300
+    return response
+
+
 @server.route("/account/delete", methods=["POST"])
 def delete_account():
     user_id = get_user_id()
@@ -154,6 +189,8 @@ dash.Dash.callback = _logging_callback
 # Importing tab modules registers their Dash callbacks.
 from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, screener as screener_tab  # noqa: F401
 
+app.index_string = app.index_string.replace('<html>', '<html lang="en">')
+
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
@@ -174,13 +211,33 @@ app.index_string = app.index_string.replace(
 )
 app.index_string = app.index_string.replace(
     '</head>',
+    '<script>'
+    '(function(){'
+    '  function normalizeHiddenDropdownFocusTargets(root){'
+    '    const scope = root && root.querySelectorAll ? root : document;'
+    '    scope.querySelectorAll(".dash-dropdown-focus-target[aria-hidden=true]")'
+    '      .forEach(function(target){ target.tabIndex = -1; });'
+    '  }'
+    '  document.addEventListener("DOMContentLoaded", function(){'
+    '    normalizeHiddenDropdownFocusTargets(document);'
+    '    new MutationObserver(function(records){'
+    '      records.forEach(function(record){'
+    '        record.addedNodes.forEach(normalizeHiddenDropdownFocusTargets);'
+    '      });'
+    '    }).observe(document.body, {childList: true, subtree: true});'
+    '  });'
+    '})();'
+    '</script></head>'
+)
+app.index_string = app.index_string.replace(
+    '</head>',
     build_head_snippets() + '</head>'
 )
 
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
-    'const APP_VERSION = "v7.8";'  # bump this on each deploy
+    'const APP_VERSION = "v8.5";'  # bump this on each deploy
     'if (localStorage.getItem("app_version") !== APP_VERSION) {'
     '    localStorage.setItem("app_version", APP_VERSION);'
     '    location.reload(true);'

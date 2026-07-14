@@ -1,34 +1,34 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// COLOR PALETTE
-// ═══════════════════════════════════════════════════════════════════════════
-// All colors from app.py constants (DARK, CARD, BORDER, GREEN, RED, AMBER, BLUE, TEXT, MUTED)
-// Single source of truth for the entire app
+$ink-950: #08111f;
+$ink-900: #0f1b2d;
+$ink-850: #16243a;
+$ink-800: #1b2d47;
+$ink-700: #324766;
+$ink-600: #526987;
+$ink-500: #7088a6;
+$ink-400: #91a7c1;
+$ink-300: #c7d3e0;
+$ink-200: #dbe4ee;
+$ink-100: #eef3f8;
+$white: #ffffff;
 
-// Primary Background & Container Colors
-$dark:                #0f1117;  // Main background
-$card:                #1a1d27;  // Card background
-$border:              #43345a;  // Border color
+$navy-700: #1f4f78;
+$navy-600: #2b678e;
+$teal-600: #167a72;
+$teal-500: #229488;
+$sage-500: #5b8a72;
+$gold-500: #be8b2d;
+$coral-500: #c9654d;
+$rose-500: #b5515a;
 
-// Status & Alert Colors
-$green:               #00c853;  // Success, bullish
-$red:                 #ff1744;  // Danger, bearish
-$amber:               #ffc107;  // Warning, neutral/caution
-$blue:                #448aff;  // Info, secondary action
+$success-600: #1a7f64;
+$success-500: #239373;
+$warning-600: #9c6a17;
+$warning-500: #b98220;
+$danger-600: #b14a43;
+$danger-500: #ca5f57;
+$info-600: #255f98;
+$info-500: #3376b8;
 
-// Text & Muted Colors
-$text:                #e0e0e0;  // Primary text
-$muted:               #9e9e9e;  // Secondary text, disabled states
-
-// Derived color combinations for specific uses
-$positive:            $green;
-$negative:            $red;
-$neutral:             $muted;
-$highlight:           $blue;
-
-// Dark variants for hover/active states
-$dark-hover:          lighten($dark, 5%);
-$card-hover:          lighten($card, 8%);
-
-// Semi-transparent overlays
-$overlay-dark:        rgba($dark, 0.95);
-$overlay-card:        rgba($card, 0.9);
+$shadow-dark: rgba(7, 16, 30, 0.26);
+$shadow-soft: rgba(18, 31, 52, 0.1);
+$shadow-light: rgba(29, 46, 72, 0.08);

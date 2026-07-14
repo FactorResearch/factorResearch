@@ -16,7 +16,7 @@ from codes.models import (
     fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model,
     growth_quality as growth_quality_model, regime as regime_model,
     insider_activity as insider_activity_model, factor_momentum as factor_momentum_model,
-    alternative_data as alternative_data_model, options_signal_engine as options_signal_model,
+    alternative_data as alternative_data_model,
     spy_benchmark_model, bias_engine, comomentum as comomentum_model,
 )
 from codes.models.analysis_snapshot import AnalysisType
@@ -381,15 +381,6 @@ def analyze_stock(symbol: str) -> dict:
     regime_overlay = scorer.apply_regime_overlay(
         enhanced.get("composite_score", 0), regime_result
     )
-    # Options Signal (P4) — depends on regime + risk + price history
-    options_signal_result = None
-    try:
-        options_signal_result = options_signal_model.get_options_signal(
-            symbol, price_hist=hist, regime_result=regime_result,
-            risk_result=risk_result, current_price=price,
-        )
-    except Exception as e:
-        print(f"Options signal calculation failed: {e}")
     # SPY Benchmark + Bias (Outperform/Neutral/Underperform vs SPY) —
     # depends on price history + enhanced composite + Altman distress flag.
     spy_benchmark_result = None
@@ -458,7 +449,6 @@ def analyze_stock(symbol: str) -> dict:
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,
-        "options_signal":     options_signal_result,
         "spy_benchmark":      spy_benchmark_result,
         "bias":               bias_result,
         # ─────────────────────────────────────────────────

@@ -1,5 +1,3 @@
-/* Runtime overrides: Dash loads .css assets directly; SCSS is source-only. */
-
 button,
 a,
 [role="button"] {
@@ -8,38 +6,37 @@ a,
   cursor: pointer;
 }
 
-/* ISSUE_038: normalize analysis labels and status colors across themes. */
 body:not(.light) .analysis-metric-label,
 body:not(.light) .criterion-label,
 body:not(.light) .text-muted,
 body:not(.light) .analysis-card-subtitle {
-  color: #8899aa !important;
+  color: #91a7c1 !important;
 }
 
 body:not(.light) .metric-row-divider,
 body:not(.light) .metric-row-divider--analysis {
-  border-bottom-color: rgba(136, 153, 170, 0.18) !important;
+  border-bottom-color: rgba(145, 167, 193, 0.18) !important;
 }
 
 body.light .tone-positive,
 body.light .clr-green {
-  color: #087f3f !important;
+  color: #215f4d !important;
 }
 
 body.light .tone-info,
 body.light .clr-blue,
 body.light .clr-cyan {
-  color: #075fc7 !important;
+  color: #255f98 !important;
 }
 
 body.light .tone-caution,
 body.light .clr-amber {
-  color: #946200 !important;
+  color: #8b6621 !important;
 }
 
 body.light .tone-danger,
 body.light .clr-red {
-  color: #c62828 !important;
+  color: #a44c45 !important;
 }
 
 body.light .tone-muted,
@@ -47,60 +44,12 @@ body.light .text-muted,
 body.light .analysis-metric-label,
 body.light .criterion-label,
 body.light .analysis-card-subtitle {
-  color: #475569 !important;
+  color: #5b6776 !important;
 }
 
 body.light .metric-row-divider,
 body.light .metric-row-divider--analysis {
-  border-bottom-color: rgba(203, 213, 225, 0.65) !important;
-}
-
-/* Keep every Dash root/loading shell dark so no white band can show behind wide tables. */
-html:not(.light),
-body:not(.light),
-html:has(body:not(.light) #tab-screener.block),
-body:not(.light):has(#tab-screener.block),
-body:not(.light):has(#tab-screener.block) #react-entry-point,
-body:not(.light):has(#tab-screener.block) #_dash-app-content,
-body:not(.light):has(#tab-screener.block) .app-container,
-body:not(.light):has(#tab-screener.block) #tab-screener,
-body:not(.light):has(#tab-screener.block) .screener-content,
-body:not(.light):has(#tab-screener.block) #screener-table-container,
-body:not(.light):has(#tab-screener.block) .screener-market-shell,
-body:not(.light):has(#tab-screener.block) .screener-table-wrap,
-body:not(.light) #react-entry-point,
-body:not(.light) #_dash-app-content,
-body:not(.light) .app-container,
-body:not(.light) .block,
-body:not(.light) .d-block,
-body:not(.light) .main-content,
-body:not(.light) .screener-content,
-body:not(.light) #screener-table-container,
-body:not(.light) .screener-market-shell,
-body:not(.light) .screener-table-wrap,
-body:not(.light) .dash-table-container,
-body:not(.light) .dash-spreadsheet-container,
-body:not(.light) .dash-graph,
-body:not(.light) .dash-loading,
-body:not(.light) .dash-loading-callback,
-body:not(.light) ._dash-loading,
-body:not(.light) ._dash-loading-callback,
-body:not(.light) [data-dash-is-loading="true"] {
-  background: #0d1117 !important;
-}
-
-body.light,
-body.light #react-entry-point,
-body.light #_dash-app-content,
-body.light .app-container,
-body.light #tab-screener,
-body.light .screener-content,
-body.light #screener-table-container,
-body.light .screener-market-shell,
-body.light .screener-table-wrap,
-body.light .dash-table-container,
-body.light .dash-spreadsheet-container {
-  background: #ffffff !important;
+  border-bottom-color: rgba(214, 203, 189, 0.65) !important;
 }
 
 body.light .screener-table-wrap,
@@ -111,98 +60,56 @@ body.light .dash-spreadsheet-inner table,
 body.light .dash-spreadsheet-inner tr,
 body.light .dash-spreadsheet-inner td,
 body.light .dash-spreadsheet-inner th {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
+  background-color: #fffdfa !important;
+  color: #1c2736 !important;
 }
 
-/* The global application navigation should leave the viewport when scrolling. */
-#topbar.topbar {
-  position: relative !important;
-  top: auto !important;
-  z-index: 1 !important;
-}
-
-/* Give the analyze ticker bar more breathing room on desktop. */
-#tab-analyze .analyze-header {
-  align-items: stretch !important;
-}
-
-#tab-analyze .analyze-ticker-input {
-  flex: 1 1 420px !important;
-  min-width: min(100%, 320px) !important;
-}
-
-#tab-analyze .analyze-ticker-input input {
-  width: min(100%, 360px) !important;
-  min-width: 220px !important;
-  flex: 1 1 auto !important;
-}
-
-/* Make the sector dropdown follow the active theme explicitly. */
-#sector-filter .Select-control {
-  background: #161d2a !important;
-  border-color: #1e2a3a !important;
-  color: #e8eaf0 !important;
-}
-
+#sector-filter .Select-control,
 #sector-filter .Select-menu-outer {
-  background: #161d2a !important;
-  border-color: #1e2a3a !important;
+  background: rgba(22, 36, 58, 0.96) !important;
+  border-color: rgba(145, 167, 193, 0.22) !important;
+  color: #eef3f8 !important;
 }
 
 #sector-filter .Select-option {
-  background: transparent !important;
-  color: #8899aa !important;
+  color: #91a7c1 !important;
 }
 
 #sector-filter .Select-option:hover,
 #sector-filter .Select-option.is-focused {
-  background: rgba(22, 119, 255, 0.08) !important;
-  color: #e8eaf0 !important;
+  background: rgba(51, 118, 184, 0.14) !important;
+  color: #eef3f8 !important;
 }
 
 #sector-filter .Select-placeholder,
 #sector-filter .Select-value-label,
 #sector-filter .Select-input > input {
-  color: #e8eaf0 !important;
+  color: #eef3f8 !important;
 }
 
 body.light #sector-filter .Select-control,
 body.light #sector-filter .Select-menu-outer {
-  background: #ffffff !important;
-  border-color: #d9dee7 !important;
-  color: #111111 !important;
+  background: rgba(255, 253, 250, 0.98) !important;
+  border-color: rgba(28, 39, 54, 0.14) !important;
+  color: #1c2736 !important;
 }
 
 body.light #sector-filter .Select-option {
-  color: #6b7280 !important;
+  color: #5b6776 !important;
 }
 
 body.light #sector-filter .Select-option:hover,
 body.light #sector-filter .Select-option.is-focused {
-  background: rgba(22, 119, 255, 0.08) !important;
-  color: #111111 !important;
+  background: rgba(37, 95, 152, 0.08) !important;
+  color: #1c2736 !important;
 }
 
 body.light #sector-filter .Select-placeholder,
 body.light #sector-filter .Select-value-label,
 body.light #sector-filter .Select-input > input {
-  color: #111111 !important;
+  color: #1c2736 !important;
 }
 
-/* Keep the report's own section navigation visible. */
-#tab-analyze .analysis-jump-nav {
-  position: sticky !important;
-  position: -webkit-sticky !important;
-  top: 0 !important;
-  z-index: 900 !important;
-  background: rgba(13, 17, 23, 0.97) !important;
-  border-bottom: 1px solid #1e2a3a !important;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
-  backdrop-filter: blur(10px);
-}
-
-/* A clipping ancestor prevents position:sticky from reaching the viewport. */
 #tab-analyze,
 #analysis-loading,
 #analysis-content,
@@ -210,8 +117,9 @@ body.light #sector-filter .Select-input > input {
   overflow: visible !important;
 }
 
-/* Keep the add-to-portfolio controls horizontal on desktop. */
-#add-to-portfolio-panel .portfolio-add-panel {
+#add-to-portfolio-panel .portfolio-add-panel,
+#add-to-portfolio-panel .portfolio-add-header,
+#add-to-portfolio-panel .portfolio-add-controls {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
@@ -219,30 +127,6 @@ body.light #sector-filter .Select-input > input {
   gap: 12px !important;
 }
 
-#add-to-portfolio-panel .portfolio-add-header,
-#add-to-portfolio-panel .portfolio-add-controls {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-
-#add-to-portfolio-panel .portfolio-add-header {
-  flex: 0 0 auto;
-}
-
-#add-to-portfolio-panel .portfolio-add-controls {
-  flex: 1 1 auto;
-}
-
-body.light #tab-analyze .analysis-jump-nav {
-  background: rgba(255, 255, 255, 0.97) !important;
-  border-bottom-color: #cbd5e1 !important;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
-}
-
-/* Ensure the company heading remains above adjacent header content. */
 .company-title-link {
   position: relative;
   z-index: 2;
@@ -250,71 +134,31 @@ body.light #tab-analyze .analysis-jump-nav {
   cursor: pointer;
 }
 
-/* Shared analysis card structure for issue 025 normalized cards. */
 #tab-analyze .analysis-card-body {
   padding: 0 18px 16px;
 }
 
 #tab-analyze .analysis-metric-row {
   align-items: flex-start;
-  transition: background 0.12s ease;
 }
 
 #tab-analyze .analysis-metric-row:last-child {
   border-bottom: none !important;
 }
 
-#tab-analyze .analysis-metric-row:hover {
-  background: rgba(22, 119, 255, 0.03) !important;
-}
-
 #tab-analyze .analysis-metric-label {
-  font-family: "DM Mono", "Fira Code", monospace;
+  font-family: "IBM Plex Mono", monospace;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.02em;
-  color: #8899aa;
 }
 
 #tab-analyze .analysis-metric-value {
-  font-family: "DM Mono", "Fira Code", monospace;
+  font-family: "IBM Plex Mono", monospace;
   font-size: 12px;
   font-weight: 600;
-  color: #e8eaf0;
-  text-align: right;
   white-space: nowrap;
 }
 
-#tab-analyze .analysis-card-subtitle {
-  line-height: 1.5;
-}
-
-#tab-analyze .stability-card .analysis-card-body {
-  padding-top: 0;
-}
-
-#tab-analyze .stability-zone {
-  border-radius: 10px;
-}
-
-body.light #tab-analyze .analysis-metric-row {
-  border-bottom-color: rgba(203, 213, 225, 0.6) !important;
-}
-
-body.light #tab-analyze .analysis-metric-row:hover {
-  background: rgba(22, 119, 255, 0.03) !important;
-}
-
-body.light #tab-analyze .analysis-metric-label,
-body.light #tab-analyze .analysis-card-subtitle {
-  color: #475569 !important;
-}
-
-body.light #tab-analyze .analysis-metric-value {
-  color: #0f172a !important;
-}
-
-/* ISSUE_032: keep the legal footer at the viewport bottom on short tabs. */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -324,11 +168,9 @@ body.light #tab-analyze .analysis-metric-value {
 
 .app-footer {
   margin-top: auto;
-  border-top: 1px solid #43345a;
-  background: #161d2a;
+  background: rgba(15, 27, 45, 0.94);
 }
 
 body.light .app-footer {
-  background: #f7f8fa;
-  border-top-color: #cbd5e1;
+  background: #f7f1e8;
 }

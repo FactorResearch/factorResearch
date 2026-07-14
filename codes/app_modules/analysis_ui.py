@@ -1,10 +1,12 @@
 """Rendering helpers for the stock analysis view and shared charts."""
 
+from datetime import datetime
 from dash import dcc, html
 import plotly.graph_objects as go
 from urllib.parse import quote
 
 from codes.services import chart_service
+from codes.app_modules.company_identity import company_logo
 
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
 from .css_classes import tone_class
@@ -324,59 +326,6 @@ def _fcf_quality_card(data: dict) -> html.Div:
         status_text=f"— {signal.replace('_', ' ').title()}",
         body_children=metric_rows,
     )
-def _options_signal_card(data: dict) -> html.Div:
-    """Options Signal card: directional bias, IV regime, strike/expiry, risk/edge."""
-    os_data = data.get("options_signal") or {}
-    if not os_data:
-        return html.Div()
-
-    bias   = os_data.get("bias", "NEUTRAL")
-    signal = os_data.get("signal", "NO_TRADE")
-    edge   = os_data.get("edge_score")
-    risk   = os_data.get("risk_score")
-    if edge is None:
-        return html.Div()
-
-    bias_color = {"CALL": GREEN, "PUT": RED, "NEUTRAL": MUTED}.get(bias, MUTED)
-    sig_color = {
-        "BUY_CALL": GREEN, "BUY_PUT": GREEN,
-        "HIGH_CONVICTION_CALL": GREEN, "HIGH_CONVICTION_PUT": GREEN,
-        "FAVORABLE_CALL": GREEN, "FAVORABLE_PUT": GREEN,
-        "WATCH": AMBER, "AVOID": RED, "NO_TRADE": MUTED,
-        "BALANCED": AMBER, "CAUTION": AMBER, "UNFAVORABLE": RED,
-    }.get(signal, MUTED)
-
-    def _fmt(v, fmt=".2f", prefix="", suffix=""):
-        if v is None:
-            return "N/A"
-        try:
-            return f"{prefix}{v:{fmt}}{suffix}"
-        except (ValueError, TypeError):
-            return "N/A"
-
-    metrics = [
-        ("Bias",             html.Span(bias, className=f"fw-700 {tone_class(bias_color)}")),
-        ("Confidence",       _fmt(os_data.get("bias_confidence"), ".0f", suffix="/100")),
-        ("IV Level",         os_data.get("iv_level", "N/A")),
-        ("IV Trend",         os_data.get("iv_trend", "N/A")),
-        ("Expected Move",    _fmt((os_data.get("expected_move_pct") or 0) * 100, ".1f", suffix="%")),
-        ("Expected Move $",  _fmt(os_data.get("expected_move_dollar"), ",.2f", "$")),
-        ("Suggested Strike", _fmt(os_data.get("recommended_strike"), ",.2f", "$")),
-        ("Expiry (days)",    str(os_data.get("recommended_expiry_days", "N/A"))),
-        ("Risk Score",       _fmt(risk, ".0f", suffix="/100")),
-    ]
-
-    metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
-
-    return _metric_scorecard(
-        title="Options Signal",
-        score_text=f"{edge:.0f}/100",
-        score_color=sig_color,
-        status_text=f"— {signal.replace('_', ' ').title()}",
-        subtitle="Models short-horizon option mark-to-market movement, not expiry payoff.",
-        body_children=metric_rows,
-    )
-
 def _capital_allocation_card(data: dict) -> html.Div:
     """Capital Allocation card: key metrics display."""
     ca = data.get("capital_allocation") or {}
@@ -836,11 +785,136 @@ def _regime_card(data: dict) -> html.Div:
     )
 
 
+def _comomentum_card(data: dict) -> html.Div:
+    """Market crowding card backed by the CoMomentum regime input."""
+    percentile = (data.get("regime") or {}).get("comomentum_percentile")
+    if percentile is None:
+        return _metric_scorecard(
+            title="CoMomentum Crowding",
+            score_text="Unavailable",
+            score_color=MUTED,
+            status_text="Legacy cache",
+            status_color=MUTED,
+            body_children=[html.Div(
+                "Run a fresh analysis to calculate the market crowding signal.",
+                className="analysis-copy-leading fs-11 clr-muted fsi",
+            )],
+        )
+
+    if percentile >= 75:
+        signal, color = "HIGH", RED
+        interpretation = "Momentum leaders are moving together. Crowding can make a bullish market regime more fragile."
+    elif percentile <= 25:
+        signal, color = "LOW", GREEN
+        interpretation = "Momentum leaders are moving independently, indicating limited crowding pressure."
+    else:
+        signal, color = "NORMAL", BLUE
+        interpretation = "Momentum crowding is within its normal historical range."
+
+    rounded_percentile = int(round(percentile))
+    suffix = (
+        "th" if 10 <= rounded_percentile % 100 <= 20
+        else {1: "st", 2: "nd", 3: "rd"}.get(rounded_percentile % 10, "th")
+    )
+
+    return _metric_scorecard(
+        title="CoMomentum Crowding",
+        score_text=f"{rounded_percentile}{suffix} pct",
+        score_color=color,
+        status_text=signal,
+        status_color=color,
+        body_children=[
+            _metric_data_row("Crowding percentile", f"{percentile:.1f}/100"),
+            _metric_data_row("Signal", html.Span(signal, className=f"fw-600 {tone_class(color)}")),
+            html.Div(interpretation, className="analysis-copy-leading fs-11 clr-muted mt-8 fsi"),
+        ],
+    )
+
+
+def _model_metric(value, fmt=".2f", suffix="") -> str:
+    if value is None:
+        return "N/A"
+    try:
+        return f"{value:{fmt}}{suffix}"
+    except (TypeError, ValueError):
+        return "N/A"
+
+
+def _greenblatt_card(data: dict) -> html.Div:
+    result = data.get("greenblatt") or {}
+    score = result.get("magic_score")
+    return _metric_scorecard(
+        title="Greenblatt Value",
+        score_text=f"{score:.0f}/100" if score is not None else "Single stock",
+        score_color=GREEN if score is not None and score >= 60 else MUTED,
+        status_text="Magic Formula",
+        status_color=MUTED,
+        body_children=[
+            _metric_data_row("Earnings yield", _model_metric(result.get("earnings_yield"), ".2f")),
+            _metric_data_row("FCF yield", _model_metric(result.get("fcf_yield"), ".2f")),
+            _metric_data_row("Return on capital", _model_metric(result.get("roic"), ".2f")),
+            html.Div("Universe ranking is required for a Magic Formula score.", className="analysis-copy-leading fs-11 clr-muted mt-8 fsi"),
+        ],
+    )
+
+
+def _profitability_card(data: dict) -> html.Div:
+    result = data.get("profitability") or {}
+    score = result.get("profitability_score")
+    color = GREEN if score is not None and score >= 65 else RED if score is not None and score < 40 else AMBER
+    return _metric_scorecard(
+        title="Structural Profitability",
+        score_text=f"{score:.0f}/100" if score is not None else "Unavailable",
+        score_color=color if score is not None else MUTED,
+        status_text=(result.get("signal") or "No data").replace("_", " ").title(),
+        status_color=color if score is not None else MUTED,
+        body_children=[
+            _metric_data_row("ROIC", _model_metric(result.get("roic"), ".1f", "%")),
+            _metric_data_row("Adjusted ROE", _model_metric(result.get("roe_adjusted"), ".1f", "%")),
+            _metric_data_row("Gross profitability", _model_metric(result.get("gross_profitability"), ".2f")),
+            _metric_data_row("Margin stability", _model_metric(result.get("operating_margin_stability"), ".1f")),
+            _metric_data_row("Incremental ROIC", _model_metric(result.get("incremental_roic"), ".1f", "%")),
+        ],
+    )
+
+
+def _benchmark_bias_card(data: dict) -> html.Div:
+    benchmark = data.get("spy_benchmark") or {}
+    bias = data.get("bias") or {}
+    label = (bias.get("bias") or "Unavailable").replace("_", " ").title()
+    color = GREEN if label == "Outperform" else RED if label == "Underperform" else AMBER if bias else MUTED
+    probability = benchmark.get("probability_outperform")
+    return _metric_scorecard(
+        title="SPY Benchmark & Bias",
+        score_text=label,
+        score_color=color,
+        status_text=f"{probability * 100:.0f}% probability" if probability is not None else "No benchmark",
+        status_color=color,
+        body_children=[
+            _metric_data_row("Outperform probability", f"{probability * 100:.1f}%" if probability is not None else "N/A"),
+            _metric_data_row("Target CAGR", _model_metric(benchmark.get("cagr_target"), ".1f", "%")),
+            _metric_data_row("SPY CAGR", _model_metric(benchmark.get("cagr_spy"), ".1f", "%")),
+            _metric_data_row("Alpha", _model_metric(benchmark.get("alpha"), ".1f", "%")),
+            _metric_data_row("Confidence", f"{bias.get('confidence') * 100:.0f}%" if bias.get("confidence") is not None else "N/A"),
+        ],
+    )
+
+
 def _market_fear_card(data: dict) -> html.Div:
     """Display-only VIX/VIXEQ Market Fear Gauge."""
     fear = data.get("market_fear") or {}
     if not fear or fear.get("error"):
-        return html.Div()
+        return _metric_scorecard(
+            title="Market Fear Gauge",
+            score_text="Unavailable",
+            score_color=MUTED,
+            status_text="Market data",
+            status_color=MUTED,
+            body_children=[html.Div(
+                "VIX and VIXEQ data could not be loaded for this analysis.",
+                className="analysis-copy-leading fs-11 clr-muted fsi",
+            )],
+        )
 
     color_map = {
         "green": GREEN,
@@ -892,257 +966,230 @@ def _market_fear_card(data: dict) -> html.Div:
     ])
 
 def _build_analysis_content(data: dict) -> list:
-    """Render analysis data into Dash components. Pure function, no side effects."""
+    """Render analysis data into a compact, summary-first analysis layout."""
     if not data or "error" in data:
         return []
+
     symbol = data["symbol"]
-    name   = data["name"]
+    name = data["name"]
     sector = data["sector"]
-    g      = data["graham"]
-    q      = data["quality"]
-    m      = data["momentum"]
-    comp = (
-        data.get("composite_score")
-        or data.get("composite", {}).get("composite_score", 0)
+    g = data["graham"]
+    q = data["quality"]
+    m = data["momentum"]
+    enhanced = data.get("enhanced") or {}
+    comp = enhanced.get("composite_score")
+    if comp is None:
+        comp = (
+            data.get("composite_score")
+            or data.get("composite", {}).get("composite_score", 0)
+        )
+    verdict = (
+        enhanced.get("verdict")
+        or data.get("composite", {}).get("verdict")
+        or "Pending"
+    ).replace("_", " ").title()
+    verdict_label = (
+        enhanced.get("verdict_label")
+        or data.get("composite", {}).get("verdict_label")
+        or "pending"
     )
     price = data.get("price")
-    er    = data.get("earnings_revision") or {}
-    # ── Color Logic ──────────────────────────────────────────────────────────
-    def _score_color(val, rule):
-        """
-        rule:
-            {
-                "direction": "high" | "low",
-                "good_threshold": float,
-                "bad_threshold": float | None
-            }
-        """
-        if val is None:
-            return MUTED
-        direction = rule.get("direction", "high")
-        good = rule.get("good_threshold")
-        bad = rule.get("bad_threshold")
-        if direction == "high":
-            if good is not None and val >= good:
-                return GREEN
-            if bad is not None and val <= bad:
-                return RED
-            return AMBER
-        else:  # low is better
-            if good is not None and val <= good:
-                return GREEN
-            if bad is not None and val >= bad:
-                return RED
-            return AMBER
-    
-    # Earnings Revision Color + Display
-    er_color = MUTED
-    er_signal = er.get("signal", "NEUTRAL")
-    if er and er.get("signal"):
-        color_map = {
-            "STRONG_UP": GREEN, "UP": GREEN,
-            "NEUTRAL": AMBER,
-            "DOWN": RED, "STRONG_DOWN": RED,
-        }
-        er_color = color_map.get(er_signal, MUTED)
-    er_display = html.Span(
-        f"{er.get('total_score', 0):.0f}/100 ({er_signal.replace('_', ' ')})",
-        className=f"fw-700 {tone_class(er_color)}"
-    )
-    # ── Extra stat row items ──────────────────────────────────────────────────
+    er = data.get("earnings_revision") or {}
     p_data = data.get("piotroski") or {}
     a_data = data.get("altman") or {}
     r_data = data.get("risk") or {}
     b_data = data.get("buffett") or {}
-    RULES = {
-    "pe": {"direction": "low", "good_threshold": 15, "bad_threshold": 25},
-    "pb": {"direction": "low", "good_threshold": 1.5, "bad_threshold": 3},
-    "roe": {"direction": "high", "good_threshold": 15, "bad_threshold": 8},
-    "op_margin": {"direction": "high", "good_threshold": 15, "bad_threshold": 5},
-    "sharpe": {"direction": "high", "good_threshold": 1.0, "bad_threshold": 0.5},
-    "beta": {"direction": "low", "good_threshold": 1.0, "bad_threshold": 1.5},
-    "f_score": {"direction": "high", "good_threshold": 7, "bad_threshold": 4},
-    }
-    composite_bucket = (
-        data.get("enhanced", {}).get("verdict")
-        or data.get("composite", {}).get("verdict")
-        or "N/A"
-    ).replace("_", " ")
-    composite_tone = tone_class(_verdict_color(
-        data.get("enhanced", {}).get("verdict_label")
-        or data.get("composite", {}).get("verdict_label", "pending")
-    ))
-    intrinsic_tone = tone_class(
-        GREEN if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
-        else RED if b_data.get("intrinsic_value") else MUTED
-    )
-    moat_tone = tone_class({"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(b_data.get("grade", ""), MUTED))
-    header = html.Div(
-        className="company-header company-identity-header",
+    fcf_data = data.get("fcf_quality") or {}
+    growth_data = data.get("growth_quality") or {}
+    capital_data = data.get("capital_allocation") or {}
+    regime_data = data.get("regime") or {}
+    bias_data = data.get("bias") or {}
+
+    def _fmt_money(value, decimals=2):
+        if value is None:
+            return "N/A"
+        return f"${value:,.{decimals}f}"
+
+    def _fmt_pct(value, decimals=1):
+        if value is None:
+            return "N/A"
+        return f"{value:.{decimals}f}%"
+
+    def _metric(label: str, value: str, hint: str | None = None) -> html.Div:
+        children = [
+            html.Div(label, className="analysis-mini-metric-label"),
+            html.Div(value, className="analysis-mini-metric-value"),
+        ]
+        if hint:
+            children.append(html.Div(hint, className="analysis-mini-metric-hint"))
+        return html.Div(className="analysis-mini-metric", children=children)
+
+    def _summary_point(title: str, copy: str) -> html.Div:
+        return html.Div(
+            className="analysis-summary-point",
+            children=[
+                html.Div(title, className="analysis-summary-point-title"),
+                html.Div(copy, className="analysis-summary-point-copy"),
+            ],
+        )
+
+    def _section_metric(label: str, value: str) -> html.Div:
+        return html.Div(
+            className="analysis-section-metric",
+            children=[
+                html.Div(label, className="analysis-section-metric-label"),
+                html.Div(value, className="analysis-section-metric-value"),
+            ],
+        )
+
+    def _section(
+        section_id: str,
+        title: str,
+        summary: str,
+        metrics: list[tuple[str, str]],
+        children: list,
+        *,
+        open_by_default: bool = False,
+    ) -> html.Section:
+        summary_props = {}
+        if section_id == "analysis-charts":
+            summary_props = {"id": "analysis-charts-summary", "n_clicks": 0}
+        return html.Section(
+            id=section_id,
+            className="analysis-section",
+            children=[
+                html.Details(
+                    id=f"{section_id}-disclosure",
+                    className="analysis-disclosure",
+                    open=open_by_default,
+                    children=[
+                        html.Summary(
+                            className="analysis-disclosure-summary",
+                            **summary_props,
+                            children=[
+                                html.Div(
+                                    className="analysis-disclosure-copy",
+                                    children=[
+                                        html.Div(title, className="analysis-disclosure-title"),
+                                        html.Div(summary, className="analysis-disclosure-text"),
+                                    ],
+                                ),
+                                html.Div(
+                                    className="analysis-disclosure-metrics",
+                                    children=[_section_metric(label, value) for label, value in metrics],
+                                ),
+                                html.Div(className="analysis-disclosure-toggle", children=[
+                                    html.Span("Open", className="analysis-disclosure-toggle-open"),
+                                    html.Span("Close", className="analysis-disclosure-toggle-close"),
+                                ]),
+                            ],
+                        ),
+                        html.Div(className="analysis-disclosure-body", children=children),
+                    ],
+                )
+            ],
+        )
+
+    intrinsic_value = b_data.get("intrinsic_value")
+    value_gap = None
+    if price and intrinsic_value:
+        value_gap = ((intrinsic_value - price) / price) * 100
+
+    if value_gap is not None and comp >= 75:
+        lead_copy = "Cheap versus modeled moat value with a high-conviction composite setup."
+    elif value_gap is not None and value_gap > 0:
+        lead_copy = "Price sits below modeled value, but the full thesis still needs score support."
+    elif comp >= 70:
+        lead_copy = "Strong overall profile. Valuation is not screaming cheap, but the business quality stack is holding up."
+    elif comp >= 50:
+        lead_copy = "Mixed setup. Worth a quick review, but not an obvious yes on first pass."
+    else:
+        lead_copy = "Current setup is weak on a first-pass read. Keep it on the watchlist only if a specific thesis exists."
+
+    overview = html.Div(
+        className="analysis-overview-shell",
         children=[
             html.Div(
-                className="company-header-left",
+                className="analysis-hero",
                 children=[
-                    html.H2(dcc.Link(
-                        f"{symbol} — {name}",
-                        href=f"/analyze/{symbol}/",
-                        refresh=True,
-                        className="company-title-link",
-                        title=f"Open {name} company research",
-                    )),
-                    html.Div(className="company-meta", children=[
-                        html.Span(f"Sector · {sector}", className="company-meta-item"),
-                        html.Span(f"Composite · {composite_bucket}", className="company-meta-item"),
-                    ]),
                     html.Div(
-                        className="stats-row",
+                        className="analysis-hero-copy",
                         children=[
-                            _stat(
-                                "Price",
-                                f"${price:.2f}" if price else "N/A",
-                                "Current market price per share."
+                            html.Div("Quick Research Snapshot", className="analysis-hero-kicker"),
+                            html.Div(
+                                className="analysis-hero-identity",
+                                children=[
+                                    company_logo(symbol, name, "company-logo company-logo--hero"),
+                                    html.H2(
+                                        dcc.Link(
+                                            f"{symbol} — {name}",
+                                            href=f"/analyze/{symbol}/",
+                                            refresh=True,
+                                            className="company-title-link",
+                                            title=f"Open {name} company research",
+                                        ),
+                                        className="analysis-hero-title",
+                                    ),
+                                ],
                             ),
-                           _stat(
-    "P/E",
-    html.Span(
-        f"{g.get('pe') or 0:.1f}×",
-        className=tone_class(_score_color(g.get("pe"), RULES["pe"]))
-    ),
-    "Price-to-Earnings (P/E) Ratio. Compares share price to earnings per share. Lower values generally indicate a lower valuation. Traditional value investing often uses 15× as a reference threshold."
-),
-_stat(
-    "P/B",
-    html.Span(
-        f"{g.get('pb') or 0:.2f}×",
-        className=tone_class(_score_color(g.get("pb"), RULES["pb"]))
-    ),
-    "Price-to-Book (P/B) Ratio. Compares market price to book value per share. Lower values generally indicate a lower valuation. Traditional value investing often uses 1.5× as a reference threshold."
-),
-_stat(
-    "ROE",
-    html.Span(
-        f"{q.get('roe') or 0:.1f}%",
-        className=tone_class(_score_color(q.get("roe"), RULES["roe"]))
-    ),
-    "Return on Equity. Target: ≥15%."
-),
-_stat(
-    "Op Margin",
-    html.Span(
-        f"{q.get('op_margin') or 0:.1f}%",
-        className=tone_class(_score_color(q.get("op_margin"), RULES["op_margin"]))
-    ),
-    "Operating Margin. Target: ≥15%."
-),
-_stat(
-    "Sharpe",
-    html.Span(
-        f"{r_data.get('sharpe') or 0:.2f}",
-        className=tone_class(_score_color(r_data.get('sharpe'), RULES["sharpe"]))
-    ),
-    "Sharpe Ratio. ≥1.0 = good, ≥1.5 = excellent."
-),
-_stat(
-    "Beta",
-    html.Span(
-        f"{r_data.get('beta') or 0:.2f}",
-        className=tone_class(_score_color(r_data.get('beta'), RULES["beta"]))
-    ),
-    "Beta vs SPY. <1.0 = defensive, >1.0 = more volatile."
-),
-_stat(
-    "F-Score",
-    html.Span(
-        f"{p_data.get('f_score') or 0}/9",
-        className=tone_class(_score_color(p_data.get('f_score'), RULES["f_score"]))
-    ),
-    "Piotroski F-Score. 8–9 = strong."
-),
-                            _stat(
-                                "Economic Moat Rating",
-                                html.Span(
-                                    f"${b_data.get('intrinsic_value'):.2f}"
-                                    if b_data.get("intrinsic_value") else "N/A",
-                                    className=tone_class(
-                                        GREEN if (price and b_data.get("intrinsic_value") and price <= b_data["intrinsic_value"])
-                                        else RED if b_data.get("intrinsic_value") else MUTED
-                                    )
-                                ),
-                                "Intrinsic Value. Green = Price below IV (margin of safety)."
+                            html.Div(
+                                className="analysis-hero-meta",
+                                children=[
+                                    html.Span(f"Sector · {sector}", className="analysis-hero-meta-item"),
+                                    html.Span(f"Verdict · {verdict}", className="analysis-hero-meta-item"),
+                                    html.Span(f"Updated · {_fmt_updated(data.get('updated_at'))}", className="analysis-hero-meta-item"),
+                                ],
                             ),
-                            _stat(
-                                "Moat",
-                                html.Span(
-                                    f"{b_data.get('grade')} ({b_data.get('grade_label', '')})"
-                                    if b_data.get("grade") else "N/A",
-                                    className=tone_class({
-                                            "A": GREEN,
-                                            "B": BLUE,
-                                            "C": AMBER,
-                                            "D": RED
-                                        }.get(b_data.get("grade"), MUTED))
-                                ),
-                                "Economic Moat Rating: A=Wide Moat (best), D=Avoid."
-                            ),
-                            _stat(
-                                "Comp",
-                                html.Span(
-                                    f"{comp:.0f}/100",
-                                    className=f"fw-700 {composite_tone}"
-                                ),
-                                "Overall Composite Score (higher = better)."
-                            ),
-                            _stat(
-                                "E. Rev",
-                                er_display,
-                                "Earnings Revision Score (0–100) — Measures analyst revisions."
-                            ),
-                        ]
+                            html.Div(lead_copy, className="analysis-hero-lead"),
+                        ],
                     ),
-                ]
+                    html.Div(
+                        className=f"analysis-hero-score analysis-hero-score--{verdict_label}",
+                        children=[
+                            html.Div("Composite", className="analysis-hero-score-label"),
+                            html.Div(f"{comp:.0f}", className="analysis-hero-score-value"),
+                            html.Div(verdict, className="analysis-hero-score-note"),
+                        ],
+                    ),
+                ],
             ),
             html.Div(
-                className="badges",
+                className="analysis-mini-metrics",
                 children=[
-                    html.Div(
-                        className="grade-badge",
-                        children=[
-                            html.Div(
-                                g["grade"],
-                                className=f"grade-letter {tone_class(_grade_color(g['grade']))}"
-                            ),
-                            html.Div("Intrinsic Value Estimate", className="grade-label"),
-                            html.Div(
-                                f"{g['total_score']}/{g['total_max']}",
-                                className="grade-score"
-                            ),
-                        ]
-                    ),
-                    html.Div(
-                        className="grade-badge badge-divider",
-                        children=[
-                            html.Div(
-                                f"${b_data.get('intrinsic_value', 0):.0f}"
-                                if b_data.get("intrinsic_value") else "—",
-                                className=f"grade-letter fs-22 {intrinsic_tone}",
-                            ),
-                            html.Div("Economic Moat Rating", className="grade-label"),
-                            html.Span(
-                                f"{b_data.get('grade')} — {b_data.get('grade_label')}"
-                                if b_data.get("grade") else "N/A",
-                                className=f"grade-score ch moat-grade-link {moat_tone}",
-                                title=_MOAT_TOOLTIPS.get(b_data.get("grade", ""), ""),
-                            ),
-                        ]
-                    ),
-                ]
+                    _metric("Price", _fmt_money(price)),
+                    _metric("Moat Value", _fmt_money(intrinsic_value, 0 if intrinsic_value else 2)),
+                    _metric("Margin", f"{value_gap:.1f}%" if value_gap is not None else "N/A"),
+                    _metric("ROE", _fmt_pct(q.get("roe"))),
+                    _metric("Op Margin", _fmt_pct(q.get("op_margin"))),
+                    _metric("F-Score", f"{p_data.get('f_score', 'N/A')}/9" if p_data.get("f_score") is not None else "N/A"),
+                ],
             ),
-        ]
+            html.Div(
+                className="analysis-summary-points",
+                children=[
+                    _summary_point(
+                        "Valuation",
+                        f"P/E {g.get('pe', 0):.1f}x, P/B {g.get('pb', 0):.2f}x, moat grade {b_data.get('grade', 'N/A')}.",
+                    ),
+                    _summary_point(
+                        "Accounting",
+                        f"F-Score {p_data.get('f_score', 'N/A')}/9 and Altman {a_data.get('zone_label', 'N/A')} set the accounting tone.",
+                    ),
+                    _summary_point(
+                        "Risk",
+                        f"Beta {r_data.get('beta', 0):.2f} and Sharpe {r_data.get('sharpe', 0):.2f} summarize current market behavior.",
+                    ),
+                    _summary_point(
+                        "Growth",
+                        f"Growth quality {growth_data.get('growth_quality_score', 'N/A')} and capital allocation {capital_data.get('capital_allocation_score', 'N/A')} lead the long-term read.",
+                    ),
+                ],
+            ),
+        ],
     )
-    banner = _composite_banner(data)
-    graham_card  = _render_scorecard("Intrinsic Value Analysis", g["criteria"], "graham")
+
+    graham_card = _render_scorecard("Intrinsic Value Analysis", g["criteria"], "graham")
     quality_card = _render_scorecard("Moat Rating Analysis", q["criteria"], "quality")
-    
     buffett_card = (
         _render_scorecard("Economic Moat Quality & Value", b_data.get("criteria", []), "buffett")
         if b_data.get("criteria") else html.Div()
@@ -1151,106 +1198,218 @@ _stat(
         _render_scorecard("Momentum Analysis", m.get("criteria", []), "momentum")
         if m.get("criteria") else html.Div()
     )
-    
     piotroski_card = _piotroski_card(data)
     altman_card = _altman_card(data)
-    risk_card = _risk_card(data)
     fcf_quality_card = _fcf_quality_card(data)
+    risk_card = _risk_card(data)
     market_fear_card = _market_fear_card(data)
     regime_card = _regime_card(data)
+    comomentum_card = _comomentum_card(data)
     capital_allocation_card = _capital_allocation_card(data)
     growth_quality_card = _growth_quality_card(data)
     factor_momentum_card = _factor_momentum_card(data)
     alternative_data_card = _alternative_data_card(data)
-    div_chart = _div_chart(g.get("div_history", []), symbol, data)
+    insider_card = _insider_activity_card(data)
+    greenblatt_card = _greenblatt_card(data)
+    profitability_card = _profitability_card(data)
+    benchmark_bias_card = _benchmark_bias_card(data)
     graham_details = _graham_details_card(g, b_data)
     buffett_details = _buffett_details_card(data)
+
+    accounting_children = [
+        html.Div(className="analysis-card-grid analysis-card-grid--two", children=[piotroski_card, altman_card]),
+        html.Div(className="analysis-card-grid analysis-card-grid--two", children=[fcf_quality_card, html.Div(
+            className="analysis-note-card",
+            children=[
+                html.Div("Fraud & Manipulation", className="analysis-note-card-title"),
+                html.Div(
+                    "This section is reserved for the accounting stack: quality checks now, deeper fraud diagnostics as new models land.",
+                    className="analysis-note-card-copy",
+                ),
+            ],
+        )]),
+    ]
+
     sections = [
-        ("analysis-overview", "Overview", [header, banner]),
+        ("analysis-overview", "Overview", overview),
         (
             "analysis-valuation",
             "Valuation",
-            [html.Div(className="card-row bg", children=[graham_details, buffett_details])],
+            _section(
+                "analysis-valuation",
+                "Valuation",
+                "Check whether the setup is actually cheap before spending more time on it.",
+                [
+                    ("Price", _fmt_money(price)),
+                    ("Moat Value", _fmt_money(intrinsic_value, 0 if intrinsic_value else 2)),
+                    ("P/E", f"{g.get('pe', 0):.1f}x"),
+                    ("P/B", f"{g.get('pb', 0):.2f}x"),
+                ],
+                [
+                    html.Div(className="analysis-card-grid analysis-card-grid--two", children=[graham_details, buffett_details]),
+                    html.Div(className="analysis-card-grid analysis-card-grid--three", children=[graham_card, quality_card, buffett_card]),
+                    greenblatt_card,
+                ],
+            ),
         ),
         (
-            "analysis-moat",
-            "Moat & Momentum",
-            [html.Div(className="moment_quality_row", children=[buffett_card, momentum_card])],
+            "analysis-accounting",
+            "Accounting",
+            _section(
+                "analysis-accounting",
+                "Accounting",
+                "Keep accounting separate from the overview: cash quality, balance-sheet safety, and reporting quality live here.",
+                [
+                    ("F-Score", f"{p_data.get('f_score', 'N/A')}/9" if p_data.get("f_score") is not None else "N/A"),
+                    ("FCF", f"{fcf_data.get('fcf_quality_score', 'N/A')}/100" if fcf_data.get("fcf_quality_score") is not None else "N/A"),
+                    ("Altman", a_data.get("zone_label", "N/A")),
+                    ("Cash Conv.", f"{fcf_data.get('fcf_conversion', 0):.1f}%" if fcf_data.get("fcf_conversion") is not None else "N/A"),
+                ],
+                accounting_children,
+            ),
         ),
-        ("analysis-risk", "Risk", [risk_card]),
         (
-            "analysis-scorecards",
-            "Scorecards",
-            [html.Div(className="card-row", children=[quality_card, graham_card])],
-        ),
-        (
-            "analysis-health",
-            "Financial Health",
-            [html.Div(className="quant_row", children=[piotroski_card, altman_card])]
-            if p_data and a_data else [],
-        ),
-        (
-            "analysis-regime",
-            "Regime & Cash Flow",
-            [
-                html.Div(className="card-row", children=[market_fear_card, regime_card]),
-                html.Div(className="card-row", children=[fcf_quality_card, factor_momentum_card]),
-            ],
+            "analysis-risk",
+            "Risk",
+            _section(
+                "analysis-risk",
+                "Risk",
+                "This section answers one question quickly: how fragile is the setup if you are wrong?",
+                [
+                    ("Beta", f"{r_data.get('beta', 0):.2f}" if r_data.get("beta") is not None else "N/A"),
+                    ("Sharpe", f"{r_data.get('sharpe', 0):.2f}" if r_data.get("sharpe") is not None else "N/A"),
+                    ("Bias", bias_data.get("bias", "N/A").replace("_", " ").title()),
+                    ("Regime", regime_data.get("regime", "N/A").replace("_", " ")),
+                ],
+                [
+                    risk_card,
+                    html.Div(
+                        className="analysis-card-grid analysis-card-grid--three",
+                        children=[market_fear_card, regime_card, comomentum_card],
+                    ),
+                    benchmark_bias_card,
+                ],
+            ),
         ),
         (
             "analysis-growth",
             "Growth",
-            [html.Div(className="card-row", children=[capital_allocation_card, growth_quality_card])],
+            _section(
+                "analysis-growth",
+                "Growth",
+                "Long-term durability lives here: reinvestment, efficiency, and whether growth quality matches the story.",
+                [
+                    ("Growth Q.", f"{growth_data.get('growth_quality_score', 'N/A')}/100" if growth_data.get("growth_quality_score") is not None else "N/A"),
+                    ("Cap Alloc.", f"{capital_data.get('capital_allocation_score', 'N/A')}/100" if capital_data.get("capital_allocation_score") is not None else "N/A"),
+                    ("ROIC", _fmt_pct(capital_data.get("roic"))),
+                    ("Revisions", f"{er.get('total_score', 'N/A')}/100" if er.get("total_score") is not None else "N/A"),
+                ],
+                [
+                    html.Div(className="analysis-card-grid analysis-card-grid--two", children=[capital_allocation_card, growth_quality_card]),
+                    html.Div(className="analysis-card-grid analysis-card-grid--two", children=[momentum_card, factor_momentum_card]),
+                    profitability_card,
+                ],
+            ),
         ),
         (
             "analysis-signals",
             "Signals",
-            [
-                html.Div(className="card-row", children=[_insider_activity_card(data), alternative_data_card]),
-            ],
-        ),
-        (
-            "analysis-charts",
-            "Charts",
-            [
-                html.Div(
-                    className="charts-grid",
-                    children=[
-                        _eps_chart(g.get("eps_history", []), symbol, data),
-                        _price_chart(data.get("price_history"), data.get("spy_history"), symbol, data),
-                    ],
-                ),
-                div_chart,
-            ],
+            _section(
+                "analysis-signals",
+                "Signals",
+                "Use this only if the stock survives the first pass. It adds market behavior and edge signals without crowding the landing view.",
+                [
+                    ("Earnings Rev.", f"{er.get('total_score', 'N/A')}/100" if er.get("total_score") is not None else "N/A"),
+                    ("Bias", (data.get("bias") or {}).get("bias", "N/A").replace("_", " ").title()),
+                    ("Insider", f"{(data.get('insider_activity') or {}).get('insider_confidence_score', 'N/A')}/100" if (data.get("insider_activity") or {}).get("insider_confidence_score") is not None else "N/A"),
+                    ("Alt Data", f"{(data.get('alternative_data') or {}).get('alternative_data_score', 'N/A')}/100" if (data.get("alternative_data") or {}).get("alternative_data_score") is not None else "N/A"),
+                ],
+                [
+                    insider_card,
+                    html.Div(className="analysis-card-grid analysis-card-grid--two", children=[alternative_data_card, _composite_banner(data)]),
+                ],
+            ),
         ),
     ]
-    sections = [(section_id, title, children) for section_id, title, children in sections if children]
+
+    if data.get("price_history") or g.get("eps_history"):
+        sections.append(
+            (
+                "analysis-charts",
+                "Charts",
+                _section(
+                    "analysis-charts",
+                    "Charts",
+                    "Hidden by default so the page stays fast to scan. Open only when you want historical context.",
+                    [
+                        ("EPS", "History"),
+                        ("Price", "History"),
+                    ],
+                    [
+                        dcc.Loading(
+                            type="circle",
+                            children=html.Div(
+                                "Expand Charts to render historical figures.",
+                                id="analysis-charts-content",
+                                className="analysis-charts-placeholder",
+                            ),
+                        ),
+                        html.Div(id="analysis-chart-resize-trigger", className="d-none"),
+                    ],
+                ),
+            )
+        )
+
     nav = html.Nav(
         className="analysis-jump-nav",
         **{"aria-label": "Analysis sections"},
         children=[
-            html.A(
-                href=f"#{section_id}",
-                className="analysis-jump-link",
-                title=title,
+            html.Div(
+                className="analysis-jump-track",
                 children=[
-                    html.Span(className="analysis-jump-dot"),
-                    html.Span(title, className="analysis-jump-label"),
+                    html.A(
+                        href=f"#{section_id}",
+                        className="analysis-jump-link",
+                        title=title,
+                        children=[
+                            html.Span(className="analysis-jump-dot"),
+                            html.Span(title, className="analysis-jump-label"),
+                        ],
+                    )
+                    for section_id, title, _children in sections
                 ],
             )
-            for section_id, title, _children in sections
         ],
     )
+
+    rendered_sections = []
+    for section_id, _title, content in sections:
+        if section_id == "analysis-overview":
+            rendered_sections.append(
+                html.Section(id=section_id, className="analysis-section analysis-section--overview", children=[content])
+            )
+        else:
+            rendered_sections.append(content)
+
     return [
         nav,
-        *[
-            html.Section(
-                id=section_id,
-                className="analysis-section",
-                children=children,
-            )
-            for section_id, _title, children in sections
-        ],
+        html.Div(className="analysis-sections", children=rendered_sections),
+    ]
+
+
+def build_analysis_charts(data: dict) -> list:
+    """Build Plotly figures only after the Charts disclosure is expanded."""
+    symbol = data.get("symbol") or "Stock"
+    graham = data.get("graham") or {}
+    return [
+        html.Div(
+            className="analysis-card-grid analysis-card-grid--two",
+            children=[
+                _eps_chart(graham.get("eps_history", []), symbol, data),
+                _price_chart(data.get("price_history"), data.get("spy_history"), symbol, data),
+            ],
+        ),
+        _div_chart(graham.get("div_history", []), symbol, data),
     ]
 
 
@@ -1293,11 +1452,15 @@ def _fmt_market_cap(v) -> str:
 
 def _fmt_updated(v) -> str:
     if not v:
-        return "—"
+        return "Not available"
     try:
-        return v[:10]  # ISO date portion
-    except Exception:
-        return "—"
+        if hasattr(v, "strftime"):
+            return v.strftime("%b %d, %Y")
+        raw = str(v).strip()
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        return parsed.strftime("%b %d, %Y")
+    except (TypeError, ValueError, OverflowError):
+        return str(v)[:10] or "Not available"
 def _verdict_color(label: str) -> str:
     return {
         "strong-buy": GREEN,
@@ -1354,7 +1517,11 @@ def _eps_chart(eps_history: list, symbol: str, data: dict | None = None) -> html
         textfont=dict(size=12, color=WHITE) 
     ))
     fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} EPS History (10yr)"))
-    return dcc.Graph(figure=fig, config={"displayModeBar": False})
+    return dcc.Graph(
+        figure=fig,
+        config={"displayModeBar": False, "responsive": True},
+        className="analysis-history-graph",
+    )
 
 def _price_chart(price_history_dict, spy_history_dict, symbol: str, data: dict | None = None) -> html.Div:
     dataset = chart_service.get_analysis_chart_dataset(
@@ -1377,7 +1544,11 @@ def _price_chart(price_history_dict, spy_history_dict, symbol: str, data: dict |
         ))
     fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} vs SPY (10yr normalised)"))
     fig.update_yaxes(title_text="Index (100 = start)")
-    return dcc.Graph(figure=fig, config={"displayModeBar": False})
+    return dcc.Graph(
+        figure=fig,
+        config={"displayModeBar": False, "responsive": True},
+        className="analysis-history-graph",
+    )
 
 def _div_chart(div_history: list, symbol: str, data: dict | None = None) -> html.Div:
     dataset = chart_service.get_analysis_chart_dataset(data or {"symbol": symbol, "graham": {"div_history": div_history}}, "dividend_history")
@@ -1397,7 +1568,11 @@ def _div_chart(div_history: list, symbol: str, data: dict | None = None) -> html
         textfont=dict(size=20, color=WHITE) 
     ))
     fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} Dividend Payments (USD Millions)"))
-    return dcc.Graph(figure=fig, config={"displayModeBar": False})
+    return dcc.Graph(
+        figure=fig,
+        config={"displayModeBar": False, "responsive": True},
+        className="analysis-history-graph",
+    )
 
 def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
     gn    = g_data.get("graham_number")
@@ -1483,23 +1658,20 @@ def _buffett_details_card(data: dict) -> html.Div:
 
 def _chart_layout(title: str, many_traces: bool = False) -> dict:
     """
-    many_traces=True: vertical legend anchored top-right outside the plot.
-    Used for portfolio charts which have 4-6 traces and would otherwise
-    collide with the title.
+    many_traces=True: horizontal legend above the plot. This preserves chart
+    width on narrow screens while keeping portfolio trace labels visible.
     """
     if many_traces:
         legend = dict(
             bgcolor="rgba(0,0,0,0)",
-            bordercolor=BORDER,
-            borderwidth=1,
             font=dict(size=11),
-            orientation="v",
-            x=1.01,
-            y=1.0,
+            orientation="h",
+            x=0,
+            y=-0.2,
             xanchor="left",
             yanchor="top",
         )
-        margin = dict(l=16, r=160, t=44, b=16)   # right margin makes room
+        margin = dict(l=52, r=16, t=58, b=112)
     else:
         legend = dict(
             bgcolor="rgba(0,0,0,0)",
