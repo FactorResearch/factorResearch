@@ -1,9 +1,11 @@
+from cryptography.fernet import Fernet
+
 from codes.core.production_readiness import validate_production_environment
 
 
 BASE = {
-    "FLASK_SECRET_KEY": "session-secret",
-    "ENCRYPTION_KEY": "configured-secret",
+    "FLASK_SECRET_KEY": "session-secret-with-at-least-32-characters",
+    "ENCRYPTION_KEY": Fernet.generate_key().decode(),
     "TRUSTED_HOSTS": "research.example",
     "DATABASE_MARKET_URL": "postgresql://market",
     "DATABASE_USERS_URL": "postgresql://users",
@@ -48,3 +50,16 @@ def test_preflight_rejects_incomplete_auth_and_unsafe_flags(monkeypatch):
     assert any("AUTH0_CLIENT_SECRET" in failure for failure in failures)
     assert any("public production tier" in failure for failure in failures)
     assert any("cannot be enabled" in failure for failure in failures)
+
+
+def test_preflight_rejects_weak_crypto_hosts_and_transport(monkeypatch):
+    _configure(monkeypatch)
+    monkeypatch.setenv("FLASK_SECRET_KEY", "short")
+    monkeypatch.setenv("ENCRYPTION_KEY", "invalid")
+    monkeypatch.setenv("TRUSTED_HOSTS", "*")
+    monkeypatch.setenv("REDIS_URL", "redis://redis")
+    failures = validate_production_environment()
+    assert any("at least 32" in failure for failure in failures)
+    assert any("valid Fernet" in failure for failure in failures)
+    assert any("explicit hostnames" in failure for failure in failures)
+    assert any("must use TLS" in failure for failure in failures)

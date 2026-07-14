@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from urllib.parse import urlparse
+from cryptography.fernet import Fernet
 
 
 def _present(name: str) -> bool:
@@ -23,8 +24,24 @@ def validate_production_environment() -> list[str]:
     )
     errors.extend(f"{name} is required" for name in required if not _present(name))
 
+    if _present("FLASK_SECRET_KEY") and len(os.environ["FLASK_SECRET_KEY"]) < 32:
+        errors.append("FLASK_SECRET_KEY must be at least 32 characters")
+    if _present("ENCRYPTION_KEY"):
+        try:
+            Fernet(os.environ["ENCRYPTION_KEY"].encode())
+        except (TypeError, ValueError):
+            errors.append("ENCRYPTION_KEY must be a valid Fernet key")
+    trusted_hosts = [host.strip() for host in os.environ.get("TRUSTED_HOSTS", "").split(",") if host.strip()]
+    if any(host == "*" or "/" in host or "://" in host for host in trusted_hosts):
+        errors.append("TRUSTED_HOSTS must contain explicit hostnames")
+
     if _present("DATABASE_MARKET_URL") and os.environ.get("DATABASE_MARKET_URL") == os.environ.get("DATABASE_USERS_URL"):
         errors.append("DATABASE_MARKET_URL and DATABASE_USERS_URL must be isolated")
+    for name in ("DATABASE_MARKET_URL", "DATABASE_USERS_URL"):
+        if _present(name) and urlparse(os.environ[name]).scheme not in {"postgres", "postgresql"}:
+            errors.append(f"{name} must be a PostgreSQL URL")
+    if _present("REDIS_URL") and urlparse(os.environ["REDIS_URL"]).scheme != "rediss":
+        errors.append("REDIS_URL must use TLS (rediss)")
 
     provider = os.environ.get("AUTH_PROVIDER", "").strip().lower()
     auth_requirements = {
