@@ -19,7 +19,7 @@ No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis I
 |---|---:|
 | Critical | 0 |
 | High | 0 open / 2 resolved |
-| Medium | 2 open / 1 resolved |
+| Medium | 1 open / 2 resolved |
 | Low | 3 |
 
 The highest risks are a materially vulnerable pinned Python dependency set and unauthenticated resource-exhaustion paths with neither global body limits nor effective route-level throttling.
@@ -106,7 +106,7 @@ tests prove an unknown host returns `400` without a session cookie while a
 configured host with a port remains valid. Closure evidence: focused suite
 `36 passed, 2 skipped`; full gate `1019 passed, 2 skipped`.
 
-### SEC-004 - Medium - JWT Issuer And Audience Validation Is Incomplete
+### SEC-004 - Resolved (formerly Medium) - JWT Issuer And Audience Validation Was Incomplete
 
 **Affected:** `codes/auth.py:121`, `codes/auth.py:203`, `codes/auth.py:221`
 
@@ -115,6 +115,13 @@ Auth0 validates fixed `RS256`, audience, and issuer. Clerk explicitly disables a
 **Impact:** A valid token minted for a different audience or context may be accepted as an application session if it is signed by a trusted provider key and contains a usable subject.
 
 **Remediation:** Require provider-specific issuer and audience values, validate token type/authorized party where applicable, require `exp`/`iat`/`nbf` semantics, and add negative tests using correctly signed tokens with wrong issuer, audience, and token purpose.
+
+**Resolution (2026-07-14):** Clerk now requires and validates explicit issuer
+and audience configuration. Supabase validates its project-specific auth issuer
+and configured JWT audience (`authenticated` by default). Production preflight
+rejects incomplete Clerk claim context. Real signed-token tests prove valid
+RS256 tokens pass while wrong algorithm, issuer, and audience fail. Closure
+evidence: focused suite `16 passed`; full gate `1021 passed, 2 skipped`.
 
 ### SEC-005 - Medium - CSP Relies On `unsafe-inline`
 

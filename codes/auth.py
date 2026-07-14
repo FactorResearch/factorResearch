@@ -10,8 +10,11 @@ Environment variables required:
   AUTH0_CLIENT_ID:        Auth0 application client ID
   AUTH0_CLIENT_SECRET:    Auth0 application client secret
   CLERK_PUBLIC_KEY:       Clerk public key (for local dev token validation)
+  CLERK_ISSUER:           Expected Clerk token issuer
+  CLERK_AUDIENCE:         Expected Clerk token audience
   SUPABASE_URL:           Supabase project URL
   SUPABASE_API_KEY:       Supabase anon/public key
+  SUPABASE_JWT_AUDIENCE:  Expected Supabase token audience (default: authenticated)
   CALLBACK_URL:           Callback URL for auth provider redirects
 """
 
@@ -46,10 +49,13 @@ AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
 
 # Clerk Configuration
 CLERK_PUBLIC_KEY = os.environ.get("CLERK_PUBLIC_KEY")
+CLERK_ISSUER = os.environ.get("CLERK_ISSUER")
+CLERK_AUDIENCE = os.environ.get("CLERK_AUDIENCE")
 
 # Supabase Configuration
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+SUPABASE_JWT_AUDIENCE = os.environ.get("SUPABASE_JWT_AUDIENCE", "authenticated")
 
 # Cache for verified tokens (to reduce external API calls)
 _token_cache: dict[str, Tuple[str, datetime]] = {}
@@ -205,8 +211,8 @@ def _verify_auth0_token(token: str) -> Optional[str]:
 
 def _verify_clerk_token(token: str) -> Optional[str]:
     """Verify Clerk JWT token."""
-    if not CLERK_PUBLIC_KEY:
-        print("[AUTH] Clerk public key not configured")
+    if not CLERK_PUBLIC_KEY or not CLERK_ISSUER or not CLERK_AUDIENCE:
+        print("[AUTH] Clerk token verification is not fully configured")
         return None
 
     try:
@@ -214,7 +220,8 @@ def _verify_clerk_token(token: str) -> Optional[str]:
             token,
             CLERK_PUBLIC_KEY,
             algorithms=["RS256"],
-            options={"verify_aud": False},
+            audience=CLERK_AUDIENCE,
+            issuer=CLERK_ISSUER,
         )
         user_id = payload.get("sub") or payload.get("user_id")
         return user_id
@@ -232,7 +239,12 @@ def _verify_supabase_token(token: str) -> Optional[str]:
     token = token.strip()
     if token.count(".") == 2:
         jwks_url = SUPABASE_URL.rstrip("/") + "/auth/v1/.well-known/jwks.json"
-        payload = _decode_jwt(token, jwks_url, audience=None, issuer=None)
+        payload = _decode_jwt(
+            token,
+            jwks_url,
+            audience=SUPABASE_JWT_AUDIENCE,
+            issuer=SUPABASE_URL.rstrip("/") + "/auth/v1",
+        )
         if payload:
             user_id = payload.get("sub") or payload.get("user_id") or payload.get("id")
             if user_id:

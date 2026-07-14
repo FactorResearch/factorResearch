@@ -46,7 +46,7 @@ def validate_production_environment() -> list[str]:
     provider = os.environ.get("AUTH_PROVIDER", "").strip().lower()
     auth_requirements = {
         "auth0": ("AUTH0_DOMAIN", "AUTH0_CLIENT_ID", "AUTH0_CLIENT_SECRET"),
-        "clerk": ("CLERK_PUBLIC_KEY",),
+        "clerk": ("CLERK_PUBLIC_KEY", "CLERK_ISSUER", "CLERK_AUDIENCE"),
         "supabase": ("SUPABASE_URL", "SUPABASE_API_KEY"),
     }
     if provider not in auth_requirements:

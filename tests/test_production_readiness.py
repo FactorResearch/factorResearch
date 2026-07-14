@@ -52,6 +52,19 @@ def test_preflight_rejects_incomplete_auth_and_unsafe_flags(monkeypatch):
     assert any("cannot be enabled" in failure for failure in failures)
 
 
+def test_preflight_requires_clerk_claim_context(monkeypatch):
+    _configure(monkeypatch)
+    monkeypatch.setenv("AUTH_PROVIDER", "clerk")
+    monkeypatch.setenv("CLERK_PUBLIC_KEY", "public-key")
+    monkeypatch.delenv("CLERK_ISSUER", raising=False)
+    monkeypatch.delenv("CLERK_AUDIENCE", raising=False)
+
+    failures = validate_production_environment()
+
+    assert any("CLERK_ISSUER" in failure for failure in failures)
+    assert any("CLERK_AUDIENCE" in failure for failure in failures)
+
+
 def test_preflight_rejects_weak_crypto_hosts_and_transport(monkeypatch):
     _configure(monkeypatch)
     monkeypatch.setenv("FLASK_SECRET_KEY", "short")
