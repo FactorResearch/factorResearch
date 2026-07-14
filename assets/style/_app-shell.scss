@@ -26,6 +26,28 @@
   background: rgba($bg, 0.88);
   border-bottom: 1px solid var(--fr-border);
   backdrop-filter: blur(18px);
+
+  .theme-toggle {
+    display: flex;
+    gap: 4px;
+  }
+
+  .theme-btn {
+    @include button-reset;
+    @include focus-ring;
+    min-width: 32px;
+    min-height: 32px;
+    border: 1px solid transparent;
+    border-radius: $radius-md;
+    color: var(--fr-text-dim);
+    cursor: pointer;
+
+    &.active {
+      border-color: var(--fr-border-strong);
+      background: var(--fr-card-raised);
+      color: var(--fr-text);
+    }
+  }
 }
 
 body.light {
@@ -135,6 +157,13 @@ body.light {
   .screener-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .topbar {
+    .theme-btn {
+      min-width: 40px;
+      min-height: 40px;
+    }
   }
 
   .ticker-input,

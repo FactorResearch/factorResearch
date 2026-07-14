@@ -529,6 +529,32 @@ body.light input:-webkit-autofill, body.light input:-webkit-autofill:hover, body
     padding-inline: 16px;
   }
 }
+.topbar .theme-toggle {
+  display: flex;
+  gap: 4px;
+}
+.topbar .theme-btn {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  min-width: 32px;
+  min-height: 32px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--fr-text-dim);
+  cursor: pointer;
+}
+.topbar .theme-btn:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
+.topbar .theme-btn.active {
+  border-color: var(--fr-border-strong);
+  background: var(--fr-card-raised);
+  color: var(--fr-text);
+}
 
 body.light .topbar {
   background: rgba(244, 239, 231, 0.9);
@@ -661,6 +687,10 @@ body.light .app-footer {
   .screener-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+  .topbar .theme-btn {
+    min-width: 40px;
+    min-height: 40px;
   }
   .ticker-input,
   .analyze-btn,
