@@ -50,3 +50,19 @@ MODELS = {
 
 def get_model(key: str) -> ModelRegistration:
     return MODELS[key]
+
+
+def production_manifest() -> list[dict]:
+    """Stable, non-secret lifecycle inventory for release evidence."""
+    return [
+        {
+            "key": model.key,
+            "version": model.version,
+            "section": model.section,
+            "disclosure": model.disclosure,
+            "cost": model.cost,
+            "cacheable": model.cacheable,
+            "backfills_existing": model.backfills_existing,
+        }
+        for model in MODELS.values()
+    ]
