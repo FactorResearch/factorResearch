@@ -45,17 +45,16 @@ from __future__ import annotations
 import math
 from typing import Any
 
+from codes.core import financial_math as fm
+from codes.core import model_utils as mu
+
 YEARS_REQUIRED = 10  # strict 10-year look-back
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val: Any) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _values(records: list, n: int = 11) -> list[float]:
@@ -71,17 +70,15 @@ def _values(records: list, n: int = 11) -> list[float]:
 
 
 def _clamp(v: float, lo: float, hi: float) -> float:
-    return max(lo, min(hi, v))
+    return mu.clamp(v, lo, hi)
 
 
 def _cagr(start: float, end: float, years: int) -> float | None:
     """Compound annual growth rate. Returns None on invalid inputs."""
     if start <= 0 or not math.isfinite(start) or not math.isfinite(end) or years <= 0:
         return None
-    try:
-        return (math.pow(end / start, 1.0 / years) - 1.0) * 100.0
-    except (ValueError, ZeroDivisionError):
-        return None
+    result = fm.cagr(start, end, years)
+    return result * 100.0 if result is not None else None
 
 
 # ── Signal mapping ────────────────────────────────────────────────────────────

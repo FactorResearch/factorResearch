@@ -35,15 +35,13 @@ import math
 import statistics
 from typing import Any
 
+from codes.core import model_utils as mu
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val: Any) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _first(records: list) -> float | None:
@@ -93,7 +91,7 @@ def _signal(score: float) -> str:
 # ── Normalization helpers ─────────────────────────────────────────────────────
 
 def _clamp(v: float, lo: float, hi: float) -> float:
-    return max(lo, min(hi, v))
+    return mu.clamp(v, lo, hi)
 
 
 def _norm_roic(roic_pct: float | None) -> float:

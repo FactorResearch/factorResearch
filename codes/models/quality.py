@@ -11,17 +11,15 @@ Criteria:
 
 import math
 
+from codes.core import model_utils as mu
+
 
 def _first(records: list, field="value"):
     return records[0][field] if records else None
 
 
 def _safe(val):
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _values(records: list) -> list[float]:

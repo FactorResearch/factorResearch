@@ -1,12 +1,16 @@
 import json
 import re
 from datetime import date
+from pathlib import Path
 from unittest.mock import patch
 
 import flask
 
 from codes.models.analysis_snapshot import AnalysisSnapshot
 from codes.routes.analyze import analyze_pages
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _snapshot(yyyymmdd, *, ticker="AAPL", name="Apple Inc.", valuation=80, rating="HIGH CONVICTION", sector="Technology"):
@@ -67,6 +71,12 @@ def test_historical_page_renders_compare_picker_and_history_links():
     assert response.status_code == 200
     body = response.get_data(as_text=True)
     assert "Compare Previous Analysis" in body
+    assert 'href="/assets/company_analysis.css"' in body
+    assert '<body class="historical-analysis-page">' in body
+    assert "<style" not in body
+    assert "style=" not in body
+    styles = (ROOT / "assets/company_analysis.css").read_text()
+    assert ".historical-analysis-page main { max-width: 960px; padding: 40px 20px; }" in styles
     assert 'name="compare"' in body
     assert "2026-06-08 - FAVORABLE" in body
     assert 'href="/analyze/AAPL/20260608"' in body

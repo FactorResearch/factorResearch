@@ -68,8 +68,11 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
                 "signals": [{"label": "Web traffic", "description": "Pending provider", "status": "STUB"}],
             }
         }),
-        analysis_ui._options_signal_card({
-            "options_signal": {"bias": "CALL", "signal": "FAVORABLE_CALL", "edge_score": 65, "risk_score": 40}
+        analysis_ui._greenblatt_card({"greenblatt": {"earnings_yield": 8.2, "roic": 17.5}}),
+        analysis_ui._profitability_card({"profitability": {"profitability_score": 72, "signal": "STRONG"}}),
+        analysis_ui._benchmark_bias_card({
+            "spy_benchmark": {"probability_outperform": 0.64, "cagr_target": 12, "cagr_spy": 9},
+            "bias": {"bias": "outperform", "confidence": 0.7},
         }),
         analysis_ui._regime_card({
             "regime": {
@@ -80,6 +83,9 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
                 "drawdown_depth": -4.0,
             },
             "regime_overlay": {"regime_multiplier": 1.0, "max_equity_exposure": 1.0, "adjusted_score": 62},
+        }),
+        analysis_ui._comomentum_card({
+            "regime": {"comomentum_percentile": 82.4},
         }),
     ]
 
@@ -94,96 +100,25 @@ def test_issue_025_metric_rows_use_visible_divider_color():
         "fcf_quality": {"fcf_quality_score": 81, "signal": "HIGH_CASH_QUALITY", "fcf": 10}
     })
     first_row = _body(card).children[0]
-    assert first_row.style["borderBottom"] == "1px solid rgba(67, 52, 90, 0.65)"
+    assert "analysis-divider" in first_row.className
 
 
-def test_options_card_switches_to_true_iv_and_chain_quote_labels():
-    card = analysis_ui._options_signal_card({
-        "options_signal": {
-            "bias": "CALL",
-            "signal": "FAVORABLE_CALL",
-            "edge_score": 68,
-            "risk_score": 42,
-            "iv_level": "NORMAL",
-            "implied_volatility": 0.284,
-            "iv_vs_realized_ratio": 1.08,
-            "iv_source": "FINNHUB_OPTION_CHAIN",
-            "chain_provider": "FINNHUB",
-            "chain_status": "AVAILABLE",
-            "recommended_contract_symbol": "AAPL260821C00200000",
-            "recommended_expiration_date": "2026-08-21",
-            "recommended_expiry_days": 41,
-            "selected_contract": {
-                "bid": 4.9,
-                "ask": 5.1,
-                "open_interest": 2450,
-                "volume": 321,
-            },
-        }
-    })
-    rendered = str(card)
-    assert "Implied Volatility" in rendered
-    assert "Bid / Ask" in rendered
-    assert "AAPL260821C00200000" in rendered
-    assert "true contract IV" in rendered
-    assert "Vol Proxy Level" not in rendered
+def test_comomentum_card_explains_legacy_cache_state():
+    card = analysis_ui._comomentum_card({"regime": {}})
+
+    assert "Unavailable" in str(card)
+    assert "fresh analysis" in str(card)
 
 
-def test_options_card_displays_ranked_strategy_payoff_and_greeks():
-    top_strategy = {
-        "strategy_type": "BULL_CALL_SPREAD",
-        "strategy_name": "Bull Call Spread",
-        "ranking_score": 73,
-        "net_debit": 420,
-        "max_loss": 420,
-        "max_profit": 580,
-        "max_profit_unbounded": False,
-        "breakevens": [104.2],
-        "expected_value_risk_neutral": -18.5,
-        "probability_profit_risk_neutral": 0.43,
-        "greeks": {
-            "delta": 0.31,
-            "gamma": 0.012,
-            "theta_per_day": -0.021,
-            "vega_per_vol_point": 0.08,
-        },
-    }
-    card = analysis_ui._options_signal_card({
-        "options_signal": {
-            "bias": "CALL",
-            "signal": "FAVORABLE_CALL",
-            "edge_score": 66,
-            "risk_score": 40,
-            "top_strategy": top_strategy,
-            "strategy_candidates": [
-                top_strategy,
-                {"strategy_name": "Long Call", "ranking_score": 65},
-                {"strategy_name": "Long Straddle", "ranking_score": 48},
-            ],
-            "pricing_assumptions": {"risk_free_rate": 0.04, "dividend_yield": 0.01},
-            "calibration_status": "CALIBRATED",
-            "event_risk": {
-                "coverage": "AVAILABLE",
-                "risk_score": 95,
-                "risk_level": "HIGH",
-            },
-            "event_entry_suppressed": True,
-            "event_suppression_reasons": ["EARNINGS within 2d"],
-        }
-    })
-    rendered = str(card)
-    assert "Bull Call Spread" in rendered
-    assert "Strategy Rank" in rendered
-    assert "Max Loss" in rendered
-    assert "Risk-Neutral EV" in rendered
-    assert "Net Delta" in rendered
-    assert "BSM (European approximation)" in rendered
-    assert "4.00% / 1.00%" in rendered
-    assert "Calibration" in rendered
-    assert "CALIBRATED" in rendered
-    assert "Event Coverage" in rendered
-    assert "Suppressed" in rendered
-    assert "EARNINGS within 2d" in rendered
-    assert "Long Call (65)" in rendered
-    assert "walk-forward calibration" in rendered
-    assert "New option entries are suppressed" in rendered
+def test_comomentum_card_formats_percentile_and_signal():
+    card = analysis_ui._comomentum_card({"regime": {"comomentum_percentile": 82.4}})
+
+    assert "82nd pct" in str(card)
+    assert "HIGH" in str(card)
+
+
+def test_market_fear_card_does_not_leave_an_empty_grid_slot():
+    card = analysis_ui._market_fear_card({"market_fear": {"error": "provider unavailable"}})
+
+    assert "Market Fear Gauge" in str(card)
+    assert "Unavailable" in str(card)

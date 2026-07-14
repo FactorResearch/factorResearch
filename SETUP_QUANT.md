@@ -62,7 +62,8 @@ Without a key, the app uses `demo` which has rate limits but still works.
 ```bash
 python app.py
 ```
-
+### 6. landing pages
+http://127.0.0.1:8050/landing/pre-a
 See:
 ```
 🚀 Graham Score — Quant Edition

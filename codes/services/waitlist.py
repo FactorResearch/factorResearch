@@ -39,6 +39,9 @@ def subscribe(email: str, source: str) -> str:
         return "invalid"
     if not db.create_waitlist_signup(normalized, source):
         return "already_confirmed"
-    _send_confirmation(normalized)
+    try:
+        _send_confirmation(normalized)
+    except WaitlistEmailError:
+        return "confirmed_no_email"
     db.mark_waitlist_confirmation_sent(normalized)
     return "confirmed"

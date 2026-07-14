@@ -1,0 +1,209 @@
+:root {
+  --error-bg: #0d1117;
+  --error-surface: #151d2a;
+  --error-card: #1e2a3a;
+  --error-border: #29384b;
+  --error-text: #e8eaf0;
+  --error-dim: #8899aa;
+  --error-accent: #448aff;
+  --error-accent-2: #00b8d4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100vh;
+}
+
+body.error-page {
+  margin: 0;
+  color: var(--error-text);
+  background: radial-gradient(circle at 18% 20%, rgba(68, 138, 255, 0.22), transparent 34%), radial-gradient(circle at 78% 10%, rgba(0, 184, 212, 0.15), transparent 32%), linear-gradient(145deg, #0d1117 0%, #111827 48%, #0d1117 100%);
+  font: 15px/1.55 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.error-shell {
+  width: min(1080px, 100vw - 32px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 32px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.error-brand {
+  position: absolute;
+  top: 24px;
+  left: max(24px, (100vw - 1080px) / 2);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--error-text);
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: rgba(68, 138, 255, 0.14);
+  color: var(--error-accent);
+}
+
+.error-card {
+  position: relative;
+  overflow: hidden;
+  width: min(720px, 100%);
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid color-mix(in srgb, var(--error-accent) 30%, var(--error-border));
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(30, 42, 58, 0.95), rgba(21, 29, 42, 0.96)), var(--error-surface);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+}
+
+.error-card::before,
+.error-card::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.error-card::before {
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -115px;
+  border: 1px solid rgba(68, 138, 255, 0.28);
+  box-shadow: 0 0 80px rgba(68, 138, 255, 0.16);
+}
+
+.error-card::after {
+  width: 160px;
+  height: 160px;
+  right: 110px;
+  bottom: -105px;
+  border: 1px solid rgba(0, 184, 212, 0.25);
+}
+
+.error-eyebrow,
+.error-code,
+.error-card h1,
+.error-message,
+.error-detail,
+.error-path,
+.error-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.error-eyebrow {
+  color: var(--error-accent-2);
+  font: 700 11px/1.4 "DM Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.error-code {
+  margin: 18px 0 0;
+  color: transparent;
+  background: linear-gradient(135deg, var(--error-accent), var(--error-accent-2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  font-size: clamp(72px, 14vw, 148px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.08em;
+}
+
+.error-card h1 {
+  max-width: 620px;
+  margin: 18px 0 12px;
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
+}
+
+.error-message,
+.error-detail {
+  max-width: 560px;
+  color: var(--error-dim);
+  font-size: 16px;
+}
+
+.error-detail {
+  padding-left: 14px;
+  border-left: 2px solid var(--error-border);
+}
+
+.error-path {
+  display: inline-flex;
+  max-width: 100%;
+  margin: 16px 0 4px;
+  padding: 7px 10px;
+  overflow-wrap: anywhere;
+  color: #b8c4d2;
+  background: rgba(13, 17, 23, 0.62);
+  border: 1px solid var(--error-border);
+  border-radius: 999px;
+  font: 600 12px/1.4 "DM Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.error-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 16px;
+  color: var(--error-text);
+  background: rgba(13, 17, 23, 0.38);
+  border: 1px solid var(--error-border);
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.error-actions .primary-action {
+  color: #fff;
+  background: linear-gradient(135deg, #1677ff, #00a6c7);
+  border-color: transparent;
+}
+
+html.light body.error-page,
+body.light.error-page {
+  --error-bg: #f5f7fb;
+  --error-surface: #ffffff;
+  --error-card: #f8fafc;
+  --error-border: #d7dee8;
+  --error-text: #172033;
+  --error-dim: #516071;
+  background: radial-gradient(circle at 18% 20%, rgba(22, 119, 255, 0.14), transparent 34%), radial-gradient(circle at 78% 10%, rgba(0, 166, 199, 0.12), transparent 32%), linear-gradient(145deg, #f5f7fb 0%, #eef3f8 100%);
+}
+
+@media (max-width: 680px) {
+  .error-shell {
+    width: min(100% - 24px, 1080px);
+    padding: 96px 0 24px;
+  }
+  .error-brand {
+    left: 16px;
+  }
+  .error-actions a {
+    width: 100%;
+  }
+}/*# sourceMappingURL=error_pages.css.map */

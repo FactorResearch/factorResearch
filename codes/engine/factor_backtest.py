@@ -35,6 +35,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from codes.core import financial_math as fm
 from .scorer import ENHANCED_WEIGHTS
 from ..data import  api_fetcher, db
 
@@ -159,21 +160,15 @@ def _backtest_equal_weight(
 
     # CAGR
     n_years = max((wide["Date"].iloc[-1] - wide["Date"].iloc[0]).days / 365.25, 1 / 12)
-    cagr = (math.pow(values[-1] / values[0], 1 / n_years) - 1) * 100 if values[0] > 0 else 0.0
+    cagr_raw = fm.cagr(values[0], values[-1], n_years)
+    cagr = cagr_raw * 100 if cagr_raw is not None else 0.0
 
     # Monthly log returns → Sharpe
     log_rets = np.log(np.array(values[1:]) / np.array(values[:-1]))
-    rf_monthly = RISK_FREE_RATE / 12
-    excess = log_rets - rf_monthly
-    vol = float(np.std(excess, ddof=1)) * math.sqrt(12) if len(excess) > 1 else 0.0
-    sharpe = (float(np.mean(excess)) / (vol / math.sqrt(12)) * math.sqrt(12)
-              if vol > 0 else None)
+    sharpe = fm.sharpe_ratio(log_rets, risk_free_rate=RISK_FREE_RATE, periods_per_year=12)
 
     # Max drawdown
-    arr = np.array(values)
-    peak = np.maximum.accumulate(arr)
-    dd   = (arr - peak) / peak
-    max_dd = round(float(np.min(dd)) * 100, 2)
+    max_dd = round((fm.max_drawdown(values) or 0.0) * 100, 2)
 
     return {
         "dates":        dates,

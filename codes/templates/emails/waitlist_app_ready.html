@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ subject|default("FactorResearch is ready") }}</title>
+</head>
+<body class="email-body">
+  <main class="email-shell">
+    <header class="email-header">
+      <p class="email-kicker">{{ brand_name|default("FactorResearch") }}</p>
+      <h1>{{ headline|default("Your research workspace is ready") }}</h1>
+    </header>
+
+    <section class="email-content">
+      <p>Hi {{ first_name|default("there") }},</p>
+
+      <p>
+        Thanks for joining the waitlist. {{ brand_name|default("FactorResearch") }}
+        is now ready, and you can start using the screener, stock analysis, and
+        portfolio research tools.
+      </p>
+
+      <p>
+        <a class="email-primary-link" href="{{ app_url }}">Open {{ brand_name|default("FactorResearch") }}</a>
+      </p>
+
+      <p>
+        We will also use this list for occasional product updates and future
+        communications about new research features.
+      </p>
+
+      <p>
+        Thanks,<br>
+        The {{ brand_name|default("FactorResearch") }} team
+      </p>
+    </section>
+
+    <footer class="email-footer">
+      <p>
+        You are receiving this because you signed up for the waitlist.
+        {% if unsubscribe_url %}
+        <a href="{{ unsubscribe_url }}">Unsubscribe</a>
+        {% endif %}
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

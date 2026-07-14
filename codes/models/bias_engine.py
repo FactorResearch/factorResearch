@@ -16,6 +16,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 
+from codes.core import model_utils as mu
+
 
 # ── Enums ─────────────────────────────────────────────────────────────────────
 
@@ -40,7 +42,7 @@ UNDERPERFORM_SCORE_THRESHOLD = 35.0
 
 
 def _clamp(v: float, lo: float = 0.0, hi: float = 1.0) -> float:
-    return max(lo, min(hi, v))
+    return mu.clamp(v, lo, hi)
 
 
 def _confidence(composite_score: float, probability_outperform: float,

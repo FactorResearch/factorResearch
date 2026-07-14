@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>404 Not Found | FactorResearch</title>
+  <link rel="stylesheet" href="/assets/error_pages.css">
+</head>
+<body class="error-page error-page-404">
+  <main class="error-shell">
+    <a class="error-brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a>
+    <section class="error-card">
+      <span class="error-eyebrow">{{ eyebrow }}</span>
+      <p class="error-code">{{ status_code }}</p>
+      <h1>{{ title }}</h1>
+      <p class="error-message">{{ message }}</p>
+      {% if error_description %}<p class="error-detail">{{ error_description }}</p>{% endif %}
+      <p class="error-path">{{ request_path }}</p>
+      <div class="error-actions">
+        <a class="primary-action" href="/">{{ action }}</a>
+        <a href="/analyze/AAPL?tab=analyze">Analyze AAPL</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

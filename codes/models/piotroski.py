@@ -43,15 +43,13 @@ import math
 DILUTION_TOLERANCE = 0.01
 from datetime import datetime, timedelta
 
+from codes.core import model_utils as mu
+
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _nth(records: list, n: int = 0) -> float | None:

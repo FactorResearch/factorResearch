@@ -145,6 +145,21 @@ Preserve:
 
 Unless explicitly instructed otherwise.
 
+Any request to implement work from `roadMap.md` is future-version work. Do not
+implement roadmap items directly on `main`.
+
+For every roadmap version or major development phase, create and work on a
+dedicated git branch named after that version number, for example `v2.0` or
+`v2.1`.
+
+Keep roadmap branches easy to merge:
+
+* Scope each branch to its roadmap version or phase.
+* Keep branches updated from `main` when `main` changes.
+* If updating from `main` causes a merge conflict, stop and ask before
+  resolving it.
+* Avoid unrelated refactors or broad cleanup in roadmap branches.
+
 ---
 
 ## Token Efficiency Rules

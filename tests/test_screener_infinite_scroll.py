@@ -61,7 +61,7 @@ def _call_render(visible_count, sector_filter="", sort_state=None,
          patch.object(graham_app, "_get_portfolio_symbols", return_value={}), \
          patch.object(graham_app, "_last_screener_state", None):
         return graham_app.render_screener_table(
-            ready=1, n_load=1, sector_filter=sector_filter,
+            ready=1, n_load=1, selected_indices=[], sector_filter=sector_filter,
             sort_state=sort_state, visible_count=visible_count, viewed_data=[],
         )
 

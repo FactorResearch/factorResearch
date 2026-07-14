@@ -27,8 +27,58 @@ import math
 import numpy as np
 import pandas as pd
 
+from codes.core import financial_math as fm
+from codes.core.engine_contracts import (
+    EngineContract,
+    EngineSchema,
+    FeatureFlag,
+    SchemaField,
+    validate_engine_input,
+    validate_engine_output,
+)
+
 RISK_FREE_RATE  = 0.045          # annual; adjust to live 10yr yield if desired
 MONTHS_PER_YEAR = 12
+
+
+CONTRACT = EngineContract(
+    name="risk_metrics",
+    version="0.5.0",
+    feature_flags=frozenset({
+        FeatureFlag.INTERNAL,
+        FeatureFlag.BETA,
+        FeatureFlag.V1,
+        FeatureFlag.V2,
+        FeatureFlag.ENTERPRISE,
+    }),
+    input_schema=EngineSchema((
+        SchemaField("price_hist", (pd.DataFrame,), description="Monthly Date/Close price history"),
+        SchemaField("spy_hist", (pd.DataFrame,), required=False, nullable=True, description="Optional SPY benchmark history"),
+    )),
+    output_schema=EngineSchema((
+        SchemaField("risk_score", (int, float), description="0-100 risk quality score"),
+        SchemaField("risk_score_max", (int, float), description="Maximum possible risk score"),
+        SchemaField("risk_criteria", (list,), description="Risk scoring criteria"),
+        SchemaField("risk_free_rate", (int, float), description="Annual risk-free rate used"),
+    )),
+    documentation=__doc__ or "",
+    interpretation_guide=(
+        "Higher risk_score indicates a better risk profile. Metrics are "
+        "diagnostics for risk-adjusted quality, not trading instructions."
+    ),
+)
+
+
+def get_contract() -> EngineContract:
+    return CONTRACT
+
+
+def validate_input(payload: dict | None):
+    return validate_engine_input(CONTRACT, payload)
+
+
+def validate_output(payload: dict | None):
+    return validate_engine_output(CONTRACT, payload)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -76,33 +126,29 @@ def score(
         return _empty("Too few return observations")
 
     # ── Volatility ────────────────────────────────────────────────────────────
-    vol_monthly = float(np.std(returns, ddof=1))
-    vol_annual  = vol_monthly * math.sqrt(MONTHS_PER_YEAR)
+    vol_annual = fm.volatility(returns, periods_per_year=MONTHS_PER_YEAR) or 0.0
+    vol_monthly = vol_annual / math.sqrt(MONTHS_PER_YEAR)
 
     # ── Total & annualised return ─────────────────────────────────────────────
     n_months     = len(returns)
     n_years      = n_months / MONTHS_PER_YEAR
     total_return = float(hist["Close"].iloc[-1] / hist["Close"].iloc[0] - 1)
-    annual_return = (1 + total_return) ** (1 / n_years) - 1 if n_years > 0 else 0.0
+    annual_return = fm.cagr(hist["Close"].iloc[0], hist["Close"].iloc[-1], n_years) or 0.0
 
     # ── Sharpe Ratio ──────────────────────────────────────────────────────────
-    rf_monthly = RISK_FREE_RATE / MONTHS_PER_YEAR
-    excess     = returns - rf_monthly
-    std_excess = float(np.std(excess, ddof=1))
-    sharpe = (float(np.mean(excess)) / std_excess * math.sqrt(MONTHS_PER_YEAR)
-              if std_excess > 0 else None)
+    sharpe = fm.sharpe_ratio(
+        returns,
+        risk_free_rate=RISK_FREE_RATE,
+        periods_per_year=MONTHS_PER_YEAR,
+    )
 
     # ── Sortino Ratio ─────────────────────────────────────────────────────────
-    # Downside deviation uses total N as denominator (not downside-count only).
-    # Formula: sqrt( Σ min(0, r − rf)² / N ) — Sortino & Price (1994).
-    n_total = len(returns)
-    downside_sq = np.minimum(returns - rf_monthly, 0.0) ** 2
-    down_var = float(np.sum(downside_sq) / n_total)
-    if down_var > 0:
-        down_std = math.sqrt(down_var) * math.sqrt(MONTHS_PER_YEAR)
-        sortino  = (annual_return - RISK_FREE_RATE) / down_std
-    else:
-        sortino = None
+    sortino = fm.sortino_ratio(
+        returns,
+        annual_return=annual_return,
+        risk_free_rate=RISK_FREE_RATE,
+        periods_per_year=MONTHS_PER_YEAR,
+    )
 
     # ── Max Drawdown ──────────────────────────────────────────────────────────
     # Robust version: works on price series (positive or negative)
@@ -110,21 +156,12 @@ def score(
     if len(prices) == 0:
         max_drawdown = 0.0
     else:
-        # Use running peak on equity curve; normalize handling for negatives
-        peak = np.maximum.accumulate(prices)
-        # Avoid div-by-zero / sign issues
-        with np.errstate(divide='ignore', invalid='ignore'):
-            drawdown = np.where(peak != 0, (prices - peak) / peak, 0.0)
-            # For fully negative series, fall back to relative change from max
-            if np.all(prices <= 0):
-                drawdown = (prices - np.maximum.accumulate(prices)) / np.abs(np.maximum.accumulate(prices) + 1e-8)
-        max_drawdown = float(np.min(drawdown))
+        max_drawdown = fm.max_drawdown(prices) or 0.0
     # ── Calmar Ratio ─────────────────────────────────────────────────────────
-    calmar = (annual_return / abs(max_drawdown)
-              if max_drawdown < -0.001 else None)
+    calmar = fm.calmar_ratio(annual_return, max_drawdown)
 
     # ── VaR & CVaR (95%) ─────────────────────────────────────────────────────
-    var_95  = float(np.percentile(returns, 5))
+    var_95  = fm.percentile(returns, 5) or 0.0
     mask    = returns <= var_95
     cvar_95 = float(np.mean(returns[mask])) if np.any(mask) else var_95
 
@@ -148,19 +185,16 @@ def score(
         if len(merged) >= 6:
             s = merged["stock"].values
             m = merged["spy"].values
-            cov_sm = float(np.cov(s, m)[0, 1])
-            var_m  = float(np.var(m, ddof=1))
-            if var_m > 0:
-                beta = cov_sm / var_m
+            beta = fm.beta(s, m)
+            if beta is not None:
                 n_merged = len(m)
                 spy_total = float(
                     spy["Close"].iloc[-1] / spy["Close"].iloc[0] - 1
                 ) if len(spy) > 1 else 0.0
-                spy_annual_ret = (1 + spy_total) ** (MONTHS_PER_YEAR / n_merged) - 1
-                # Jensen's alpha: α = actual − [Rf + β(Rm − Rf)]
-                alpha = annual_return - (
-                    RISK_FREE_RATE + beta * (spy_annual_ret - RISK_FREE_RATE)
+                spy_annual_ret = fm.cagr(
+                    1.0, 1.0 + spy_total, n_merged / MONTHS_PER_YEAR
                 )
+                alpha = fm.alpha(annual_return, spy_annual_ret, beta, risk_free_rate=RISK_FREE_RATE)
 
     # ── Risk score (0-100) ────────────────────────────────────────────────────
     risk_result = _risk_score(

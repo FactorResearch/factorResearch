@@ -1,23 +1,23 @@
 """Screener tab callbacks."""
 
-import hashlib
-import json
 import math
 
 import dash
 from dash import Input, Output, State, callback, html
 
+from codes.data import db
+from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
 from codes.engine import screener
 from codes.engine.scorer import verdict_for_score
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
+from codes.app_modules.company_identity import company_logo
 from codes.app_modules.config import (
     AMBER, BLUE, GREEN, MUTED, RED, PAGE_SIZE,
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.screener_markets import (
-    SCREENER_COUNTRIES,
-    get_screener_country,
-    row_matches_country,
+    market_from_path,
+    row_matches_market,
 )
 from codes.app_modules.session import get_portfolio_symbols
 from codes.app_modules.session import get_user_id
@@ -25,83 +25,356 @@ from codes.services import product_analytics
 
 last_progress_state = None
 last_progress_bar_state = None
-last_screener_state = None
 
 
-def _country_tab_buttons(active_country):
-    active = get_screener_country(active_country)["code"]
-    buttons = []
-    for country in SCREENER_COUNTRIES:
-        is_active = country["code"] == active
-        buttons.append(html.Button(
-            [
-                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                html.Span(country["short_label"], className="screener-country-label"),
-            ],
-            id={"type": "screener-country-tab", "index": country["code"]},
-            className="screener-country-tab" + (" active" if is_active else ""),
-            title=country["label"],
+def _filter_results_by_market(results, market_code):
+    return [r for r in results if row_matches_market(r, market_code)]
+
+
+def _index_pill_buttons(selected_indices=None):
+    selected = set(selected_indices or [])
+    return [
+        html.Button(
+            index["label"],
+            id={"type": "index-filter-pill", "index": index["value"]},
+            className="screener-index-pill" + (" active" if index["value"] in selected else ""),
             n_clicks=0,
-        ))
-    return buttons
+            type="button",
+        )
+        for index in US_INDEX_DEFINITIONS
+    ]
 
 
-def _filter_results_by_country(results, country_code):
-    active = get_screener_country(country_code)["code"]
-    return [r for r in results if row_matches_country(r, active)]
+def _quick_peek_row(symbol: str) -> dict | None:
+    for row in screener.get_screener_results():
+        if row.get("symbol") == symbol:
+            return row
+    return None
 
 
-# ── Screener ticker-click → store ─────────────────────────────────────────────
+def _quick_peek_takeaway(row: dict, analysis: dict | None) -> str:
+    if analysis:
+        enhanced = analysis.get("enhanced") or {}
+        verdict = (enhanced.get("verdict") or "").replace("_", " ").title()
+        score = enhanced.get("composite_score")
+        buffett = analysis.get("buffett") or {}
+        risk = analysis.get("risk") or {}
+        price = analysis.get("price")
+        intrinsic = buffett.get("intrinsic_value")
+        if price and intrinsic:
+            if price <= intrinsic and (score or 0) >= 70:
+                return f"{verdict or 'Favorable'} setup with price below modeled moat value."
+            if price > intrinsic and (score or 0) < 50:
+                return "Quality may exist, but valuation and score both need work."
+        if risk.get("sharpe") is not None and risk.get("sharpe", 0) < 0.5:
+            return "Fundamentals may be acceptable, but risk-adjusted returns are currently weak."
+        if score is not None:
+            return f"Composite score sits at {score:.0f}/100 with a {verdict.lower() or 'mixed'} profile."
+    if row.get("analyzed"):
+        return "Cached summary available. Open the full report for full factor detail."
+    return "Not fully analyzed yet. Use this quick peek for triage, then open the full report if it survives the first pass."
+
+
+def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
+    if not analysis:
+        return [
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Valuation", className="quick-peek-section-title"),
+                    html.Div("Quick view only. Full valuation detail appears after a full analysis run.", className="quick-peek-section-copy"),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Accounting", className="quick-peek-section-title"),
+                    html.Div("Accounting diagnostics are not available yet for this cached screener row.", className="quick-peek-section-copy"),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Risk", className="quick-peek-section-title"),
+                    html.Div("Use the screener score as a first filter, then open the full report for drawdown and safety detail.", className="quick-peek-section-copy"),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-section",
+                children=[
+                    html.Div("Growth", className="quick-peek-section-title"),
+                    html.Div("Growth quality and capital allocation become available after full analysis.", className="quick-peek-section-copy"),
+                ],
+            ),
+        ]
+
+    graham = analysis.get("graham") or {}
+    buffett = analysis.get("buffett") or {}
+    piotroski = analysis.get("piotroski") or {}
+    fcf_quality = analysis.get("fcf_quality") or {}
+    altman = analysis.get("altman") or {}
+    risk = analysis.get("risk") or {}
+    growth_quality = analysis.get("growth_quality") or {}
+    capital_allocation = analysis.get("capital_allocation") or {}
+    earnings_revision = analysis.get("earnings_revision") or {}
+    price = analysis.get("price")
+    intrinsic = buffett.get("intrinsic_value")
+
+    valuation_copy = "Intrinsic value not available yet."
+    if price and intrinsic:
+        direction = "below" if price <= intrinsic else "above"
+        valuation_copy = f"Price is {direction} moat value. P/E {graham.get('pe', 0):.1f}x and P/B {graham.get('pb', 0):.2f}x frame the current setup."
+
+    accounting_bits = []
+    if piotroski.get("f_score") is not None:
+        accounting_bits.append(f"F-Score {piotroski['f_score']}/9")
+    if fcf_quality.get("fcf_quality_score") is not None:
+        accounting_bits.append(f"FCF quality {fcf_quality['fcf_quality_score']:.0f}/100")
+    if altman.get("zone_label"):
+        accounting_bits.append(altman["zone_label"])
+    accounting_copy = " · ".join(accounting_bits) or "Accounting diagnostics are limited for this report."
+
+    risk_bits = []
+    if risk.get("beta") is not None:
+        risk_bits.append(f"Beta {risk['beta']:.2f}")
+    if risk.get("sharpe") is not None:
+        risk_bits.append(f"Sharpe {risk['sharpe']:.2f}")
+    if altman.get("z_score") is not None:
+        risk_bits.append(f"Altman {altman['z_score']:.2f}")
+    risk_copy = " · ".join(risk_bits) or "Open full analysis for risk detail."
+
+    growth_bits = []
+    if growth_quality.get("growth_quality_score") is not None:
+        growth_bits.append(f"Growth quality {growth_quality['growth_quality_score']:.0f}/100")
+    if capital_allocation.get("capital_allocation_score") is not None:
+        growth_bits.append(f"Capital allocation {capital_allocation['capital_allocation_score']:.0f}/100")
+    if earnings_revision.get("total_score") is not None:
+        growth_bits.append(f"Revisions {earnings_revision['total_score']:.0f}/100")
+    growth_copy = " · ".join(growth_bits) or "Growth signals not available yet."
+
+    return [
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Valuation", className="quick-peek-section-title"),
+                html.Div(valuation_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Accounting", className="quick-peek-section-title"),
+                html.Div(accounting_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Risk", className="quick-peek-section-title"),
+                html.Div(risk_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+        html.Div(
+            className="quick-peek-section",
+            children=[
+                html.Div("Growth", className="quick-peek-section-title"),
+                html.Div(growth_copy, className="quick-peek-section-copy"),
+            ],
+        ),
+    ]
+
+
+def _build_quick_peek(symbol: str) -> html.Div:
+    row = _quick_peek_row(symbol) or {"symbol": symbol, "name": symbol, "sector": "Unknown", "composite_score": 0}
+    analysis = db.get_analysis(symbol)
+    enhanced = (analysis or {}).get("enhanced") or {}
+    buffett = (analysis or {}).get("buffett") or {}
+    price = (analysis or {}).get("price") or row.get("price")
+    moat_value = buffett.get("intrinsic_value") or row.get("buffett_iv")
+    verdict = enhanced.get("verdict")
+    verdict_label = enhanced.get("verdict_label")
+    score = enhanced.get("composite_score")
+
+    if verdict is None:
+        if row.get("analyzed"):
+            verdict, verdict_label, _ = verdict_for_score(row.get("composite_score", 0), enhanced=False)
+        else:
+            verdict, verdict_label = "Pending", "pending"
+    if score is None:
+        score = row.get("composite_score", 0)
+
+    metric_items = [
+        ("Composite", f"{score:.0f}/100"),
+        ("Verdict", verdict.replace("_", " ").title()),
+        ("Price", f"{price:,.2f}" if price else "—"),
+        ("Market Cap", _fmt_market_cap((analysis or {}).get("market_cap") or row.get("market_cap"))),
+        ("Moat Value", f"{moat_value:,.2f}" if moat_value else "—"),
+    ]
+
+    return html.Div(
+        className="quick-peek-card",
+        children=[
+            html.Div(
+                className="quick-peek-identity",
+                children=[
+                    company_logo(symbol, row.get("name") or symbol, "company-logo company-logo--quick-peek"),
+                    html.Div(className="quick-peek-identity-copy", children=[
+                        html.Div(symbol, className="quick-peek-symbol"),
+                        html.H4(row.get("name") or symbol, className="quick-peek-company"),
+                        html.Div(
+                            f"Updated {_fmt_updated((analysis or {}).get('updated_at') or row.get('updated_at'))}",
+                            className="quick-peek-updated",
+                        ),
+                    ]),
+                ],
+            ),
+            html.Div(
+                className="quick-peek-metrics",
+                children=[
+                    html.Div(
+                        className="quick-peek-metric",
+                        children=[
+                            html.Div(label, className="quick-peek-metric-label"),
+                            html.Div(value, className="quick-peek-metric-value"),
+                        ],
+                    )
+                    for label, value in metric_items
+                ],
+            ),
+            html.Div(
+                className="quick-peek-actions",
+                children=[
+                    html.Button(
+                        "Open Full Analysis",
+                        id="quick-peek-open-analysis-btn",
+                        className="quick-peek-open-analysis-btn",
+                        n_clicks=0,
+                        type="button",
+                    )
+                ],
+            ),
+        ],
+    )
+
+
+# ── Screener ticker-click → quick peek ───────────────────────────────────────
 @callback(
-    Output("screener-click-ticker", "data"),
-    Input({"type": "screener-ticker-btn", "index": dash.ALL}, "n_clicks"),
+    Output("screener-quick-peek-symbol", "data"),
+    Input(
+        {"type": "screener-ticker-btn", "index": dash.ALL, "source": dash.ALL},
+        "n_clicks",
+    ),
+    Input("quick-peek-close-btn", "n_clicks"),
+    Input("quick-peek-backdrop", "n_clicks"),
     prevent_initial_call=True
 )
-def capture_screener_click(n_clicks_list):
-    # Find which button was just clicked
+def manage_quick_peek(n_clicks_list, close_clicks, backdrop_clicks):
+    triggered = dash.ctx.triggered_id
+    if isinstance(triggered, str) and triggered in {
+        "quick-peek-close-btn",
+        "quick-peek-backdrop",
+    }:
+        return None
+    triggered_value = dash.ctx.triggered[0].get("value") if dash.ctx.triggered else None
+    if not isinstance(triggered_value, (int, float)) or triggered_value <= 0:
+        return dash.no_update
+    if not isinstance(triggered, dict) or "index" not in triggered:
+        return dash.no_update
+    symbol = triggered["index"]
+    try:
+        product_analytics.track_event(get_user_id(), "stock_viewed", {"symbol": symbol, "source": "screener"})
+    except Exception:
+        pass
+    return symbol
+
+
+@callback(
+    Output("screener-quick-peek-shell", "className"),
+    Output("screener-quick-peek-content", "children"),
+    Input("screener-quick-peek-symbol", "data"),
+    prevent_initial_call=False,
+)
+def render_quick_peek(symbol):
+    if not symbol:
+        return "quick-peek-shell", html.Div(
+            "Select a stock to open a quick summary without leaving the screener.",
+            className="quick-peek-empty",
+        )
+    return "quick-peek-shell is-open", _build_quick_peek(symbol)
+
+
+@callback(
+    Output("screener-open-analysis-symbol", "data"),
+    Output("screener-quick-peek-symbol", "data", allow_duplicate=True),
+    Input("quick-peek-open-analysis-btn", "n_clicks"),
+    State("screener-quick-peek-symbol", "data"),
+    prevent_initial_call=True,
+)
+def open_full_analysis_from_peek(n_clicks, symbol):
+    if not n_clicks or not symbol:
+        return dash.no_update, dash.no_update
+    return symbol, None
+
+
+@callback(
+    Output("index-filter", "data", allow_duplicate=True),
+    Output("sector-filter", "value", allow_duplicate=True),
+    Input("url", "pathname"),
+    prevent_initial_call=True
+)
+def reset_filters_for_market(pathname):
+    market = market_from_path(pathname)
+    try:
+        product_analytics.track_event(
+            get_user_id(),
+            "screener_filter_changed",
+            {"filter": "country", "value": market.code},
+        )
+    except Exception:
+        pass
+    return [], ""
+
+
+@callback(
+    Output("index-filter", "data", allow_duplicate=True),
+    Input({"type": "index-filter-pill", "index": dash.ALL}, "n_clicks"),
+    State("index-filter", "data"),
+    prevent_initial_call=True
+)
+def update_index_filter(n_clicks_list, selected_indices):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
-    try:
-        product_analytics.track_event(get_user_id(), "stock_viewed", {"symbol": triggered["index"], "source": "screener"})
-    except Exception:
-        pass
-    return triggered["index"]  # the symbol string
+    value = triggered["index"]
+    selected = list(selected_indices or [])
+    if value in selected:
+        return [item for item in selected if item != value]
+    if len(selected) >= 2:
+        return dash.no_update
+    return selected + [value]
 
 
 @callback(
-    Output("screener-country-store", "data"),
-    Output("screener-page-store", "data", allow_duplicate=True),
-    Input({"type": "screener-country-tab", "index": dash.ALL}, "n_clicks"),
-    prevent_initial_call=True
-)
-def switch_screener_country(n_clicks_list):
-    triggered = dash.ctx.triggered_id
-    if not triggered or not any(n for n in n_clicks_list if n):
-        return dash.no_update, dash.no_update
-    try:
-        product_analytics.track_event(get_user_id(), "screener_filter_changed", {"filter": "country", "value": triggered["index"]})
-    except Exception:
-        pass
-    return triggered["index"], 1
-
-
-@callback(
-    Output("sector-filter", "value", allow_duplicate=True),
-    Input("screener-country-store", "data"),
-    prevent_initial_call=True
-)
-def reset_sector_filter_for_country(active_country):
-    return ""
-
-
-@callback(
-    Output("screener-country-tabs-container", "children"),
-    Input("screener-country-store", "data"),
+    Output("index-filter-pill-container", "children"),
+    Input("index-filter", "data"),
     prevent_initial_call=False
 )
-def render_screener_country_tabs(active_country):
-    return _country_tab_buttons(active_country)
+def render_index_filter_pills(selected_indices):
+    return _index_pill_buttons(selected_indices)
+
+
+@callback(
+    Output({"type": "screener-market-link", "index": dash.ALL}, "className"),
+    Input("url", "pathname"),
+    State({"type": "screener-market-link", "index": dash.ALL}, "id"),
+    prevent_initial_call=False,
+)
+def style_screener_market_links(pathname, link_ids):
+    active_code = market_from_path(pathname).code
+    return [
+        "screener-country-tab" + (" active" if link_id.get("index") == active_code else "")
+        for link_id in (link_ids or [])
+    ]
 
 
 @callback(
@@ -181,7 +454,7 @@ def update_progress_bar(n):
             html.Span(f"({pct}%) {eta_text}", className="text-xs text-muted")
         ], className="flex justify-between mb-lg"),
         html.Div(className="progress-bar-wrapper", children=[
-            html.Progress(value=pct, max=100, className="progress-bar-fill")
+            html.Progress(value=str(pct), max="100", className="progress-bar-fill")
         ])
     ])
 
@@ -190,21 +463,19 @@ def update_progress_bar(n):
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
     Input("screener-ready-store",  "data"),
-    Input("screener-country-store","data"),
+    Input("url",                       "pathname"),
     Input("page-load-interval",    "n_intervals"),
+    Input("index-filter",          "data"),
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
     Input("screener-page-store",   "data"),
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, active_country, n_load, sector_filter, sort_state, page_num, viewed_data):
-    global last_screener_state
+def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
     triggered_id = dash.ctx.triggered_id
-    if triggered_id == "page-load-interval":
-        last_screener_state = None
-    active_country = get_screener_country(active_country)["code"]
-    results    = _filter_results_by_country(screener.get_screener_results(), active_country)
+    active_market = market_from_path(pathname)
+    results = _filter_results_by_market(screener.get_screener_results(), active_market.code)
    
     prog       = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
@@ -214,29 +485,26 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
     
-    if dash.ctx.triggered_id in ["sector-filter", "screener-sort-store", "screener-country-store"]:
+    if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "url"]:
         page = 1
         page_reset = 1
-    # 1E: Smart state key using MD5 hash of results for guaranteed deduplication
-    state_tuple = (
-        json.dumps([r["symbol"] for r in results], sort_keys=True),
-        active_country,
-        sector_filter or "",
-        sort_col,
-        sort_asc,
-        sorted(viewed_set),
-        page
-    )
-    state_hash = hashlib.md5(json.dumps(state_tuple).encode()).hexdigest()
-
-    if state_hash == last_screener_state:
-        return dash.no_update, dash.no_update, page_reset
-    last_screener_state = state_hash
-    sectors = sorted(set(r["sector"] for r in results if r.get("sector")))
+    index_filtered_results = [r for r in results if row_matches_any_index(r, selected_indices)]
+    sectors = sorted(set(r["sector"] for r in index_filtered_results if r.get("sector")))
     sector_options = [{"label": "All Sectors", "value": ""}] + [
         {"label": s, "value": s} for s in sectors
     ]
     if not results:
+        if active_market.code != "US":
+            return (
+                html.Div([
+                    html.Div(f"No {active_market.label} screener data loaded yet.",
+                             className="clr-muted fw-600 mb-8"),
+                    html.Div(f"Load verified {active_market.label} data into the market database, then refresh this view.",
+                             className="clr-muted fs-13"),
+                ], className="tac p-40"),
+                sector_options,
+                page_reset,
+            )
         if prog["running"]:
             return (
                 html.Div([
@@ -255,20 +523,24 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             page_reset,
         )
     portfolio_symbols = get_portfolio_symbols()
-    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    filtered = [
+        r for r in index_filtered_results
+        if not sector_filter or r.get("sector") == sector_filter
+    ]
     
     text_cols = {"symbol", "name", "sector", "updated_at"}
     if sort_col in text_cols:
         filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-    if triggered_id in {"screener-ready-store", "page-load-interval", "sector-filter", "screener-sort-store", "screener-country-store"}:
+    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "url"}:
         try:
             product_analytics.track_event(
                 get_user_id(),
                 "screener_run",
                 {
-                    "country": active_country,
+                    "country": active_market.code,
+                    "indices": selected_indices or [],
                     "sector": sector_filter or "",
                     "sort_col": sort_col,
                     "sort_asc": sort_asc,
@@ -335,26 +607,37 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         # n_clicks on <td> not <button> — iOS Safari drops touch on <button> inside <table>
         ticker_cell = html.Td(
             html.Div([
-                html.Span(sym, className="ticker-link-btn"),
-                html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
-                if badges else html.Div(),
-            ]),
-            id={"type": "screener-ticker-btn", "index": sym},
+                company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
+                html.Div([
+                    html.Span(sym, className="ticker-link-btn"),
+                    html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
+                    if badges else html.Div(),
+                ]),
+            ], className="ticker-identity"),
+            id={"type": "screener-ticker-btn", "index": sym, "source": "table"},
             n_clicks=0,
             className="ticker-cell ticker-cell-touch cp",
         )
         # Graham Number cell — populated after full analysis
         gn    = r.get("graham_number")
         price = r.get("price")
-        if gn:
-            intrinsic_score = min(105, max(0, int((gn or 0) / (price or 1) * 50))) if gn and price else 0
+        currency = r.get("currency") or "USD"
+        grade = None
+        intrinsic_score = None
+        if gn and price:
+            intrinsic_score = min(105, max(0, int(gn / price * 50)))
             grade = "A" if intrinsic_score >= 80 else "B" if intrinsic_score >= 65 else "C" if intrinsic_score >= 50 else "D" if intrinsic_score >= 35 else "F"
-            grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED, "F": RED}.get(grade, MUTED)
             grade_class = {"A": "clr-green", "B": "clr-blue", "C": "clr-amber", "D": "clr-red", "F": "clr-red"}.get(grade, "clr-muted")
             gn_cell = html.Td([
                 html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
                 html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
             ], title=f"Intrinsic Value Estimate · #{intrinsic_score}/105")
+        elif gn:
+            gn_cell = html.Td(
+                f"{currency} {gn:,.2f}",
+                className="text-xs",
+                title="Fundamental fair value; live price not loaded",
+            )
         else:
             gn_cell = html.Td("—", className="text-xs text-muted",
                               title="Run full analysis to calculate Intrinsic Value")
@@ -392,7 +675,6 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
         ]))
         # ── Accordion item (mobile) ─────────────────────────────────────
-        acc_gn_color  = (GREEN if (price and gn  and price <= gn)  else MUTED) if gn  else MUTED
         acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
         acc_biv_class = "clr-green" if (price and biv and price <= biv) else "clr-muted"
         acc_rows = [
@@ -407,7 +689,10 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
                                 className=f"score-pill {get_score_class(r['composite_score'])}")],
                      className="accordion-row"),
             html.Div([html.Span("Intrinsic",  className="accordion-label"),
-                      html.Span(f"{grade} {intrinsic_score}/{105}"  if gn  else "—",
+                      html.Span(
+                          f"{grade} {intrinsic_score}/105"
+                          if gn and price
+                          else f"{currency} {gn:,.2f}" if gn else "—",
                                 className="accordion-value")],  className="accordion-row"),
             html.Div([html.Span("Moat", className="accordion-label"),
                       html.Span(f"${biv:.0f}" if biv else "—",
@@ -418,7 +703,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         if badges:
             acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
         acc_rows.append(
-            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym},
+            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym, "source": "mobile"},
                      n_clicks=0, className="accordion-analyze-btn")
         )
         accordion_items.append(html.Details(
@@ -426,6 +711,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
             children=[
                 html.Summary(className="accordion-summary", children=[
                     html.Span(f"#{i}", className="accordion-rank"),
+                    company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
                     html.Span(sym, className="ticker-link-btn"),
                     html.Div([html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")],
                              className="accordion-summary-right"),
@@ -450,7 +736,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         html.Button(
             "◀ Prev",
             id={"type": "screener-page-btn", "index": "prev"},
-            className="pagination-btn",
+            className="pagination-btn pagination-btn--prev",
             n_clicks=0,
             disabled=(page <= 1),
         ),
@@ -461,7 +747,7 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
         html.Button(
             "Next ▶",
             id={"type": "screener-page-btn", "index": "next"},
-            className="pagination-btn",
+            className="pagination-btn pagination-btn--next",
             n_clicks=0,
             disabled=(page >= total_pages),
         ),
@@ -479,16 +765,22 @@ def render_screener_table(ready, active_country, n_load, sector_filter, sort_sta
     Input({"type": "screener-page-btn", "index": dash.ALL}, "n_clicks"),
     State("screener-page-store", "data"),
     State("screener-sort-store", "data"),
+    State("index-filter", "data"),
     State("sector-filter", "value"),
-    State("screener-country-store", "data"),
+    State("url", "pathname"),
     prevent_initial_call=True
 )
-def navigate_screener_page(n_clicks_list, current_page, sort_state, sector_filter, active_country):
+def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
-    results = _filter_results_by_country(screener.get_screener_results(), active_country)
-    filtered = [r for r in results if not sector_filter or r.get("sector") == sector_filter]
+    market = market_from_path(pathname)
+    results = _filter_results_by_market(screener.get_screener_results(), market.code)
+    filtered = [
+        r for r in results
+        if row_matches_any_index(r, selected_indices)
+        and (not sector_filter or r.get("sector") == sector_filter)
+    ]
     total_pages = max(1, math.ceil(len(filtered) / PAGE_SIZE))
     cp = current_page or 1
     direction = triggered.get("index", "next")
@@ -562,7 +854,7 @@ def register_clientside_callbacks(app):
             return window.dash_clientside.no_update;
         }
         """,
-        Output("screener-table-container", "id"),
+        Output("screener-scroll-restore-sink", "children"),
         Input("tab-screener", "style"),
         Input("tab-analyze", "style"),
         Input("tab-portfolio", "style"),

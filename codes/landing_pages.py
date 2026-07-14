@@ -28,6 +28,9 @@ def register_landing_pages(server: flask.Flask) -> None:
             result = waitlist.subscribe(flask.request.form.get("email", ""), variant)
         except waitlist.WaitlistEmailError:
             result = "email_unavailable"
+        except Exception as exc:
+            flask.current_app.logger.warning("Waitlist signup failed: %s: %s", type(exc).__name__, exc)
+            result = "email_unavailable"
         product_analytics.track_event("", "waitlist_submission", {"variant": variant, "result": result})
         return flask.redirect(flask.url_for("landing_variant", variant=variant, waitlist=result))
 

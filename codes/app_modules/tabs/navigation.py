@@ -20,23 +20,21 @@ from dash import Input, Output, State, callback, clientside_callback
     Input("tab-portfolio-btn",    "n_clicks"),
     Input("tab-factorlab-btn",    "n_clicks"),
     Input("tab-pricing-btn",      "n_clicks"),
-    Input("screener-click-ticker","data"),
+    Input("screener-open-analysis-symbol","data"),
     Input("upgrade-funnel-store", "data"),
     Input("url",                  "pathname"),
     prevent_initial_call=False
 )
-def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clicked_ticker, upgrade_context, pathname):
+def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open_analysis_symbol, upgrade_context, pathname):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
-    if triggered == "screener-click-ticker" and clicked_ticker:
+    if triggered == "screener-open-analysis-symbol" and open_analysis_symbol:
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
-    if triggered in ("url", None) and (pathname or "").startswith("/analyze/"):
-        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
-    if triggered in ("url", None) and (pathname or "") == "/pricing":
-        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if triggered == "upgrade-funnel-store" and upgrade_context:
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    if triggered == "tab-screener-btn" and n_screener:
+        return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if triggered == "tab-analyze-btn":
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "tab-portfolio-btn":
@@ -44,6 +42,10 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, clic
     if triggered == "tab-factorlab-btn":
         return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if triggered == "tab-pricing-btn":
+        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    if (pathname or "").startswith("/analyze/"):
+        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+    if (pathname or "") == "/pricing":
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
     return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
 
@@ -54,14 +56,10 @@ def _make_theme_js(target_theme):
     function(n) {{
         if (!n) return "";
         localStorage.setItem("fr-theme", "{target_theme}");
-        if ("{target_theme}" === "light") {{
-            document.body.classList.add("light");
-        }} else if ("{target_theme}" === "dark") {{
-            document.body.classList.remove("light");
-        }} else {{
-            var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-            document.body.classList.toggle("light", prefersLight);
-        }}
+        var light = "{target_theme}" === "light" ||
+            ("{target_theme}" === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
+        document.documentElement.classList.toggle("light", light);
+        document.body.classList.toggle("light", light);
         document.querySelectorAll(".theme-btn").forEach(function(btn) {{
             btn.classList.toggle("active", btn.dataset.theme === "{target_theme}");
         }});
@@ -81,14 +79,10 @@ clientside_callback(
     """
     function() {
         var theme = localStorage.getItem("fr-theme") || "system";
-        if (theme === "light") {
-            document.body.classList.add("light");
-        } else if (theme === "dark") {
-            document.body.classList.remove("light");
-        } else {
-            var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-            document.body.classList.toggle("light", prefersLight);
-        }
+        var light = theme === "light" ||
+            (theme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
+        document.documentElement.classList.toggle("light", light);
+        document.body.classList.toggle("light", light);
         document.querySelectorAll(".theme-btn").forEach(function(btn) {
             btn.classList.toggle("active", btn.dataset.theme === theme);
         });

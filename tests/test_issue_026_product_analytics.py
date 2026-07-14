@@ -308,7 +308,6 @@ def test_webhook_tracks_subscription_completed(monkeypatch):
 
 
 def test_screener_tracks_screener_run(monkeypatch):
-    screener.last_screener_state = None
     monkeypatch.setattr(screener.dash, "ctx", SimpleNamespace(triggered_id="sector-filter"))
     monkeypatch.setattr(screener, "get_user_id", lambda: "u1")
     monkeypatch.setattr(screener, "get_portfolio_symbols", lambda: {})
@@ -330,13 +329,14 @@ def test_screener_tracks_screener_run(monkeypatch):
     tracked = Mock()
     monkeypatch.setattr(screener.product_analytics, "track_event", tracked)
 
-    screener.render_screener_table(-1, "US", 1, "Technology", {"col": "composite_score", "asc": False}, 1, [])
+    screener.render_screener_table(-1, "US", 1, "", "Technology", {"col": "composite_score", "asc": False}, 1, [])
 
     tracked.assert_called_once_with(
         "u1",
         "screener_run",
         {
             "country": "US",
+            "indices": [],
             "sector": "Technology",
             "sort_col": "composite_score",
             "sort_asc": False,

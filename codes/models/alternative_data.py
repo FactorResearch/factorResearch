@@ -14,6 +14,8 @@ import re
 from datetime import datetime
 from typing import Any, Iterable
 
+from codes.core import model_utils as mu
+
 try:
     from . import insider_activity
 except ImportError:  # tests import this module directly from codes/models
@@ -77,7 +79,7 @@ _NEGATIVE_8K_TERMS = {
 
 
 def _clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
-    return max(low, min(high, float(value)))
+    return mu.clamp(value, low, high)
 
 
 def _signal(score: float) -> str:

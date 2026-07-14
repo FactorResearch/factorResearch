@@ -36,15 +36,13 @@ Requires new sec_facts keys added to sec_data.py:
 
 import math
 
+from codes.core import model_utils as mu
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _first(records: list) -> float | None:

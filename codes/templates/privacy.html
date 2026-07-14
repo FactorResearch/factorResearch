@@ -1,66 +1,51 @@
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Privacy Policy</title>
+    <link rel="stylesheet" href="/assets/legal_pages.css">
 </head>
+<body class="legal-page">
+    <main class="legal-document">
+        <p class="legal-kicker">FactorResearch privacy</p>
+        <h1>Privacy Policy</h1>
+        <p class="legal-updated">Last updated: July 2026</p>
 
-<body style="font-family:sans-serif;max-width:700px;margin:40px auto;line-height:1.6;">
-    <h1>Privacy Policy</h1>
-    {{ legal_notice|safe }}
-    <p>We store the portfolios and holdings you create, tied to your account
-        (or an anonymous session ID if unauthenticated). Market/company data (SEC
-        filings, prices) is public and not tied to your identity.</p>
-    <h2>Analytics Preference</h2>
-    <p>
-        Product analytics can be disabled for the current browser session.
-        Current status:
-        <strong id="analytics-opt-out-status">
-            {{ "opted out" if analytics_opt_out else "tracking enabled" }}
-        </strong>
-    </p>
-    <button id="analytics-opt-out-toggle"
-            type="button"
-            style="padding:10px 14px;border:1px solid #ccc;border-radius:8px;background:#f7f7f7;cursor:pointer;">
-        {{ "Enable analytics for this session" if analytics_opt_out else "Disable analytics for this session" }}
-    </button>
-    <script>
-        (function () {
-            var btn = document.getElementById("analytics-opt-out-toggle");
-            var status = document.getElementById("analytics-opt-out-status");
-            if (!btn || !status) return;
+        <h2>Information We Collect</h2>
+        <p>We collect account identifiers, authentication session data, portfolio names and holdings you enter, feature usage, billing status, waitlist submissions, and product analytics events. Market data, public filings, and company facts are public source data and are not personal information by themselves.</p>
 
-            function render(optedOut) {
-                status.textContent = optedOut ? "opted out" : "tracking enabled";
-                btn.textContent = optedOut
-                    ? "Enable analytics for this session"
-                    : "Disable analytics for this session";
-            }
+        <h2>How We Use Information</h2>
+        <p>We use information to provide the app, save user portfolios, enforce feature limits, process billing status, prevent abuse, improve product flows, and troubleshoot reliability issues.</p>
 
-            btn.addEventListener("click", function () {
-                var nextOptOut = status.textContent !== "opted out";
-                fetch("/privacy/analytics", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "same-origin",
-                    body: JSON.stringify({ opt_out: nextOptOut })
-                })
-                    .then(function (response) { return response.json(); })
-                    .then(function (data) {
-                        render(!!data.analytics_opt_out);
-                        if (window.factorResearchSyncAnalyticsContext) {
-                            window.factorResearchSyncAnalyticsContext(data);
-                        }
-                    })
-                    .catch(function () {});
-            });
-        })();
-    </script>
-    <p>You can delete all your data at any time via account deletion, which
-        removes your portfolios and session data. See our right-to-erasure
-        endpoint (<code>/account/delete</code>).</p>
-    <p>[placeholder — insert data retention period, third-party processors
-        (Auth0/Stripe/hosting), and GDPR/CCPA contact info].</p>
-    <p><a href="/">← Back</a></p>
+        <h2>Analytics Preference</h2>
+        <p>
+            Product analytics can be disabled for the current browser session.
+            Current status:
+            <strong id="analytics-opt-out-status">
+                {{ "opted out" if analytics_opt_out else "tracking enabled" }}
+            </strong>
+        </p>
+        <button id="analytics-opt-out-toggle"
+                class="legal-toggle-button"
+                type="button">
+            {{ "Enable analytics for this session" if analytics_opt_out else "Disable analytics for this session" }}
+        </button>
+        <script src="/assets/legal_pages.js"></script>
+
+        <h2>Sharing and Providers</h2>
+        <p>We may use infrastructure, authentication, analytics, email, market-data, and payment providers to operate the Service. We do not sell personal information. Provider access is limited to operating the Service and complying with legal obligations.</p>
+
+        <h2>Retention and Deletion</h2>
+        <p>We keep data while needed to provide the Service, satisfy billing or security requirements, and maintain product records. Account deletion removes portfolios and session-linked user data through the account deletion flow.</p>
+
+        <h2>Security</h2>
+        <p>We use reasonable technical controls, but no internet service can be guaranteed secure. Do not submit sensitive personal financial account credentials or private brokerage passwords to the Service.</p>
+
+        <h2>Contact</h2>
+        <p>For privacy requests, contact the operator of this deployment through the published support channel.</p>
+
+        <p><a href="/">Back to app</a></p>
+    </main>
 </body>
-
 </html>

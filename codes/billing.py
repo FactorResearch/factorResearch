@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 import os
 
 import flask
-
+from codes.core import app_flags
 from codes.app_modules.session import get_user_id
 from codes.payments import stripe_client, subscriptions, webhooks
 from codes.services import permissions
@@ -91,6 +91,8 @@ def init_billing(server: Optional[flask.Flask] = None):
 
 
 def user_has_paid(user_id: str) -> bool:
+    if app_flags.billing_checks_disabled():
+        return True
     if not user_id:
         return False
     try:

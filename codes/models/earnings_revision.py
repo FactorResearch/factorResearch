@@ -62,6 +62,7 @@ Note on revision proxies:
 import math
 from typing import Optional
 
+from codes.core import model_utils as mu
 from ..data import api_fetcher as _av
 
 
@@ -88,22 +89,12 @@ _FH_PAID_METHODS = {
 # ── Pure helpers ──────────────────────────────────────────────────────────────
 
 def _safe(val) -> Optional[float]:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _pct_change(old, new) -> Optional[float]:
     """Percentage change; returns None when old ≈ 0."""
-    try:
-        o, n = float(old), float(new)
-        if abs(o) < 1e-10:
-            return None
-        return (n - o) / abs(o) * 100.0
-    except (TypeError, ValueError, ZeroDivisionError):
-        return None
+    return mu.percent_change(old, new)
 
 
 def _sigmoid_score(value: float, center: float = 0.0, scale: float = 5.0) -> float:
@@ -117,18 +108,7 @@ def _linear_slope(values: list) -> Optional[float]:
     OLS slope of a sequence, normalised by |mean|.
     Returns % change per period; positive = rising trend.
     """
-    n = len(values)
-    if n < 2:
-        return None
-    mean_v = sum(values) / n
-    if abs(mean_v) < 1e-10:
-        return None
-    x_mean = (n - 1) / 2.0
-    num = sum((i - x_mean) * (v - mean_v) for i, v in enumerate(values))
-    den = sum((i - x_mean) ** 2 for i in range(n))
-    if den < 1e-10:
-        return None
-    return (num / den) / abs(mean_v) * 100.0
+    return mu.linear_slope_percent(values)
 
 
 def _filter_outliers(values: list, k: float = 3.0) -> list:

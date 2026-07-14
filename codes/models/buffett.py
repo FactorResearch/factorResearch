@@ -30,6 +30,9 @@ Intrinsic Value method:
 
 import math
 
+from codes.core import financial_math as fm
+from codes.core import model_utils as mu
+
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -42,11 +45,7 @@ DCF_YEARS     = 10
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:
-    try:
-        v = float(val)
-        return v if math.isfinite(v) else None
-    except (TypeError, ValueError):
-        return None
+    return mu.safe_float(val)
 
 
 def _first(records: list) -> float | None:
@@ -92,7 +91,8 @@ def _cagr(start: float, end: float, years: float) -> float | None:
         return None
     if start <= 0 or end <= 0:
         return None
-    return (math.pow(end / start, 1 / years) - 1) * 100
+    result = fm.cagr(start, end, years)
+    return result * 100 if result is not None else None
 
 
 def _dcf(owner_earnings_ps: float, growth: float) -> float | None:
