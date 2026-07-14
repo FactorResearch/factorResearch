@@ -160,6 +160,17 @@ Keep roadmap branches easy to merge:
   resolving it.
 * Avoid unrelated refactors or broad cleanup in roadmap branches.
 
+Every newly added scoring/model engine must include cached-analysis upgrade
+support for existing `analysis_cache` rows in Postgres.
+
+Minimum requirement for a new model:
+
+* compute during fresh analysis
+* persist into `analysis_cache`
+* persist its factor score if applicable
+* backfill/enrich already analyzed stocks in DB without requiring manual
+  re-analysis
+
 ---
 
 ## Token Efficiency Rules

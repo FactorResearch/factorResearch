@@ -29,6 +29,7 @@ from codes.data.providers import (
 from codes.models import risk_metrics
 from codes.models import (
     alternative_data,
+    accounting_quality,
     altman,
     bias_engine,
     buffett,
@@ -208,6 +209,7 @@ def test_existing_models_are_wired_to_shared_model_utils():
     modules = [
         alternative_data,
         altman,
+        accounting_quality,
         bias_engine,
         buffett,
         capital_allocation,

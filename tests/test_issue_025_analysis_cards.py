@@ -57,6 +57,15 @@ def test_issue_025_growth_signal_cards_use_shared_metric_rows():
         analysis_ui._growth_quality_card({
             "growth_quality": {"growth_quality_score": 74, "signal": "Bullish", "rev_cagr_10y": 12.3}
         }),
+        analysis_ui._accounting_quality_card({
+            "accounting_quality": {
+                "accounting_quality_score": 71,
+                "manipulation_risk": "Moderate",
+                "accounting_grade": "C",
+                "warning_count": 1,
+                "explanation": "Receivables are growing faster than sales.",
+            }
+        }),
         analysis_ui._factor_momentum_card({
             "factor_momentum": {"factor_momentum_score": 68, "signal": "Bullish", "return_3m": 5.2}
         }),

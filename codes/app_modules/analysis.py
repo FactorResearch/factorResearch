@@ -14,7 +14,8 @@ from codes.models import (
     graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt,
     buffett, earnings_revision, profitability as profitability_model,
     fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model,
-    growth_quality as growth_quality_model, regime as regime_model,
+    growth_quality as growth_quality_model, accounting_quality as accounting_quality_model,
+    regime as regime_model,
     insider_activity as insider_activity_model, factor_momentum as factor_momentum_model,
     alternative_data as alternative_data_model, options_signal_engine as options_signal_model,
     spy_benchmark_model, bias_engine, comomentum as comomentum_model,
@@ -33,6 +34,7 @@ _comomentum_cache = {"ts": 0.0, "result": None}
 _comomentum_lock = threading.Lock()
 _market_fear_cache = {"ts": 0.0, "result": None}
 _market_fear_lock = threading.Lock()
+_analysis_backfill_lock = threading.Lock()
 _COMOMENTUM_TTL = 3600  # seconds
 _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
@@ -140,6 +142,142 @@ def _set_cache_metadata(result: dict, cache_hit: bool, cache_source: str) -> dic
     return result
 
 
+def _ensure_cached_model_dependencies(symbol: str, sec_facts: dict, result: dict) -> dict[str, dict]:
+    """
+    Build or reuse prerequisite model outputs required to enrich old cached
+    analyses with newly introduced engines.
+    """
+    updates: dict[str, dict] = {}
+
+    piotroski_result = result.get("piotroski")
+    if not piotroski_result:
+        piotroski_result = piotroski.score(sec_facts)
+        updates["piotroski"] = piotroski_result
+
+    fcf_quality_result = result.get("fcf_quality")
+    if not fcf_quality_result:
+        fcf_quality_result = fcf_quality_model.FCFQualityAnalyzer(
+            symbol, sec_facts
+        ).get_fcf_quality_score()
+        updates["fcf_quality"] = fcf_quality_result
+
+    growth_quality_result = result.get("growth_quality")
+    if not growth_quality_result:
+        growth_quality_result = growth_quality_model.GrowthQualityAnalyzer(
+            symbol, sec_facts
+        ).get_growth_quality_score()
+        updates["growth_quality"] = growth_quality_result
+
+    return {
+        "piotroski": piotroski_result,
+        "fcf_quality": fcf_quality_result,
+        "growth_quality": growth_quality_result,
+        "updates": updates,
+    }
+
+
+def _compute_accounting_quality_for_result(symbol: str, sec_facts: dict, result: dict) -> tuple[str, dict, dict]:
+    deps = _ensure_cached_model_dependencies(symbol, sec_facts, result)
+    accounting_quality_result = accounting_quality_model.AccountingQualityAnalyzer(
+        symbol,
+        sec_facts,
+        piotroski_result=deps["piotroski"],
+        fcf_quality_result=deps["fcf_quality"],
+        growth_quality_result=deps["growth_quality"],
+    ).get_accounting_quality_score()
+
+    updates = deps["updates"]
+    updates["accounting_quality"] = accounting_quality_result
+    return "accounting_quality", accounting_quality_result, updates
+
+
+_CACHED_ANALYSIS_ENRICHERS = {
+    "accounting_quality": _compute_accounting_quality_for_result,
+}
+
+
+def enrich_cached_analysis_if_needed(symbol: str, result: dict) -> dict:
+    """
+    Add newly introduced model outputs to legacy cached analyses and persist the
+    enriched result so every downstream DB reader sees the same shape.
+    """
+    if not isinstance(result, dict) or not result or "error" in result:
+        return result
+
+    pending = [
+        (key, enricher) for key, enricher in _CACHED_ANALYSIS_ENRICHERS.items()
+        if not result.get(key)
+    ]
+    if not pending:
+        return result
+
+    try:
+        sec_facts = scoring_facts_for_symbol(symbol) or sec_data.get_financials(symbol)
+    except Exception as e:
+        print(f"Cached analysis enrichment failed for {symbol}: {type(e).__name__}: {e}")
+        return result
+
+    updated = False
+    factor_updates: dict[str, dict] = {}
+    for _, enricher in pending:
+        try:
+            field, value, extra_updates = enricher(symbol, sec_facts, result)
+        except Exception as e:
+            print(f"Cached model backfill failed for {symbol}: {type(e).__name__}: {e}")
+            continue
+        result[field] = value
+        factor_updates[field] = value
+        for extra_key, extra_value in extra_updates.items():
+            if not result.get(extra_key):
+                result[extra_key] = extra_value
+            factor_updates[extra_key] = extra_value
+        updated = True
+
+    if not updated:
+        return result
+
+    try:
+        db.upsert_analysis(symbol, result)
+        factor_engine.persist_factor_scores(symbol, factor_updates)
+    except Exception as e:
+        print(f"Cached analysis persistence failed for {symbol}: {type(e).__name__}: {e}")
+        return result
+
+    with _analysis_cache_lock:
+        if symbol in _analysis_cache:
+            _analysis_cache[symbol] = result
+    return result
+
+
+def backfill_cached_analysis_models(max_symbols: int | None = None) -> int:
+    """
+    Upgrade legacy rows in analysis_cache so new models are available to all
+    consumers without forcing full re-analysis.
+    """
+    with _analysis_backfill_lock:
+        try:
+            symbols = db.list_analysis_tickers()
+        except Exception as e:
+            print(f"Cached analysis model backfill skipped: {type(e).__name__}: {e}")
+            return 0
+
+        updated = 0
+        for symbol in symbols[:max_symbols] if max_symbols else symbols:
+            result = db.get_analysis(symbol)
+            if not result or "error" in result:
+                continue
+            missing_before = any(
+                not result.get(key) for key in _CACHED_ANALYSIS_ENRICHERS
+            )
+            if not missing_before:
+                continue
+            enrich_cached_analysis_if_needed(symbol, result)
+            updated += 1
+        if updated:
+            print(f"  [AnalysisBackfill] upgraded {updated} cached analyses")
+        return updated
+
+
 def analyze_stock(symbol: str) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
@@ -161,7 +299,8 @@ def analyze_stock(symbol: str) -> dict:
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
-            cached_memory = _set_cache_metadata(_analysis_cache[symbol], True, "memory")
+            cached_memory = enrich_cached_analysis_if_needed(symbol, _analysis_cache[symbol])
+            cached_memory = _set_cache_metadata(cached_memory, True, "memory")
             _attach_market_fear(cached_memory)
             try:
                 save_standard_snapshot(cached_memory, analysis_type=AnalysisType.STANDARD)
@@ -172,6 +311,7 @@ def analyze_stock(symbol: str) -> dict:
     cached = db.get_analysis(symbol)
 
     if cached:
+        cached = enrich_cached_analysis_if_needed(symbol, cached)
         _set_cache_metadata(cached, True, "database")
         _attach_market_fear(cached)
         try:
@@ -301,6 +441,18 @@ def analyze_stock(symbol: str) -> dict:
         ).get_growth_quality_score()
     except Exception as e:
         print(f"Growth quality calculation failed: {e}")
+    # Accounting Quality score (V2.3)
+    accounting_quality_result = None
+    try:
+        accounting_quality_result = accounting_quality_model.AccountingQualityAnalyzer(
+            symbol,
+            sec_facts,
+            piotroski_result=piotroski_result,
+            fcf_quality_result=fcf_quality_result,
+            growth_quality_result=growth_quality_result,
+        ).get_accounting_quality_score()
+    except Exception as e:
+        print(f"Accounting quality calculation failed: {e}")
     # Insider Activity (P4)
     insider_activity_result = None
     transactions = []
@@ -451,6 +603,7 @@ def analyze_stock(symbol: str) -> dict:
         "fcf_quality": fcf_quality_result,
         "capital_allocation": capital_allocation_result,
         "growth_quality": growth_quality_result,
+        "accounting_quality": accounting_quality_result,
         "insider_activity":   insider_activity_result,
         "factor_momentum": factor_momentum_result,
         "alternative_data": alternative_data_result,
@@ -471,7 +624,7 @@ def analyze_stock(symbol: str) -> dict:
         "piotroski": piotroski_result, "risk": risk_result, "buffett": buffett_result,
         "earnings_revision": earnings_revision_result, "profitability": profitability_result,
         "fcf_quality": fcf_quality_result, "capital_allocation": capital_allocation_result,
-        "growth_quality": growth_quality_result,
+        "growth_quality": growth_quality_result, "accounting_quality": accounting_quality_result,
     })
     composite_source = enhanced if enhanced.get("composite_score") is not None else comp
     db.record_composite_score_snapshot(

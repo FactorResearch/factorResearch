@@ -38,6 +38,7 @@ def test_app_startup_does_not_launch_metadata_backfill_by_default(monkeypatch):
 
     with patch("codes.data.sec_data.get_ticker_map", return_value={}), \
          patch("codes.data.db.init_db"), \
+         patch("codes.app_modules.analysis.backfill_cached_analysis_models", return_value=0), \
          patch("codes.engine.universe.get_universe", return_value=["AAPL", "MSFT"]), \
          patch("codes.engine.screener.load_cached_only", return_value=[]), \
          patch("codes.data.company_metadata.start_background_refresh") as refresh:

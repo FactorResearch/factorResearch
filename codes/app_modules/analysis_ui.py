@@ -101,6 +101,7 @@ def _composite_trend_chart(symbol: str, color: str):
 def _metric_data_row(label, value) -> html.Div:
     return html.Div(
         className="analysis-metric-row analysis-divider d-flex jc-between gap-12 py-4 fs-12",
+        style={"borderBottom": f"1px solid {_ANALYSIS_ROW_DIVIDER}"},
         children=[
             html.Span(label, className="analysis-metric-label text-muted"),
             value if not isinstance(value, str) else html.Span(value, className="analysis-metric-value clr-text fw-600"),
@@ -474,6 +475,59 @@ def _growth_quality_card(data: dict) -> html.Div:
         score_text=f"{score:.0f}/100",
         score_color=sig_color,
         status_text=f"\u2014 {signal}",
+        body_children=metric_rows,
+    )
+
+
+def _accounting_quality_card(data: dict) -> html.Div:
+    """Accounting Quality card: forensic accounting and manipulation-risk diagnostics."""
+    aq = data.get("accounting_quality") or {}
+    if not aq:
+        return html.Div()
+
+    score = aq.get("accounting_quality_score")
+    risk = aq.get("manipulation_risk", "Moderate")
+    if score is None:
+        return html.Div()
+
+    sig_color = {
+        "Low": GREEN,
+        "Moderate": AMBER,
+        "High": RED,
+    }.get(risk, MUTED)
+
+    def _fmt(v, decimals=1, suffix="%"):
+        return f"{v:.{decimals}f}{suffix}" if v is not None else "N/A"
+
+    metrics = [
+        ("Grade", aq.get("accounting_grade", "N/A")),
+        ("Risk Level", aq.get("accounting_risk_level", "N/A")),
+        ("Accrual Ratio", _fmt(aq.get("accrual_ratio"), 2, "")),
+        ("DSO Change", _fmt(aq.get("dso_change_days"), 1, " days")),
+        (
+            "Asset Composition",
+            _fmt(
+                aq.get("asset_composition_ratio") * 100
+                if aq.get("asset_composition_ratio") is not None else None,
+                1,
+            ),
+        ),
+        ("Warning Flags", str(aq.get("warning_count", 0))),
+    ]
+
+    metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
+    metric_rows.append(
+        html.Div(
+            aq.get("explanation", ""),
+            className="fs-12 clr-muted fsi pt-8",
+        )
+    )
+
+    return _metric_scorecard(
+        title="Accounting Quality",
+        score_text=f"{score:.0f}/100",
+        score_color=sig_color,
+        status_text=f"\u2014 {risk} Manipulation Risk",
         body_children=metric_rows,
     )
 
@@ -1160,6 +1214,7 @@ _stat(
     regime_card = _regime_card(data)
     capital_allocation_card = _capital_allocation_card(data)
     growth_quality_card = _growth_quality_card(data)
+    accounting_quality_card = _accounting_quality_card(data)
     factor_momentum_card = _factor_momentum_card(data)
     alternative_data_card = _alternative_data_card(data)
     div_chart = _div_chart(g.get("div_history", []), symbol, data)
@@ -1187,6 +1242,8 @@ _stat(
             "analysis-health",
             "Financial Health",
             [html.Div(className="quant_row", children=[piotroski_card, altman_card])]
+            + ([html.Div(className="card-row", children=[accounting_quality_card])]
+               if data.get("accounting_quality") else [])
             if p_data and a_data else [],
         ),
         (

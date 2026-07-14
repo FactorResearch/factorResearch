@@ -26,6 +26,7 @@ FACTOR_SOURCES = {
     "fcf_quality":         ("fcf_quality",           "total_score", "total_max"),
     "capital_allocation":  ("capital_allocation",    "total_score", "total_max"),
     "growth_quality":      ("growth_quality",        "total_score", "total_max"),
+    "accounting_quality":  ("accounting_quality",    "total_score", "total_max"),
 }
 
 

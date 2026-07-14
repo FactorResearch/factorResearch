@@ -35,7 +35,7 @@ from codes.services import product_analytics
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
-from codes.app_modules.analysis import is_production
+from codes.app_modules.analysis import backfill_cached_analysis_models, is_production
 from codes.app_modules.layout import build_layout
 from codes.app_modules.rate_limit import clear_rate_limits_for_user
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
@@ -198,6 +198,10 @@ def startup():
     db.init_db()
     sec_data.get_ticker_map()
     universe.get_universe()
+    try:
+        backfill_cached_analysis_models()
+    except Exception as e:
+        print(f"Cached analysis backfill failed at startup: {type(e).__name__}: {e}")
     results = screener.load_cached_only()
     print(f"✅ {len(results)} cached stocks ready\n")
 

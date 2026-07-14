@@ -27,6 +27,7 @@ _LEGACY_MODULES = {
     "fcf_quality": "codes.models.fcf_quality",
     "capital_allocation": "codes.models.capital_allocation",
     "growth_quality": "codes.models.growth_quality",
+    "accounting_quality": "codes.models.accounting_quality",
     "regime": "codes.models.regime",
     "insider_activity": "codes.models.insider_activity",
     "alternative_data": "codes.models.alternative_data",
