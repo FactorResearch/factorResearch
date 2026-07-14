@@ -68,6 +68,7 @@ app = dash.Dash(
     ]
 )
 server = app.server
+server.config["MAX_CONTENT_LENGTH"] = int(os.environ.get("MAX_REQUEST_BYTES", str(2 * 1024 * 1024)))
 trusted_hosts = [host.strip() for host in os.environ.get("TRUSTED_HOSTS", "").split(",") if host.strip()]
 if trusted_hosts:
     server.config["TRUSTED_HOSTS"] = trusted_hosts
@@ -246,6 +247,22 @@ def robots_txt():
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)
 
+
+@server.errorhandler(413)
+def request_too_large(_error):
+    return flask.jsonify({"error": "request too large"}), 413
+
+
+@server.errorhandler(429)
+def request_rate_limited(_error):
+    return flask.jsonify({"error": "rate limit exceeded"}), 429
+
+
+@server.before_request
+def apply_endpoint_body_limit():
+    if flask.request.path == "/billing/webhook":
+        flask.request.max_content_length = int(os.environ.get("STRIPE_WEBHOOK_MAX_BYTES", str(256 * 1024)))
+
 # Initialize Flask-Limiter if available (best-effort; dev may omit package)
 if Limiter is not None:
     rate_limit_storage = os.environ.get("RATELIMIT_STORAGE_URI") or os.environ.get("REDIS_URL")
@@ -254,9 +271,20 @@ if Limiter is not None:
     limiter = Limiter(
         app=server,
         key_func=get_remote_address,
-        default_limits=[],
+        default_limits=[os.environ.get("DEFAULT_RATE_LIMIT", "600 per minute")],
         storage_uri=rate_limit_storage or "memory://",
     )
+    for endpoint, limit in {
+        "/_dash-update-component": "240 per minute",
+        "_stripe_webhook": "120 per minute",
+        "landing_waitlist": "5 per minute",
+        "cached_company_logo": "60 per minute",
+        "_checkout": "20 per minute",
+        "_portal": "20 per minute",
+        "dev_impersonate": "20 per minute",
+    }.items():
+        if endpoint in server.view_functions:
+            server.view_functions[endpoint] = limiter.limit(limit)(server.view_functions[endpoint])
 else:
     limiter = None
 

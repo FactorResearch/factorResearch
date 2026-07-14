@@ -18,7 +18,7 @@ No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis I
 | Severity | Count |
 |---|---:|
 | Critical | 0 |
-| High | 1 open / 1 resolved |
+| High | 0 open / 2 resolved |
 | Medium | 3 |
 | Low | 3 |
 
@@ -60,7 +60,7 @@ pinned proof dependency and `scripts/release-gate.sh` runs
 cannot pass while the dependency audit fails. Closure evidence: `No known
 vulnerabilities found`; full gate `1014 passed, 2 skipped`.
 
-### SEC-002 - High - Public Endpoints Accept Large Bodies And Bursts Without Throttling
+### SEC-002 - Resolved (formerly High) - Public Endpoints Accepted Large Bodies And Bursts Without Throttling
 
 **Affected:** `codes/app.py:251`, `codes/billing.py:66`, `codes/landing_pages.py:20`, `codes/app.py:162`
 
@@ -77,6 +77,15 @@ The webhook is correctly exempt from CSRF and correctly verifies Stripe signatur
 **Remediation:** Set an application and reverse-proxy request-body limit; use a tighter webhook-specific limit compatible with Stripe; apply Redis-backed per-IP and per-identity limits to webhook, waitlist, logo, billing, auth, and Dash callback routes; enforce request timeouts/concurrency limits at the proxy; alert on `413`/`429` and abuse rates.
 
 **Regression gate:** Oversized requests must return `413` before route logic, and bursts must produce deterministic `429` responses without provider/database calls.
+
+**Resolution (2026-07-14):** The application now enforces a 2 MiB global
+request limit and a 256 KiB Stripe webhook limit before signature handling.
+Flask-Limiter has a shared production-backed default limit plus stricter limits
+for Dash callbacks, webhooks, waitlist, logo, billing, and development-persona
+routes. Exact `413` and `429` handlers preserve security semantics. Regression
+tests prove oversized requests never reach webhook verification and a sixth
+waitlist request returns `429` before persistence. Closure evidence: focused
+suite `55 passed, 2 skipped`; full gate `1017 passed, 2 skipped`.
 
 ### SEC-003 - Medium - Configured Trusted Hosts Are Not Enforced
 
