@@ -36,17 +36,5 @@ jobs:
       - name: Install frontend audit dependencies
         run: npm ci
 
-      - name: Compile application
-        run: python -m compileall -q codes
-
-      - name: Compile styles
-        run: npx --yes sass assets/style.scss /tmp/factorresearch.css --no-source-map
-
-      - name: Run full regression suite
-        env:
-          APP_SKIP_STARTUP: "1"
-          APP_FEATURE_FLAG: V1
-        run: pytest -q
-
-      - name: Check repository diff
-        run: git diff --check
+      - name: Run release integrity gate
+        run: ./scripts/release-gate.sh
