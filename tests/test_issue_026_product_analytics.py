@@ -308,7 +308,6 @@ def test_webhook_tracks_subscription_completed(monkeypatch):
 
 
 def test_screener_tracks_screener_run(monkeypatch):
-    screener.last_screener_state = None
     monkeypatch.setattr(screener.dash, "ctx", SimpleNamespace(triggered_id="sector-filter"))
     monkeypatch.setattr(screener, "get_user_id", lambda: "u1")
     monkeypatch.setattr(screener, "get_portfolio_symbols", lambda: {})

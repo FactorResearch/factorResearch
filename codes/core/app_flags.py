@@ -18,6 +18,7 @@ from pathlib import Path
 _FLAG_FILE = Path(__file__).resolve().parents[2] / "feature_flags.json"
 _DEFAULT_FLAG = "V1"
 _VALID_FLAGS = {"INTERNAL", "BETA", "V1", "V2", "ENTERPRISE"}
+_DEFAULT_MARKETS = {"US"}
 
 
 def get_current_flag() -> str:
@@ -26,12 +27,36 @@ def get_current_flag() -> str:
     if override:
         flag = override.strip().upper()
         return flag if flag in _VALID_FLAGS else _DEFAULT_FLAG
+    data = _read_flags_file()
+    flag = str(data.get("flag", _DEFAULT_FLAG)).strip().upper()
+    return flag if flag in _VALID_FLAGS else _DEFAULT_FLAG
+
+
+def get_enabled_markets() -> set[str]:
+    """Return country/market codes enabled in feature_flags.json."""
+    data = _read_flags_file()
+    markets = data.get("markets")
+    if not isinstance(markets, dict):
+        return set(_DEFAULT_MARKETS)
+
+    enabled = {
+        str(code).strip().upper()
+        for code, active in markets.items()
+        if active is True
+    }
+    return enabled or set(_DEFAULT_MARKETS)
+
+
+def is_market_enabled(country_code: str) -> bool:
+    return country_code.strip().upper() in get_enabled_markets()
+
+
+def _read_flags_file() -> dict:
     try:
         data = json.loads(_FLAG_FILE.read_text())
-        flag = str(data.get("flag", _DEFAULT_FLAG)).strip().upper()
-        return flag if flag in _VALID_FLAGS else _DEFAULT_FLAG
+        return data if isinstance(data, dict) else {}
     except Exception:
-        return _DEFAULT_FLAG
+        return {}
 
 
 def is_internal_mode() -> bool:

@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 from codes import security
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
+from codes.data.providers.registry import require_symbol_market_enabled, scoring_facts_for_symbol
 from codes.engine import factor_engine, scorer, screener, market_fear
 from codes.models import (
     graham, quality, momentum, piotroski, altman, risk_metrics, greenblatt,
@@ -15,7 +16,7 @@ from codes.models import (
     fcf_quality as fcf_quality_model, capital_allocation as capital_allocation_model,
     growth_quality as growth_quality_model, regime as regime_model,
     insider_activity as insider_activity_model, factor_momentum as factor_momentum_model,
-    alternative_data as alternative_data_model, options_signal_engine as options_signal_model,
+    alternative_data as alternative_data_model,
     spy_benchmark_model, bias_engine, comomentum as comomentum_model,
 )
 from codes.models.analysis_snapshot import AnalysisType
@@ -153,6 +154,10 @@ def analyze_stock(symbol: str) -> dict:
     symbol = validate_ticker(symbol)
     if not symbol:
         return {"error": "Invalid ticker format."}
+    try:
+        require_symbol_market_enabled(symbol)
+    except ValueError as exc:
+        return {"error": str(exc)}
     # 1A: Check in-memory cache first (zero disk I/O for repeat lookups)
     with _analysis_cache_lock:
         if symbol in _analysis_cache:
@@ -176,9 +181,10 @@ def analyze_stock(symbol: str) -> dict:
         with _analysis_cache_lock:
             _analysis_cache[symbol] = cached
         return cached
-    # Fetch SEC fundamentals — lazy: returns cache instantly when not stale
+    # International symbols read verified normalized facts from the market DB;
+    # U.S. symbols retain the existing SEC-only path.
     try:
-        sec_facts = sec_data.get_financials(symbol)
+        sec_facts = scoring_facts_for_symbol(symbol) or sec_data.get_financials(symbol)
     except ValueError as e:
         err_msg = str(e)
         # Provide a more actionable message for foreign-listed tickers that
@@ -196,14 +202,19 @@ def analyze_stock(symbol: str) -> dict:
         return {"error": "Could not retrieve data for this ticker. Please try again shortly."}
     # Quality score (no price) — early calculation
     q = quality.score(sec_facts)
-    # Now try to get price
-    try:
-        price = api_fetcher.get_price(symbol)
-    except Exception as e:
-        if _is_rate_limit_error(e):
-            message = getattr(e, "user_message", str(e))
-            return {"error": message}
-        raise
+    # International prices require a licensed source with explicit quote
+    # currency, unit, and adjustment metadata. Until that evidence is stored,
+    # run fundamentals without price-based outputs.
+    if sec_facts.get("source_market", "US") == "US":
+        try:
+            price = api_fetcher.get_price(symbol)
+        except Exception as e:
+            if _is_rate_limit_error(e):
+                message = getattr(e, "user_message", str(e))
+                return {"error": message}
+            raise
+    else:
+        price = None
     # Earnings revision score
     earnings_revision_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price:
@@ -370,15 +381,6 @@ def analyze_stock(symbol: str) -> dict:
     regime_overlay = scorer.apply_regime_overlay(
         enhanced.get("composite_score", 0), regime_result
     )
-    # Options Signal (P4) — depends on regime + risk + price history
-    options_signal_result = None
-    try:
-        options_signal_result = options_signal_model.get_options_signal(
-            symbol, price_hist=hist, regime_result=regime_result,
-            risk_result=risk_result, current_price=price,
-        )
-    except Exception as e:
-        print(f"Options signal calculation failed: {e}")
     # SPY Benchmark + Bias (Outperform/Neutral/Underperform vs SPY) —
     # depends on price history + enhanced composite + Altman distress flag.
     spy_benchmark_result = None
@@ -420,6 +422,7 @@ def analyze_stock(symbol: str) -> dict:
             pass
     result = {
         "symbol":    symbol,
+        "market_code": sec_facts.get("source_market", "US"),
         "name":      security.sanitize_string(sec_facts["name"], max_length=200),
         "sector":    sec_facts["sector"],
         "price":     price,
@@ -446,7 +449,6 @@ def analyze_stock(symbol: str) -> dict:
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,
         "enhanced":    enhanced,
-        "options_signal":     options_signal_result,
         "spy_benchmark":      spy_benchmark_result,
         "bias":               bias_result,
         # ─────────────────────────────────────────────────

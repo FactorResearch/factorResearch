@@ -1,307 +1,535 @@
-@use 'tokens' as *;
+@use '../media';
 @use 'helpers' as *;
-// ── Company Header ────────────────────────────────────────────────────────────
-.company-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  padding: 20px 24px;
-  border: 1px solid $border;
-  border-radius: 8px;
-  background: $card;
-  margin-bottom: 16px;
+@use 'tokens' as *;
 
-  h2 {
-    font-family: $font-base;
-    font-size: 20px;
-    font-weight: 700;
-    color: $text;
-    letter-spacing: -0.01em;
-    margin-bottom: 4px;
-  }
-
-  .company-title-link {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color 0.15s ease, border-color 0.15s ease;
-
-    &:hover,
-    &:focus-visible {
-      color: $blue-bright;
-      border-bottom-color: $blue-bright;
-      outline: none;
-    }
-  }
-}
-
-.company-meta {
-  font-family: $font-mono;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: $text-muted;
+.history-section {
   margin-bottom: 14px;
 }
 
-.stats-row {
+.analysis-jump-nav {
+  position: sticky;
+  top: 96px;
+  z-index: 10;
+  align-self: start;
+  grid-column: 1;
+  margin-bottom: 0;
+  padding: 6px;
+  border: 1px solid var(--fr-border);
+  border-radius: $radius-md;
+  background: rgba($surface, 0.94);
+  backdrop-filter: blur(16px);
+}
+
+.analysis-jump-track {
   display: flex;
-  gap: 0;
-  flex-wrap: wrap;
-  border: 1px solid $border;
-  border-radius: 6px;
-  overflow: hidden;
+  flex-direction: column;
+  gap: 4px;
+}
 
-  .stat-item {
-    padding: 8px 16px;
-    border-right: 1px solid $border;
-    min-width: 90px;
+.analysis-jump-link {
+  @include mono(11px, 600);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: $radius-sm;
+  color: var(--fr-text-dim);
 
-    &:last-child {
-      border-right: none;
+  &:hover,
+  &:focus-visible,
+  &.active {
+    background: $green-glow;
+    color: var(--fr-text);
+  }
+
+  &.active {
+    box-shadow: inset 3px 0 0 $green-dim;
+
+    .analysis-jump-dot {
+      background: $green-dim;
+      box-shadow: 0 0 0 4px $green-glow;
     }
   }
 }
 
-.stat-label {
-  font-family: $font-mono;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: $text-muted;
-  margin-bottom: 3px;
+.analysis-jump-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: $text-muted;
 }
 
-.stat-value {
-  font-family: $font-mono;
-  font-size: 15px;
-  font-weight: 500;
-  color: $text;
-}
+body.light {
+  .analysis-jump-nav {
+    border-color: $light-border;
+    background: rgba($light-surface, 0.96);
+    box-shadow: var(--fr-shadow-sm);
+  }
 
-.grade-badge {
-  text-align: center;
-  padding: 12px 20px;
-  background: rgba($blue, 0.05);
-  border: 1px solid $border;
-  border-radius: 6px;
-  min-width: 100px;
-  flex-shrink: 0;
-}
+  .analysis-jump-link {
+    color: $light-text-dim;
 
-.grade-letter {
-  font-family: $font-base;
-  font-size: 40px;
-  font-weight: 800;
-  line-height: 1;
-  margin-bottom: 4px;
-}
+    &:hover,
+    &:focus-visible,
+    &.active {
+      background: rgba($light-positive, 0.09);
+      color: $light-text;
+    }
 
-.grade-label {
-  font-family: $font-mono;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: $text-muted;
-  margin-bottom: 4px;
-}
+    &.active {
+      box-shadow: inset 3px 0 0 $light-positive;
 
-.grade-score {
-  font-family: $font-mono;
-  font-size: 13px;
-  font-weight: 500;
-  color: $text-dim;
-}
+      .analysis-jump-dot {
+        background: $light-positive;
+        box-shadow: 0 0 0 4px rgba($light-positive, 0.12);
+      }
+    }
+  }
 
-// ── Mockup-style Composite Banner ─────────────────────────────────────────────
-.composite-banner {
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 24px;
-  background: $surface;
-  margin-bottom: 24px;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.composite-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 32px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.composite-score-wrap {
-  text-align: center;
-}
-
-.composite-score {
-  font-size: 64px;
-  font-weight: 800;
-  font-family: $font-mono;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: $text;
-}
-
-.composite-label {
-  font-size: 13px;
-  color: $text-dim;
-  margin-top: 4px;
-}
-
-.composite-verdict {
-  display: inline-block;
-  padding: 4px 14px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  margin-top: 8px;
-
-  &.hc { background: $green-glow; color: $green; }
-  &.fav { background: rgba(0,188,212,0.12); color: $cyan; }
-  &.bal { background: $warning-bg; color: $warning; }
-  &.cau { background: rgba(255,109,0,0.12); color: #ff6d00; }
-  &.unfav { background: rgba(255,23,68,0.10); color: $red; }
-}
-
-.composite-stats {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding-top: 8px;
-}
-
-.composite-stat-label {
-  font-size: 11px;
-  color: $text-dim;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.composite-stat-value {
-  font-size: 16px;
-  font-weight: 600;
-  font-family: $font-mono;
-  margin-top: 2px;
-  color: $text;
-}
-
-// ── Factor Grid (4-column, replacing detailed scorecards) ─────────────────────
-.factor-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.factor-card {
-  border: 1px solid $border;
-  border-radius: 8px;
-  padding: 16px;
-  background: $card;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: $blue;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    transform: translateY(-1px);
+  .analysis-jump-dot {
+    background: $light-text-muted;
   }
 }
 
-.factor-card-top {
+.analysis-hero-identity,
+.quick-peek-identity,
+.ticker-identity,
+.portfolio-symbol-identity {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
+  align-items: center;
 }
 
-.factor-card-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: $text;
+.analysis-hero-identity {
+  gap: 16px;
 }
 
-.factor-card-weight {
-  font-size: 11px;
-  color: $text-dim;
-  font-weight: 400;
-}
-
-.factor-card-score-pill {
+.company-logo {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: $font-mono;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  border: 1px solid var(--fr-border);
+  border-radius: $radius-sm;
+  background: var(--fr-card-raised);
+  object-fit: contain;
 
-  &.high { background: $green-glow; color: $green; }
-  &.med  { background: $warning-bg; color: $warning; }
-  &.low  { background: rgba(255,23,68,0.10); color: $red; }
+  &.company-logo--fallback {
+    @include mono(11px, 700);
+    color: var(--fr-accent-soft);
+  }
+
+  &.company-logo--hero {
+    width: 58px;
+    height: 58px;
+    border-radius: $radius-md;
+  }
+
+  &.company-logo--quick-peek {
+    width: 48px;
+    height: 48px;
+  }
+
+  &.company-logo--table {
+    width: 34px;
+    height: 34px;
+  }
 }
 
-.factor-card-metrics {
-  margin-bottom: 12px;
+.quick-peek-identity,
+.ticker-identity,
+.portfolio-symbol-identity {
+  gap: 10px;
 }
 
-.factor-card-metric {
-  display: flex;
-  justify-content: space-between;
-  padding: 3px 0;
-  font-size: 13px;
+.analysis-section {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: 18px;
+  scroll-margin-top: 110px;
 }
 
-.factor-card-metric-label {
-  color: $text-dim;
+.analysis-sections {
+  grid-column: 2;
+  min-width: 0;
 }
 
-.factor-card-metric-value {
-  font-family: $font-mono;
-  font-weight: 500;
-  color: $text;
+#analysis-content {
+  display: grid;
+  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  align-items: start;
+  gap: 18px 24px;
 }
 
-.factor-card-desc {
-  font-size: 12px;
-  color: $text-dim;
-  line-height: 1.5;
+.analysis-overview-shell {
+  display: grid;
+  gap: 16px;
 }
 
-// ── Factor circles (SVG, kept from mockup for future use) ─────────────────────
-.factor-circle-svg {
-  width: 46px;
-  height: 46px;
-  transform: rotate(-90deg);
+.analysis-hero {
+  padding: 22px;
+  background:
+    radial-gradient(circle at top right, rgba($cyan, 0.18), transparent 28%),
+    linear-gradient(145deg, rgba($white, 0.06), rgba($white, 0.02));
 }
 
-.factor-circle-bg { fill: none; stroke: $border; stroke-width: 4; }
-.factor-circle-fill { fill: none; stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
-.factor-circle-fill.green { stroke: $green; }
-.factor-circle-fill.amber { stroke: $amber; }
-.factor-circle-fill.red { stroke: $red; }
+.analysis-hero,
+.analysis-hero-copy,
+.analysis-hero-meta,
+.analysis-mini-metrics,
+.analysis-summary-points,
+.analysis-disclosure-summary,
+.analysis-disclosure-metrics,
+.analysis-card-grid {
+  display: grid;
+}
 
-// ── Chart placeholder ─────────────────────────────────────────────────────────
-.chart-section { margin-bottom: 24px; }
-.chart-section h3 { font-size: 16px; font-weight: 600; color: $text; margin-bottom: 16px; }
+.analysis-hero {
+  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.7fr);
+  gap: 18px;
+}
 
-.chart-placeholder {
-  border: 1px dashed $border;
-  border-radius: 8px;
-  padding: 48px 16px;
+.analysis-hero-kicker {
+  @include mono(11px, 600);
+  color: var(--fr-text-muted);
+  text-transform: uppercase;
+}
+
+.analysis-hero-title {
+  @include heading(38px, 800, 0.98);
+  margin: 8px 0 10px;
+}
+
+.analysis-hero-meta {
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, max-content));
+}
+
+.analysis-hero-meta-item {
+  @include badge;
+  justify-content: flex-start;
+}
+
+.analysis-hero-lead {
+  margin-top: 12px;
+  max-width: 72ch;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--fr-text);
+}
+
+.analysis-hero-score {
+  padding: 18px;
+  border-radius: $radius-lg;
+  border: 1px solid var(--fr-border);
+  background: rgba($white, 0.04);
+  text-align: right;
+
+  &.analysis-hero-score--favorable,
+  &.analysis-hero-score--buy,
+  &.analysis-hero-score--high-conviction {
+    background: $green-glow;
+  }
+
+  &.analysis-hero-score--pending,
+  &.analysis-hero-score--watch,
+  &.analysis-hero-score--balanced {
+    background: $amber-glow;
+  }
+
+  &.analysis-hero-score--avoid,
+  &.analysis-hero-score--unfavorable {
+    background: $red-glow;
+  }
+}
+
+.analysis-hero-score-label {
+  @include mono(11px, 600);
+  color: var(--fr-text-muted);
+}
+
+.analysis-hero-score-value {
+  @include heading(60px, 800, 0.95);
+  margin-top: 10px;
+}
+
+.analysis-hero-score-note {
+  margin-top: 6px;
+  color: var(--fr-text-dim);
+}
+
+.analysis-mini-metrics,
+.analysis-summary-points {
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.analysis-mini-metric,
+.analysis-summary-point {
+  @include panel;
+  padding: 16px;
+}
+
+.analysis-mini-metric-label,
+.analysis-summary-point-title,
+.analysis-section-metric-label,
+.analysis-disclosure-title {
+  @include mono(11px, 600);
+  color: var(--fr-text-muted);
+  text-transform: uppercase;
+}
+
+.analysis-mini-metric-value {
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.analysis-mini-metric-hint,
+.analysis-summary-point-copy,
+.analysis-disclosure-text {
+  margin-top: 8px;
+  color: var(--fr-text-dim);
+}
+
+.analysis-disclosure {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+
+  .analysis-disclosure-summary {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .analysis-disclosure-summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.analysis-disclosure-metrics {
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.analysis-section-metric {
+  padding: 12px 14px;
+  border-radius: $radius-md;
+  border: 1px solid var(--fr-border);
+  background: rgba($white, 0.03);
+}
+
+.analysis-section-metric-value {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.analysis-disclosure-toggle {
+  @include badge;
+
+  .analysis-disclosure-toggle-close {
+    display: none;
+  }
+}
+
+.analysis-disclosure[open] {
+  .analysis-disclosure-toggle {
+    @include badge(positive);
+
+    .analysis-disclosure-toggle-open {
+      display: none;
+    }
+
+    .analysis-disclosure-toggle-close {
+      display: inline;
+    }
+  }
+}
+
+.analysis-disclosure-body {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 20px 20px;
+}
+
+.analysis-charts-placeholder {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  color: var(--fr-text-muted);
   text-align: center;
-  color: $text-dim;
-  background: $surface;
-  transition: background 0.2s, border-color 0.2s;
 }
 
-.chart-placeholder-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.4; }
-.chart-placeholder h4 { font-size: 15px; color: $text; margin-bottom: 4px; }
-.chart-placeholder p { font-size: 13px; }
+#analysis-charts-content {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+
+  .analysis-card-grid,
+  .analysis-history-graph,
+  .js-plotly-plot,
+  .plot-container,
+  .svg-container {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .analysis-card-grid {
+    > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
+}
+
+.analysis-card-grid {
+  gap: 14px;
+  margin-top: 14px;
+
+  &.analysis-card-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &.analysis-card-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.analysis-note-card {
+  padding: 18px;
+
+  .analysis-note-card-title {
+    @include mono(11px, 700);
+    color: var(--fr-text-muted);
+    text-transform: uppercase;
+  }
+
+  .analysis-note-card-copy {
+    margin-top: 10px;
+    line-height: 1.7;
+    color: var(--fr-text-dim);
+  }
+}
+
+.company-title-link {
+  text-decoration: none;
+}
+
+@include media.tablet-down {
+  body:has(#tab-analyze[style*="display: block"]) {
+    .topbar {
+      padding-top: 6px;
+      padding-bottom: 6px;
+
+      .topbar-brand,
+      .topbar-actions {
+        display: none;
+      }
+
+      .topbar-nav {
+        width: 100%;
+        padding: 4px;
+        overflow-x: auto;
+
+        .topbar-nav-btn {
+          flex: 1 0 auto;
+          min-height: 34px;
+          padding-inline: 12px;
+        }
+      }
+    }
+  }
+
+  #analysis-content {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-jump-nav,
+  .analysis-sections {
+    grid-column: 1;
+  }
+
+  .analysis-jump-nav {
+    top: 51px;
+  }
+
+  .analysis-jump-track {
+    flex-direction: row;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  #analysis-charts-content {
+    .analysis-card-grid.analysis-card-grid--two {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .analysis-hero,
+  .analysis-mini-metrics,
+  .analysis-summary-points,
+  .analysis-disclosure-metrics,
+  .analysis-card-grid.analysis-card-grid--three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analysis-disclosure {
+    .analysis-disclosure-summary {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@include media.phones {
+  .analysis-jump-nav {
+    margin-bottom: 14px;
+  }
+
+  .analysis-hero,
+  .analysis-mini-metrics,
+  .analysis-summary-points,
+  .analysis-disclosure-metrics,
+  .analysis-card-grid.analysis-card-grid--two,
+  .analysis-card-grid.analysis-card-grid--three {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-hero-title {
+    font-size: 30px;
+  }
+
+  .analysis-hero-score {
+    text-align: left;
+  }
+
+  .analysis-disclosure {
+    .analysis-disclosure-summary {
+      grid-template-columns: 1fr;
+      padding: 16px;
+    }
+  }
+
+  .analysis-disclosure-body {
+    padding: 0 16px 16px;
+  }
+}
