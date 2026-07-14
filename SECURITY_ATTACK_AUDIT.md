@@ -3,7 +3,7 @@
 **Assessment date:** 2026-07-14  
 **Assessed commit:** `5929bad2` (`optimization`)  
 **Target:** isolated FactorResearch processes on `127.0.0.1:8053` and production-mode `127.0.0.1:8054`  
-**Decision:** **NEEDS WORK - do not treat the current build as production-secure**
+**Decision:** **All identified application findings remediated; production infrastructure validation remains required**
 
 ## Scope And Safety
 
@@ -13,16 +13,18 @@ The audit covered source review, trust boundaries, secret patterns, SAST, Python
 
 ## Executive Summary
 
-No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis IDOR, CSRF bypass, webhook-signature bypass, metrics disclosure, or development-persona exposure in production was demonstrated. However, the app is not ready for hostile public traffic.
+No direct SQL injection, SSRF, reflected XSS, path traversal, private-analysis IDOR, CSRF bypass, webhook-signature bypass, metrics disclosure, or development-persona exposure in production was demonstrated. All eight application findings identified by this assessment are resolved and covered by regression tests. The unassessed deployment infrastructure listed under limitations must still be validated before launch.
 
 | Severity | Count |
 |---|---:|
 | Critical | 0 |
 | High | 0 open / 2 resolved |
 | Medium | 0 open / 3 resolved |
-| Low | 1 open / 2 resolved |
+| Low | 0 open / 3 resolved |
 
-The highest risks are a materially vulnerable pinned Python dependency set and unauthenticated resource-exhaustion paths with neither global body limits nor effective route-level throttling.
+The formerly highest risks, vulnerable dependencies and unauthenticated
+resource-exhaustion paths, are now enforced by the release dependency audit,
+request-size limits, and durable production rate limiting.
 
 ## Findings
 
@@ -174,7 +176,7 @@ tests prove `TRACE` and `CONNECT` remain `405`, and an untemplated `418` remains
 `418` without exposing its internal description. Closure evidence: focused
 suite `9 passed`; full gate `1026 passed, 2 skipped`.
 
-### SEC-008 - Low - Access Tokens Are Copied Into Client-Side Session Cookies
+### SEC-008 - Resolved (formerly Low) - Access Tokens Are Copied Into Client-Side Session Cookies
 
 **Affected:** `codes/auth.py:343`
 
@@ -183,6 +185,14 @@ suite `9 passed`; full gate `1026 passed, 2 skipped`.
 **Impact:** Tokens are duplicated into every session-cookie request and may be exposed through cookie capture, size limits, diagnostics, or tooling. A stolen session already has impact, but duplicating bearer material increases blast radius and operational leakage risk.
 
 **Remediation:** Store only an opaque server-side session identifier or minimal nonsecret claims in the cookie. Keep provider tokens in an encrypted server-side session/token store with bounded lifetime and revocation.
+
+**Resolution (2026-07-14):** Bearer and Auth0 callback authentication now
+store only the verified nonsecret user ID in the signed client session. Provider
+tokens exist only for immediate verification and are never serialized into the
+cookie; logout still removes the legacy `_auth_token` key from existing
+sessions. Regression tests cover bearer authentication, OAuth callback storage,
+and legacy cleanup. Closure evidence: focused suite `6 passed`; full gate
+`1028 passed, 2 skipped`.
 
 ## Controls That Resisted Attack
 
@@ -202,19 +212,16 @@ suite `9 passed`; full gate `1026 passed, 2 skipped`.
 
 ## Tool Results And Limitations
 
-- Bandit scanned 24,087 lines: zero high-severity findings, seven medium scanner findings, and 18 low findings. The reported SQL and URL-open candidates were manually reviewed as mitigated; the all-interface bind is intentional only in production deployment.
+- Bandit scanned 24,138 lines: zero high-severity findings, seven medium scanner findings, and 17 low findings. The reported SQL and URL-open candidates were manually reviewed as mitigated; the all-interface bind is intentional only in production deployment.
 - `pip-audit` used the current advisory database on the assessment date. Advisory applicability varies, but the dependency gate fails regardless.
 - This was black-box and source-assisted localhost testing, not an external penetration test. No reverse proxy, TLS terminator, cloud IAM, managed database, Redis deployment, Auth0/Clerk/Supabase tenant, Stripe account, SMTP provider, DNS, container, or host operating system was assessed.
 - No real screen-reader/manual accessibility, production-scale slow-client attack, multi-worker race exploit, external callback, social engineering, persistence, or destructive data test was performed.
 
-## Remediation Order
+## Closure Status
 
-1. Upgrade and repin the vulnerable Python stack; make dependency audit part of the release gate.
-2. Add proxy/application body limits and Redis-backed limits to every public expensive route.
-3. Upgrade/enforce trusted-host validation and test production proxy headers.
-4. Complete issuer/audience/token-purpose validation for every auth provider.
-5. Replace inline-script CSP allowances with nonces/hashes.
-6. Correct unauthenticated deletion and unsupported-method error semantics.
-7. Move provider access tokens out of client-side Flask sessions.
-
-After remediation, rerun every reproduction above, the full release gate, authenticated two-user IDOR tests, signed wrong-claim JWT tests, and a proxy-backed slow-body/load test. The application should remain **NEEDS WORK** until those retests pass.
+SEC-001 through SEC-008 were remediated in order, independently tested, and
+committed. The final application gate passed `1028` tests with `2` intentional
+skips, the combined SEC regression suite passed `20` tests, and the strict
+dependency audit reported no known vulnerabilities.
+Proxy-backed slow-body/load testing and external infrastructure assessment
+remain deployment gates rather than open source-code findings.

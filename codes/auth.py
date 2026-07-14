@@ -340,16 +340,13 @@ def get_authenticated_user_id() -> Optional[str]:
         user_id = verify_token(token)
         if user_id:
             session["_authenticated_user_id"] = user_id
-            session["_auth_token"] = token
             return user_id
     return None
 
 
-def set_authenticated_user(user_id: str, token: str = "") -> None:
-    """Store authenticated user_id in Flask session."""
+def set_authenticated_user(user_id: str) -> None:
+    """Store only the nonsecret authenticated user ID in the client session."""
     session["_authenticated_user_id"] = user_id
-    if token:
-        session["_auth_token"] = token
 
 
 def clear_authenticated_user() -> None:
@@ -462,7 +459,7 @@ def setup_auth0_routes(app_server):
             # Verify and store user info
             user_id = verify_token(access_token)
             if user_id:
-                set_authenticated_user(user_id, access_token)
+                set_authenticated_user(user_id)
                 return redirect("/")  # Redirect to app
         except Exception as e:
             print(f"[AUTH] Callback error type: {type(e).__name__}")
