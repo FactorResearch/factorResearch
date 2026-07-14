@@ -149,6 +149,11 @@ def initialize_schema() -> None:
             cur.execute(SNAPSHOT_DDL)
 
 
+def pool_health() -> dict:
+    with _pool_lock:
+        return {f"pool_{index + 1}": pool.stats() for index, pool in enumerate(_pools.values())}
+
+
 def ensure_schema_if_configured() -> bool:
     if not _database_url():
         print("Analysis snapshot schema skipped: no analytics database URL configured.")

@@ -14,6 +14,9 @@ import dash
 import functools
 import flask
 import hmac
+import re
+import time
+import uuid
 from markupsafe import escape
 try:
     from flask_limiter import Limiter
@@ -122,12 +125,38 @@ def internal_performance():
     supplied = flask.request.headers.get("X-Internal-Metrics-Token", "")
     if not expected or not hmac.compare_digest(expected, supplied):
         flask.abort(404)
+    from codes.data import analytics_db, db
+    from codes.services import analysis_snapshot_service
     return flask.jsonify({
-        "analysis": performance_metrics.snapshot(),
+        "performance": performance_metrics.snapshot(),
         "providers": provider_gateway.health(),
         "component_cache": component_cache.stats(),
         "jobs": analysis_jobs.health(),
+        "database_pools": {
+            "application": db.pool_health(),
+            "analytics": analytics_db.pool_health(),
+            "snapshots": analysis_snapshot_service.pool_health(),
+        },
     })
+
+
+_REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")
+
+
+@server.before_request
+def start_request_metrics():
+    supplied = flask.request.headers.get("X-Request-ID", "")
+    flask.g.request_id = supplied if _REQUEST_ID.fullmatch(supplied) else uuid.uuid4().hex
+    flask.g.request_started = time.perf_counter()
+
+
+@server.after_request
+def finish_request_metrics(response):
+    started = getattr(flask.g, "request_started", time.perf_counter())
+    route = flask.request.url_rule.rule if flask.request.url_rule else "unmatched"
+    performance_metrics.record_request(route, flask.request.method, response.status_code, (time.perf_counter() - started) * 1000)
+    response.headers["X-Request-ID"] = flask.g.request_id
+    return response
 
 
 @server.route("/company-logo")

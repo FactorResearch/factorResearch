@@ -66,3 +66,16 @@ class ConnectionPool:
             raise
         finally:
             self._release(connection)
+
+    def stats(self) -> dict:
+        self._reset_after_fork()
+        with self._lock:
+            created = self._created
+        available = self._available.qsize()
+        return {
+            "created": created,
+            "available": available,
+            "in_use": max(created - available, 0),
+            "max_size": self._max_size,
+            "utilization": round((created - available) / self._max_size, 4),
+        }

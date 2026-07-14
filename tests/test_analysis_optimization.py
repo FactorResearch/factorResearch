@@ -64,17 +64,18 @@ def test_performance_snapshot_reports_percentiles(monkeypatch):
     monkeypatch.setattr(performance_metrics, "_samples", performance_metrics.deque(maxlen=500))
     monkeypatch.setattr(performance_metrics, "_payloads", performance_metrics.deque(maxlen=500))
     monkeypatch.setattr(performance_metrics, "_failures", performance_metrics.Counter())
+    monkeypatch.setattr(performance_metrics, "_requests", performance_metrics.deque(maxlen=500))
     for duration in (10, 20, 30, 40, 50):
         performance_metrics.record_analysis(duration, duration <= 20)
     performance_metrics.record_payload(1000)
     performance_metrics.record_failure("provider:sec", TimeoutError())
 
     result = performance_metrics.snapshot()
-    assert result["p50_ms"] == 30
-    assert result["p95_ms"] == 50
-    assert result["cache_hit_rate"] == 0.4
-    assert result["avg_payload_bytes"] == 1000
-    assert result["failures"] == {"provider:sec:TimeoutError": 1}
+    assert result["analysis"]["p50_ms"] == 30
+    assert result["analysis"]["p95_ms"] == 50
+    assert result["analysis"]["cache_hit_rate"] == 0.4
+    assert result["analysis"]["avg_payload_bytes"] == 1000
+    assert result["analysis"]["failures"] == {"provider:sec:TimeoutError": 1}
 
 
 def test_background_maintenance_refreshes_shared_context_and_popular_symbols(monkeypatch):

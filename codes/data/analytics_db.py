@@ -97,6 +97,10 @@ def _conn():
         yield con
 
 
+def pool_health() -> dict:
+    return _pool.stats() if _pool is not None else {"created": 0, "available": 0, "in_use": 0, "max_size": 2, "utilization": 0.0}
+
+
 def ensure_schema() -> None:
     global _initialized
     if _initialized:

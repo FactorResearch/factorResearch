@@ -1802,6 +1802,11 @@ def _pool(url: str) -> ConnectionPool:
         )
 
 
+def pool_health() -> dict:
+    with _pools_lock:
+        return {f"pool_{index + 1}": pool.stats() for index, pool in enumerate(_pools.values())}
+
+
 @contextmanager
 def _conn():
     """Yield a pooled Postgres connection (returned to the pool on exit)."""
