@@ -1,332 +1,453 @@
-@use 'tokens' as *;
+@use '../media';
 @use 'helpers' as *;
+@use 'tokens' as *;
 
-/* ── Portfolio Header ─────────────────────────────────────── */
-.portfolio-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-3, 12px);
-  margin-bottom: 20px;
-
-  &-left {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3, 12px);
-  }
-
-  h2 { font-size: 20px; font-weight: 700; color: $text; }
+.portfolio-add-panel,
+.portfolio-message {
+  @include panel;
 }
 
-.portfolio-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.portfolio-action-btn {
-  padding: 8px 16px;
-  font-family: $font-base;
-  font-size: 13px;
-  font-weight: 600;
-  background: transparent;
-  border: 1px solid $border;
-  border-radius: 8px;
-  color: $text-dim;
-  cursor: pointer;
-  transition: all 0.15s;
-  touch-action: manipulation;
-
-  &:hover { border-color: $blue; color: $blue; }
-  &.primary { background: $blue; color: #fff; border-color: $blue; }
-  &.primary:hover { background: $blue-bright; }
-}
-
-/* ── Portfolio Summary Row ────────────────────────────────── */
-.portfolio-summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.portfolio-summary-card {
-  background: $card;
-  border: 1px solid $border;
-  border-radius: 8px;
+.portfolio-add-panel {
   padding: 16px 18px;
-  transition: border-color 0.15s;
-
-  &:hover { border-color: $blue; }
 }
 
-.portfolio-summary-value {
-  font-family: $font-mono;
-  font-size: 20px;
-  font-weight: 700;
-  color: $text;
-  line-height: 1.2;
-}
-
-.portfolio-summary-label {
-  font-size: 12px;
-  color: $text-dim;
-  margin-top: 4px;
-}
-
-.portfolio-summary-delta {
-  font-size: 11px;
-  font-weight: 600;
-  margin-top: 2px;
-  display: inline-block;
-
-  &.pos { color: $green; }
-  &.neg { color: $red; }
-}
-
-/* ── Portfolio Table ──────────────────────────────────────── */
-.portfolio-table-wrap {
-  @include card;
-  overflow: hidden;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.portfolio-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th {
-    font-family: $font-mono;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: $text-muted;
-    padding: 12px 14px;
-    text-align: left;
-    white-space: nowrap;
-    background: $surface;
-    border-bottom: 2px solid $border;
-  }
-
-  td {
-    padding: 10px 14px;
-    font-family: $font-mono;
-    font-size: 13px;
-    color: $text;
-    border-bottom: 1px solid rgba($border, 0.6);
-  }
-
-  tr:last-child td { border-bottom: none; }
-
-  .pcol-symbol { font-weight: 600; }
-  .pcol-num { font-family: $font-mono; font-size: 13px; }
-  .pcol-return { &.pos { color: $green; } &.neg { color: $red; } }
-  .pcol-score { font-family: $font-mono; font-weight: 600; }
-}
-
-/* ── Portfolio Empty State ────────────────────────────────── */
-.portfolio-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: $text-dim;
-
-  &-icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
-  h3 { font-size: 18px; color: $text; margin-bottom: 8px; font-family: $font-base; }
-  p { font-size: 14px; color: $text-dim; }
-}
-
-/* ── Editable shares cell ─────────────────────────────────── */
-.shares-input {
-  width: 70px;
-  padding: 3px 6px;
-  background: $card;
-  border: 1px solid $border;
-  border-radius: 6px;
-  color: $text;
-  font-size: 13px;
-  font-family: $font-mono;
-}
-
-.shares-save-btn {
-  background: none;
-  border: 1px solid $border;
-  border-radius: 5px;
-  color: $green;
-  touch-action: manipulation;
-  cursor: pointer;
-  font-size: 13px;
-  padding: 2px 7px;
-  line-height: 1;
-}
-
-.portfolio-remove-btn {
-  background: none;
-  border: none;
-  color: $red;
-  touch-action: manipulation;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-/* ── Simulation results ───────────────────────────────────── */
-#portfolio-sim-results .dash-graph { width: 100%; max-width: 100%; }
-
-html {
-  scroll-behavior: smooth;
-}
-
-#tab-analyze #analysis-content {
-  position: relative;
-  @media (max-width: $mobile) { width: 100%; }
-  .infolayer .scrollbox {
-    position: absolute;
-    transform: translate(67%, 0px);
-    @media (max-width: $mobile) { transform: translate(50%, 0px); }
-  }
-}
-
-#add-to-portfolio-panel {
-  margin-bottom: 16px;
-
-  .portfolio-add-panel {
-    margin-bottom: 0;
-  }
-}
-
-.analysis-section {
-  scroll-margin-top: 72px;
-}
-
-.analysis-jump-nav {
-  position: sticky;
-  top: 0;
-  z-index: 90;
+.portfolio-add-controls {
   display: flex;
-  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  padding: 10px 0;
-  margin-bottom: 12px;
-  background: rgba($bg, 0.96);
-  border-bottom: 1px solid $border;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
-.analysis-jump-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 24px;
-  padding: 5px 9px;
-  border: 1px solid $border;
-  border-radius: 999px;
-  color: $text-dim;
-  background: $surface;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: border-color 0.16s ease, color 0.16s ease;
+.portfolio-name-badge {
+  @include badge(warning);
+  border-radius: var(--fr-radius-pill) !important;
+  background: $amber-glow !important;
+  color: var(--fr-warning) !important;
+}
 
-  &:hover,
-  &:focus-visible {
-    border-color: $border-glow;
-    color: $text;
-    outline: none;
+.portfolio-delete-btn {
+  border-color: rgba($red, 0.32) !important;
+  background: $red-glow !important;
+  color: var(--fr-danger) !important;
+
+  &:hover {
+    border-color: rgba($red, 0.55) !important;
   }
-}
-
-.analysis-jump-dot {
-  width: 8px;
-  height: 8px;
-  flex: 0 0 8px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.analysis-jump-label {
-  font-family: $font-mono;
-  font-size: 11px;
 }
 
 body.light {
-  .analysis-jump-nav {
-    background: rgba($light-bg, 0.96);
-    border-bottom-color: $light-border;
-    box-shadow: 0 8px 16px rgba(17, 24, 39, 0.08);
+  .portfolio-name-badge {
+    background: rgba($light-amber, 0.1) !important;
   }
 
-  .analysis-jump-link {
-    color: $light-text-dim;
-    background: $light-surface;
-    border-color: $light-border;
-
-    &:hover,
-    &:focus-visible {
-      color: $light-text;
-      border-color: $light-blue;
-    }
+  .portfolio-delete-btn {
+    background: rgba($light-negative, 0.08) !important;
   }
 }
 
-@media (max-width: $tablet) {
-  .analysis-jump-nav {
-    flex-wrap: nowrap;
+#tab-portfolio {
+  min-width: 0;
+
+  > * + * {
+    margin-top: 18px;
+  }
+
+  > .screener-toolbar {
+    margin-bottom: 0;
+  }
+
+  .portfolio-message {
+    padding: 14px 18px;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .portfolio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+
+    .portfolio-header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+
+      h2 {
+        @include heading(28px, 800);
+        margin: 0;
+      }
+    }
+  }
+
+  .portfolio-body,
+  .portfolio-add-panel,
+  .portfolio-add-controls {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .portfolio-summary {
+    @include panel(true);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 18px;
+    overflow: hidden;
+
+    .portfolio-summary-card {
+      min-width: 0;
+      padding: 22px 24px;
+
+      & + .portfolio-summary-card {
+        border-left: 1px solid var(--fr-border);
+      }
+
+      .portfolio-summary-value {
+        @include heading(30px, 800, 1);
+        white-space: nowrap;
+      }
+
+      .portfolio-summary-label {
+        @include mono(11px, 600);
+        margin-top: 10px;
+        color: var(--fr-text-muted);
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .portfolio-table-wrap {
+    @include panel;
+    width: 100%;
+    padding: 10px 16px;
     overflow-x: auto;
-  }
-}
 
-@media (max-width: $mobile) {
-  .analysis-section {
-    scroll-margin-top: 64px;
-  }
+    .portfolio-table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: separate;
+      border-spacing: 0;
 
-  .analysis-jump-label {
-    font-size: 10px;
-  }
-}
+      th,
+      td {
+        padding: 14px 12px;
+        border-bottom: 1px solid var(--fr-border);
+        text-align: left;
+        vertical-align: middle;
+      }
 
-.quant_row, .card-row, .moment_quality_row, .risk-row {
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  @media (max-width: $tablet) { flex-direction: column; }
-  .scorecard { flex: 1 1 50%; }
-}
+      th {
+        @include mono(11px, 600);
+        color: var(--fr-text-muted);
+        text-transform: uppercase;
+      }
 
-.risk-row .metric_cell {
-  display: flex;
-  flex-wrap: wrap;
-  flex: 1 1 50%;
-  p { width: 100%; }
-  div {
-    flex: 1 1 50%;
-    border-radius: 8px;
-    padding: 10px 14px;
-    border: 1px solid $border;
-    min-width: 140px;
-    p {
-      &:nth-child(1) { font-size: 11px; color: $text-muted; margin-bottom: 4px; }
-      &:nth-child(2) { font-size: 18px; font-weight: 700; color: $amber; }
+      tbody {
+        tr {
+          transition: background 0.16s ease;
+
+          &:hover {
+            background: rgba($white, 0.025);
+          }
+
+          &:last-child td {
+            border-bottom: 0;
+          }
+        }
+      }
+
+      .pcol-symbol {
+        font-weight: 800;
+      }
+
+      .pcol-num {
+        @include mono(12px, 600);
+        white-space: nowrap;
+      }
+
+      .pcol-return {
+        @include mono(12px, 700);
+        white-space: nowrap;
+
+        &.pos {
+          color: var(--fr-positive);
+        }
+
+        &.neg {
+          color: var(--fr-danger);
+        }
+      }
     }
   }
-  & + div { flex: 1 1 50%; }
+
+  .shares-input {
+    width: 82px;
+    min-height: 38px;
+    padding: 0 10px;
+    border-radius: $radius-sm !important;
+    background: var(--fr-surface-soft) !important;
+    color: var(--fr-text) !important;
+    -webkit-text-fill-color: var(--fr-text) !important;
+  }
+
+  .shares-input-label {
+    display: inline-flex;
+  }
+
+  .shares-save-btn,
+  .portfolio-remove-btn,
+  .portfolio-action-btn {
+    @include button-reset;
+    @include focus-ring;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    border: 1px solid var(--fr-border);
+    border-radius: $radius-sm;
+    cursor: pointer;
+  }
+
+  .shares-save-btn {
+    width: 38px;
+    color: var(--fr-positive);
+  }
+
+  .portfolio-remove-btn {
+    width: 38px;
+    color: var(--fr-text-muted);
+
+    &:hover {
+      border-color: rgba($red, 0.4);
+      color: var(--fr-danger);
+    }
+  }
+
+  .portfolio-actions {
+    justify-content: flex-end;
+    margin-bottom: 18px;
+
+    .portfolio-action-btn {
+      min-height: 46px;
+      padding: 0 18px;
+      color: var(--fr-text);
+      font-weight: 800;
+
+      &.primary {
+        border-color: rgba($cyan, 0.42);
+        background: $green-glow;
+        color: var(--fr-positive);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+      }
+    }
+  }
+
+  .portfolio-empty {
+    @include panel;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    min-height: 280px;
+    padding: 54px 24px;
+    text-align: center;
+
+    .portfolio-empty-icon {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 58px;
+      border: 1px solid var(--fr-border);
+      border-radius: $radius-md;
+      background: $blue-glow;
+      font-size: 26px;
+    }
+
+    h3,
+    p {
+      margin: 0;
+    }
+
+    p {
+      color: var(--fr-text-dim);
+    }
+  }
+
+  .portfolio-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 18px 0;
+
+    .stat-item {
+      @include panel;
+      padding: 16px;
+
+      .stat-label {
+        @include mono(11px, 600);
+        color: var(--fr-text-muted);
+        text-transform: uppercase;
+      }
+
+      .stat-value {
+        margin-top: 8px;
+        font-size: 18px;
+        font-weight: 800;
+      }
+    }
+  }
+
+  .portfolio-two-col {
+    flex: 1 1 420px;
+    min-width: 0;
+  }
+
+  .portfolio-comparison-summary {
+    padding: 18px;
+
+    .portfolio-comparison-title {
+      padding: 0;
+    }
+
+    .portfolio-comparison-copy {
+      padding: 8px 0 0;
+    }
+
+    .portfolio-comparison-reasons {
+      padding: 10px 0 0 20px;
+    }
+  }
+
+  .portfolio-weak-link-alert {
+    border-radius: $radius-sm;
+
+    &.portfolio-weak-link-alert--danger {
+      border: 1px solid rgba($red, 0.35);
+      background: $red-glow;
+      color: var(--fr-danger);
+    }
+
+    &.portfolio-weak-link-alert--safe {
+      border: 1px solid rgba($green, 0.35);
+      background: $green-glow;
+      color: var(--fr-positive);
+    }
+  }
+
+  #portfolio-sim-results {
+    display: grid;
+    gap: 18px;
+
+    &:empty {
+      display: none;
+    }
+
+    .portfolio-graph {
+      @include panel;
+      box-sizing: border-box;
+      contain: inline-size;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      height: clamp(320px, 42vw, 520px);
+      min-height: 320px;
+      max-height: 520px;
+      overflow: hidden;
+
+      .js-plotly-plot,
+      .plot-container,
+      .svg-container {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        min-height: 320px !important;
+        max-height: 520px !important;
+      }
+    }
+  }
+}
+
+.risk-row {
+  .metric_cell {
+    border: 1px solid var(--fr-border);
+  }
 }
 
 body.light .risk-row .metric_cell {
-  background: $light-card;
   border-color: $light-border;
+}
 
-  > .risk-metric-cell {
-    background: $light-surface;
-    border-color: $light-border;
+@include media.phones {
+  .portfolio-add-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    p:first-child {
-      color: $light-text-dim !important;
+  #tab-portfolio {
+    .portfolio-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .portfolio-summary {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      .portfolio-summary-card {
+        padding: 18px;
+
+        &:nth-child(3) {
+          border-left: 0;
+        }
+
+        &:nth-child(n + 3) {
+          border-top: 1px solid var(--fr-border);
+        }
+
+        .portfolio-summary-value {
+          font-size: 23px;
+        }
+      }
+    }
+
+    .portfolio-table-wrap {
+      padding: 6px 10px;
+    }
+
+    .portfolio-stats-row {
+      grid-template-columns: 1fr;
+    }
+
+    #portfolio-sim-results {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+
+      .portfolio-graph {
+        width: 100% !important;
+        height: clamp(340px, 105vw, 460px);
+        min-height: 340px;
+        max-height: 460px;
+
+        .js-plotly-plot,
+        .plot-container,
+        .svg-container {
+          min-height: 340px !important;
+          max-height: 460px !important;
+        }
+      }
+    }
+
+    .portfolio-actions {
+      .portfolio-action-btn {
+        width: 100%;
+      }
     }
   }
 }

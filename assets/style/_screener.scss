@@ -1,408 +1,519 @@
-@use 'tokens' as *;
+@use '../media';
 @use 'helpers' as *;
-@use '../media' as m;
-// ── Screener Tab ─────────────────────────────────────────────────────────────
-.screener-content {
-  padding-top: 4px;
-  background: $bg;
-}
+@use 'tokens' as *;
 
 .screener-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  @include card;
-  border-left: 3px solid $blue;
-}
+  @include panel(true);
+  padding: 18px;
 
-.screener-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-      width: 100%;
+  .screener-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .screener-index-filter {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
-  flex: 1 1 520px;
-  min-width: 280px;
-  @include m.phones{
-    flex:1 1 100%;
-    justify-content: center;
-            min-width: 100%;
-        max-width: 100%;
-        width: 100%;
-  }
-
-  label {
-    margin-bottom: 0;
-  }
 }
 
 .screener-index-pills {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
-  max-height: 76px;
-  overflow-y: auto;
-  padding: 2px 2px 4px;
-  @include m.phones{
-    flex-wrap: nowrap;
-  }
+  gap: 8px;
 }
 
-.screener-index-pill {
-  @include mono(11px, 600);
-  min-height: 32px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba($text-muted, 0.22);
-  background: rgba($text-muted, 0.06);
-  color: $text-dim;
+.screener-index-pill,
+.screener-country-tab {
+  @include button-reset;
+  @include focus-ring;
+  @include badge;
   cursor: pointer;
-  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
-  touch-action: manipulation;
-
-  &:hover {
-    border-color: rgba($blue, 0.45);
-    color: $text;
-    background: rgba($blue, 0.08);
-  }
 
   &.active {
-    border-color: rgba($blue, 0.72);
-    background: rgba($blue, 0.18);
-    color: $blue;
-    box-shadow: 0 0 0 1px rgba($blue, 0.12);
+    @include badge(positive);
   }
-}
-
-body.light .screener-index-pill:hover {
-  color: #0f172a;
-}
-
-.load-btn {
-  @include mono(12px, 500);
-  background: rgba($blue, 0.08);
-  border: 1px solid $blue;
-  border-radius: 6px;
-  color: $blue;
-  cursor: pointer;
-  letter-spacing: 0.06em;
-  padding: 9px 20px;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-
-  @include m.phones {
-    white-space: break-spaces;
-  }
-
-  &:hover {
-    background: rgba($blue, 0.15);
-    box-shadow: 0 0 12px rgba($blue, 0.3);
-  }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-}
-
-.screener-info {
-  @include mono(12px);
-  color: $text-dim;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-// ── Progress Bar ─────────────────────────────────────────────────────────────
-.progress-container {
-  padding: 12px 16px;
-  @include card;
-  border-left: 3px solid $amber;
-  margin-bottom: 16px;
-
-  span {
-    @include mono(12px);
-  }
-}
-
-.progress-bar-wrapper {
-  height: 3px;
-  background: rgba($amber, 0.15);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, $amber, $green-dim);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-  box-shadow: 0 0 8px rgba($amber, 0.5);
-}
-
-// ── Screener Table ───────────────────────────────────────────────────────────
-.screener-table-wrap {
-  @include card;
-  background: $card;
-  overflow: hidden;
-  border-radius: 8px;
 }
 
 .screener-market-shell {
-  display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 0;
-  align-items: start;
-  background: $bg;
+  position: relative;
+}
 
-  @include m.phones {
-    grid-template-columns: 1fr;
-  }
+.screener-market-links {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  overflow-x: auto;
 }
 
 .screener-country-tabs {
-  position: sticky;
-  top: 78px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  padding-top: 14px;
-  z-index: 2;
-
-  @include m.phones {
-    position: static;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    padding: 0 0 8px;
-    overflow-x: auto;
-  }
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  overflow-x: auto;
 }
 
 .screener-country-tab {
-  box-sizing: border-box;
-  position: relative;
-  right: -1px;
-  width: 42px;
-  min-height: 78px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 7px;
-  border: 1px solid rgba($border, 0.85);
-  border-right: none;
-  border-radius: 8px 0 0 8px;
-  background: rgba($surface, 0.96);
-  color: $text-muted;
-  font-size: 10px;
-  font-weight: 700;
-  line-height: 1;
-  padding: 9px 5px 12px;
-  box-shadow: -5px 6px 16px rgba($black, 0.16);
-  cursor: pointer;
+  flex: 0 0 auto;
   text-decoration: none;
-
-  @include m.phones {
-    right: auto;
-    width: auto;
-    min-width: 48px;
-    min-height: 44px;
-    flex-direction: row;
-    justify-content: center;
-    border: 1px solid rgba($border, 0.85);
-    border-radius: 7px;
-    padding: 7px 9px;
-  }
-
-  &:hover,
-  &.active {
-    border-color: rgba($blue, 0.7);
-    background: linear-gradient(180deg, rgba($blue, 0.22), rgba($blue, 0.08));
-    color: $text;
-  }
-
-  &.active {
-    box-shadow: -6px 8px 18px rgba($blue, 0.14);
-  }
-
-  &:focus-visible {
-    outline: 2px solid $blue;
-    outline-offset: 2px;
-  }
 }
 
 .screener-country-flag {
-  width: 24px;
-  height: 16px;
   display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
   object-fit: cover;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px rgba($text, 0.18);
+  box-shadow: inset 0 0 0 1px rgba($white, 0.08);
 }
 
 .screener-country-label {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  @include mono(11px, 600);
+}
 
-  @include m.phones {
-    writing-mode: horizontal-tb;
-  }
+.screener-table-wrap {
+  overflow: hidden;
+  padding: 12px;
 }
 
 .screener-table {
   width: 100%;
-  border-collapse: collapse;
-
-  @include m.phones {
-    display: block;
-  }
+  border-collapse: separate;
+  border-spacing: 0;
 
   thead {
-    @include m.phones {
-      display: none;
-    }
-
     tr {
-      background: $surface;
-      border-bottom: 2px solid $border;
-    }
-
-    th {
-      font-family: $font-mono;
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: $text-muted;
-      padding: 12px 14px;
-      text-align: left;
-      white-space: nowrap;
-      border-right: 1px solid rgba($border, 0.5);
-      cursor: pointer;
-      user-select: none;
-
-      &:last-child {
-        border-right: none;
-      }
-
-      &:hover {
-        color: $text;
-        background: rgba($blue, 0.05);
-      }
+      background: rgba($white, 0.03);
     }
   }
 
-  tbody {
-    @include m.phones {
-      display: block;
-    }
-
-    tr {
-      border-bottom: 1px solid rgba($border, 0.6);
-      transition: background 0.12s;
-
-      @include m.phones {
-        display: block;
-        border-bottom: 2px solid rgba($blue, 0.6);
-      }
-
-      &:last-child {
-        border-bottom: none;
-      }
-
-      &:hover {
-        background: rgba($blue, 0.04);
-
-        .ticker-link-btn {
-          text-decoration: underline;
-        }
-      }
-    }
-
-    td {
-      padding: 10px 14px;
-      @include mono(13px);
-      vertical-align: middle;
-      border-right: 1px solid rgba($border, 0.3);
-
-      @include m.phones {
-        display: block;
-        padding: 20px 14px;
-        width: 100% !important;
-        margin: 10px 0;
-        border-bottom: 1px solid rgba($border, 0.6);
-      }
-
-      &:last-child {
-        border-right: none;
-      }
-    }
+  th,
+  td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--fr-border);
+    text-align: left;
+    vertical-align: middle;
   }
 
-  .rank-num {
-    color: $text-muted;
-    font-size: 11px;
-    width: 36px;
-    text-align: right;
-    padding-right: 10px;
-
-    @include m.phones {
-      text-align: left;
-    }
+  th {
+    @include mono(11px, 600);
+    color: var(--fr-text-dim);
+    text-transform: uppercase;
   }
 
-  .ticker-cell {
-    width: 80px;
-  }
-
-  .company-name-cell {
-    color: $text-dim;
-    font-size: 12px;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  td {
+    color: var(--fr-text);
   }
 }
 
-// ── Ticker Link Button ────────────────────────────────────────────────────────
-.ticker-link-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  color: $blue;
-  font-family: $font-mono;
-  font-weight: 500;
-  font-size: 13px;
+.sort-header-btn {
+  @include button-reset;
+  @include mono(11px, 600);
+  color: inherit;
   cursor: pointer;
-  letter-spacing: 0.04em;
-  transition: color 0.15s;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+}
 
-  &:hover {
-    color: #4798ff;
+.ticker-cell {
+  .ticker-link-btn {
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
+}
+
+.company-name-cell {
+  max-width: 220px;
+  font-weight: 700;
+}
+
+.score-pill,
+.verdict-pill {
+  @include badge;
+}
+
+.screener-row--portfolio,
+.accordion-item.in-portfolio {
+  background: rgba($cyan, 0.06);
+}
+
+.screener-row--viewed,
+.accordion-item.viewed {
+  background: rgba($white, 0.03);
+}
+
+.screener-accordion {
+  display: none;
+}
+
+.accordion-item {
+  margin-bottom: 10px;
+  padding: 18px;
+
+  .accordion-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .accordion-content {
+    margin-top: 16px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .accordion-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--fr-border);
+    border-radius: $radius-md;
+    background: rgba($white, 0.025);
+
+    .accordion-label {
+      color: var(--fr-text-muted);
+    }
+
+    .accordion-value {
+      text-align: right;
+      color: var(--fr-text);
+    }
+  }
+
+  .accordion-portfolio-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 2px;
+  }
+}
+
+.accordion-analyze-btn {
+  @include badge(positive);
+  width: 100%;
+  min-height: 44px;
+  margin-top: 2px;
+  justify-content: center;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.pagination-info {
+  color: var(--fr-text-dim);
+}
+
+.pagination-btn {
+  &:disabled {
+    border-color: var(--fr-border) !important;
+    background: rgba($white, 0.02) !important;
+    color: var(--fr-text-muted) !important;
+    cursor: not-allowed;
+    opacity: 0.42;
+  }
+}
+
+.quick-peek-shell {
+  pointer-events: none;
+
+  .quick-peek-backdrop,
+  .quick-peek-panel {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  &.is-open {
+    pointer-events: auto;
+
+    .quick-peek-backdrop,
+    .quick-peek-panel {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+  }
+}
+
+.quick-peek-backdrop {
+  @include button-reset;
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 14, 24, 0.48);
+  z-index: 45;
+}
+
+.quick-peek-panel {
+  position: fixed;
+  top: 76px;
+  right: 18px;
+  width: min(420px, calc(100vw - 36px));
+  max-height: calc(100dvh - 94px);
+  z-index: 1100;
+  transform: translateX(18px);
+
+  .quick-peek-shell.is-open & {
+    transform: translateX(0);
+  }
+
+  .quick-peek-panel-inner {
+    @include panel(true);
+    padding: 24px;
+    max-height: calc(100dvh - 94px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+.quick-peek-panel-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.quick-peek-kicker {
+  @include mono(11px, 600);
+  color: var(--fr-text-muted);
+  text-transform: uppercase;
+}
+
+.quick-peek-title {
+  @include heading(24px, 800);
+  margin: 6px 0 0;
+}
+
+.quick-peek-content {
+  display: grid;
+  gap: 18px;
+}
+
+.quick-peek-empty {
+  color: var(--fr-text-dim);
+}
+
+.quick-peek-card {
+  display: grid;
+  gap: 20px;
+  padding: 22px;
+}
+
+.quick-peek-symbol {
+  @include mono(12px, 700);
+  color: var(--fr-text-muted);
+  text-transform: uppercase;
+}
+
+.quick-peek-company {
+  @include heading(22px, 800);
+  margin: 3px 0 5px;
+}
+
+.quick-peek-updated {
+  @include mono(10px, 500);
+  color: var(--fr-text-muted);
+}
+
+.quick-peek-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-peek-flag {
+  @include badge;
+
+  &.quick-peek-flag--positive {
+    @include badge(positive);
+  }
+}
+
+.quick-peek-verdict {
+  min-width: 104px;
+  padding: 14px;
+  border-radius: 4px;
+  border: 1px solid var(--fr-border);
+  text-align: right;
+
+  &.quick-peek-verdict--favorable,
+  &.quick-peek-verdict--buy,
+  &.quick-peek-verdict--high-conviction {
+    background: $green-glow;
+  }
+
+  &.quick-peek-verdict--pending,
+  &.quick-peek-verdict--balanced,
+  &.quick-peek-verdict--watch {
+    background: $amber-glow;
+  }
+
+  &.quick-peek-verdict--unfavorable,
+  &.quick-peek-verdict--avoid {
+    background: $red-glow;
+  }
+}
+
+.quick-peek-verdict-label {
+  @include mono(11px, 600);
+  color: var(--fr-text-muted);
+}
+
+.quick-peek-verdict-score {
+  @include heading(36px, 800, 0.95);
+  margin-top: 6px;
+}
+
+.quick-peek-verdict-note {
+  color: var(--fr-text-dim);
+  font-size: 12px;
+}
+
+.quick-peek-takeaway {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fr-text);
+}
+
+.quick-peek-metrics,
+.quick-peek-section-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.quick-peek-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  .quick-peek-metric {
+    &:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.quick-peek-metric,
+.quick-peek-section {
+  padding: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--fr-border);
+  background: rgba($white, 0.03);
+}
+
+.quick-peek-metric-label,
+.quick-peek-section-title {
+  @include mono(11px, 600);
+  color: var(--fr-text-muted);
+  text-transform: uppercase;
+}
+
+.quick-peek-metric-value {
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.quick-peek-section-copy {
+  margin-top: 8px;
+  color: var(--fr-text-dim);
+}
+
+.quick-peek-actions {
+  display: flex;
+
+  .quick-peek-open-analysis-btn {
+    width: 100%;
+  }
+}
+
+@include media.tablet {
+  .quick-peek-panel {
+    width: min(460px, calc(100vw - 32px));
+    top: 72px;
+    right: 16px;
+    max-height: calc(100dvh - 88px);
+
+    .quick-peek-panel-inner {
+      max-height: calc(100dvh - 88px);
+    }
+  }
+}
+
+@include media.phones {
+  .screener-toolbar {
+    padding: 14px;
+  }
+
+  .screener-table {
+    display: none;
+  }
+
+  .screener-accordion {
+    display: block;
+  }
+
+  .pagination-controls {
+    justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .pagination-btn {
+      width: auto;
+      min-height: 36px;
+      padding: 0 11px;
+      font-size: 12px;
+
+      &.pagination-btn--prev:disabled {
+        display: none;
+      }
+    }
+
+    .pagination-info {
+      order: -1;
+      flex: 1 0 100%;
+      font-size: 11px;
+    }
+  }
+
+  .quick-peek-panel {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    bottom: auto;
+    width: auto;
+    max-height: calc(100dvh - 20px);
+    transform: translateY(12px);
+
+    .quick-peek-shell.is-open & {
+      transform: translateY(0);
+    }
+
+    .quick-peek-panel-inner {
+      max-height: calc(100dvh - 20px);
+      padding: 18px;
+    }
+  }
+
+  .quick-peek-hero {
+    flex-direction: column;
+  }
+
+  .quick-peek-verdict {
+    width: 100%;
+    text-align: left;
+  }
+
 }
