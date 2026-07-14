@@ -7,6 +7,8 @@ def test_pr_workflow_runs_locked_release_gate():
     assert "./scripts/release-gate.sh" in workflow
     assert "pytest -q" in gate
     assert "python -m compileall" in gate
+    assert "python -m pip_audit -r requirements.txt --strict" in gate
+    assert "-r requirements-proof.txt" in workflow
     assert "node --check" in gate
     assert "npx --no-install sass" in gate
     assert "npx --yes" not in gate

@@ -6,6 +6,7 @@ export APP_FEATURE_FLAG=V1
 
 python -m compileall -q codes scripts
 python -c "import codes.app"
+python -m pip_audit -r requirements.txt --strict
 node --check assets/iiq.js
 node --check assets/legal_pages.js
 node --check scripts/audit-accessibility.mjs

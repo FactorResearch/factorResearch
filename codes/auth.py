@@ -23,8 +23,8 @@ from typing import Optional, Tuple
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-from jose import jwt
-from jose.exceptions import JWTError
+import jwt
+from jwt.exceptions import PyJWTError
 
 # Import Flask and related libraries
 import flask
@@ -122,26 +122,24 @@ def _fetch_jwks(jwks_url: str) -> Optional[dict]:
 
 
 def _decode_jwt(token: str, jwks_url: str, audience: Optional[str] = None, issuer: Optional[str] = None) -> Optional[dict]:
-    unverified_header = jwt.get_unverified_header(token)
-    jwks = _fetch_jwks(jwks_url)
-    if not jwks or "keys" not in jwks:
-        return None
-
-    key = next((k for k in jwks["keys"] if k.get("kid") == unverified_header.get("kid")), None)
-    if key is None:
-        return None
-
     try:
+        unverified_header = jwt.get_unverified_header(token)
+        jwks = _fetch_jwks(jwks_url)
+        if not jwks or "keys" not in jwks:
+            return None
+        key = next((k for k in jwks["keys"] if k.get("kid") == unverified_header.get("kid")), None)
+        if key is None:
+            return None
         options = {"verify_aud": audience is not None}
         return jwt.decode(
             token,
-            key,
+            jwt.PyJWK.from_dict(key).key,
             algorithms=["RS256"],
             audience=audience,
             issuer=issuer,
             options=options,
         )
-    except JWTError as e:
+    except (PyJWTError, ValueError) as e:
         print(f"[AUTH] JWT verification failed: {e}")
         return None
 
@@ -220,7 +218,7 @@ def _verify_clerk_token(token: str) -> Optional[str]:
         )
         user_id = payload.get("sub") or payload.get("user_id")
         return user_id
-    except JWTError as e:
+    except PyJWTError as e:
         print(f"[AUTH] Clerk token verification failed: {e}")
     return None
 

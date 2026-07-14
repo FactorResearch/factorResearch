@@ -1,14 +1,11 @@
 import importlib.util
 import sys
-import types
 from pathlib import Path
 
 from flask import Flask
 
 ROOT = Path(__file__).resolve().parents[1]
 AUTH_PATH = ROOT / "codes" / "auth.py"
-sys.modules.setdefault("jose", types.SimpleNamespace(jwt=types.SimpleNamespace()))
-sys.modules.setdefault("jose.exceptions", types.SimpleNamespace(JWTError=Exception))
 spec = importlib.util.spec_from_file_location("issue_013_auth", AUTH_PATH)
 auth = importlib.util.module_from_spec(spec)
 sys.modules["issue_013_auth"] = auth
