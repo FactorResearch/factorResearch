@@ -14,6 +14,9 @@ from codes.data import db
 from .canada import CanadaProviderAdapter, is_canadian_symbol
 from .canada_db import CanadaDatabaseDataSource, materialize_canada_screener_projection
 from .canada_normalization import PUBLIC_CONFIDENCE, build_canada_scoring_facts
+from .australia import AustraliaProviderAdapter, is_australia_symbol
+from .australia_db import AustraliaDatabaseDataSource, materialize_australia_screener_projection
+from .australia_normalization import build_australia_scoring_facts
 from .screener_projection import FUNDAMENTAL_PROJECTION_VERSION
 
 
@@ -36,6 +39,11 @@ MARKET_PROVIDERS: tuple[MarketProviderRegistration, ...] = (
         scoring_builder=build_canada_scoring_facts,
         projection_builder=materialize_canada_screener_projection,
     ),
+    MarketProviderRegistration(market_code="AU", market_name="Australia",
+        symbol_matcher=is_australia_symbol,
+        provider_factory=lambda: AustraliaProviderAdapter(AustraliaDatabaseDataSource()),
+        scoring_builder=build_australia_scoring_facts,
+        projection_builder=materialize_australia_screener_projection),
 )
 MARKET_PROJECTION_BUILDERS = {
     registration.market_code: registration.projection_builder
