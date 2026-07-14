@@ -41,11 +41,11 @@
 
 @media (max-width: 1050px) {
   .composite-top {
-    grid-template-columns: minmax(175px, 205px) minmax(280px, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .composite-stats {
-    grid-column: 1 / -1;
+    grid-column: auto;
     border-left: 0;
     border-top: 1px solid rgba(126, 157, 194, 0.28);
     padding: 16px 0 0 !important;

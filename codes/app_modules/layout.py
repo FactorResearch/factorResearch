@@ -1,28 +1,40 @@
 """Dash layout composition."""
 
 from dash import dcc, html
+from codes.app_modules.company_identity import logo_attribution
 
 from codes.engine import scorer
 
 from .config import BLUE
-from .screener_markets import DEFAULT_SCREENER_COUNTRY, SCREENER_COUNTRIES
+from .screener_markets import (
+    DEFAULT_SCREENER_MARKET,
+    available_screener_markets,
+    get_screener_market,
+)
 from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
-def _screener_country_tabs(active_country=DEFAULT_SCREENER_COUNTRY):
-    return [
-        html.Button(
-            [
-                html.Img(src=country["flag_src"], alt="", className="screener-country-flag"),
-                html.Span(country["short_label"], className="screener-country-label"),
-            ],
-            id={"type": "screener-country-tab", "index": country["code"]},
-            className="screener-country-tab" + (" active" if country["code"] == active_country else ""),
-            title=country["label"],
-            n_clicks=0,
-        )
-        for country in SCREENER_COUNTRIES
-    ]
+def _screener_market_links(active_market=DEFAULT_SCREENER_MARKET):
+    active_code = get_screener_market(active_market).code
+    return html.Nav(
+        id="screener-market-nav",
+        className="screener-country-tabs",
+        **{"aria-label": "Screener market"},
+        children=[
+            dcc.Link(
+                [
+                    html.Img(src=market.flag_src, alt="", className="screener-country-flag"),
+                    html.Span(market.short_label, className="screener-country-label"),
+                ],
+                id={"type": "screener-market-link", "index": market.code},
+                href=market.path,
+                refresh=False,
+                title=market.label,
+                className="screener-country-tab" + (" active" if market.code == active_code else ""),
+            )
+            for market in available_screener_markets()
+        ],
+    )
 
 
 def _screener_index_pills(selected=None):
@@ -45,7 +57,7 @@ def _topbar():
             html.Img(src="/assets/logo.svg", alt="Research Factor", className="topbar-logo"),
             html.Span("FactorResearch", className="topbar-title"),
         ]),
-        html.Div(className="topbar-nav", children=[
+        html.Nav(className="topbar-nav", **{"aria-label": "Primary navigation"}, children=[
             html.Button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", **{"data-tab": "screener"}),
             html.Button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", **{"data-tab": "analyze"}),
             html.Button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "portfolio"}),
@@ -54,9 +66,9 @@ def _topbar():
         ]),
         html.Div(className="topbar-actions", children=[
             html.Div(id="theme-toggle", className="theme-toggle", children=[
-                html.Button("☀", id="theme-light", className="theme-btn", **{"data-theme": "light"}),
-                html.Button("◐", id="theme-system", className="theme-btn active", **{"data-theme": "system"}),
-                html.Button("☾", id="theme-dark", className="theme-btn", **{"data-theme": "dark"}),
+                html.Button("☀", id="theme-light", className="theme-btn", **{"data-theme": "light", "aria-label": "Use light theme"}),
+                html.Button("◐", id="theme-system", className="theme-btn active", **{"data-theme": "system", "aria-label": "Use system theme"}),
+                html.Button("☾", id="theme-dark", className="theme-btn", **{"data-theme": "dark", "aria-label": "Use dark theme"}),
             ]),
             html.Div(id="theme-dummy", className="d-none"),
         ]),
@@ -131,7 +143,7 @@ def build_layout():
                         ),
                         dcc.Store(id="index-filter", data=[]),
                     ]),
-                    html.Label("Filter by sector:", className="text-sm text-muted"),
+                    html.Label("Filter by sector:", htmlFor="sector-filter", className="text-sm text-muted"),
                     dcc.Dropdown(
                         id="sector-filter",
                         options=[{"label": "All Sectors", "value": ""}],
@@ -143,12 +155,7 @@ def build_layout():
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),
             html.Div(className="screener-market-shell", children=[
-                html.Div(
-                    id="screener-country-tabs-container",
-                    className="screener-country-tabs",
-                    role="tablist",
-                    children=_screener_country_tabs(),
-                ),
+                _screener_market_links(),
                 dcc.Loading(
                     id="screener-loading",
                     type="default",
@@ -159,12 +166,60 @@ def build_layout():
                         ])
                     ]
                 ),
+                html.Div(
+                    id="screener-quick-peek-shell",
+                    className="quick-peek-shell",
+                    children=[
+                        html.Button(
+                            id="quick-peek-backdrop",
+                            className="quick-peek-backdrop",
+                            n_clicks=0,
+                            type="button",
+                            **{"aria-label": "Close quick peek"},
+                        ),
+                        html.Aside(
+                            id="screener-quick-peek-panel",
+                            className="quick-peek-panel",
+                            children=[
+                                html.Div(
+                                    className="quick-peek-panel-inner",
+                                    children=[
+                                        html.Div(
+                                            className="quick-peek-panel-top",
+                                            children=[
+                                                html.Div(
+                                                    className="quick-peek-panel-copy",
+                                                    children=[
+                                                        html.Div("Quick Peek", className="quick-peek-kicker"),
+                                                        html.H3("Stock snapshot", className="quick-peek-title"),
+                                                    ],
+                                                ),
+                                                html.Button(
+                                                    "Close",
+                                                    id="quick-peek-close-btn",
+                                                    className="quick-peek-close-btn",
+                                                    n_clicks=0,
+                                                    type="button",
+                                                ),
+                                            ],
+                                        ),
+                                        html.Div(
+                                            id="screener-quick-peek-content",
+                                            className="quick-peek-content",
+                                        ),
+                                    ],
+                                )
+                            ],
+                        ),
+                    ],
+                ),
             ]),
         ]),
         # ── Tab: Analyze ─────────────────────────────────────────────────────────
         html.Div(id="tab-analyze", className="main-content", children=[
             html.Div(className="analyze-header", children=[
                 html.Div(className="analyze-ticker-input", children=[
+                    html.Label("Stock ticker", htmlFor="ticker-input", className="sr-only"),
                     dcc.Input(
                         id="ticker-input",
                         type="text",
@@ -196,18 +251,21 @@ def build_layout():
                         html.Span("Add to Portfolio", className="font-semibold text-lg"),
                     ]),
                     html.Div(className="portfolio-add-controls", children=[
+                        html.Label("Portfolio", htmlFor="portfolio-select-dropdown", className="sr-only"),
                         dcc.Dropdown(
                             id="portfolio-select-dropdown",
                             placeholder="Select or create portfolio…",
                             clearable=True,
                             className="min-w-220",
                         ),
+                        html.Label("New portfolio name", htmlFor="portfolio-new-name", className="sr-only"),
                         dcc.Input(
                             id="portfolio-new-name",
                             type="text",
                             placeholder="Or type new portfolio name…",
                             className="max-w-220 ticker-input"
                         ),
+                        html.Label("Number of shares", htmlFor="portfolio-shares-input", className="sr-only"),
                         dcc.Input(
                             id="portfolio-shares-input",
                             type="number",
@@ -228,6 +286,7 @@ def build_layout():
             # Top toolbar: portfolio switcher + create + compare
             html.Div(className="screener-toolbar", children=[
                 html.Div(className="screener-controls", children=[
+                    html.Label("Active portfolio", htmlFor="portfolio-active-dropdown", className="sr-only"),
                     dcc.Dropdown(
                         id="portfolio-active-dropdown",
                         placeholder="Select a portfolio…",
@@ -241,7 +300,7 @@ def build_layout():
                                 n_clicks=0),
                 ]),
                 html.Div(className="screener-controls", children=[
-                    html.Label("Compare:", className="fs-13 clr-muted"),
+                    html.Label("Compare:", htmlFor="portfolio-compare-dropdown", className="fs-13 clr-muted"),
                     dcc.Dropdown(
                         id="portfolio-compare-dropdown",
                         placeholder="Add portfolio to compare…",
@@ -253,7 +312,7 @@ def build_layout():
             # New portfolio name modal (inline, hidden by default)
             html.Div(id="portfolio-create-panel", className="hidden", children=[
                 html.Div(className="portfolio-add-panel", children=[
-                    html.Span("Name your portfolio:", className="text-primary"),
+                    html.Label("Name your portfolio:", htmlFor="portfolio-create-name", className="text-primary"),
                     dcc.Input(id="portfolio-create-name", type="text",
                               placeholder="e.g. Value Picks Q1",
                               className="ticker-input max-w-240"),
@@ -277,7 +336,7 @@ def build_layout():
             html.Div(id="portfolio-sim-results", children=[]),
         ]),
         # ── Tab: Factor Lab ─────────────────────────────────────────────────────
-        html.Div(id="tab-factorlab", className="main-content d-none", children=[
+        html.Div(id="tab-factorlab", className="main-content", style={"display": "none"}, children=[
             html.Div(className="app-header mb-24", children=[
                 html.Div("🧪", className="app-header-icon"),
                 html.Div(className="app-header-content", children=[
@@ -293,13 +352,13 @@ def build_layout():
             html.Div(className="screener-toolbar", children=[
                 html.Div(className="screener-controls flex-wrap gap-20", children=[
                     html.Div([
-                        html.Label("Top N stocks", className="fs-12 clr-muted"),
+                        html.Label("Top N stocks", htmlFor="fb-top-n", className="fs-12 clr-muted"),
                         dcc.Slider(id="fb-top-n", min=3, max=20, step=1, value=10,
                                    marks={3: "3", 5: "5", 10: "10", 15: "15", 20: "20"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
                     ], className="control-width-200"),
                     html.Div([
-                        html.Label("Backtest years", className="fs-12 clr-muted"),
+                        html.Label("Backtest years", htmlFor="fb-years", className="fs-12 clr-muted"),
                         dcc.Slider(id="fb-years", min=1, max=10, step=1, value=5,
                                    marks={1: "1", 3: "3", 5: "5", 7: "7", 10: "10"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
@@ -316,7 +375,7 @@ def build_layout():
                     *[
                         html.Div([
                             html.Div(className="d-flex jc-between mb-4", children=[
-                                html.Label(lbl, className="fs-13 fw-600"),
+                                html.Label(lbl, htmlFor=f"fb-w-{key}", className="fs-13 fw-600"),
                             ]),
                             dcc.Slider(
                                 id=f"fb-w-{key}",
@@ -349,7 +408,7 @@ def build_layout():
                 html.Div(id="fb-results", children=[])
             ]),
         ]),
-        html.Div(id="tab-pricing", className="main-content d-none", children=[]),
+        html.Div(id="tab-pricing", className="main-content", style={"display": "none"}, children=[]),
 
         _legal_modal("legal-terms", "Terms of Service", "/terms", _legal_terms_content()),
         _legal_modal("legal-privacy", "Privacy Policy", "/privacy", _legal_privacy_content()),
@@ -361,22 +420,24 @@ def build_layout():
             html.Span(" · "),
             html.A("Privacy Policy", href="#legal-privacy", className="clr-muted"),
             html.Span(" · Not financial advice."),
+            logo_attribution(),
         ]),
 
         # Stores
         dcc.Store(id="screener-cache"),
         dcc.Store(id="analysis-store"),
         dcc.Store(id="screener-sort-store", data={"col": "composite_score", "asc": False}),
-        dcc.Store(id="screener-country-store", data=DEFAULT_SCREENER_COUNTRY, storage_type="session"),
         dcc.Store(id="screener-page-store", data=1, storage_type="session"),  # current page in screener table
         dcc.Store(id="search-history-store"),
-        dcc.Store(id="screener-click-ticker"),   # symbol clicked in screener table
+        dcc.Store(id="screener-quick-peek-symbol"),
+        dcc.Store(id="screener-open-analysis-symbol"),
         dcc.Store(id="portfolio-refresh-store", data=0),  # increment to trigger refresh
         dcc.Store(id="active-analysis-symbol"),           # symbol currently analyzed
         dcc.Store(id="upgrade-funnel-store", data=None),
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
+        html.Div(id="screener-scroll-restore-sink", style={"display": "none"}),
         # interval disabled=True once loading finishes to stop constant re-renders
         dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
         # fires once 600ms after page load to render already-cached screener data
