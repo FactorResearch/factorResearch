@@ -17,8 +17,13 @@ def _popular_symbols() -> list[str]:
     configured = [item.strip().upper() for item in os.environ.get("PRECOMPUTE_SYMBOLS", "").split(",") if item.strip()]
     if configured:
         return configured[: int(os.environ.get("PRECOMPUTE_LIMIT", "20"))]
+    from codes.services import analysis_demand
+    limit = int(os.environ.get("PRECOMPUTE_LIMIT", "20"))
+    demanded = analysis_demand.popular(limit)
+    if demanded:
+        return demanded
     from codes.data import db
-    return db.list_analysis_tickers()[: int(os.environ.get("PRECOMPUTE_LIMIT", "20"))]
+    return db.list_analysis_tickers()[:limit]
 
 
 def run_maintenance_once() -> None:
@@ -53,6 +58,8 @@ def start_background_maintenance() -> bool:
     with _lock:
         if _started:
             return False
+        from codes.services import analysis_jobs
         threading.Thread(target=_worker, name="analysis-maintenance", daemon=True).start()
+        threading.Thread(target=analysis_jobs.work_forever, name="analysis-jobs", daemon=True).start()
         _started = True
     return True

@@ -430,6 +430,16 @@ def _growth_quality_card(data: dict) -> html.Div:
 def _insider_activity_card(data: dict) -> html.Div:
     """Insider buying/selling activity card."""
     ia = data.get("insider_activity") or {}
+    if not ia and data.get("secondary_status") in {"pending", "failed"}:
+        failed = data.get("secondary_status") == "failed"
+        return _metric_scorecard(
+            title="Insider Activity",
+            score_text="Unavailable" if failed else "Loading",
+            score_color=MUTED,
+            status_text="Try later" if failed else "Background enrichment",
+            status_color=MUTED,
+            body_children=[html.Div("Primary analysis is ready. Insider filings are loading separately.", className="analysis-copy-leading fs-11 clr-muted")],
+        )
     if not ia or ia.get("low_coverage"):
         return html.Div()
     score  = ia.get("insider_confidence_score")
@@ -510,6 +520,16 @@ def _factor_momentum_card(data: dict) -> html.Div:
 def _alternative_data_card(data: dict) -> html.Div:
     """Alternative Data card: provider-ready Phase E signals."""
     ad = data.get("alternative_data") or {}
+    if not ad and data.get("secondary_status") in {"pending", "failed"}:
+        failed = data.get("secondary_status") == "failed"
+        return _metric_scorecard(
+            title="Alternative Data",
+            score_text="Unavailable" if failed else "Loading",
+            score_color=MUTED,
+            status_text="Try later" if failed else "Background enrichment",
+            status_color=MUTED,
+            body_children=[html.Div("Ownership, filings, and patent signals will appear without blocking this page.", className="analysis-copy-leading fs-11 clr-muted")],
+        )
     if not ad:
         return html.Div()
 

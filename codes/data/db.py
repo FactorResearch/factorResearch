@@ -94,6 +94,7 @@ CREATE TABLE IF NOT EXISTS analysis_cache (
     data_json  TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_analysis_cache_updated_at ON analysis_cache(updated_at);
 CREATE TABLE IF NOT EXISTS company_logo_cache (
     provider_key TEXT PRIMARY KEY,
     symbol       TEXT NOT NULL,

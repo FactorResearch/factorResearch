@@ -445,5 +445,6 @@ def build_layout():
         dcc.Interval(id="page-load-interval", interval=600, max_intervals=1, disabled=False),
         # polls the screener tab's scroll position so it can be restored on tab switch
         dcc.Interval(id="screener-scroll-poll-interval", interval=1000, disabled=False),
+        dcc.Interval(id="analysis-secondary-interval", interval=1200, disabled=False),
         dcc.Loading(id="loading", type="circle", color=BLUE, children=html.Div(id="loading-trigger"))
     ])

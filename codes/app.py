@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import dash
 import functools
 import flask
+import hmac
 from markupsafe import escape
 try:
     from flask_limiter import Limiter
@@ -33,6 +34,8 @@ from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
+from codes.services import performance_metrics, provider_gateway
+from codes.services import analysis_jobs, component_cache
 from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
@@ -53,7 +56,13 @@ app = dash.Dash(
         r".*\.scss$|"
         r"^(company_analysis|error_pages|landing|legal_pages|waitlist)\.css$"
     ),
-    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
+    meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1, viewport-fit=cover"},
+        {"name": "theme-color", "content": "#0f1b2d"},
+        {"name": "mobile-web-app-capable", "content": "yes"},
+        {"name": "apple-mobile-web-app-capable", "content": "yes"},
+        {"name": "apple-mobile-web-app-status-bar-style", "content": "black-translucent"},
+    ]
 )
 server = app.server
 secret_key = os.environ.get("FLASK_SECRET_KEY")
@@ -72,6 +81,54 @@ auth.init_auth(server)
 billing.init_billing(server)
 register_landing_pages(server)
 register_error_pages(server)
+
+
+@server.route("/manifest.webmanifest")
+def web_manifest():
+    return flask.jsonify({
+        "name": "FactorResearch",
+        "short_name": "FactorResearch",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#0f1b2d",
+        "theme_color": "#0f1b2d",
+        "description": "Fast, model-driven company research.",
+    }), 200, {"Content-Type": "application/manifest+json", "Cache-Control": "public, max-age=86400"}
+
+
+@server.route("/service-worker.js")
+def service_worker():
+    script = """
+const CACHE = 'factorresearch-shell-v2';
+self.addEventListener('install', event => event.waitUntil(caches.open(CACHE)));
+self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  if (event.request.method !== 'GET' || url.origin !== location.origin || !url.pathname.startsWith('/assets/')) return;
+  event.respondWith(caches.open(CACHE).then(async cache => {
+    const cached = await cache.match(event.request);
+    if (cached) return cached;
+    const response = await fetch(event.request);
+    if (response.ok) cache.put(event.request, response.clone());
+    return response;
+  }));
+});
+"""
+    return flask.Response(script, mimetype="application/javascript", headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"})
+
+
+@server.route("/_internal/performance")
+def internal_performance():
+    expected = os.environ.get("INTERNAL_METRICS_TOKEN")
+    supplied = flask.request.headers.get("X-Internal-Metrics-Token", "")
+    if not expected or not hmac.compare_digest(expected, supplied):
+        flask.abort(404)
+    return flask.jsonify({
+        "analysis": performance_metrics.snapshot(),
+        "providers": provider_gateway.health(),
+        "component_cache": component_cache.stats(),
+        "jobs": analysis_jobs.health(),
+    })
 
 
 @server.route("/company-logo")
@@ -190,6 +247,12 @@ dash.Dash.callback = _logging_callback
 from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, screener as screener_tab  # noqa: F401
 
 app.index_string = app.index_string.replace('<html>', '<html lang="en">')
+app.index_string = app.index_string.replace(
+    '</head>',
+    '<link rel="manifest" href="/manifest.webmanifest">'
+    '<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));}</script>'
+    '</head>'
+)
 
 app.index_string = app.index_string.replace(
     '</head>',
@@ -237,7 +300,7 @@ app.index_string = app.index_string.replace(
 app.index_string = app.index_string.replace(
     '</head>',
     '<script>'
-    'const APP_VERSION = "v8.5";'  # bump this on each deploy
+    'const APP_VERSION = "v8.6";'  # bump this on each deploy
     'if (localStorage.getItem("app_version") !== APP_VERSION) {'
     '    localStorage.setItem("app_version", APP_VERSION);'
     '    location.reload(true);'

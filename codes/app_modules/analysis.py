@@ -7,6 +7,7 @@ import datetime as _datetime
 from concurrent.futures import ThreadPoolExecutor
 
 from codes import security
+from codes.core import singleflight
 from codes.data import api_fetcher, sec_data, db, market_data
 from codes.data.api_fetcher import RateLimitError
 from codes.data.providers.registry import require_symbol_market_enabled, scoring_facts_for_symbol
@@ -23,6 +24,9 @@ from codes.models import (
 from codes.models.analysis_snapshot import AnalysisType
 from codes.services.analysis_snapshot_service import save_standard_snapshot
 from codes.services import performance_metrics
+from codes.services import provider_gateway
+from codes.services import component_cache
+from codes.services import analysis_jobs
 
 from .config import validate_ticker
 
@@ -42,6 +46,10 @@ _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
 ANALYSIS_VERSION = "2026.07-opt1"
 ANALYSIS_MAX_AGE_SECONDS = int(os.environ.get("ANALYSIS_MAX_AGE_SECONDS", 30 * 86400))
+_MODEL_VERSIONS = {
+    "quality": "1", "graham": "1", "piotroski": "1", "altman": "1",
+    "greenblatt": "1", "buffett": "1", "profitability": "1", "fcf_quality": "1",
+}
 
 
 def _timed(timings: dict[str, float], name: str, callback):
@@ -52,12 +60,15 @@ def _timed(timings: dict[str, float], name: str, callback):
         timings[name] = round((_time.perf_counter() - started) * 1000, 2)
 
 
-def _provider_value(label: str, callback, default):
-    try:
-        return callback()
-    except Exception as exc:
-        print(f"{label} failed: {exc}")
-        return default
+def _component(timings: dict[str, float], name: str, symbol: str, inputs, callback):
+    started = _time.perf_counter()
+    result, cache_hit = component_cache.get_or_compute(
+        name, symbol, _MODEL_VERSIONS[name], inputs, callback,
+    )
+    timings[name] = round((_time.perf_counter() - started) * 1000, 2)
+    timings[f"{name}_cache_hit"] = cache_hit
+    return result
+
 
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
@@ -177,7 +188,7 @@ def _cache_is_current(result: dict) -> bool:
     return age < ANALYSIS_MAX_AGE_SECONDS
 
 
-def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
+def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary: bool = False) -> dict:
     """Full pipeline: SEC → Graham + Quality + (Price→Momentum) → Composite.
     
     Optimizations:
@@ -242,7 +253,7 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
         print(f"[SEC EDGAR error] {symbol}: {e}")  # full detail server-side only
         return {"error": "Could not retrieve data for this ticker. Please try again shortly."}
     # Quality score (no price) — early calculation
-    q = _timed(timings, "quality", lambda: quality.score(sec_facts))
+    q = _component(timings, "quality", symbol, sec_facts, lambda: quality.score(sec_facts))
     # International prices require a licensed source with explicit quote
     # currency, unit, and adjustment metadata. Until that evidence is stored,
     # run fundamentals without price-based outputs.
@@ -290,7 +301,7 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
                 print(f"SPY history fetch failed: {e}")
         timings["price_histories"] = round((_time.perf_counter() - history_started) * 1000, 2)
     # 1G: Calculate Graham score WITH price (if available), eliminating redundant call
-    g = _timed(timings, "graham", lambda: graham.score(price, sec_facts) if price else graham.score(None, sec_facts))
+    g = _component(timings, "graham", symbol, [price, sec_facts], lambda: graham.score(price, sec_facts) if price else graham.score(None, sec_facts))
     # Momentum score (needs price history)
     m_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price and hist is not None:
@@ -305,21 +316,21 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
     # Original composite (kept for backward-compat with screener)
     comp = _timed(timings, "composite", lambda: scorer.composite(g, q, m_result))
     # ── New quant modules ─────────────────────────────────────────────────
-    piotroski_result = _timed(timings, "piotroski", lambda: piotroski.score(sec_facts))
-    altman_result = _timed(timings, "altman", lambda: altman.score(price, sec_facts))
+    piotroski_result = _component(timings, "piotroski", symbol, sec_facts, lambda: piotroski.score(sec_facts))
+    altman_result = _component(timings, "altman", symbol, [price, sec_facts], lambda: altman.score(price, sec_facts))
     risk_result = {"risk_score": 50, "risk_score_max": 100, "risk_criteria": []}
     if hist is not None and not hist.empty:
         try:
             risk_result = risk_metrics.score(hist, spy_hist)
         except Exception as e:
             print(f"Risk metrics calculation failed: {e}")
-    greenblatt_result = _timed(timings, "greenblatt", lambda: greenblatt.compute_single(price, sec_facts))
-    buffett_result = _timed(timings, "buffett", lambda: buffett.score(price, sec_facts))
+    greenblatt_result = _component(timings, "greenblatt", symbol, [price, sec_facts], lambda: greenblatt.compute_single(price, sec_facts))
+    buffett_result = _component(timings, "buffett", symbol, [price, sec_facts], lambda: buffett.score(price, sec_facts))
     # Profitability score (P1)
     profitability_result = None
     try:
-        profitability_result = _timed(
-            timings, "profitability",
+        profitability_result = _component(
+            timings, "profitability", symbol, sec_facts,
             lambda: profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score(),
         )
     except Exception as e:
@@ -327,8 +338,8 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
     # FCF Quality score (P1)
     fcf_quality_result = None
     try:
-        fcf_quality_result = _timed(
-            timings, "fcf_quality",
+        fcf_quality_result = _component(
+            timings, "fcf_quality", symbol, sec_facts,
             lambda: fcf_quality_model.FCFQualityAnalyzer(symbol, sec_facts).get_fcf_quality_score(),
         )
     except Exception as e:
@@ -350,20 +361,21 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
         ).get_growth_quality_score()
     except Exception as e:
         print(f"Growth quality calculation failed: {e}")
-    # Independent secondary providers share one bounded pool.
-    provider_started = _time.perf_counter()
-    with ThreadPoolExecutor(max_workers=4, thread_name_prefix="analysis-provider") as executor:
-        provider_futures = {
-            "transactions": executor.submit(_provider_value, "Insider activity fetch", lambda: api_fetcher.get_insider_transactions(symbol), []),
-            "sec_8k": executor.submit(_provider_value, "SEC 8-K fetch", lambda: sec_data.get_recent_8k_filings(symbol), []),
-            "ownership": executor.submit(_provider_value, "Institutional ownership fetch", lambda: api_fetcher.get_institutional_ownership_trends(symbol), []),
-            "patents": executor.submit(_provider_value, "Patent activity fetch", lambda: api_fetcher.get_patent_trends(symbol), []),
-        }
-        transactions = provider_futures["transactions"].result()
-        sec_8k_filings = provider_futures["sec_8k"].result()
-        ownership_trends = provider_futures["ownership"].result()
-        patent_trends = provider_futures["patents"].result()
-    timings["secondary_providers"] = round((_time.perf_counter() - provider_started) * 1000, 2)
+    transactions, sec_8k_filings, ownership_trends, patent_trends = [], [], [], []
+    if not defer_secondary:
+        provider_started = _time.perf_counter()
+        with ThreadPoolExecutor(max_workers=4, thread_name_prefix="analysis-provider") as executor:
+            provider_futures = {
+                "transactions": executor.submit(provider_gateway.call, "finnhub", f"insiders:{symbol}", lambda: api_fetcher.get_insider_transactions(symbol), default=[]),
+                "sec_8k": executor.submit(provider_gateway.call, "sec", f"8k:{symbol}", lambda: sec_data.get_recent_8k_filings(symbol), default=[]),
+                "ownership": executor.submit(provider_gateway.call, "finnhub", f"ownership:{symbol}", lambda: api_fetcher.get_institutional_ownership_trends(symbol), default=[]),
+                "patents": executor.submit(provider_gateway.call, "finnhub", f"patents:{symbol}", lambda: api_fetcher.get_patent_trends(symbol), default=[]),
+            }
+            transactions = provider_futures["transactions"].result()
+            sec_8k_filings = provider_futures["sec_8k"].result()
+            ownership_trends = provider_futures["ownership"].result()
+            patent_trends = provider_futures["patents"].result()
+        timings["secondary_providers"] = round((_time.perf_counter() - provider_started) * 1000, 2)
 
     insider_activity_result = None
     shares_out = None
@@ -496,6 +508,7 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
         "insider_activity":   insider_activity_result,
         "factor_momentum": factor_momentum_result,
         "alternative_data": alternative_data_result,
+        "secondary_status": "pending" if defer_secondary else "complete",
         "market_fear":       _get_market_fear_result(),
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,
@@ -525,6 +538,8 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
         composite_source.get("verdict"),
     )
     db.upsert_analysis(symbol, result)
+    if defer_secondary:
+        analysis_jobs.enqueue({"type": "secondary-analysis", "symbol": symbol, "shares_out": shares_out})
     try:
         save_standard_snapshot(result, analysis_type=AnalysisType.STANDARD)
     except Exception as e:
@@ -536,3 +551,47 @@ def analyze_stock(symbol: str, *, force_refresh: bool = False) -> dict:
 
     performance_metrics.record_analysis(result["performance"]["pipeline_ms"], False)
     return result
+
+
+def _complete_secondary_analysis(symbol: str, shares_out: float | None) -> None:
+    """Fetch display-only enrichment after the primary analysis is visible."""
+    try:
+        transactions = provider_gateway.call("finnhub", f"insiders:{symbol}", lambda: api_fetcher.get_insider_transactions(symbol), default=[])
+        sec_8k = provider_gateway.call("sec", f"8k:{symbol}", lambda: sec_data.get_recent_8k_filings(symbol), default=[])
+        ownership = provider_gateway.call("finnhub", f"ownership:{symbol}", lambda: api_fetcher.get_institutional_ownership_trends(symbol), default=[])
+        patents = provider_gateway.call("finnhub", f"patents:{symbol}", lambda: api_fetcher.get_patent_trends(symbol), default=[])
+        current = db.get_analysis(symbol) or {}
+        current["insider_activity"] = insider_activity_model.get_insider_score(symbol, transactions, shares_outstanding=shares_out)
+        current["alternative_data"] = alternative_data_model.get_alternative_data_score(
+            symbol,
+            sec_8k_filings=sec_8k,
+            insider_transactions=transactions,
+            shares_outstanding=shares_out,
+            ownership_trends=ownership,
+            patent_trends=patents,
+            market_provider_ready=api_fetcher.is_finnhub_configured(),
+        )
+        current["secondary_status"] = "complete"
+    except Exception as exc:
+        print(f"Secondary analysis failed for {symbol}: {exc}")
+        current = db.get_analysis(symbol) or {}
+        current["secondary_status"] = "failed"
+    db.upsert_analysis(symbol, current)
+    with _analysis_cache_lock:
+        _analysis_cache[symbol] = current
+
+
+def analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary: bool = False) -> dict:
+    normalized = (symbol or "").strip().upper()
+    mode = "refresh" if force_refresh else "primary" if defer_secondary else "request"
+    return singleflight.run(
+        f"analysis:{normalized}:{ANALYSIS_VERSION}:{mode}",
+        lambda: _analyze_stock(normalized, force_refresh=force_refresh, defer_secondary=defer_secondary),
+        timeout=120,
+        result_ttl=10,
+    )
+
+
+def analyze_stock_primary(symbol: str) -> dict:
+    """Fast web entrypoint; display-only enrichment completes in background."""
+    return analyze_stock(symbol, defer_secondary=True)

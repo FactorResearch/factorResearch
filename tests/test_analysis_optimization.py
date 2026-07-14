@@ -1,9 +1,15 @@
 from unittest.mock import Mock, call
 
 from codes.app_modules import analysis
-from codes.app_modules.tabs.analyze import _client_analysis_payload, render_analysis_charts_on_demand
+from codes.app_modules.tabs.analyze import (
+    _client_analysis_payload,
+    refresh_secondary_analysis,
+    render_analysis_charts_on_demand,
+)
+from codes.app_modules.analysis_ui import _alternative_data_card, _insider_activity_card
 from codes.services import performance_metrics
 from codes.services import analysis_scheduler
+from codes.services import analysis_demand
 
 
 def test_client_payload_omits_chart_history():
@@ -72,3 +78,30 @@ def test_background_maintenance_refreshes_shared_context_and_popular_symbols(mon
     fear.assert_called_once()
     crowding.assert_called_once()
     assert analyze.call_args_list == [call("AAPL", force_refresh=True), call("MSFT", force_refresh=True)]
+
+
+def test_local_demand_prioritizes_frequently_viewed_symbols(monkeypatch):
+    monkeypatch.setattr(analysis_demand, "get_redis", lambda: None)
+    monkeypatch.setattr(analysis_demand, "_local", analysis_demand.Counter())
+    analysis_demand.record("MSFT")
+    analysis_demand.record("AAPL", weight=3)
+
+    assert analysis_demand.popular(2) == ["AAPL", "MSFT"]
+
+
+def test_pending_secondary_cards_reserve_layout_space():
+    data = {"secondary_status": "pending"}
+    assert "Background enrichment" in str(_insider_activity_card(data))
+    assert "Background enrichment" in str(_alternative_data_card(data))
+
+
+def test_secondary_poll_rebuilds_content_when_enrichment_completes(monkeypatch):
+    enriched = {"symbol": "AAPL", "secondary_status": "complete"}
+    monkeypatch.setattr("codes.app_modules.tabs.analyze.db.get_analysis", lambda _symbol: enriched)
+    monkeypatch.setattr("codes.app_modules.tabs.analyze._build_analysis_content", lambda result: [result["secondary_status"]])
+    monkeypatch.setattr("codes.app_modules.tabs.analyze.permissions.can_access_feature", lambda *_args: None)
+    monkeypatch.setattr("codes.app_modules.tabs.analyze.get_user_id", lambda: "test-user")
+
+    content, payload = refresh_secondary_analysis(1, {"symbol": "AAPL", "secondary_status": "pending"})
+    assert content == ["complete"]
+    assert payload["secondary_status"] == "complete"
