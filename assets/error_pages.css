@@ -26,7 +26,7 @@ body.error-page {
 }
 
 .error-shell {
-  width: min(1080px, calc(100vw - 32px));
+  width: min(1080px, 100vw - 32px);
   min-height: 100vh;
   margin: 0 auto;
   padding: 32px 0;
@@ -38,7 +38,7 @@ body.error-page {
 .error-brand {
   position: absolute;
   top: 24px;
-  left: max(24px, calc((100vw - 1080px) / 2));
+  left: max(24px, (100vw - 1080px) / 2);
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -206,4 +206,4 @@ body.light.error-page {
   .error-actions a {
     width: 100%;
   }
-}
+}/*# sourceMappingURL=error_pages.css.map */
