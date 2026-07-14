@@ -1015,6 +1015,11 @@ def _build_analysis_content(data: dict) -> list:
             return "N/A"
         return f"{value:.{decimals}f}%"
 
+    def _fmt_number(value, decimals=1, suffix=""):
+        if value is None:
+            return "N/A"
+        return f"{value:.{decimals}f}{suffix}"
+
     def _metric(label: str, value: str, hint: str | None = None) -> html.Div:
         children = [
             html.Div(label, className="analysis-mini-metric-label"),
@@ -1169,7 +1174,7 @@ def _build_analysis_content(data: dict) -> list:
                 children=[
                     _summary_point(
                         "Valuation",
-                        f"P/E {g.get('pe', 0):.1f}x, P/B {g.get('pb', 0):.2f}x, moat grade {b_data.get('grade', 'N/A')}.",
+                        f"P/E {_fmt_number(g.get('pe'), 1, 'x')}, P/B {_fmt_number(g.get('pb'), 2, 'x')}, moat grade {b_data.get('grade', 'N/A')}.",
                     ),
                     _summary_point(
                         "Accounting",
@@ -1177,7 +1182,7 @@ def _build_analysis_content(data: dict) -> list:
                     ),
                     _summary_point(
                         "Risk",
-                        f"Beta {r_data.get('beta', 0):.2f} and Sharpe {r_data.get('sharpe', 0):.2f} summarize current market behavior.",
+                        f"Beta {_fmt_number(r_data.get('beta'), 2)} and Sharpe {_fmt_number(r_data.get('sharpe'), 2)} summarize current market behavior.",
                     ),
                     _summary_point(
                         "Growth",
@@ -1242,8 +1247,8 @@ def _build_analysis_content(data: dict) -> list:
                 [
                     ("Price", _fmt_money(price)),
                     ("Moat Value", _fmt_money(intrinsic_value, 0 if intrinsic_value else 2)),
-                    ("P/E", f"{g.get('pe', 0):.1f}x"),
-                    ("P/B", f"{g.get('pb', 0):.2f}x"),
+                    ("P/E", _fmt_number(g.get("pe"), 1, "x")),
+                    ("P/B", _fmt_number(g.get("pb"), 2, "x")),
                 ],
                 [
                     html.Div(className="analysis-card-grid analysis-card-grid--two", children=[graham_details, buffett_details]),
