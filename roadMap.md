@@ -132,7 +132,7 @@ Includes
 -   Return attribution
 -   Rolling attribution
 
-## V2.3 Accounting Intelligence [ ]
+## V2.3 Accounting Intelligence [x]
 
 Goal
 
