@@ -1,20 +1,53 @@
-// ── Responsive Media Query Mixins ────────────────────────────────────────────
-
 @mixin phones {
-  @media screen and (max-width: 767px) { @content; }
+  @media screen and (max-width: 767px) {
+    @content;
+  }
 }
 
 @mixin sm-phones {
-  @media screen and (max-width: 400px) { @content; }
+  @media screen and (max-width: 400px) {
+    @content;
+  }
 }
+
 @mixin xs-phones {
-  @media screen and (max-width: 320px) { @content; }
+  @media screen and (max-width: 320px) {
+    @content;
+  }
 }
 
 @mixin tablet {
-  @media screen and (min-width: 767px) and (max-width: 1024px) { @content; }
+  @media screen and (min-width: 768px) and (max-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin tablet-down {
+  @media screen and (max-width: 1024px) {
+    @content;
+  }
 }
 
 @mixin md-laptop {
-  @media screen and (min-width: 1024px) and (max-width: 1366px) { @content; }
+  @media screen and (min-width: 1025px) and (max-width: 1366px) {
+    @content;
+  }
+}
+
+@mixin up-tablet {
+  @media screen and (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media screen and (min-width: 1025px) {
+    @content;
+  }
+}
+
+@mixin wide-desktop {
+  @media screen and (min-width: 1440px) {
+    @content;
+  }
 }

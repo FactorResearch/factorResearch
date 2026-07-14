@@ -3,15 +3,15 @@
 @use 'style/tokens';
 @use 'style/helpers';
 @use 'style/base';
+@use 'style/vendor';
 @use 'style/app-shell';
 @use 'style/tabs';
 @use 'style/screener';
-@use 'style/pills';
 @use 'style/search';
 @use 'style/company';
 @use 'style/scorecards';
-@use 'style/vendor';
 @use 'style/utilities';
 @use 'style/inline_free';
 @use 'style/portfolio';
+@use 'style/legal';
 @use 'style/responsive';
