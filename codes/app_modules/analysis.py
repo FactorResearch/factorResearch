@@ -26,31 +26,44 @@ from .config import validate_ticker
 
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None
+_spy_history_loaded = False
+_spy_history_ts = 0.0
 _spy_history_lock = threading.Lock()
 _analysis_cache = {}
 _analysis_cache_lock = threading.Lock()
-_comomentum_cache = {"ts": 0.0, "result": None}
+_comomentum_cache = {"ts": 0.0, "result": None, "loaded": False}
 _comomentum_lock = threading.Lock()
-_market_fear_cache = {"ts": 0.0, "result": None}
+_market_fear_cache = {"ts": 0.0, "result": None, "loaded": False}
 _market_fear_lock = threading.Lock()
 _COMOMENTUM_TTL = 3600  # seconds
 _COMOMENTUM_TOP_N = 20
 _MARKET_FEAR_TTL = 3600  # seconds
 
+
+def _timed(timings: dict[str, float], name: str, callback):
+    started = _time.perf_counter()
+    try:
+        return callback()
+    finally:
+        timings[name] = round((_time.perf_counter() - started) * 1000, 2)
+
 def _get_spy_history_lazy():
     """Fetch SPY history once at startup, cache it module-level. Subsequent calls are instant."""
-    global _spy_history
-    if _spy_history is not None:
+    global _spy_history, _spy_history_loaded, _spy_history_ts
+    now = _time.time()
+    if _spy_history_loaded and (_spy_history is not None or now - _spy_history_ts < _MARKET_FEAR_TTL):
         return _spy_history
     
     with _spy_history_lock:
-        if _spy_history is not None:  # Double-check after acquiring lock
+        if _spy_history_loaded and (_spy_history is not None or now - _spy_history_ts < _MARKET_FEAR_TTL):
             return _spy_history
         try:
             _spy_history = api_fetcher.get_price_history("SPY", years=10)
         except Exception as e:
             print(f"Failed to fetch SPY history: {e}")
-            _spy_history = None  # Cache failure so we don't retry every time
+            _spy_history = None
+        _spy_history_loaded = True
+        _spy_history_ts = now
         return _spy_history
 def _is_rate_limit_error(exc: Exception) -> bool:
     """Recognize RateLimitError instances across import aliases."""
@@ -62,7 +75,7 @@ def _get_comomentum_result() -> dict | None:
     global _comomentum_cache
     now = _time.time()
     with _comomentum_lock:
-        if _comomentum_cache["result"] is not None and now - _comomentum_cache["ts"] < _COMOMENTUM_TTL:
+        if _comomentum_cache["loaded"] and now - _comomentum_cache["ts"] < _COMOMENTUM_TTL:
             return _comomentum_cache["result"]
 
     try:
@@ -76,25 +89,24 @@ def _get_comomentum_result() -> dict | None:
             reverse=True,
         )
         top_symbols = candidates[:_COMOMENTUM_TOP_N]
-        if len(top_symbols) < 2:
-            return None
+        result = None
+        if len(top_symbols) >= 2:
+            price_histories = {}
+            for sym in top_symbols:
+                try:
+                    h = api_fetcher.get_price_history(sym, years=3)
+                    if h is not None and not h.empty:
+                        price_histories[sym] = h
+                except Exception as e:
+                    print(f"Comomentum: history fetch failed for {sym}: {e}")
 
-        price_histories = {}
-        for sym in top_symbols:
-            try:
-                h = api_fetcher.get_price_history(sym, years=3)
-                if h is not None and not h.empty:
-                    price_histories[sym] = h
-            except Exception as e:
-                print(f"Comomentum: history fetch failed for {sym}: {e}")
-
-        result = comomentum_model.calc_comomentum(top_symbols, price_histories)
+            result = comomentum_model.calc_comomentum(top_symbols, price_histories)
     except Exception as e:
         print(f"Comomentum calculation failed: {e}")
         result = None
 
     with _comomentum_lock:
-        _comomentum_cache = {"ts": now, "result": result}
+        _comomentum_cache = {"ts": now, "result": result, "loaded": True}
     return result
 
 
@@ -103,7 +115,7 @@ def _get_market_fear_result() -> dict | None:
     global _market_fear_cache
     now = _time.time()
     with _market_fear_lock:
-        if _market_fear_cache["result"] is not None and now - _market_fear_cache["ts"] < _MARKET_FEAR_TTL:
+        if _market_fear_cache["loaded"] and now - _market_fear_cache["ts"] < _MARKET_FEAR_TTL:
             return _market_fear_cache["result"]
 
     try:
@@ -118,7 +130,7 @@ def _get_market_fear_result() -> dict | None:
         result = None
 
     with _market_fear_lock:
-        _market_fear_cache = {"ts": now, "result": result}
+        _market_fear_cache = {"ts": now, "result": result, "loaded": True}
     return result
 
 
@@ -150,6 +162,8 @@ def analyze_stock(symbol: str) -> dict:
     - 1C: Lazy-load SPY history once, reuse across all stocks
     """
     global _analysis_cache, _analysis_cache_lock
+    analysis_started = _time.perf_counter()
+    timings: dict[str, float] = {}
 
     symbol = validate_ticker(symbol)
     if not symbol:
@@ -201,7 +215,7 @@ def analyze_stock(symbol: str) -> dict:
         print(f"[SEC EDGAR error] {symbol}: {e}")  # full detail server-side only
         return {"error": "Could not retrieve data for this ticker. Please try again shortly."}
     # Quality score (no price) — early calculation
-    q = quality.score(sec_facts)
+    q = _timed(timings, "quality", lambda: quality.score(sec_facts))
     # International prices require a licensed source with explicit quote
     # currency, unit, and adjustment metadata. Until that evidence is stored,
     # run fundamentals without price-based outputs.
@@ -247,7 +261,7 @@ def analyze_stock(symbol: str) -> dict:
             except Exception as e:
                 print(f"SPY history fetch failed: {e}")
     # 1G: Calculate Graham score WITH price (if available), eliminating redundant call
-    g = graham.score(price, sec_facts) if price else graham.score(None, sec_facts)
+    g = _timed(timings, "graham", lambda: graham.score(price, sec_facts) if price else graham.score(None, sec_facts))
     # Momentum score (needs price history)
     m_result = {"total_score": 0, "total_max": 100, "criteria": []}
     if price and hist is not None:
@@ -260,28 +274,34 @@ def analyze_stock(symbol: str) -> dict:
         except Exception as e:
             print(f"Momentum calculation failed: {e}")
     # Original composite (kept for backward-compat with screener)
-    comp = scorer.composite(g, q, m_result)
+    comp = _timed(timings, "composite", lambda: scorer.composite(g, q, m_result))
     # ── New quant modules ─────────────────────────────────────────────────
-    piotroski_result = piotroski.score(sec_facts)
-    altman_result = altman.score(price, sec_facts)
+    piotroski_result = _timed(timings, "piotroski", lambda: piotroski.score(sec_facts))
+    altman_result = _timed(timings, "altman", lambda: altman.score(price, sec_facts))
     risk_result = {"risk_score": 50, "risk_score_max": 100, "risk_criteria": []}
     if hist is not None and not hist.empty:
         try:
             risk_result = risk_metrics.score(hist, spy_hist)
         except Exception as e:
             print(f"Risk metrics calculation failed: {e}")
-    greenblatt_result = greenblatt.compute_single(price, sec_facts)
-    buffett_result = buffett.score(price, sec_facts)
+    greenblatt_result = _timed(timings, "greenblatt", lambda: greenblatt.compute_single(price, sec_facts))
+    buffett_result = _timed(timings, "buffett", lambda: buffett.score(price, sec_facts))
     # Profitability score (P1)
     profitability_result = None
     try:
-        profitability_result = profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score()
+        profitability_result = _timed(
+            timings, "profitability",
+            lambda: profitability_model.ProfitabilityAnalyzer(symbol, sec_facts).get_profitability_score(),
+        )
     except Exception as e:
         print(f"Profitability calculation failed: {e}")
     # FCF Quality score (P1)
     fcf_quality_result = None
     try:
-        fcf_quality_result = fcf_quality_model.FCFQualityAnalyzer(symbol, sec_facts).get_fcf_quality_score()
+        fcf_quality_result = _timed(
+            timings, "fcf_quality",
+            lambda: fcf_quality_model.FCFQualityAnalyzer(symbol, sec_facts).get_fcf_quality_score(),
+        )
     except Exception as e:
         print(f"FCF quality calculation failed: {e}")
 
@@ -451,6 +471,10 @@ def analyze_stock(symbol: str) -> dict:
         "enhanced":    enhanced,
         "spy_benchmark":      spy_benchmark_result,
         "bias":               bias_result,
+        "performance": {
+            "models_ms": timings,
+            "pipeline_ms": round((_time.perf_counter() - analysis_started) * 1000, 2),
+        },
         # ─────────────────────────────────────────────────
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,
