@@ -106,7 +106,7 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
     assert response.status_code == 200
     assert "Apple Inc." in body and "(AAPL)" in body
     assert "FactorResearch History" in body
-    assert "/AAPL/analyze/20260709" in body
+    assert "/AAPL/analyze/20260709?tab=analyze" in body
     assert 'href="/analyze/AAPL?tab=analyze">Analyze</a>' in body
     assert "Sign in and upgrade" in body
     assert 'rel="canonical" href="http://localhost/AAPL"' in body

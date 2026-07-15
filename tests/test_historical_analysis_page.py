@@ -59,6 +59,20 @@ def test_historical_page_falls_back_to_dash_shell_when_snapshot_db_unavailable()
     assert response.get_data(as_text=True) == "dash shell for NVDA/analyze/20260709"
 
 
+def test_interactive_historical_link_uses_dash_shell():
+    app = flask.Flask(__name__)
+    app.register_blueprint(analyze_pages)
+    app.add_url_rule(
+        "/<path:path>", endpoint="/<path:path>",
+        view_func=lambda path: flask.Response(f"dash shell for {path}"),
+    )
+
+    response = app.test_client().get("/NVDA/analyze/20260709?tab=analyze")
+
+    assert response.status_code == 200
+    assert response.get_data(as_text=True) == "dash shell for NVDA/analyze/20260709"
+
+
 def test_historical_page_renders_compare_picker_and_history_links():
     current = _snapshot("20260708")
     previous = _snapshot("20260608", valuation=74, rating="FAVORABLE")
@@ -80,7 +94,7 @@ def test_historical_page_renders_compare_picker_and_history_links():
     assert "max-width: 960px;" in styles
     assert 'name="compare"' in body
     assert "2026-06-08 - FAVORABLE" in body
-    assert 'href="/AAPL/analyze/20260608"' in body
+    assert 'href="/AAPL/analyze/20260608?tab=analyze"' in body
     assert "/AAPL/analyze/20260708?compare=20260608" in body
 
 
@@ -132,8 +146,8 @@ def test_historical_page_renders_related_internal_links():
     assert "Similar Factor Stocks" in body
     assert "Technology Competitors" in body
     assert "Related Market Sectors" in body
-    assert 'href="/MSFT/analyze/20260708"' in body
-    assert 'href="/GOOGL/analyze/20260708"' in body
+    assert 'href="/MSFT/analyze/20260708?tab=analyze"' in body
+    assert 'href="/GOOGL/analyze/20260708?tab=analyze"' in body
     assert "Finance · HIGH CONVICTION" in body
 
 

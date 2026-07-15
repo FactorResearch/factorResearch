@@ -33,6 +33,11 @@ def _date_key(value: str) -> str:
     return value.replace("-", "")
 
 
+def _interactive_analysis_path(snapshot) -> str:
+    """Use the Dash shell for in-app historical analysis links."""
+    return f"{snapshot.public_path}?tab=analyze"
+
+
 def _theme_for(snapshot) -> dict[str, str]:
     approved = {
         "apple": ("#a7b0bc", "#f4f5f7", "precision"),
@@ -104,7 +109,7 @@ def _official_history_cards(history) -> str:
             f'<span>Moat Rating {_fmt(item.quality_score)}</span><span>Profitability {_fmt(metrics.get("profitability_score"))}</span>'
             f'<span>Growth Quality {_fmt(item.growth_score)}</span><span>Momentum Analysis {_fmt(item.momentum_score)}</span><span>Risk &amp; Performance {_fmt(item.risk_score)}</span>'
             '</div>'
-            f'<a href="{html.escape(item.public_path)}">Complete historical report</a>'
+            f'<a href="{html.escape(_interactive_analysis_path(item))}">Open in Analyze</a>'
             '</article>'
         )
     return "".join(cards)
@@ -343,7 +348,7 @@ def _history_links(snapshot, history) -> str:
             )
         rows.append(
             f'<div class="history-row{active}">'
-            f'<a class="history-date" href="{html.escape(item.public_path)}"{current_attr}>'
+            f'<a class="history-date" href="{html.escape(_interactive_analysis_path(item))}"{current_attr}>'
             f"{html.escape(item.analysis_date.isoformat())}</a>"
             f"<strong>{html.escape(item.final_rating)}</strong>"
             f"{action_html}"
@@ -406,7 +411,7 @@ def _related_link_list(items, *, include_sector: bool = False) -> str:
             detail = f"{item.sector} · {detail}"
         rows.append(
             '<li class="related-item">'
-            f'<a href="{html.escape(item.public_path)}">'
+            f'<a href="{html.escape(_interactive_analysis_path(item))}">'
             f"{html.escape(item.company_name)} ({html.escape(item.ticker)})"
             "</a>"
             f'<span>{html.escape(detail)}</span>'
@@ -582,6 +587,11 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     route_id = ticker or ""
     if not _DATE_RE.match(yyyymmdd):
         flask.abort(404)
+
+    if flask.request.args.get("tab") == "analyze":
+        dash_shell = _dash_shell_response()
+        if dash_shell is not None:
+            return dash_shell
 
     ticker = route_id.upper()
     is_company_slug = route_id == route_id.lower() and _SLUG_RE.match(route_id)
