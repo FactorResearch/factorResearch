@@ -6,10 +6,16 @@ import argparse
 import datetime as dt
 import json
 import os
+import sys
 import uuid
+from pathlib import Path
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
+
+# Direct script execution adds scripts/, not the repository root, to sys.path.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from codes.data import temporal
 

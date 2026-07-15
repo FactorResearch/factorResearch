@@ -1,6 +1,25 @@
 import pytest
+import subprocess
+import sys
+from pathlib import Path
 
 from scripts import seed_track_e
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_script_can_run_directly_without_pythonpath():
+    result = subprocess.run(
+        [sys.executable, "scripts/seed_track_e.py", "--help"],
+        cwd=ROOT,
+        env={"PATH": str(Path(sys.executable).parent)},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "Populate a local market database" in result.stdout
 
 
 def test_seed_refuses_missing_or_remote_database(monkeypatch):

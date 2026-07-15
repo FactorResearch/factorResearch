@@ -36,6 +36,17 @@ CREATE TABLE IF NOT EXISTS security_identifiers (
     source TEXT NOT NULL, confidence TEXT NOT NULL, observed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     PRIMARY KEY (namespace, identifier, scope, valid_from)
 );
+ALTER TABLE security_identifiers ADD COLUMN IF NOT EXISTS scope TEXT DEFAULT 'GLOBAL';
+UPDATE security_identifiers i SET scope=l.market_code
+FROM security_listings l
+WHERE i.security_id=l.security_id AND i.namespace='TICKER' AND i.scope='GLOBAL';
+ALTER TABLE security_identifiers ALTER COLUMN scope SET NOT NULL;
+ALTER TABLE security_identifiers DROP CONSTRAINT IF EXISTS security_identifiers_pkey;
+ALTER TABLE security_identifiers ADD CONSTRAINT security_identifiers_pkey
+    PRIMARY KEY (namespace, identifier, scope, valid_from);
+UPDATE security_listings SET exchange_code='' WHERE exchange_code IS NULL;
+ALTER TABLE security_listings ALTER COLUMN exchange_code SET DEFAULT '';
+ALTER TABLE security_listings ALTER COLUMN exchange_code SET NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_security_identifiers_security ON security_identifiers(security_id);
 
 CREATE TABLE IF NOT EXISTS filing_versions (
