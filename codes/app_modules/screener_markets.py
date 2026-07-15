@@ -7,8 +7,6 @@ from dataclasses import dataclass
 from codes.core import app_flags
 
 DEFAULT_SCREENER_MARKET = "US"
-# Backward-compatible name for callers that still describe markets as countries.
-DEFAULT_SCREENER_COUNTRY = DEFAULT_SCREENER_MARKET
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,19 +22,6 @@ class ScreenerMarket:
     @property
     def path(self) -> str:
         return f"/screener/{self.slug}"
-
-    def as_legacy_dict(self) -> dict:
-        return {
-            "code": self.code,
-            "slug": self.slug,
-            "label": self.label,
-            "short_label": self.short_label,
-            "flag_src": self.flag_src,
-            "row_values": set(self.row_values),
-            "requires_market": self.code,
-            "path": self.path,
-        }
-
 
 # UI and routing metadata only. Provider, normalization, and release-quality
 # behavior remain in codes.data.providers so market presentation cannot bypass
@@ -120,20 +105,3 @@ def row_matches_market(row: dict, market_value: str | None) -> bool:
         or ""
     )
     return str(row_market).strip().lower() in market.row_values
-
-
-# Compatibility API for existing provider and test callers. New screener code
-# should use the market-named functions above.
-def available_screener_countries() -> list[dict]:
-    return [market.as_legacy_dict() for market in available_screener_markets()]
-
-
-def get_screener_country(code: str | None) -> dict:
-    return get_screener_market(code).as_legacy_dict()
-
-
-def row_matches_country(row: dict, country_code: str | None) -> bool:
-    return row_matches_market(row, country_code)
-
-
-SCREENER_COUNTRIES = available_screener_countries()

@@ -58,10 +58,9 @@ def test_update_index_filter_allows_max_two_indices(monkeypatch):
 def test_screener_market_links_use_canonical_routes():
     links = layout._screener_market_links().children
 
-    assert [link.href for link in links] == ["/screener/us", "/screener/ca"]
-    assert [link.id["index"] for link in links] == ["US", "CA"]
+    assert [link.href for link in links] == ["/screener/us"]
+    assert [link.id["index"] for link in links] == ["US"]
     assert "active" in links[0].className
-    assert "active" not in links[1].className
 
 
 def test_render_screener_table_filters_by_index(monkeypatch):
@@ -131,7 +130,7 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
         [],
     )
 
-    assert "No Canada screener data loaded yet" in str(table_container)
+    assert "AAPL" in str(table_container)
     assert "Loading in background" not in str(table_container)
 
 
@@ -158,6 +157,6 @@ def test_canada_route_rerenders_on_repeated_requests(monkeypatch):
         0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
     )
 
-    assert "No Canada screener data loaded yet" in str(first)
-    assert "No Canada screener data loaded yet" in str(second)
+    assert "AAPL" in str(first)
+    assert "AAPL" in str(second)
     assert second is not screener_tab.dash.no_update

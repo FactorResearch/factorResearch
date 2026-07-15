@@ -14,6 +14,7 @@ scores for dates before this module existed.
 from __future__ import annotations
 
 import datetime
+from collections import defaultdict
 
 from ..data import db
 from . import factor_engine
@@ -58,3 +59,32 @@ def has_sufficient_history(symbol: str, min_dates: int = 2) -> bool:
     get_factor_scores_asof() over the current live score.
     """
     return len(db.list_snapshot_dates(symbol.upper())) >= min_dates
+
+
+def load_history(symbols: list[str]) -> dict[str, dict[str, list[dict]]]:
+    """Bulk-load snapshots into a symbol/factor index for backtests."""
+    history = defaultdict(lambda: defaultdict(list))
+    for row in db.list_factor_snapshot_history(symbols):
+        item = dict(row)
+        item["snapshot_date"] = str(item["snapshot_date"])
+        history[str(item.pop("ticker")).upper()][str(item["factor_name"])].append(item)
+    return {symbol: dict(factors) for symbol, factors in history.items()}
+
+
+def history_has_sufficient_dates(history: dict, symbol: str, min_dates: int = 2) -> bool:
+    dates = {
+        row["snapshot_date"]
+        for rows in history.get(symbol.upper(), {}).values()
+        for row in rows
+    }
+    return len(dates) >= min_dates
+
+
+def history_scores_asof(history: dict, symbol: str, as_of: str) -> dict[str, dict]:
+    scores = {}
+    for factor_name, rows in history.get(symbol.upper(), {}).items():
+        eligible = (row for row in reversed(rows) if row["snapshot_date"] <= as_of)
+        row = next(eligible, None)
+        if row:
+            scores[factor_name] = row
+    return scores

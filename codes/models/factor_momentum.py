@@ -37,8 +37,6 @@ Integration:
 
 from __future__ import annotations
 
-import math
-from typing import Any
 
 import pandas as pd
 
@@ -47,24 +45,15 @@ from codes.core import model_utils as mu
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _safe(val: Any) -> float | None:
-    return mu.safe_float(val)
+_safe = mu.safe_float
 
 
 def _values(records: list, n: int = 10) -> list[float]:
     """Return up to n most-recent non-None values, newest first."""
-    out: list[float] = []
-    for r in records:
-        v = _safe(r.get("value"))
-        if v is not None:
-            out.append(v)
-            if len(out) >= n:
-                break
-    return out
+    return mu.record_values(records, limit=n)
 
 
-def _clamp(v: float, lo: float, hi: float) -> float:
-    return mu.clamp(v, lo, hi)
+_clamp = mu.clamp
 
 
 def _linear_slope(values: list) -> float | None:

@@ -1,33 +1,13 @@
-"""
-Screener: batch-scores the full US equity universe.
-
-Threading strategy:
-  Phase 1 — Cached stocks (no network):
-    ThreadPoolExecutor(max_workers=16) — pure CPU, fully parallel.
-    ~3,000 stocks cached → completes in a few seconds.
-
-  Phase 2 — Uncached stocks (need SEC EDGAR fetch):
-    ThreadPoolExecutor(max_workers=3) with a token-bucket rate limiter.
-    Keeps SEC requests at ≤ 3/sec as a courtesy to the free API.
-
-SEC allows ~10 req/sec. We use 3/sec to stay polite.
-"""
+"""Screener state populated from the universe and persisted analyses."""
 
 import time
 import threading
-import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from ..core.redis_client import get_redis, json_get, json_set
-from ..data import cache
 from ..data import sec_data
 from ..data import db
-from ..models import graham
-from ..models import quality
-from . import scorer
 from . import universe
 from datetime import datetime, timezone
 from ..data import company_metadata
-from codes import security
 
 _PROGRESS_REDIS_KEY = "screener:progress"
 
@@ -52,24 +32,7 @@ _lock = threading.Lock()
 # or clobber each other's last-seen progress snapshot.
 _user_progress: dict[str, dict] = {}
 _user_progress_lock = threading.Lock()
-_USER_PROGRESS_TTL = 30 * 60  # seconds (ISSUE_014)
 _USER_PROGRESS_TTL = 600  # seconds before stale per-session progress snapshots are evicted
-
-# ── Rate limiter for SEC fetches (token-bucket, ≤ 3 calls/sec) ───────────────
-
-_sec_rate_lock = threading.Lock()
-_sec_last_call = 0.0
-_SEC_MIN_GAP   = 0.34   # seconds between SEC requests
-
-
-def _sec_rate_wait():
-    """Block until it's safe to make the next SEC request."""
-    global _sec_last_call
-    with _sec_rate_lock:
-        gap = _SEC_MIN_GAP - (time.time() - _sec_last_call)
-        if gap > 0:
-            time.sleep(gap)
-        _sec_last_call = time.time()
 
 
 # ── Progress accessors ────────────────────────────────────────────────────────
@@ -166,48 +129,6 @@ def _minimal_row(
         "analyzed":        False,
         "updated_at":      None,
     }
-# ── Score one stock ───────────────────────────────────────────────────────────
-
-def _score_one(symbol: str) -> dict | None:
-    """Score a single stock from cache or fresh fetch. Returns row dict or None."""
-    try:
-        cached_sec = db.get_sec_facts(symbol)
-        if not cached_sec:
-            return None   # not yet populated by the worker — skip for now
-
-        g    = graham.score(None, cached_sec)
-        q    = quality.score(cached_sec)
-        comp = scorer.fundamental_only(g, q)
-
-        return {
-            "market_code":      "US",
-            "symbol":          symbol,
-            "name":            security.sanitize_string(cached_sec.get("name", symbol), max_length=200) if cached_sec.get("name") else symbol,
-            "sector":          cached_sec.get("sector", "Unknown"),
-            "graham_score":    g["total_score"],
-            "graham_max":      g["total_max"],
-            "graham_pct":      comp["graham_pct"],
-            "quality_score":   q["total_score"],
-            "quality_max":     q["total_max"],
-            "quality_pct":     comp["quality_pct"],
-            "composite_score": comp["composite_score"],
-            "verdict":         comp["verdict"],
-            "verdict_label":   comp["verdict_label"],
-            "roe":             q.get("roe"),
-            "op_margin":       q.get("op_margin"),
-            "eps_years":       g.get("eps_years", 0),
-            "div_years":       g.get("div_years", 0),
-            # ── Enriched after full analysis ──────────────────────────────────
-            "graham_number":   None,
-            "buffett_iv":      None,
-            "market_cap":      None,
-            "price":           None,
-            "analyzed":        False,
-             "updated_at":      None,
-        }
-    except Exception:
-        return None
-
 def get_sector_avg_momentum(sector: str, exclude_symbol: str | None = None) -> float | None:
     """
     Live-computed peer-sector average 12M (skip-month) return, from
@@ -217,10 +138,10 @@ def get_sector_avg_momentum(sector: str, exclude_symbol: str | None = None) -> f
     if not sector:
         return None
     rets = []
-    for sym in db.list_analysis_tickers():
+    for sym, entry in db.list_analysis_entries().items():
         if sym == exclude_symbol:
             continue
-        data = db.get_analysis(sym)
+        data = entry["data"]
         if not data or data.get("sector") != sector:
             continue
         r = (data.get("momentum") or {}).get("return_12m")
@@ -384,8 +305,8 @@ def load_universe_background(tickers: list[str] | None = None):
 # ── Enrich screener rows from persisted analysis cache ───────────────────────
 
 def _enrich_from_analysis_cache() -> int:
-    analysis_symbols = db.list_analysis_tickers()
-    if not analysis_symbols:
+    analysis_entries = db.list_analysis_entries()
+    if not analysis_entries:
         return 0
 
     with _lock:
@@ -395,10 +316,7 @@ def _enrich_from_analysis_cache() -> int:
         }
 
     enriched = 0
-    for sym in analysis_symbols:
-        entry = db.get_analysis_entry(sym)
-        if not entry:
-            continue
+    for sym, entry in analysis_entries.items():
         data = entry["data"]
         if not data or "error" in data:
             continue
