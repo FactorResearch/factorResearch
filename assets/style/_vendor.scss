@@ -1,6 +1,19 @@
 @use 'helpers' as *;
 @use 'tokens' as *;
 
+.dash-dropdown-wrapper {
+  > .dash-dropdown-focus-target {
+    position: fixed !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    clip-path: inset(50%);
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+}
+
 button.dash-dropdown {
   color-scheme: dark;
   min-height: 48px;

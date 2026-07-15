@@ -253,6 +253,17 @@ body.light .stability-component-row {
     line-height: 1.5;
   }
 }
+.dash-dropdown-wrapper > .dash-dropdown-focus-target {
+  position: fixed !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  clip-path: inset(50%);
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
 button.dash-dropdown {
   color-scheme: dark;
   min-height: 48px;
@@ -624,6 +635,15 @@ body.light .app-footer {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.analyze-ticker-input {
+  flex: 1 1 520px;
+}
+.analyze-ticker-input .ticker-input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
 }
 
 .ticker-input,

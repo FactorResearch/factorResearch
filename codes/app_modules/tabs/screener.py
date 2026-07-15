@@ -301,12 +301,10 @@ def open_full_analysis_from_peek(n_clicks, symbol):
 
 @callback(
     Output("index-filter", "data", allow_duplicate=True),
-    Output("sector-filter", "value", allow_duplicate=True),
     Input("url", "pathname"),
-    Input("url", "search"),
     prevent_initial_call=True
 )
-def reset_filters_for_market(pathname, search):
+def reset_index_filter_for_market(pathname):
     market = market_from_path(pathname)
     try:
         product_analytics.track_event(
@@ -316,7 +314,16 @@ def reset_filters_for_market(pathname, search):
         )
     except Exception:
         pass
-    return [], _sector_from_search(search)
+    return []
+
+
+@callback(
+    Output("sector-filter", "value"),
+    Input("url", "pathname"),
+    Input("url", "search"),
+)
+def apply_sector_filter_from_url(_pathname, search):
+    return _sector_from_search(search)
 
 
 @callback(
