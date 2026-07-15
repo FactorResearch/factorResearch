@@ -9,7 +9,7 @@ from codes import security
 from codes.data import db
 from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.config import (
-    AMBER, BLUE, BORDER, DARK, GREEN, MUTED, RED, TEXT,
+    AMBER, BLUE, GREEN, MUTED, RED,
     validate_portfolio_name,
 )
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
@@ -189,33 +189,29 @@ def render_portfolio_holdings(active, refresh):
             for h in holdings.values()
         )
         # ── Summary cards ──
-        avg_score = 0
-        scored = 0
-        for sym, h in holdings.items():
-            ca = db.get_analysis(sym)
-            if ca and ca.get("composite_score"):
-                avg_score += ca["composite_score"]
-                scored += 1
-        avg_score = avg_score / scored if scored else 0
+        analysis_entries = db.get_analysis_entries(holdings)
+        analyses = {
+            symbol: (analysis_entries.get(symbol) or {}).get("data")
+            for symbol in holdings
+        }
+        scores = [
+            analysis["composite_score"]
+            for analysis in analyses.values()
+            if analysis and analysis.get("composite_score") is not None
+        ]
+        avg_score = sum(scores) / len(scores) if scores else 0
+        summary = (
+            (f"${total_value:,.0f}", "Total Value", ""),
+            (f"${total_invested:,.0f}", "Invested", ""),
+            (f"{avg_score:.1f}", "Avg Score", "clr-green" if avg_score >= 50 else "clr-amber" if avg_score >= 35 else "clr-red"),
+            (str(count), "Holdings", ""),
+        )
         summary_cards = html.Div(className="portfolio-summary", children=[
             html.Div(className="portfolio-summary-card", children=[
-                html.Div(f"${total_value:,.0f}", className="portfolio-summary-value"),
-                html.Div("Total Value", className="portfolio-summary-label"),
-            ]),
-            html.Div(className="portfolio-summary-card", children=[
-                html.Div(f"${total_invested:,.0f}", className="portfolio-summary-value"),
-                html.Div("Invested", className="portfolio-summary-label"),
-            ]),
-            html.Div(className="portfolio-summary-card", children=[
-                html.Div(f"{avg_score:.1f}", className="portfolio-summary-value " + (
-                    "clr-green" if avg_score >= 50 else "clr-amber" if avg_score >= 35 else "clr-red"
-                )),
-                html.Div("Avg Score", className="portfolio-summary-label"),
-            ]),
-            html.Div(className="portfolio-summary-card", children=[
-                html.Div(f"{count}", className="portfolio-summary-value"),
-                html.Div("Holdings", className="portfolio-summary-label"),
-            ]),
+                html.Div(value, className=f"portfolio-summary-value {tone}".strip()),
+                html.Div(label, className="portfolio-summary-label"),
+            ])
+            for value, label, tone in summary
         ])
         # ── Holdings table ──
         rows = []
@@ -228,14 +224,10 @@ def render_portfolio_holdings(active, refresh):
             gain_class = "pos" if gain_pct >= 0 else "neg"
 
             sharpe_val = None
-            cached_analysis = db.get_analysis(sym)
+            cached_analysis = analyses[sym]
             if cached_analysis:
                 sharpe_val = (cached_analysis.get("risk") or {}).get("sharpe")
             sharpe_str = f"{sharpe_val:.2f}" if sharpe_val is not None else "—"
-            sharpe_color = GREEN if (sharpe_val is not None and sharpe_val >= 1.0) else (
-                AMBER if (sharpe_val is not None and sharpe_val >= 0) else RED
-                if sharpe_val is not None else MUTED
-            )
             sharpe_class = (
                 "clr-green" if sharpe_val is not None and sharpe_val >= 1.0 else
                 "clr-amber" if sharpe_val is not None and sharpe_val >= 0 else
@@ -387,7 +379,7 @@ def _two_col(left, right) -> html.Div:
     )
 
 
-def _comparison_stats_row(port_name: str, bt: dict) -> html.Div:
+def _comparison_stats_row(bt: dict) -> html.Div:
     """Single-portfolio summary stats row (reused for side-by-side display)."""
     if bt.get("error"):
         return html.Div(f"❌ {bt['error']}", className="text-danger")
@@ -441,7 +433,6 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
         return html.Div()
     detail_rows = []
     for sym, d in bt["holdings_detail"].items():
-        gain_color = GREEN if d["gain_pct"] >= 0 else RED
         factor = d.get("split_factor", 1.0)
         orig   = d.get("original_shares", d["shares"])
         if factor and factor != 1.0 and orig:
@@ -515,8 +506,6 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
     for sym in wl["ranking"]:
         d       = wl["holdings"][sym]
         verdict = d["verdict"]
-        v_col   = (RED   if verdict == "weak link"   else
-                   GREEN if verdict == "contributor" else MUTED)
         v_icon  = ("⚠️"  if verdict == "weak link"   else
                    "✅" if verdict == "contributor" else "—")
         wl_rows.append(html.Tr([
@@ -603,8 +592,8 @@ def _build_comparison_view(user_id: str, active: str, compare: str, cmp_result: 
 
     # ── Side-by-side stats ───────────────────────────────────────────────
     sections.append(_two_col(
-        _comparison_stats_row(active, bt_a),
-        _comparison_stats_row(compare, bt_b),
+        _comparison_stats_row(bt_a),
+        _comparison_stats_row(bt_b),
     ))
 
     # ── Combined backtest chart (A + B + single SPY line) ───────────────
@@ -850,48 +839,8 @@ def run_simulation(n, active, compare):
         bt = sim["backtest"]
         mc = sim["montecarlo"]
         components = []
-        # ── Summary stats row ──────────────────────────────────────────────
-        def _delta(val, ref):
-            d = val - ref
-            sign = "+" if d >= 0 else ""
-            delta_class = "clr-green fs-12" if d >= 0 else "clr-red fs-12"
-            return html.Span(f" ({sign}${d:,.0f})", className=delta_class)
         if not bt.get("error"):
-            components.append(html.Div(className="portfolio-stats-row", children=[
-                html.Div(className="stat-item", children=[
-                    html.Div("Invested", className="stat-label"),
-                    html.Div(f"${bt['total_invested']:,.2f}", className="stat-value"),
-                ]),
-                html.Div(className="stat-item", children=[
-                    html.Div("Portfolio Value", className="stat-label"),
-                    html.Div([
-                        html.Span(f"${bt['final_value']:,.2f}", className="stat-value"),
-                        _delta(bt["final_value"], bt["total_invested"]),
-                    ]),
-                ]),
-                html.Div(className="stat-item", children=[
-                    html.Div("SPY (same $)", className="stat-label"),
-                    html.Div([
-                        html.Span(f"${bt['final_spy']:,.2f}", className="stat-value"),
-                        _delta(bt["final_spy"], bt["spy_invested"]),
-                    ]),
-                ]),
-                html.Div(className="stat-item", children=[
-                    html.Div("Portfolio CAGR", className="stat-label"),
-                    html.Div(f"{bt['cagr']:+.1f}%", className="stat-value "
-                             + ("clr-green" if bt["cagr"] > 0 else "clr-red")),
-                ]),
-                html.Div(className="stat-item", children=[
-                    html.Div("SPY CAGR", className="stat-label"),
-                    html.Div(f"{bt['spy_cagr']:+.1f}%", className="stat-value "
-                             + ("clr-green" if bt["spy_cagr"] > 0 else "clr-red")),
-                ]),
-                html.Div(className="stat-item", children=[
-                    html.Div("vs SPY", className="stat-label"),
-                    html.Div(f"{bt['cagr'] - bt['spy_cagr']:+.1f}% / yr", className="stat-value "
-                             + ("clr-green" if bt["cagr"] > bt["spy_cagr"] else "clr-red")),
-                ]),
-            ]))
+            components.append(_comparison_stats_row(bt))
         # ── Backtest chart ─────────────────────────────────────────────────
         if not bt.get("error"):
             fig_bt = go.Figure()
@@ -954,132 +903,10 @@ def run_simulation(n, active, compare):
                 config={"displayModeBar": False, "responsive": True},
                 className="portfolio-graph",
             ))
-        # ── Holdings detail table ──────────────────────────────────────────
         if not bt.get("error") and bt.get("holdings_detail"):
-            detail_rows = []
-            for sym, d in bt["holdings_detail"].items():
-                gain_color = GREEN if d["gain_pct"] >= 0 else RED
-                # Build shares cell — show split badge when a forward split occurred
-                factor = d.get("split_factor", 1.0)
-                orig   = d.get("original_shares", d["shares"])
-                if factor and factor != 1.0 and orig:
-                    split_label = f"÷{1/factor:.0f}" if factor < 1 else f"×{factor:.4g}"
-                    shares_cell = html.Td([
-                        str(d["shares"]),
-                        html.Span(
-                            f" (split {split_label})",
-                            className="fs-11 clr-amber ml-4"
-                        ),
-                    ])
-                else:
-                    shares_cell = html.Td(str(d["shares"]))
-                detail_rows.append(html.Tr([
-                    html.Td(sym, className="font-semibold text-info"),
-                    shares_cell,
-                    html.Td(f"${d['entry_price']:.2f}"),
-                    html.Td(f"${d['current_price']:.2f}"),
-                    html.Td(f"${d['current_value']:,.2f}"),
-                    html.Td(f"{d['gain_pct']:+.1f}%",
-                            className="clr-green" if d["gain_pct"] >= 0 else "clr-red"),
-                ]))
-            components.append(html.Div(className="scorecard", children=[
-                html.Div("Holdings Performance (10yr backtest period)", className="scorecard-header"),
-                html.Table(className="screener-table", children=[
-                    html.Thead(html.Tr([
-                        html.Th("Ticker"), html.Th("Shares"),
-                        html.Th("Entry Price"), html.Th("Exit Price"),
-                        html.Th("Value"), html.Th("Total Return"),
-                    ])),
-                    html.Tbody(detail_rows),
-                ]),
-            ]))
-        # ── Weak-link analysis ─────────────────────────────────────────────
+            components.append(_comparison_holdings_table(bt))
         if not bt.get("error"):
-            p_obj = portfolio_engine.load_portfolio(uid,port_name)
-            if p_obj:
-                wl = portfolio_engine.analyze_weak_links(p_obj, bt)
-                if wl.get("error"):
-                    components.append(html.Div(
-                        f"⚠️  Weak-link analysis unavailable: {wl['error']}",
-                        className="clr-muted fs-13 py-8 px-4"
-                    ))
-                else:
-                    gap      = wl["gap_cagr"]
-                    gap_col  = GREEN if gap >= 0 else RED
-                    gap_text = (
-                        f"Portfolio CAGR {wl['port_cagr']:+.1f}%  vs  "
-                        f"SPY {wl['spy_cagr']:+.1f}%  —  {gap:+.2f}% / yr gap "
-                        f"over {wl['n_years']:.1f} yr"
-                    )
-                    # Banner: weakest link callout OR all-clear
-                    if wl.get("weakest"):
-                        ws  = wl["weakest"]
-                        wd  = wl["holdings"][ws]
-                        banner = html.Div(
-                            f"⚠️  Weakest link: {ws} — "
-                            f"replacing it with SPY would have improved total returns "
-                            f"by +{wd['swap_delta_pct']:.2f}%",
-                            className="portfolio-weak-link-alert portfolio-weak-link-alert--danger br-6 px-14 py-8 mb-12 fs-13 fw-600"
-                        )
-                    else:
-                        banner = html.Div(
-                            "✅  No weak links — every holding beat SPY over the backtest period.",
-                            className="portfolio-weak-link-alert portfolio-weak-link-alert--safe br-6 px-14 py-8 mb-12 fs-13 fw-600"
-                        )
-                    # Per-holding rows — worst to best (ranking is worst-first)
-                    wl_rows = []
-                    for sym in wl["ranking"]:
-                        d       = wl["holdings"][sym]
-                        verdict = d["verdict"]
-                        v_col   = (RED   if verdict == "weak link"   else
-                                   GREEN if verdict == "contributor" else MUTED)
-                        v_icon  = ("⚠️"  if verdict == "weak link"   else
-                                   "✅" if verdict == "contributor" else "—")
-                        wl_rows.append(html.Tr([
-                            html.Td(sym,
-                                    className="font-semibold text-info"),
-                            html.Td(f"{d['weight']:.1f}%"),
-                            html.Td(f"{d['stock_cagr']:+.1f}%",
-                                    className="clr-green" if d["stock_cagr"] >= 0 else "clr-red"),
-                            html.Td(f"{d['cagr_vs_spy']:+.1f}%",
-                                    className="clr-green" if d["cagr_vs_spy"] >= 0 else "clr-red"),
-                            html.Td(f"{d['drag_bps']:+.1f}",
-                                    className="clr-green" if d["drag_bps"] >= 0 else "clr-red"),
-                            html.Td(f"{d['swap_delta_pct']:+.2f}%",
-                                    className="clr-green" if d["swap_delta_pct"] <= 0 else "clr-red"),
-                            html.Td(
-                                f"{v_icon} {verdict}",
-                                className=(
-                                    "clr-red fw-600" if verdict == "weak link" else
-                                    "clr-green fw-600" if verdict == "contributor" else
-                                    "clr-muted fw-600"
-                                )
-                            ),
-                        ]))
-                    components.append(html.Div(className="scorecard", children=[
-                        html.Div("🔍 Weak Link Analysis", className="scorecard-header"),
-                        html.Div(gap_text, className=f"fs-13 mb-14 px-4 {tone_class(gap_col)}"),
-                        banner,
-                        html.Table(className="screener-table", children=[
-                            html.Thead(html.Tr([
-                                html.Th("Ticker"),
-                                html.Th("Weight"),
-                                html.Th("Stock CAGR"),
-                                html.Th("vs SPY"),
-                                html.Th("Drag (bps)"),
-                                html.Th("Swap Δ"),
-                                html.Th("Verdict"),
-                            ])),
-                            html.Tbody(wl_rows),
-                        ]),
-                        html.Div(
-                            "Table sorted worst-to-best.  "
-                            "Drag (bps): weighted annualised underperformance vs SPY (negative = drag).  "
-                            "Swap Δ: total-return change if this stock were replaced with SPY "
-                            "(positive = stock was a drag; negative = stock beat SPY).",
-                            className="analysis-copy-leading fs-11 clr-muted mt-10 px-4",
-                        ),
-                    ]))
+            components.append(_comparison_weak_link_card(uid, port_name, bt))
         return components
     PALETTE = [BLUE, GREEN, AMBER, "#e040fb", "#00bcd4"]
     if compare and compare != active:

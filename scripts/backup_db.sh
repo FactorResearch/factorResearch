@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dumps all 4 factorresearch databases and encrypts each backup file.
+# Streams all 3 authoritative PostgreSQL databases into encrypted backups.
 #
 # Requires:
 #   BACKUP_ENCRYPTION_KEY  — 32+ char passphrase (store in secrets manager, NOT in repo)
@@ -31,11 +31,16 @@ if [ -z "${BACKUP_ENCRYPTION_KEY:-}" ]; then
     echo "ERROR: BACKUP_ENCRYPTION_KEY not set. Refusing to write unencrypted backups." >&2
     exit 1
 fi
+for required_url in DATABASE_USERS_URL DATABASE_MARKET_URL; do
+    if [ -z "${!required_url:-}" ]; then
+        echo "ERROR: $required_url is required for a complete backup." >&2
+        exit 1
+    fi
+done
 
 DBS=(
     "factorresearch_users:${DATABASE_USERS_URL:-}"
     "factorresearch_market:${DATABASE_MARKET_URL:-}"
-    "factorresearch_jobs:${DATABASE_JOBS_URL:-}"
     "factorresearch_analytics:${DATABASE_ANALYTICS_URL:-}"
 )
 
@@ -48,24 +53,22 @@ for entry in "${DBS[@]}"; do
         continue
     fi
 
-    raw_file="$BACKUP_DIR/${name}_${TIMESTAMP}.sql"
-    enc_file="${raw_file}.enc"
+    enc_file="$BACKUP_DIR/${name}_${TIMESTAMP}.dump.enc"
+    pending_file="${enc_file}.pending"
+    trap 'rm -f "${pending_file:-}"' EXIT
 
-    echo "Dumping $name..."
-    pg_dump "$url" --format=custom --file="$raw_file"
-
-    echo "Encrypting $name backup..."
-    openssl enc -aes-256-cbc -pbkdf2 -salt \
-        -in "$raw_file" -out "$enc_file" \
-        -pass "pass:${BACKUP_ENCRYPTION_KEY}"
-
-    # Never leave the plaintext dump on disk
-    rm -f "$raw_file"
+    echo "Streaming encrypted backup for $name..."
+    rm -f "$pending_file"
+    pg_dump "$url" --format=custom | openssl enc -aes-256-cbc -pbkdf2 -salt \
+        -out "$pending_file" -pass env:BACKUP_ENCRYPTION_KEY
+    test -s "$pending_file"
+    mv "$pending_file" "$enc_file"
+    pending_file=""
 
     echo "✅ $name backed up -> $enc_file"
 done
 
 # Optional: prune backups older than 30 days
-find "$BACKUP_DIR" -name "*.sql.enc" -mtime +30 -delete
+find "$BACKUP_DIR" -name "*.dump.enc" -mtime +"${BACKUP_RETENTION_DAYS:-30}" -delete
 
 echo "Backup complete."

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "alerts": [
+    {"id":"slo-fast-burn","severity":"critical","owner":"on-call","condition":"error_ratio > 0.02 for 5m and 1h_error_budget_burn > 14.4","runbook":"runbooks/service-degradation.md"},
+    {"id":"slo-slow-burn","severity":"high","owner":"on-call","condition":"6h_error_budget_burn > 6","runbook":"runbooks/service-degradation.md"},
+    {"id":"database-unavailable","severity":"critical","owner":"data-platform","condition":"database pool unavailable for 2m or utilization >= 0.95 for 5m","runbook":"runbooks/database.md"},
+    {"id":"redis-unavailable","severity":"high","owner":"platform","condition":"Redis health unavailable for 5m","runbook":"runbooks/redis.md"},
+    {"id":"provider-circuit-open","severity":"high","owner":"data-platform","condition":"provider circuit open for 10m or provider error ratio > 0.20 for 10m","runbook":"runbooks/provider.md"},
+    {"id":"analysis-backlog","severity":"high","owner":"platform","condition":"oldest queued job > 300s or dead_letter > 0","runbook":"runbooks/queue.md"},
+    {"id":"authentication-failure","severity":"critical","owner":"security","condition":"authentication failure ratio > 0.10 for 5m","runbook":"runbooks/authentication.md"},
+    {"id":"billing-webhook-delay","severity":"high","owner":"payments","condition":"oldest unprocessed webhook > 300s or verification failure > 0","runbook":"runbooks/billing.md"},
+    {"id":"model-integrity-failure","severity":"critical","owner":"model-integrity","condition":"golden-set failure or model failure ratio > 0.05 for 10m","runbook":"runbooks/model-data.md"},
+    {"id":"cache-disk-pressure","severity":"high","owner":"platform","condition":"disk utilization > 0.90 or cache decode failures > 5 in 10m","runbook":"runbooks/cache-disk.md"},
+    {"id":"telemetry-absent","severity":"critical","owner":"platform","condition":"no production heartbeat for 5m","runbook":"runbooks/service-degradation.md"},
+    {"id":"secret-compromise","severity":"critical","owner":"security","condition":"manual declaration or secret scanner confirms exposure","runbook":"runbooks/secret-compromise.md"}
+  ]
+}

@@ -20,31 +20,31 @@ class CanadaDatabaseDataSource(CanadaDataSource):
     """Read normalized Canada facts from the market database."""
 
     def get_company_profile(self, symbol: str) -> dict[str, Any] | None:
-        return db.get_canada_company_profile(normalize_canada_symbol(symbol))
+        return db.get_market_company_profile("CA", normalize_canada_symbol(symbol))
 
     def get_financial_periods(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_financial_periods(normalize_canada_symbol(symbol))
+        return db.get_market_financial_periods("CA", normalize_canada_symbol(symbol))
 
     def get_income_statements(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_statement_facts(normalize_canada_symbol(symbol), "income")
+        return db.get_market_statement_facts("CA", normalize_canada_symbol(symbol), "income")
 
     def get_balance_sheets(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_statement_facts(normalize_canada_symbol(symbol), "balance")
+        return db.get_market_statement_facts("CA", normalize_canada_symbol(symbol), "balance")
 
     def get_cash_flows(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_statement_facts(normalize_canada_symbol(symbol), "cash_flow")
+        return db.get_market_statement_facts("CA", normalize_canada_symbol(symbol), "cash_flow")
 
     def get_filings(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_filings(normalize_canada_symbol(symbol))
+        return db.get_market_source_documents("CA", normalize_canada_symbol(symbol))
 
     def get_shares_outstanding(self, symbol: str) -> dict[str, Any] | None:
-        return db.get_canada_shares_outstanding(normalize_canada_symbol(symbol))
+        return db.get_market_shares_outstanding("CA", normalize_canada_symbol(symbol))
 
     def get_source_documents(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_source_documents(normalize_canada_symbol(symbol))
+        return db.get_market_source_documents("CA", normalize_canada_symbol(symbol))
 
     def get_statement_provenance(self, symbol: str) -> list[dict[str, Any]]:
-        return db.get_canada_statement_provenance(normalize_canada_symbol(symbol))
+        return db.get_market_statement_provenance("CA", normalize_canada_symbol(symbol))
 
 
 def ingest_verified_canada_financials(
@@ -66,7 +66,8 @@ def ingest_verified_canada_financials(
     provider = CanadaProviderAdapter(source)
     result = build_canada_scoring_facts(provider, normalized_symbol, allow_internal=allow_internal)
     screener_row = _public_screener_projection(result, financials)
-    db.upsert_canada_canonical_facts(
+    db.upsert_market_canonical_facts(
+        "CA",
         normalized_symbol,
         financials,
         shares,

@@ -34,7 +34,6 @@ Requires new sec_facts keys added to sec_data.py:
   ppe_net, cash
 """
 
-import math
 
 from codes.core import model_utils as mu
 
