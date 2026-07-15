@@ -254,6 +254,15 @@ Authentication must use a configured production provider and HTTPS. See
 `AUTHENTICATION_SETUP.md` for provider-specific settings. Session UUID fallback
 is for local development only.
 
+### Analysis performance
+
+- `ANALYSIS_BACKGROUND_JOBS=1` enables shared-context refresh and popular-stock precomputation. Set it on exactly one designated process, not every web worker.
+- `PRECOMPUTE_SYMBOLS=AAPL,MSFT` selects high-traffic symbols; otherwise cached symbols are refreshed.
+- `PRECOMPUTE_LIMIT=20` bounds each maintenance pass.
+- `ANALYSIS_REFRESH_SECONDS=3600` controls maintenance frequency, with a five-minute minimum.
+- `ANALYSIS_MAX_AGE_SECONDS=2592000` marks versioned records stale after 30 days while still serving them immediately.
+- `COMOMENTUM_WORKERS=4` bounds parallel market-history retrieval.
+
 ## Internal Canada Development
 
 To expose Canada locally, temporarily change `CA` to `true` in

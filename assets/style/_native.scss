@@ -1,0 +1,55 @@
+@use '../media';
+@use 'tokens' as *;
+
+.main-content,
+.screener-content {
+  animation: native-view-enter 220ms ease-out both;
+}
+
+.analysis-section:not(.analysis-section--overview) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 280px;
+}
+
+.analysis-disclosure-body,
+.quick-peek-content,
+.portfolio-workspace {
+  contain: layout paint;
+}
+
+._dash-loading-callback {
+  cursor: progress;
+}
+
+.dash-spinner {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+@keyframes native-view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@include media.reduced-motion {
+  .main-content,
+  .screener-content {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

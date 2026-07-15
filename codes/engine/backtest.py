@@ -36,7 +36,6 @@ walk-forward returns.
 
 from __future__ import annotations
 
-import math
 from typing import Any, Callable
 from . import factor_snapshot
 import numpy as np
@@ -80,8 +79,8 @@ def _build_price_matrix(symbols: list[str], years: int) -> pd.DataFrame:
 def _load_cached_universe() -> dict[str, dict]:
     """All symbols with a persisted full `analysis` result (Postgres, shared cache)."""
     out = {}
-    for sym in db.list_analysis_tickers():
-        data = db.get_analysis(sym)
+    for sym, entry in db.list_analysis_entries().items():
+        data = entry["data"]
         if data and "error" not in data:
             out[sym] = data
     return out
@@ -254,6 +253,8 @@ def score_filtered(min_score: float = 65.0, top_n: int = 20, years: int = 5,
                 "look_ahead_bias": True}
 
     fallback_used = {"flag": False}
+    snapshot_history = factor_snapshot.load_history(candidates)
+    top_n = max(MIN_STOCKS, min(MAX_TOP_N, int(top_n)))
 
     def _today_composite(sym: str) -> float | None:
         data = universe[sym]
@@ -261,9 +262,9 @@ def score_filtered(min_score: float = 65.0, top_n: int = 20, years: int = 5,
         comp = data.get("composite") or {}
         return enhanced.get("composite_score") or comp.get("composite_score")
 
-    def qualify(sym: str, as_of: str) -> bool | None:
-        if factor_snapshot.has_sufficient_history(sym):
-            scores = factor_snapshot.get_factor_scores_asof(sym, as_of)
+    def qualify(sym: str, as_of: str) -> float | None:
+        if factor_snapshot.history_has_sufficient_dates(snapshot_history, sym):
+            scores = factor_snapshot.history_scores_asof(snapshot_history, sym, as_of)
             usable = {k: v for k, v in scores.items() if v.get("max_score")}
             if usable:
                 total_w = sum(ENHANCED_WEIGHTS.get(k, 0) for k in usable)
@@ -272,13 +273,16 @@ def score_filtered(min_score: float = 65.0, top_n: int = 20, years: int = 5,
                         (v["score"] / v["max_score"] * 100) * ENHANCED_WEIGHTS.get(k, 0)
                         for k, v in usable.items()
                     )
-                    return (raw / total_w) >= min_score
+                    score = raw / total_w
+                    return score if score >= min_score else None
         # Fallback: today's score, applied retroactively (biased)
         fallback_used["flag"] = True
         today_score = _today_composite(sym)
-        return today_score is not None and today_score >= min_score
+        return today_score if today_score is not None and today_score >= min_score else None
 
-    result = _rebalanced_dynamic_qualify_backtest(candidates, years, rebalance_months, qualify)
+    result = _rebalanced_dynamic_qualify_backtest(
+        candidates, years, rebalance_months, qualify, max_holdings=top_n
+    )
     result.update({
         "strategy":         "score_filtered",
         "min_score":        min_score,
@@ -308,6 +312,7 @@ def factor_combo(min_piotroski: int = 7, min_graham_pct: float = 50.0,
                 "look_ahead_bias": True}
 
     fallback_used = {"flag": False}
+    snapshot_history = factor_snapshot.load_history(candidates)
 
     def _today_fcf_positive(sym: str) -> bool:
         fcf = universe[sym].get("fcf_quality") or {}
@@ -316,8 +321,8 @@ def factor_combo(min_piotroski: int = 7, min_graham_pct: float = 50.0,
 
     def qualify(sym: str, as_of: str) -> bool | None:
         graham_ok = piotroski_ok = None
-        if factor_snapshot.has_sufficient_history(sym):
-            scores = factor_snapshot.get_factor_scores_asof(sym, as_of)
+        if factor_snapshot.history_has_sufficient_dates(snapshot_history, sym):
+            scores = factor_snapshot.history_scores_asof(snapshot_history, sym, as_of)
             g = scores.get("graham")
             p = scores.get("piotroski")
             if g and g.get("max_score"):
@@ -348,68 +353,20 @@ def factor_combo(min_piotroski: int = 7, min_graham_pct: float = 50.0,
         "look_ahead_bias":  fallback_used["flag"],
     })
     return result
-# ── Shared rebalanced equal-weight backtest (used by score_filtered / factor_combo) ──
-
-def _rebalanced_equal_weight_backtest(symbols: list[str], years: int,
-                                       rebalance_months: int) -> dict[str, Any]:
-    wide = _build_price_matrix(symbols + ["SPY"], years)
-    if wide.empty or "SPY" not in wide.columns or len(wide) < 6:
-        return {"error": "Insufficient overlapping price history.", "values": [], "dates": []}
-
-    available = [s for s in symbols if s in wide.columns]
-    if len(available) < MIN_STOCKS:
-        return {"error": f"Only {len(available)} symbols have price history.", "values": [], "dates": []}
-
-    dates = wide.index.tolist()
-    rebalance_idx = list(range(0, len(wide), rebalance_months))
-    if rebalance_idx[-1] != len(wide) - 1:
-        rebalance_idx.append(len(wide) - 1)
-
-    port_values = [10_000.0]
-    spy_values  = [10_000.0]
-    port_dates  = [dates[0]]
-    spy_shares  = spy_values[0] / float(wide["SPY"].iloc[0])
-
-    for i in range(1, len(rebalance_idx)):
-        prev_i, this_i = rebalance_idx[i - 1], rebalance_idx[i]
-        valid = [s for s in available if pd.notna(wide[s].iloc[prev_i]) and wide[s].iloc[prev_i] > 0]
-        if not valid:
-            continue
-        alloc = port_values[-1] / len(valid)
-        shares = {s: alloc / float(wide[s].iloc[prev_i]) for s in valid}
-        pv = sum(sh * float(wide[s].iloc[this_i]) for s, sh in shares.items()
-                 if pd.notna(wide[s].iloc[this_i]))
-        port_values.append(pv if pv > 0 else port_values[-1])
-        spy_values.append(spy_shares * float(wide["SPY"].iloc[this_i]))
-        port_dates.append(dates[this_i])
-
-    metrics = _compute_risk_metrics(port_values, spy_values)
-    return {
-        "dates":            [d.strftime("%Y-%m-%d") for d in port_dates],
-        "values":           [round(v, 2) for v in port_values],
-        "spy_values":       [round(v, 2) for v in spy_values],
-        "symbols":          available,
-        "n_stocks":         len(available),
-        "rebalance_months": rebalance_months,
-        **metrics,
-        "error": None,
-    }
-
 def _rebalanced_dynamic_qualify_backtest(
     candidate_symbols: list[str],
     years: int,
     rebalance_months: int,
-    qualify_fn,  # (symbol: str, as_of: str) -> bool | None  (None = "no data, skip")
+    qualify_fn,
+    max_holdings: int | None = None,
 ) -> dict[str, Any]:
     """
     Like _rebalanced_equal_weight_backtest, but re-evaluates which symbols
     qualify AT EACH REBALANCE DATE via qualify_fn, instead of using a
     single fixed symbol list for the whole window (ISSUE_012 Layer 5).
 
-    qualify_fn returns True/False using factor_snapshot data when available
-    for that symbol/date, or None to indicate no snapshot exists yet (the
-    caller decides whether to fall back to today's score before calling in,
-    and reports that via used_fallback in the return dict).
+    qualify_fn returns a truthy rank or None. Numeric ranks are sorted before
+    max_holdings is applied; boolean screens preserve candidate order.
     """
     wide = _build_price_matrix(candidate_symbols + ["SPY"], years)
     if wide.empty or "SPY" not in wide.columns or len(wide) < 6:
@@ -428,14 +385,13 @@ def _rebalanced_dynamic_qualify_backtest(
     spy_values  = [10_000.0]
     port_dates  = [dates[0]]
     spy_shares  = spy_values[0] / float(wide["SPY"].iloc[0])
-    any_fallback_used = False
     last_qualifying: list[str] = []
 
     for i in range(1, len(rebalance_idx)):
         prev_i, this_i = rebalance_idx[i - 1], rebalance_idx[i]
         as_of = dates[prev_i].strftime("%Y-%m-%d")
 
-        qualifying = []
+        ranked = []
         for s in available:
             if pd.isna(wide[s].iloc[prev_i]) or wide[s].iloc[prev_i] <= 0:
                 continue
@@ -443,7 +399,11 @@ def _rebalanced_dynamic_qualify_backtest(
             if result is None:
                 continue  # no data at all — exclude rather than guess
             if result:
-                qualifying.append(s)
+                ranked.append((s, float(result)))
+
+        if max_holdings is not None:
+            ranked.sort(key=lambda item: item[1], reverse=True)
+        qualifying = [symbol for symbol, _rank in ranked[:max_holdings]]
 
         if not qualifying:
             qualifying = last_qualifying  # hold previous allocation if nothing qualifies this period
@@ -467,6 +427,7 @@ def _rebalanced_dynamic_qualify_backtest(
         "values":           [round(v, 2) for v in port_values],
         "spy_values":       [round(v, 2) for v in spy_values],
         "symbols":          available,
+        "final_symbols":    last_qualifying,
         "n_stocks":         len(available),
         "rebalance_months": rebalance_months,
         **metrics,
