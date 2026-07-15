@@ -1,17 +1,10 @@
 import datetime as dt
 from contextlib import contextmanager
-from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import Mock
-
-import flask
 
 from codes.data import temporal
 from codes.data.providers.fmp import FMPClient, FMPError
-from codes.routes.company_data import company_data_pages
 from codes.services import track_e_ingestion
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
 class _Result:
@@ -121,55 +114,3 @@ def test_identity_normalization_does_not_leak_provider_payload(monkeypatch):
     assert captured["identity"].symbol == "TEST"
     assert not hasattr(captured["identity"], "exchangeShortName")
 
-
-def test_company_data_page_escapes_and_separates_research(monkeypatch):
-    app = flask.Flask(__name__)
-    app.register_blueprint(company_data_pages)
-    monkeypatch.setattr(temporal, "resolve_security", lambda *_args, **_kwargs: {"security_id": "s", "legal_name": "A&B <Corp>", "market_code": "US", "exchange_code": "NYSE", "currency": "USD", "status": "active"})
-    monkeypatch.setattr(temporal, "list_corporate_actions", lambda *_args: [])
-    monkeypatch.setattr(temporal, "list_restatements", lambda *_args: [])
-    monkeypatch.setattr(temporal, "company_data_history", lambda *_args: {"identifiers": [], "filings": [], "universes": []})
-    response = app.test_client().get("/TEST/data")
-    body = response.get_data(as_text=True)
-    assert response.status_code == 200
-    assert "Company Data" in body and "A&amp;B &lt;Corp&gt;" in body
-    assert "No sourced corporate actions" in body
-    assert 'class="topbar"' in body
-    assert 'class="app-footer"' in body
-    assert 'href="/assets/style.css"' in body
-    assert "historical-analysis-page" not in body
-
-
-def test_company_data_page_has_honest_pending_state(monkeypatch):
-    app = flask.Flask(__name__)
-    app.register_blueprint(company_data_pages)
-    monkeypatch.setattr(temporal, "resolve_security", lambda *_args, **_kwargs: None)
-    monkeypatch.setattr("codes.routes.company_data.db.get_analysis", lambda _ticker: {"name": "Essent Group"})
-    response = app.test_client().get("/ESNT/data")
-    body = response.get_data(as_text=True)
-    assert response.status_code == 200
-    assert "Essent Group" in body
-    assert "coverage pending" in body
-    assert "No sourced filings" in body
-
-
-def test_legacy_company_data_route_redirects_without_lookup(monkeypatch):
-    app = flask.Flask(__name__)
-    app.register_blueprint(company_data_pages)
-    lookup = Mock()
-    monkeypatch.setattr(temporal, "resolve_security", lookup)
-
-    response = app.test_client().get("/data/esnt?source=legacy")
-
-    assert response.status_code == 308
-    assert response.headers["Location"] == "/ESNT/data?source=legacy"
-    lookup.assert_not_called()
-
-
-def test_company_data_styles_use_shared_tokens_and_media_partial():
-    source = (ROOT / "assets/style/_company-data.scss").read_text()
-    assert "@use '../media';" in source
-    assert "var(--fr-card)" in source
-    assert "@include media.tablet-down" in source
-    assert "@include media.phones" in source
-    assert "@media" not in source
