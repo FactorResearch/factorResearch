@@ -55,11 +55,11 @@ def test_uppercase_ticker_route_renders_company_history_without_slug_lookup():
     with patch("codes.routes.analyze.list_ticker_snapshots", return_value=[_official()]) as history, \
          patch("codes.routes.analyze.get_company_snapshots_by_slug") as snapshots, \
          patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None):
-        response = _client_with_dash_shell().get("/analyze/META")
+        response = _client_with_dash_shell().get("/AAPL")
 
     assert response.status_code == 200
     assert "FactorResearch History" in response.get_data(as_text=True)
-    history.assert_called_once_with("META", limit=12)
+    history.assert_called_once_with("AAPL", limit=12)
     snapshots.assert_not_called()
 
 
@@ -71,12 +71,12 @@ def test_dash_analysis_parser_accepts_bare_and_dated_ticker_urls():
 
 
 def test_ticker_page_bootstraps_first_snapshot_from_cached_official_analysis():
-    cached = {"symbol": "GOOGL", "name": "Alphabet Inc."}
+    cached = {"symbol": "AAPL", "name": "Apple Inc."}
     with patch("codes.routes.analyze.list_ticker_snapshots", side_effect=[[], [_official()]]) as history, \
          patch("codes.routes.analyze.db.get_analysis", return_value=cached), \
          patch("codes.routes.analyze.save_standard_snapshot") as save, \
          patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None):
-        response = _client().get("/analyze/GOOGL/")
+        response = _client().get("/AAPL/")
 
     assert response.status_code == 200
     assert "FactorResearch History" in response.get_data(as_text=True)
@@ -96,19 +96,19 @@ def test_company_page_falls_back_to_dash_when_snapshot_database_is_unavailable()
 
 
 def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private_data():
-    with patch("codes.routes.analyze.get_company_snapshots_by_slug", return_value=[_official()]), \
+    with patch("codes.routes.analyze.list_ticker_snapshots", return_value=[_official()]), \
          patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None), \
          patch("codes.routes.analyze.list_custom_snapshots") as custom:
-        response = _client().get("/analyze/apple")
+        response = _client().get("/AAPL")
 
     body = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "Apple Inc." in body and "(AAPL)" in body
     assert "FactorResearch History" in body
-    assert "/analyze/AAPL/20260709" in body
+    assert "/AAPL/analyze/20260709" in body
     assert 'href="/analyze/AAPL?tab=analyze">Analyze</a>' in body
     assert "Sign in and upgrade" in body
-    assert 'rel="canonical" href="http://localhost/analyze/apple"' in body
+    assert 'rel="canonical" href="http://localhost/AAPL"' in body
     assert "FactorResearch company dossier" in body
     assert "Company Research" in body
     assert "non-proprietary design elements" in body
@@ -219,11 +219,11 @@ def test_legacy_payload_fallback_uses_enhanced_verdict_table():
 
 def test_eligible_owner_sees_only_their_custom_history():
     allow = PermissionResult(True, Feature.BACKTEST, plan="premium", status="active")
-    with patch("codes.routes.analyze.get_company_snapshots_by_slug", return_value=[_official()]), \
+    with patch("codes.routes.analyze.list_ticker_snapshots", return_value=[_official()]), \
          patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value="user-1"), \
          patch("codes.routes.analyze.permissions.can_access_feature", return_value=allow), \
          patch("codes.routes.analyze.list_custom_snapshots", return_value=[_custom()]) as listing:
-        response = _client().get("/analyze/apple")
+        response = _client().get("/AAPL")
 
     assert response.status_code == 200
     assert "Durable Growth" in response.get_data(as_text=True)
@@ -237,9 +237,17 @@ def test_slug_date_route_resolves_company_to_internal_ticker():
          patch("codes.routes.analyze.list_related_snapshots", return_value={}):
         response = _client().get("/analyze/apple/2026-07-09")
 
-    assert response.status_code == 200
-    assert 'rel="canonical" href="http://localhost/analyze/apple/2026-07-09"' in response.get_data(as_text=True)
+    assert response.status_code == 308
+    assert response.headers["Location"] == "/AAPL/analyze/20260709"
     lookup.assert_called_once_with("AAPL", "20260709")
+
+
+def test_legacy_company_route_redirects_to_ticker_home():
+    with patch("codes.routes.analyze.get_company_snapshots_by_slug", return_value=[_official()]):
+        response = _client().get("/analyze/apple?page=2")
+
+    assert response.status_code == 308
+    assert response.headers["Location"] == "/AAPL?page=2"
 
 
 def test_custom_page_is_owner_scoped_and_noindex():

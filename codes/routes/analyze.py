@@ -130,11 +130,13 @@ def _custom_history_column(user_id: str | None, ticker: str) -> str:
     return '<section class="section-shell"><h2>My Custom Models</h2>' + "".join(cards) + '</section>'
 
 
+@analyze_pages.route("/<slug>", strict_slashes=False)
 @analyze_pages.route("/analyze/<slug>", strict_slashes=False)
 def company_analysis_page(slug: str):
     raw_slug = slug or ""
     ticker = raw_slug.upper() if raw_slug == raw_slug.upper() and _TICKER_RE.match(raw_slug) else None
-    if ticker and flask.request.args.get("tab") == "analyze":
+    legacy_route = flask.request.path.rstrip("/").startswith("/analyze/")
+    if legacy_route and ticker and flask.request.args.get("tab") == "analyze":
         fallback = _dash_shell_response()
         if fallback is not None:
             return fallback
@@ -163,6 +165,8 @@ def company_analysis_page(slug: str):
     latest = history[0]
     if not ticker and company_slug(latest.company_name) != slug:
         flask.abort(404)
+    if legacy_route or raw_slug != latest.ticker:
+        return _permanent_redirect(latest.company_path)
     theme = _theme_for(latest)
     motif = theme["motif"]
     canonical = _absolute_url(latest.company_path)
@@ -241,6 +245,11 @@ def _dash_shell_or_404():
     if response is not None:
         return response
     flask.abort(404)
+
+
+def _permanent_redirect(path: str):
+    query = flask.request.query_string.decode("ascii", errors="ignore")
+    return flask.redirect(f"{path}?{query}" if query else path, code=308)
 
 
 def _fmt(value, suffix: str = "") -> str:
@@ -565,16 +574,12 @@ def _structured_data(snapshot, canonical_url: str) -> str:
     return json.dumps(graph, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
+@analyze_pages.route("/<ticker>/analyze/<yyyymmdd>")
 @analyze_pages.route("/analyze/<ticker>/<yyyymmdd>")
 def historical_analysis_page(ticker: str, yyyymmdd: str):
     route_id = ticker or ""
     if not _DATE_RE.match(yyyymmdd):
         flask.abort(404)
-
-    if route_id == route_id.upper() and _TICKER_RE.match(route_id):
-        fallback = _dash_shell_response()
-        if fallback is not None:
-            return fallback
 
     ticker = route_id.upper()
     is_company_slug = route_id == route_id.lower() and _SLUG_RE.match(route_id)
@@ -598,6 +603,9 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     if snapshot is None:
         return _dash_shell_or_404()
 
+    if flask.request.path.startswith("/analyze/") or route_id != snapshot.ticker or yyyymmdd != snapshot.url_date:
+        return _permanent_redirect(snapshot.public_path)
+
     compare_date = flask.request.args.get("compare", "").strip()
     if compare_date and not _DATE_RE.match(compare_date):
         flask.abort(404)
@@ -616,10 +624,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     keywords = html.escape(snapshot.keywords)
     company = html.escape(snapshot.company_name)
     rating = html.escape(snapshot.final_rating)
-    canonical_url = _absolute_url(
-        snapshot.permanent_path if route_id.lower() == company_slug(snapshot.company_name)
-        else snapshot.public_path
-    )
+    canonical_url = _absolute_url(snapshot.public_path)
     url = html.escape(canonical_url)
     structured_data = _structured_data(snapshot, canonical_url)
     published = html.escape(

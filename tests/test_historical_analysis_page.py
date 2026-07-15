@@ -53,10 +53,10 @@ def test_historical_page_falls_back_to_dash_shell_when_snapshot_db_unavailable()
     app.add_url_rule("/<path:path>", endpoint="/<path:path>", view_func=dash_shell)
 
     with patch("codes.routes.analyze.get_snapshot", side_effect=RuntimeError("database missing")):
-        response = app.test_client().get("/analyze/NVDA/20260709")
+        response = app.test_client().get("/NVDA/analyze/20260709")
 
     assert response.status_code == 200
-    assert response.get_data(as_text=True) == "dash shell for analyze/NVDA/20260709"
+    assert response.get_data(as_text=True) == "dash shell for NVDA/analyze/20260709"
 
 
 def test_historical_page_renders_compare_picker_and_history_links():
@@ -66,7 +66,7 @@ def test_historical_page_renders_compare_picker_and_history_links():
     with patch("codes.routes.analyze.get_snapshot", return_value=current), \
          patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current, previous]), \
          patch("codes.routes.analyze.list_related_snapshots", return_value={}):
-        response = _client().get("/analyze/AAPL/20260708")
+        response = _client().get("/AAPL/analyze/20260708")
 
     assert response.status_code == 200
     body = response.get_data(as_text=True)
@@ -80,8 +80,8 @@ def test_historical_page_renders_compare_picker_and_history_links():
     assert "max-width: 960px;" in styles
     assert 'name="compare"' in body
     assert "2026-06-08 - FAVORABLE" in body
-    assert 'href="/analyze/AAPL/20260608"' in body
-    assert "/analyze/AAPL/20260708?compare=20260608" in body
+    assert 'href="/AAPL/analyze/20260608"' in body
+    assert "/AAPL/analyze/20260708?compare=20260608" in body
 
 
 def test_historical_page_renders_selected_comparison_deltas():
@@ -91,7 +91,7 @@ def test_historical_page_renders_selected_comparison_deltas():
     with patch("codes.routes.analyze.get_snapshot", side_effect=[current, previous]), \
          patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current, previous]), \
          patch("codes.routes.analyze.list_related_snapshots", return_value={}):
-        response = _client().get("/analyze/AAPL/20260708?compare=20260608")
+        response = _client().get("/AAPL/analyze/20260708?compare=20260608")
 
     assert response.status_code == 200
     body = response.get_data(as_text=True)
@@ -105,7 +105,7 @@ def test_historical_page_rejects_invalid_compare_date():
     current = _snapshot("20260708")
 
     with patch("codes.routes.analyze.get_snapshot", return_value=current):
-        response = _client().get("/analyze/AAPL/20260708?compare=not-a-date")
+        response = _client().get("/AAPL/analyze/20260708?compare=not-a-date")
 
     assert response.status_code == 404
 
@@ -125,15 +125,15 @@ def test_historical_page_renders_related_internal_links():
     with patch("codes.routes.analyze.get_snapshot", return_value=current), \
          patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current]), \
          patch("codes.routes.analyze.list_related_snapshots", return_value=related):
-        response = _client().get("/analyze/AAPL/20260708")
+        response = _client().get("/AAPL/analyze/20260708")
 
     assert response.status_code == 200
     body = response.get_data(as_text=True)
     assert "Similar Factor Stocks" in body
     assert "Technology Competitors" in body
     assert "Related Market Sectors" in body
-    assert 'href="/analyze/MSFT/20260708"' in body
-    assert 'href="/analyze/GOOGL/20260708"' in body
+    assert 'href="/MSFT/analyze/20260708"' in body
+    assert 'href="/GOOGL/analyze/20260708"' in body
     assert "Finance · HIGH CONVICTION" in body
 
 
@@ -143,7 +143,7 @@ def test_historical_page_renders_schema_org_json_ld():
     with patch("codes.routes.analyze.get_snapshot", return_value=current), \
          patch("codes.routes.analyze.list_ticker_snapshots", return_value=[current]), \
          patch("codes.routes.analyze.list_related_snapshots", return_value={}):
-        response = _client().get("/analyze/AAPL/20260708")
+        response = _client().get("/AAPL/analyze/20260708")
 
     assert response.status_code == 200
     body = response.get_data(as_text=True)
@@ -159,7 +159,7 @@ def test_historical_page_renders_schema_org_json_ld():
     article = schema["@graph"][0]
     assert article["@type"] == "Article"
     assert article["headline"] == "Apple Inc. Stock Analysis July 8 2026 | FactorResearch"
-    assert article["url"] == "http://localhost/analyze/AAPL/20260708"
+    assert article["url"] == "http://localhost/AAPL/analyze/20260708"
     assert article["about"]["@type"] == "Corporation"
     assert article["about"]["tickerSymbol"] == "AAPL"
 
@@ -172,3 +172,12 @@ def test_historical_page_renders_schema_org_json_ld():
     breadcrumbs = schema["@graph"][1]
     assert breadcrumbs["@type"] == "BreadcrumbList"
     assert breadcrumbs["itemListElement"][1]["name"] == "AAPL Analysis"
+
+
+def test_legacy_historical_route_redirects_to_canonical_path():
+    current = _snapshot("20260708")
+    with patch("codes.routes.analyze.get_snapshot", return_value=current):
+        response = _client().get("/analyze/AAPL/2026-07-08?compare=20260608")
+
+    assert response.status_code == 308
+    assert response.headers["Location"] == "/AAPL/analyze/20260708?compare=20260608"

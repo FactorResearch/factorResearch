@@ -79,15 +79,15 @@ class AnalysisSnapshot:
 
     @property
     def public_path(self) -> str:
-        return f"/analyze/{self.ticker}/{self.url_date}"
+        return f"/{self.ticker}/analyze/{self.url_date}"
 
     @property
     def company_path(self) -> str:
-        return f"/analyze/{company_slug(self.company_name)}"
+        return f"/{self.ticker}"
 
     @property
     def permanent_path(self) -> str:
-        return f"{self.company_path}/{self.analysis_date.isoformat()}"
+        return self.public_path
 
     @property
     def title(self) -> str:
