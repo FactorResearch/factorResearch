@@ -1,8 +1,9 @@
 @use 'helpers' as *;
 @use 'tokens' as *;
+@use '../media';
 
 .dash-dropdown-wrapper {
-  > .dash-dropdown-focus-target {
+  >.dash-dropdown-focus-target {
     position: fixed !important;
     width: 1px !important;
     height: 1px !important;
@@ -11,6 +12,25 @@
     clip-path: inset(50%);
     opacity: 0 !important;
     pointer-events: none;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  flex: 1 1 57%;
+  justify-content: flex-end;
+  @include media.tablet{
+        justify-content: left;
+  } 
+  @include media.phones{
+    justify-content: start;
+  }
+
+  .dash-dropdown-wrapper {
+    flex: 0 1 48%;
   }
 }
 
@@ -23,6 +43,7 @@ button.dash-dropdown {
   background: var(--fr-card-raised) !important;
   color: var(--fr-text) !important;
   box-shadow: none !important;
+  width: 100%;
 
   &:hover {
     border-color: var(--fr-border-strong) !important;
@@ -85,6 +106,9 @@ button.dash-dropdown {
     border-radius: $radius-sm;
     color: var(--fr-text-dim) !important;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 
     &:hover,
     &:focus-within {
@@ -99,8 +123,14 @@ button.dash-dropdown {
     }
   }
 
-  .dash-options-list-option-checkbox {
-    accent-color: var(--fr-accent-soft);
+  .dash-options-list {
+      &-virtualized{
+        height: 50vh !important;
+      }
+    &-option-checkbox {
+      accent-color: var(--fr-accent-soft);
+      border: none !important;
+    }
   }
 }
 
@@ -119,7 +149,7 @@ button.dash-dropdown {
 
   &.is-focused,
   &.is-open {
-    > .Select-control {
+    >.Select-control {
       border-color: var(--fr-accent) !important;
       box-shadow: 0 0 0 3px $blue-glow !important;
     }
@@ -128,7 +158,7 @@ button.dash-dropdown {
   &.is-disabled {
     opacity: 0.55;
 
-    > .Select-control {
+    >.Select-control {
       cursor: not-allowed;
     }
   }
@@ -150,7 +180,7 @@ button.dash-dropdown {
   }
 
   .Select-input {
-    > input {
+    >input {
       min-height: 0;
       padding: 0 !important;
       border: 0 !important;
@@ -231,6 +261,7 @@ input {
 }
 
 body.light {
+
   input,
   button.dash-dropdown,
   .dash-dropdown-content {
@@ -247,6 +278,7 @@ body.light {
     }
 
     .dash-dropdown-option {
+
       &:hover,
       &:focus-within {
         background: rgba($light-blue, 0.08);
@@ -261,12 +293,14 @@ body.light {
 
   .Select,
   .dash-dropdown {
+
     .Select-control,
     .Select-menu-outer {
       background: $light-surface !important;
     }
 
     .Select-option {
+
       &.is-focused,
       &:hover {
         background: rgba($light-blue, 0.08);
@@ -279,6 +313,7 @@ body.light {
   }
 
   input {
+
     &:-webkit-autofill,
     &:-webkit-autofill:hover,
     &:-webkit-autofill:focus {

@@ -143,14 +143,16 @@ def build_layout():
                         ),
                         dcc.Store(id="index-filter", data=[]),
                     ]),
+                    html.Div(className="filters",children=[
                     html.Label("Filter by sector:", htmlFor="sector-filter", className="text-sm text-muted"),
                     dcc.Dropdown(
                         id="sector-filter",
                         options=[{"label": "All Sectors", "value": ""}],
                         value="",
                         clearable=False,
-                        className="bg-card br-10 clr-text control-width-200",
+                        className="bg-card br-10 clr-text",
                     ),
+                    ]),
                 ]),
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),

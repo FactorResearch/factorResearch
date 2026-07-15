@@ -102,7 +102,9 @@ body.light {
   gap: 18px;
   margin-bottom: 18px;
 }
-
+.analyze-header{
+ align-items: center;
+}
 .analyze-ticker-input,
 .screener-controls {
   display: flex;
@@ -113,6 +115,8 @@ body.light {
 
 .analyze-ticker-input {
   flex: 1 1 520px;
+  flex-direction: row;
+    flex-wrap: nowrap;
 
   .ticker-input {
     flex: 1 1 auto;
@@ -134,8 +138,12 @@ body.light {
 .ticker-input {
   min-width: 220px;
   width: min(100%, 360px);
-  padding: 0 16px;
+  padding: 0px;
   background: var(--fr-card-raised) !important;
+  input{
+    width: 100%;
+        padding: 0px 10px;
+  }
 }
 
 .analyze-btn,

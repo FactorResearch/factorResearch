@@ -1,5 +1,5 @@
+@use './media';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap');
-
 :root {
   --accent: #448aff;
   --accent-2: #00b8d4;
@@ -38,6 +38,9 @@ a {
 
 .topbar {
   height: 64px;
+  @include media.phones{
+   height: 100%;
+  }
   border-bottom: 1px solid #1e2a3a;
   display: flex;
   align-items: center;
