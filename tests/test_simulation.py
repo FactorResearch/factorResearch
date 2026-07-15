@@ -19,6 +19,7 @@ from codes.portfolio import (
 class TestPortfolio(unittest.TestCase):
 
     def setUp(self):
+        self.user_id = "test-user"
         self.test_portfolio_name = "TestPortfolio"
 
     # ====================== SPLIT ADJUSTMENT ======================
@@ -69,25 +70,26 @@ class TestPortfolio(unittest.TestCase):
         mock_cache.clear.side_effect = mock_clear
 
         # Create portfolio
-        p = create_portfolio(self.test_portfolio_name)
+        p = create_portfolio(self.user_id, self.test_portfolio_name)
         self.assertEqual(p["name"], self.test_portfolio_name)
         self.assertIn("holdings", p)
 
         # Add holding
         with patch('codes.portfolio.api_fetcher') as mock_av:
             mock_av.get_price_history.return_value = pd.DataFrame()
-            updated, err = add_holding(self.test_portfolio_name, "AAPL", 10, 150.0, "Apple Inc.")
+            updated, err = add_holding(self.user_id, self.test_portfolio_name, "AAPL", 10, 150.0, "Apple Inc.")
             self.assertEqual(err, "", f"Add holding failed: {err}")
             self.assertIn("AAPL", updated["holdings"])
 
         # Remove holding
-        _, err = remove_holding(self.test_portfolio_name, "AAPL")
+        _, err = remove_holding(self.user_id, self.test_portfolio_name, "AAPL")
         self.assertEqual(err, "")
 
     # ====================== BACKTEST ======================
 
+    @patch('codes.portfolio._splits_since', return_value=[])
     @patch('codes.portfolio._load_history')
-    def test_run_backtest_basic(self, mock_load):
+    def test_run_backtest_basic(self, mock_load, _mock_splits):
         dates = pd.date_range('2023-01-01', periods=36, freq='ME')
         df = pd.DataFrame({
             'Date': dates,
@@ -160,9 +162,10 @@ class TestPortfolio(unittest.TestCase):
 
     # ====================== WEAK LINKS + FULL SIMULATION ======================
 
+    @patch('codes.portfolio._splits_since', return_value=[])
     @patch('codes.portfolio.run_backtest')
     @patch('codes.portfolio._load_history')
-    def test_analyze_weak_links(self, mock_load, mock_backtest):
+    def test_analyze_weak_links(self, mock_load, mock_backtest, _mock_splits):
         mock_backtest.return_value = {
             "cagr": 12.5, "spy_cagr": 10.0, "error": None,
             "holdings_detail": {"AAPL": {}}, "final_value": 50000
@@ -193,13 +196,13 @@ class TestPortfolio(unittest.TestCase):
         mock_bt.return_value = {"error": None, "final_value": 50000}
         mock_mc.return_value = {"error": None}
 
-        result = run_simulation("TestSim")
+        result = run_simulation(self.user_id, "TestSim")
         self.assertIn("backtest", result)
         self.assertIn("montecarlo", result)
 
     @patch('codes.portfolio.cache')
     def test_invalidate_cache(self, mock_cache):
-        invalidate_simulation_cache("TestPort")
+        invalidate_simulation_cache(self.user_id, "TestPort")
         mock_cache.clear.assert_called()
 
     # ====================== ERROR HANDLING ======================

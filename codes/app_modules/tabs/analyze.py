@@ -2,18 +2,23 @@
 
 import re
 import time as _time
+import json
 
 import dash
 from dash import Input, Output, State, callback, clientside_callback
 from dash.exceptions import PreventUpdate
 
 from codes.engine import screener
-from codes.app_modules.analysis import analyze_stock, _is_rate_limit_error, is_production
+from codes.data import db
+from codes.app_modules.analysis import analyze_stock_primary as analyze_stock, _is_rate_limit_error
+from codes.core.config import is_production
 from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes.services import permissions
 from codes.services import product_analytics
+from codes.services import performance_metrics
+from codes.services import analysis_demand
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.components.upgrade_banner import UpgradeBanner
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
@@ -22,6 +27,11 @@ from codes.app_modules.tabs.pricing import open_upgrade_funnel
 _ANALYZE_PATH_RE = re.compile(
     r"^/analyze/([A-Za-z]{1,6})(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?/?$"
 )
+
+
+def _client_analysis_payload(result: dict) -> dict:
+    """Keep large chart histories server-side until the user opens Charts."""
+    return {key: value for key, value in result.items() if key not in {"price_history", "spy_history"}}
 
 
 clientside_callback(
@@ -258,6 +268,7 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         },
     )
     product_analytics.track_event(user_id, "stock_viewed", {"symbol": symbol, "source": "analysis"})
+    analysis_demand.record(symbol)
     viewed_updated = list(set((viewed_list or []) + [symbol]))
     content = _build_analysis_content(result)
     # Update screener row with full analysis data (Graham Number, live price, enhanced score)
@@ -267,10 +278,12 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         consumed = permissions.consume_analysis_if_allowed(user_id, ticker=symbol)
         usage_msg = f" · {consumed.remaining} free analyses remaining"
         content = [UpgradeBanner(remaining=consumed.remaining), *content]
+    client_result = _client_analysis_payload(result)
+    performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return (
         dash.no_update if triggered in ("url", None) else f"/analyze/{symbol}/{_time.strftime('%Y%m%d')}",
         content,
-        result,
+        client_result,
         f"✅ {result['name']} ({symbol}) — Analysis complete{usage_msg}",
         False, False, symbol,
         {"display": "block"},
@@ -289,7 +302,33 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
 def render_analysis_charts_on_demand(n_clicks, analysis):
     if not n_clicks or not analysis:
         return dash.no_update
-    return build_analysis_charts(analysis)
+    chart_analysis = analysis
+    if not analysis.get("price_history"):
+        chart_analysis = db.get_analysis(analysis.get("symbol", "")) or analysis
+    return build_analysis_charts(chart_analysis)
+
+
+@callback(
+    Output("analysis-content", "children", allow_duplicate=True),
+    Output("analysis-store", "data", allow_duplicate=True),
+    Input("analysis-secondary-interval", "n_intervals"),
+    State("analysis-store", "data"),
+    prevent_initial_call=True,
+)
+def refresh_secondary_analysis(_n_intervals, analysis):
+    if not analysis or analysis.get("secondary_status") != "pending":
+        raise PreventUpdate
+    enriched = db.get_analysis(analysis.get("symbol", ""))
+    if not enriched or enriched.get("secondary_status") not in {"complete", "failed"}:
+        raise PreventUpdate
+
+    content = _build_analysis_content(enriched)
+    access = permissions.can_access_feature(get_user_id(), permissions.Feature.ANALYSIS)
+    if access and access.remaining is not None:
+        content = [UpgradeBanner(remaining=access.remaining), *content]
+    client_result = _client_analysis_payload(enriched)
+    performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
+    return content, client_result
 
 
 clientside_callback(

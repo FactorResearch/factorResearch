@@ -35,32 +35,32 @@ def _sim(cagr, spy_cagr, final_value, p50_last):
 class TestCompareePortfoliosErrors:
     def test_error_from_sim_a_propagates(self):
         with patch.object(portfolio, "run_simulation",
-                          side_effect=lambda n: {"error": "boom"} if n == "A" else _sim(10, 8, 100, 110)):
-            result = portfolio.compare_portfolios("A", "B")
+                          side_effect=lambda _u, n: {"error": "boom"} if n == "A" else _sim(10, 8, 100, 110)):
+            result = portfolio.compare_portfolios("user", "A", "B")
         assert result["error"] == "boom"
 
     def test_error_from_sim_b_propagates(self):
         with patch.object(portfolio, "run_simulation",
-                          side_effect=lambda n: _sim(10, 8, 100, 110) if n == "A" else {"error": "boom"}):
-            result = portfolio.compare_portfolios("A", "B")
+                          side_effect=lambda _u, n: _sim(10, 8, 100, 110) if n == "A" else {"error": "boom"}):
+            result = portfolio.compare_portfolios("user", "A", "B")
         assert result["error"] == "boom"
 
     def test_backtest_error_returns_error(self):
         bad = _sim(10, 8, 100, 110)
         bad["backtest"]["error"] = "no data"
         with patch.object(portfolio, "run_simulation",
-                          side_effect=lambda n: bad if n == "A" else _sim(10, 8, 100, 110)):
-            result = portfolio.compare_portfolios("A", "B")
+                          side_effect=lambda _u, n: bad if n == "A" else _sim(10, 8, 100, 110)):
+            result = portfolio.compare_portfolios("user", "A", "B")
         assert result["error"] is not None
 
 
 class TestCompareePortfoliosWinner:
     def _run(self, sim_a, sim_b):
         with patch.object(portfolio, "run_simulation",
-                          side_effect=lambda n: sim_a if n == "A" else sim_b), \
+                          side_effect=lambda _u, n: sim_a if n == "A" else sim_b), \
              patch.object(portfolio, "load_portfolio", return_value={"holdings": {}}), \
              patch.object(portfolio, "_weak_link_score", return_value=100.0):
-            return portfolio.compare_portfolios("A", "B")
+            return portfolio.compare_portfolios("user", "A", "B")
 
     def test_higher_cagr_wins(self):
         sim_a = _sim(cagr=20, spy_cagr=8, final_value=150, p50_last=160)
@@ -115,4 +115,3 @@ class TestWeakLinkScore:
         with patch.object(portfolio, "analyze_weak_links", return_value={"error": "x"}):
             score = portfolio._weak_link_score({"holdings": {}}, {})
         assert score == 50.0
-

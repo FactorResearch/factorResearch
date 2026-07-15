@@ -9,7 +9,6 @@ Criteria:
   Revenue Growth              positive 5yr  15 pts
 """
 
-import math
 
 from codes.core import model_utils as mu
 
