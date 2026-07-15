@@ -506,6 +506,18 @@ body.light input:-webkit-autofill, body.light input:-webkit-autofill:hover, body
   width: min(100%, 1440px);
   margin: 0 auto;
   padding-inline: 24px;
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .topbar {
+    padding-inline: 20px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .topbar {
+    padding-inline: 16px;
+  }
+}
+.topbar {
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -518,16 +530,6 @@ body.light input:-webkit-autofill, body.light input:-webkit-autofill:hover, body
   background: rgba(8, 17, 31, 0.88);
   border-bottom: 1px solid var(--fr-border);
   backdrop-filter: blur(18px);
-}
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  .topbar {
-    padding-inline: 20px;
-  }
-}
-@media screen and (max-width: 767px) {
-  .topbar {
-    padding-inline: 16px;
-  }
 }
 .topbar .theme-toggle {
   display: flex;
@@ -574,9 +576,6 @@ body.light .topbar {
   width: min(100%, 1440px);
   margin: 0 auto;
   padding-inline: 24px;
-  width: 100%;
-  padding-top: 14px;
-  padding-bottom: 40px;
 }
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   .main-content,
@@ -589,6 +588,12 @@ body.light .topbar {
   .screener-content {
     padding-inline: 16px;
   }
+}
+.main-content,
+.screener-content {
+  width: 100%;
+  padding-top: 14px;
+  padding-bottom: 40px;
 }
 
 .app-footer {

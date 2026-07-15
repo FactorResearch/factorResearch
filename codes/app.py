@@ -356,8 +356,9 @@ if os.environ.get("APP_SKIP_STARTUP") != "1":
 if __name__ == "__main__":
    
     
+    # Production ingress must reach the process; the edge controls public exposure.
     app.run(
-        host="0.0.0.0" if is_production() else "127.0.0.1",
+        host="0.0.0.0" if is_production() else "127.0.0.1",  # nosec B104
         debug=not is_production(),
         port=int(os.environ.get("PORT", 8050)),
     )

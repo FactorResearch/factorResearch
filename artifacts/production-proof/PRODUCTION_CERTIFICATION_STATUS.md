@@ -23,10 +23,20 @@ The repository-controlled engineering foundation is substantially stronger and a
 
 ## Automated Evidence at Assessment
 
-- Full release gate: `1011 passed, 2 skipped`.
+- Full release gate: `1028 passed, 2 skipped`.
+- Twenty consecutive complete release-gate runs passed without a flaky failure.
+- Focused local reliability/model/privacy/deployment matrix: `51 passed`.
+- Local two-worker baseline, peak, and spike probes passed with zero failures;
+  the highest observed aggregate p95 was `110 ms` at 30 instant-spawn users.
 - Live Firefox matrix: 19 scenarios, zero axe violations, zero horizontal overflow.
+- Python and npm CycloneDX SBOMs were generated; Python and npm dependency
+  audits reported no known vulnerabilities.
+- All three configured PostgreSQL stores passed read-only reachability checks.
 - Every phase checkpoint was committed and pushed independently to `origin/optimization` after its focused and full tests passed.
-- Known nonblocking toolchain debt: Sass emits mixed-declaration deprecation warnings; compiled CSS remains deterministic.
+- Sass compilation is warning-free and tracked generated CSS is deterministic.
+
+Detailed local evidence and boundaries are recorded in
+`LOCAL_EXECUTION_2026-07-14.md`.
 
 ## Launch Rule
 

@@ -15,6 +15,12 @@
 
 `local-smoke-verdict.json` records a successful two-worker localhost smoke run. It validates Locust execution, CSV production, and threshold evaluation only. It is not included in the production capacity decision.
 
+On 2026-07-14 the harness was also executed against two local Gunicorn sync
+workers for a baseline, 10-user expected-peak probe, and 30-user instant-spike
+probe. All requests succeeded; aggregate p95 values were 9 ms, 20 ms, and
+110 ms respectively. See `../LOCAL_EXECUTION_2026-07-14.md` for scope and
+limitations.
+
 ## Required Staging Evidence
 
 - [ ] Immutable release commit and environment manifest.

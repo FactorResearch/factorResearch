@@ -1,6 +1,6 @@
 # Phase 1 Release Integrity Evidence
 
-**Status:** Automated controls implemented; consecutive-run and production-artifact evidence remain open.  
+**Status:** Automated controls and local consecutive-run proof complete; hosted artifact evidence remains open.
 **Evidence date:** 2026-07-14
 
 ## Implemented Controls
@@ -13,7 +13,7 @@
 
 ## Open Certification Evidence
 
-- [ ] Record 20 consecutive non-flaky release-gate runs.
+- [x] Record 20 consecutive non-flaky release-gate runs.
 - [ ] Add supported-browser smoke execution once Phase 10 infrastructure exists.
 - [ ] Record PostgreSQL/Redis integration runs against production-supported versions.
 - [ ] Define and enforce branch/critical-module coverage thresholds after measuring the baseline.

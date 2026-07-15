@@ -1,4 +1,7 @@
 {
+  "name": "factorresearch",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "audit:a11y": "node scripts/audit-accessibility.mjs"
   },

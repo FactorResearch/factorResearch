@@ -33,7 +33,8 @@ def _fetch(company_name: str) -> tuple[bytes, str] | None:
     if not url:
         return None
     request = Request(url, headers={"User-Agent": "FactorResearch/1.0"})
-    with urlopen(request, timeout=5) as response:
+    # _provider_url fixes the scheme and host; only the quoted path and provider token vary.
+    with urlopen(request, timeout=5) as response:  # nosec B310
         mime_type = response.headers.get_content_type().lower()
         if mime_type not in _ALLOWED_MIME_TYPES:
             return None

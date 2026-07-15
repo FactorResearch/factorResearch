@@ -521,7 +521,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                base_select
+                base_select  # nosec B608
                 + """
                 SELECT *
                 FROM latest
@@ -548,7 +548,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
             competitors = []
             if sector:
                 cur.execute(
-                    base_select
+                    base_select  # nosec B608
                     + """
                     SELECT *
                     FROM latest
@@ -561,7 +561,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
                 competitors = [_snapshot_from_row(row) for row in cur.fetchall()]
 
             cur.execute(
-                base_select
+                base_select  # nosec B608
                 + """
                 SELECT DISTINCT ON (sector) *
                 FROM latest

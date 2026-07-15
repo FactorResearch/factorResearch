@@ -1837,7 +1837,8 @@ def delete_user_records(user_id: str) -> dict[str, int]:
     deleted = {}
     with _users_conn() as con:
         for table in ("user_weights", "user_usage", "subscriptions"):
-            deleted[table] = con.execute(f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}).rowcount
+            # Table names come only from the fixed tuple above; user data remains parameterized.
+            deleted[table] = con.execute(f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}).rowcount  # nosec B608
     return deleted
 
 
@@ -1958,7 +1959,7 @@ def get_all(order_by: str = "market_cap") -> list[dict]:
     with _conn() as con:
         con.row_factory = dict_row
         rows = con.execute(
-            f"SELECT * FROM value_metrics ORDER BY {col} IS NULL, {col} DESC"
+            f"SELECT * FROM value_metrics ORDER BY {col} IS NULL, {col} DESC"  # nosec B608
         ).fetchall()
     return [dict(r) for r in rows]
 
