@@ -6,7 +6,6 @@ rankings, or portfolio sizing.
 
 from __future__ import annotations
 
-import math
 from statistics import mean, stdev
 from typing import Iterable
 

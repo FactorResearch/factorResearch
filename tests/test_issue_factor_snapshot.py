@@ -27,3 +27,15 @@ def test_has_sufficient_history():
         assert factor_snapshot.has_sufficient_history("ACME", min_dates=2)
     with patch("codes.engine.factor_snapshot.db.list_snapshot_dates", return_value=["2026-01-01"]):
         assert not factor_snapshot.has_sufficient_history("ACME", min_dates=2)
+
+
+def test_bulk_history_supports_point_in_time_lookup():
+    rows = [
+        {"ticker": "ACME", "factor_name": "graham", "snapshot_date": "2026-01-01", "score": 60, "max_score": 100},
+        {"ticker": "ACME", "factor_name": "graham", "snapshot_date": "2026-02-01", "score": 80, "max_score": 100},
+    ]
+    with patch("codes.engine.factor_snapshot.db.list_factor_snapshot_history", return_value=rows) as bulk:
+        history = factor_snapshot.load_history(["ACME"])
+    assert factor_snapshot.history_has_sufficient_dates(history, "ACME")
+    assert factor_snapshot.history_scores_asof(history, "ACME", "2026-01-15")["graham"]["score"] == 60
+    bulk.assert_called_once_with(["ACME"])

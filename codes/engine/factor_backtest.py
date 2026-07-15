@@ -28,8 +28,6 @@ Returns:
 
 from __future__ import annotations
 
-import math
-import statistics
 from typing import Any
 
 import numpy as np
@@ -215,14 +213,14 @@ def run_factor_backtest(
     w_default = _normalise_weights(dict(ENHANCED_WEIGHTS))
 
     # ── Load all persisted analyses (Postgres, shared cache) ─────────────────
-    cached_symbols = db.list_analysis_tickers()
-    if len(cached_symbols) < MIN_STOCKS:
+    cached_entries = db.list_analysis_entries()
+    if len(cached_entries) < MIN_STOCKS:
         return {"error": f"Need at least {MIN_STOCKS} analysed stocks in the database. "
                          "Use the Analyze tab to analyse some stocks first."}
 
     ranked: list[dict[str, Any]] = []
-    for sym in cached_symbols:
-        data = db.get_analysis(sym)
+    for sym, entry in cached_entries.items():
+        data = entry["data"]
         if not data or "error" in data:
             continue
         price = data.get("price")

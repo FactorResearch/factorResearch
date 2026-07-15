@@ -18,8 +18,9 @@ def test_score_filtered_uses_snapshot_when_sufficient_history():
     }
     with patch("codes.engine.backtest._load_cached_universe", return_value=fake_universe), \
          patch("codes.engine.backtest._build_price_matrix", return_value=_fake_wide(["AAA", "BBB", "CCC"])), \
-         patch("codes.engine.backtest.factor_snapshot.has_sufficient_history", return_value=True), \
-         patch("codes.engine.backtest.factor_snapshot.get_factor_scores_asof",
+         patch("codes.engine.backtest.factor_snapshot.load_history", return_value={}), \
+         patch("codes.engine.backtest.factor_snapshot.history_has_sufficient_dates", return_value=True), \
+         patch("codes.engine.backtest.factor_snapshot.history_scores_asof",
                return_value={"graham": {"score": 90, "max_score": 100}}):
         result = backtest.score_filtered(min_score=50.0, years=1, rebalance_months=1)
     assert result["error"] is None
@@ -34,6 +35,18 @@ def test_score_filtered_flags_bias_when_no_history():
     }
     with patch("codes.engine.backtest._load_cached_universe", return_value=fake_universe), \
          patch("codes.engine.backtest._build_price_matrix", return_value=_fake_wide(["AAA", "BBB", "CCC"])), \
-         patch("codes.engine.backtest.factor_snapshot.has_sufficient_history", return_value=False):
+         patch("codes.engine.backtest.factor_snapshot.load_history", return_value={}), \
+         patch("codes.engine.backtest.factor_snapshot.history_has_sufficient_dates", return_value=False):
         result = backtest.score_filtered(min_score=50.0, years=1, rebalance_months=1)
     assert result["look_ahead_bias"] is True
+
+
+def test_score_filtered_caps_ranked_holdings_at_top_n():
+    symbols = ["AAA", "BBB", "CCC", "DDD"]
+    universe = {symbol: {"enhanced": {"composite_score": score}} for symbol, score in zip(symbols, [90, 80, 70, 60])}
+    with patch("codes.engine.backtest._load_cached_universe", return_value=universe), \
+         patch("codes.engine.backtest._build_price_matrix", return_value=_fake_wide(symbols)), \
+         patch("codes.engine.backtest.factor_snapshot.load_history", return_value={}), \
+         patch("codes.engine.backtest.factor_snapshot.history_has_sufficient_dates", return_value=False):
+        result = backtest.score_filtered(min_score=50, top_n=3, years=1, rebalance_months=1)
+    assert result["final_symbols"] == ["AAA", "BBB", "CCC"]

@@ -1,0 +1,136 @@
+[
+  {
+    "viewport": "desktop",
+    "theme": "light",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "light",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "light",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "dark",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "dark",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "dark",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "light",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "light",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "light",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "dark",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "dark",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "dark",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "light",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "light",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "light",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "dark",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "dark",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "dark",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile-200-percent",
+    "theme": "dark",
+    "tab": "portfolio",
+    "overflow": 0,
+    "reducedMotionRules": true,
+    "violations": []
+  }
+]
