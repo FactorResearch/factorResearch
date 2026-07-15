@@ -70,10 +70,10 @@ import collections
 import requests
 import finnhub
 import pandas as pd
-import threading
 from pathlib import Path
 
 from .cache import read, read_entry, write
+from codes.core.config import cache_root
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -264,8 +264,7 @@ _av_limiter = RateLimiter(
     ],
 )
 
-_price_history_lock_path = Path(".cache")
-_price_history_lock_path.mkdir(exist_ok=True)
+_price_history_lock_path = cache_root()
 
 class _FileLock:
     def __init__(self, path: Path):
@@ -769,7 +768,7 @@ def get_price_history(symbol: str, years: int = 10) -> pd.DataFrame:
     Raises RateLimitError if the active provider is near its ceiling.
     """
     symbol = symbol.upper().strip()
-    lock_path = Path(".cache") / f"hist-{symbol.lower()}.lock"
+    lock_path = _price_history_lock_path / f"hist-{symbol.lower()}.lock"
 
     with _FileLock(lock_path):
         entry = read_entry("hist", symbol)

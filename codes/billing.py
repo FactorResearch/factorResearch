@@ -4,18 +4,14 @@ from __future__ import annotations
 
 from typing import Optional
 from urllib.parse import urlencode
-import os
 
 import flask
 from codes.core import app_flags
+from codes.core.config import is_production
 from codes.app_modules.session import get_user_id
 from codes.payments import stripe_client, subscriptions, webhooks
 from codes.services import permissions
 from codes.services import product_analytics
-
-
-def _is_production() -> bool:
-    return os.environ.get("FLASK_ENV", "").lower() == "production"
 
 
 def init_billing(server: Optional[flask.Flask] = None):
@@ -46,7 +42,7 @@ def init_billing(server: Optional[flask.Flask] = None):
             )
             return flask.redirect(get_checkout_url(user_id, plan=plan))
         except Exception as exc:
-            if _is_production():
+            if is_production():
                 return "Billing is unavailable. Please try again later.", 503
             return f"Billing unavailable: {type(exc).__name__}: {exc}", 503
 
@@ -59,7 +55,7 @@ def init_billing(server: Optional[flask.Flask] = None):
         try:
             return flask.redirect(get_portal_url(user_id))
         except Exception as exc:
-            if _is_production():
+            if is_production():
                 return "Billing portal is unavailable. Please try again later.", 503
             return f"Billing portal unavailable: {type(exc).__name__}: {exc}", 503
 
@@ -78,7 +74,7 @@ def init_billing(server: Optional[flask.Flask] = None):
         handled = webhooks.handle_event(event)
         return flask.jsonify({"received": True, "handled": handled})
 
-    if not _is_production():
+    if not is_production():
         @server.route("/billing/mark_paid", methods=["GET"])
         def _mark_paid():
             try:
@@ -96,7 +92,7 @@ def user_has_paid(user_id: str) -> bool:
     if not user_id:
         return False
     try:
-        if flask.session.get("is_paid") and not _is_production():
+        if flask.session.get("is_paid") and not is_production():
             return True
     except Exception:
         pass
@@ -108,7 +104,7 @@ def get_checkout_url(user_id: str, plan: str = "premium") -> str:
         raise ValueError("Only the Premium plan is available.")
     if stripe_client.is_configured():
         return stripe_client.create_checkout_session(user_id, plan=plan)
-    if _is_production():
+    if is_production():
         raise RuntimeError("Stripe checkout is not configured in production.")
     return "/billing/mark_paid"
 
@@ -126,6 +122,6 @@ def get_billing_entry_url(plan: str = "premium", **context: str | None) -> str:
 def get_portal_url(user_id: str) -> str:
     if stripe_client.is_configured():
         return stripe_client.create_billing_portal_session(user_id)
-    if _is_production():
+    if is_production():
         raise RuntimeError("Stripe portal is not configured in production.")
     return "/billing/mark_paid"

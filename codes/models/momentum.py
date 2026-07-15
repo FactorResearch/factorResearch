@@ -9,7 +9,6 @@ Criteria:
 """
 
 import pandas as pd
-import numpy as np
 
 from codes.core import financial_math as fm
 

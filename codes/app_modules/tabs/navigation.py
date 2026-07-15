@@ -23,9 +23,18 @@ from dash import Input, Output, State, callback, clientside_callback
     Input("screener-open-analysis-symbol","data"),
     Input("upgrade-funnel-store", "data"),
     Input("url",                  "pathname"),
+    State("tab-screener-btn",     "n_clicks_timestamp"),
+    State("tab-analyze-btn",      "n_clicks_timestamp"),
+    State("tab-portfolio-btn",    "n_clicks_timestamp"),
+    State("tab-factorlab-btn",    "n_clicks_timestamp"),
+    State("tab-pricing-btn",      "n_clicks_timestamp"),
     prevent_initial_call=False
 )
-def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open_analysis_symbol, upgrade_context, pathname):
+def switch_tabs(
+    n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing,
+    open_analysis_symbol, upgrade_context, pathname,
+    ts_screener=None, ts_analyze=None, ts_portfolio=None, ts_factorlab=None, ts_pricing=None,
+):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
@@ -47,6 +56,16 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if (pathname or "") == "/pricing":
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+    timestamps = {
+        "screener": ts_screener, "analyze": ts_analyze, "portfolio": ts_portfolio,
+        "factorlab": ts_factorlab, "pricing": ts_pricing,
+    }
+    latest = max(timestamps, key=lambda tab: int(timestamps[tab] or -1))
+    if int(timestamps[latest] or -1) >= 0:
+        tabs = ("screener", "analyze", "portfolio", "factorlab", "pricing")
+        styles = tuple(SHOW if tab == latest else HIDE for tab in tabs)
+        classes = tuple(ACTIVE if tab == latest else IDLE for tab in tabs)
+        return styles + classes
     return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
 
 

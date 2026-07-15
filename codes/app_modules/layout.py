@@ -351,7 +351,7 @@ def build_layout():
             html.Div(id="portfolio-sim-results", children=[]),
         ]),
         # ── Tab: Factor Lab ─────────────────────────────────────────────────────
-        html.Div(id="tab-factorlab", className="main-content", style={"display": "none"}, children=[
+        html.Div(id="tab-factorlab", className="main-content is-hidden", children=[
             html.Div(className="app-header mb-24", children=[
                 html.Div("🧪", className="app-header-icon"),
                 html.Div(className="app-header-content", children=[
@@ -423,7 +423,7 @@ def build_layout():
                 html.Div(id="fb-results", children=[])
             ]),
         ]),
-        html.Div(id="tab-pricing", className="main-content", style={"display": "none"}, children=[]),
+        html.Div(id="tab-pricing", className="main-content is-hidden", children=[]),
 
         _legal_modal("legal-terms", "Terms of Service", "/terms", _legal_terms_content()),
         _legal_modal("legal-privacy", "Privacy Policy", "/privacy", _legal_privacy_content()),
@@ -452,7 +452,7 @@ def build_layout():
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
-        html.Div(id="screener-scroll-restore-sink", style={"display": "none"}),
+        html.Div(id="screener-scroll-restore-sink", className="is-hidden"),
         # interval disabled=True once loading finishes to stop constant re-renders
         dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
         # fires once 600ms after page load to render already-cached screener data
@@ -460,5 +460,6 @@ def build_layout():
         dcc.Interval(id="page-load-interval", interval=600, max_intervals=1, disabled=False),
         # polls the screener tab's scroll position so it can be restored on tab switch
         dcc.Interval(id="screener-scroll-poll-interval", interval=1000, disabled=False),
+        dcc.Interval(id="analysis-secondary-interval", interval=1200, disabled=False),
         dcc.Loading(id="loading", type="circle", color=BLUE, children=html.Div(id="loading-trigger"))
     ])

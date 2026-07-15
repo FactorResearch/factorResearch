@@ -39,7 +39,6 @@ Requires sec_facts keys:
 Add total_assets to sec_data.py — see patch in that file.
 """
 
-import math
 DILUTION_TOLERANCE = 0.01
 from datetime import datetime, timedelta
 

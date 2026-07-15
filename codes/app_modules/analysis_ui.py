@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from urllib.parse import quote
 
 from codes.services import chart_service
+from codes.engine import factor_research
 from codes.app_modules.company_identity import company_logo
 
 from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
@@ -297,24 +298,16 @@ def _fcf_quality_card(data: dict) -> html.Div:
         "EARNINGS_QUALITY_RISK": RED,
     }.get(signal, MUTED)
 
-    def _fmt(v, fmt=",.2f", prefix="", suffix=""):
-        if v is None:
-            return "N/A"
-        try:
-            return f"{prefix}{v:{fmt}}{suffix}"
-        except (ValueError, TypeError):
-            return "N/A"
-
     metrics = [
-        ("FCF",              _fmt(fcf.get("fcf"), ",.0f", "$")),
-        ("Operating CF",     _fmt(fcf.get("operating_cash_flow"), ",.0f", "$")),
-        ("CapEx",            _fmt(fcf.get("capex"), ",.0f", "$")),
-        ("FCF Margin",       _fmt(fcf.get("fcf_margin"), ".1f", suffix="%")),
-        ("FCF Conversion",   _fmt(fcf.get("fcf_conversion"), ".1f", suffix="%")),
-        ("FCF Stability CV", _fmt(fcf.get("fcf_stability"), ".3f")),
-        ("Growth Consist.",  _fmt(fcf.get("fcf_growth_consistency"), ".0%") if fcf.get("fcf_growth_consistency") is not None else "N/A"),
-        ("Accrual Ratio",    _fmt(fcf.get("accrual_ratio"), ".4f")),
-        ("FCF CAGR 5yr",     _fmt(fcf.get("fcf_cagr_5y"), ".1f", suffix="%")),
+        ("FCF",              _model_metric(fcf.get("fcf"), ",.0f", prefix="$")),
+        ("Operating CF",     _model_metric(fcf.get("operating_cash_flow"), ",.0f", prefix="$")),
+        ("CapEx",            _model_metric(fcf.get("capex"), ",.0f", prefix="$")),
+        ("FCF Margin",       _model_metric(fcf.get("fcf_margin"), ".1f", "%")),
+        ("FCF Conversion",   _model_metric(fcf.get("fcf_conversion"), ".1f", "%")),
+        ("FCF Stability CV", _model_metric(fcf.get("fcf_stability"), ".3f")),
+        ("Growth Consist.",  _model_metric(fcf.get("fcf_growth_consistency"), ".0%")),
+        ("Accrual Ratio",    _model_metric(fcf.get("accrual_ratio"), ".4f")),
+        ("FCF CAGR 5yr",     _model_metric(fcf.get("fcf_cagr_5y"), ".1f", "%")),
     ]
 
     metric_rows = [_metric_data_row(lbl, val) for lbl, val in metrics]
@@ -430,6 +423,16 @@ def _growth_quality_card(data: dict) -> html.Div:
 def _insider_activity_card(data: dict) -> html.Div:
     """Insider buying/selling activity card."""
     ia = data.get("insider_activity") or {}
+    if not ia and data.get("secondary_status") in {"pending", "failed"}:
+        failed = data.get("secondary_status") == "failed"
+        return _metric_scorecard(
+            title="Insider Activity",
+            score_text="Unavailable" if failed else "Loading",
+            score_color=MUTED,
+            status_text="Try later" if failed else "Background enrichment",
+            status_color=MUTED,
+            body_children=[html.Div("Primary analysis is ready. Insider filings are loading separately.", className="analysis-copy-leading fs-11 clr-muted")],
+        )
     if not ia or ia.get("low_coverage"):
         return html.Div()
     score  = ia.get("insider_confidence_score")
@@ -450,22 +453,13 @@ def _insider_activity_card(data: dict) -> html.Div:
         ("Sell Transactions",   str(ia.get("n_sell_transactions", 0))),
         ("Distinct Buyers",     str(ia.get("n_distinct_buyers",   0))),
     ]
-    rows = [
-        html.Div(className="metric-row-divider d-flex jc-between py-4 fs-12",
-                 children=[
-            html.Span(lbl, className="text-muted"),
-            html.Span(val, className="clr-text fw-600"),
-        ])
-        for lbl, val in metrics
-    ]
-    return html.Div(className="scorecard", children=[
-        html.Div(className="d-flex ai-center gap-10 pt-14 px-18 pb-10", children=[
-            html.Span("Insider Activity", className="fs-14 fw-700 clr-text"),
-            html.Span(f"{score:.0f}/100", className=f"fs-22 fw-800 {tone_class(sig_color)}"),
-            html.Span(f"\u2014 {signal}", className=f"fs-13 {tone_class(sig_color)}"),
-        ]),
-        html.Div(rows, className="px-xl pb-2xl"),
-    ])
+    return _metric_scorecard(
+        title="Insider Activity",
+        score_text=f"{score:.0f}/100",
+        score_color=sig_color,
+        status_text=f"\u2014 {signal}",
+        body_children=[_metric_data_row(label, value) for label, value in metrics],
+    )
 
 
 def _factor_momentum_card(data: dict) -> html.Div:
@@ -510,6 +504,16 @@ def _factor_momentum_card(data: dict) -> html.Div:
 def _alternative_data_card(data: dict) -> html.Div:
     """Alternative Data card: provider-ready Phase E signals."""
     ad = data.get("alternative_data") or {}
+    if not ad and data.get("secondary_status") in {"pending", "failed"}:
+        failed = data.get("secondary_status") == "failed"
+        return _metric_scorecard(
+            title="Alternative Data",
+            score_text="Unavailable" if failed else "Loading",
+            score_color=MUTED,
+            status_text="Try later" if failed else "Background enrichment",
+            status_color=MUTED,
+            body_children=[html.Div("Ownership, filings, and patent signals will appear without blocking this page.", className="analysis-copy-leading fs-11 clr-muted")],
+        )
     if not ad:
         return html.Div()
 
@@ -642,6 +646,46 @@ def _altman_card(data: dict) -> html.Div:
             *comp_rows,
         ],
     )
+
+def _legacy_factor_research(data: dict) -> dict:
+    capm = factor_research.capm_from_price_history(data.get("price_history"), data.get("spy_history"))
+    if capm.get("error"):
+        return {"status": "data_unavailable", "message": "Needs more benchmark history."}
+    return {"status": "ready", "model": "capm", "models": {"capm": capm}, "source": "saved histories"}
+
+
+def _factor_research_card(data: dict) -> html.Div:
+    research = data.get("factor_research") or _legacy_factor_research(data)
+    models = research.get("models") or {}
+    labels = {"capm": "CAPM", "ff3": "Fama-French 3", "ff5": "Fama-French 5", "carhart4": "Carhart 4"}
+    if not models:
+        return _metric_scorecard(
+            title="Factor Research", status_text="Pending", status_color=AMBER,
+            subtitle=research.get("message", "Waiting for return history."),
+        )
+    primary = research.get("model") or next(iter(models))
+    result = models.get(primary) or {}
+    beta = (result.get("betas") or {}).get("mkt_rf")
+    color = GREEN if beta is not None and beta < 1 else AMBER if beta is not None and beta <= 1.3 else RED
+    rows = []
+    for key in ("capm", "ff3", "ff5", "carhart4"):
+        model = models.get(key)
+        if not model:
+            continue
+        model_beta = (model.get("betas") or {}).get("mkt_rf")
+        value = (f"beta {model_beta:.2f} / alpha {(model.get('alpha_annualized') or 0) * 100:.1f}%"
+                 if model_beta is not None else model.get("error", "Unavailable"))
+        rows.append(_metric_data_row(labels[key], value))
+    attribution = research.get("return_attribution") or result.get("return_attribution") or {}
+    if attribution.get("total_excess_return") is not None:
+        rows.append(_metric_data_row("Attributed excess return", f"{attribution['total_excess_return'] * 100:.1f}%"))
+    rows.append(_metric_data_row("Source", research.get("source", "saved analysis")))
+    return _metric_scorecard(
+        title="Factor Research", score_text=f"{beta:.2f}" if beta is not None else "N/A",
+        score_color=color, status_text=labels.get(primary, primary), subtitle="V2.2 factor attribution",
+        body_children=rows, card_class="factor-research-card",
+    )
+
 
 def _risk_card(data: dict) -> html.Div:
     """Risk & performance metrics dashboard."""
@@ -831,11 +875,11 @@ def _comomentum_card(data: dict) -> html.Div:
     )
 
 
-def _model_metric(value, fmt=".2f", suffix="") -> str:
+def _model_metric(value, fmt=".2f", suffix="", prefix="") -> str:
     if value is None:
         return "N/A"
     try:
-        return f"{value:{fmt}}{suffix}"
+        return f"{prefix}{value:{fmt}}{suffix}"
     except (TypeError, ValueError):
         return "N/A"
 
@@ -1015,6 +1059,11 @@ def _build_analysis_content(data: dict) -> list:
             return "N/A"
         return f"{value:.{decimals}f}%"
 
+    def _fmt_number(value, decimals=1, suffix=""):
+        if value is None:
+            return "N/A"
+        return f"{value:.{decimals}f}{suffix}"
+
     def _metric(label: str, value: str, hint: str | None = None) -> html.Div:
         children = [
             html.Div(label, className="analysis-mini-metric-label"),
@@ -1169,7 +1218,7 @@ def _build_analysis_content(data: dict) -> list:
                 children=[
                     _summary_point(
                         "Valuation",
-                        f"P/E {g.get('pe', 0):.1f}x, P/B {g.get('pb', 0):.2f}x, moat grade {b_data.get('grade', 'N/A')}.",
+                        f"P/E {_fmt_number(g.get('pe'), 1, 'x')}, P/B {_fmt_number(g.get('pb'), 2, 'x')}, moat grade {b_data.get('grade', 'N/A')}.",
                     ),
                     _summary_point(
                         "Accounting",
@@ -1177,7 +1226,7 @@ def _build_analysis_content(data: dict) -> list:
                     ),
                     _summary_point(
                         "Risk",
-                        f"Beta {r_data.get('beta', 0):.2f} and Sharpe {r_data.get('sharpe', 0):.2f} summarize current market behavior.",
+                        f"Beta {_fmt_number(r_data.get('beta'), 2)} and Sharpe {_fmt_number(r_data.get('sharpe'), 2)} summarize current market behavior.",
                     ),
                     _summary_point(
                         "Growth",
@@ -1202,6 +1251,7 @@ def _build_analysis_content(data: dict) -> list:
     altman_card = _altman_card(data)
     fcf_quality_card = _fcf_quality_card(data)
     risk_card = _risk_card(data)
+    factor_research_card = _factor_research_card(data)
     market_fear_card = _market_fear_card(data)
     regime_card = _regime_card(data)
     comomentum_card = _comomentum_card(data)
@@ -1242,8 +1292,8 @@ def _build_analysis_content(data: dict) -> list:
                 [
                     ("Price", _fmt_money(price)),
                     ("Moat Value", _fmt_money(intrinsic_value, 0 if intrinsic_value else 2)),
-                    ("P/E", f"{g.get('pe', 0):.1f}x"),
-                    ("P/B", f"{g.get('pb', 0):.2f}x"),
+                    ("P/E", _fmt_number(g.get("pe"), 1, "x")),
+                    ("P/B", _fmt_number(g.get("pb"), 2, "x")),
                 ],
                 [
                     html.Div(className="analysis-card-grid analysis-card-grid--two", children=[graham_details, buffett_details]),
@@ -1282,7 +1332,7 @@ def _build_analysis_content(data: dict) -> list:
                     ("Regime", regime_data.get("regime", "N/A").replace("_", " ")),
                 ],
                 [
-                    risk_card,
+                    html.Div(className="analysis-card-grid analysis-card-grid--two", children=[risk_card, factor_research_card]),
                     html.Div(
                         className="analysis-card-grid analysis-card-grid--three",
                         children=[market_fear_card, regime_card, comomentum_card],
@@ -1413,20 +1463,6 @@ def build_analysis_charts(data: dict) -> list:
     ]
 
 
-def _stat(label, value, tooltip=None):
-    return html.Div([
-        html.Div(label, className="stat-label" + (" ch stat-label-tooltip" if tooltip else ""),
-                 title=tooltip or ""),
-        html.Div(value, className="stat-value")
-    ], className="stat-item")
-
-def _pillar(label, score, weight):
-    return html.Div([
-        html.Div(f"{score}%", className="pillar-value") if isinstance(score, (int, float)) else html.Div(score, className="pillar-value"),
-        html.Div(label, className="pillar-label"),
-        html.Div(f"({weight})", className="pillar-weight"),
-    ])
-
 def _grade_color(grade: str) -> str:
     return {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(grade, MUTED)
 def format_currency(val) -> str:
@@ -1461,21 +1497,6 @@ def _fmt_updated(v) -> str:
         return parsed.strftime("%b %d, %Y")
     except (TypeError, ValueError, OverflowError):
         return str(v)[:10] or "Not available"
-def _verdict_color(label: str) -> str:
-    return {
-        "strong-buy": GREEN,
-        "high-conviction": GREEN,
-        "buy": BLUE,
-        "favorable": BLUE,
-        "watch": AMBER,
-        "balanced": AMBER,
-        "hold": MUTED,
-        "caution": MUTED,
-        "avoid": RED,
-        "unfavorable": RED,
-        "pending": MUTED,
-    }.get(label, MUTED)
-
 def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
     rows = []
     for c in criteria:

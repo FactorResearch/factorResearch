@@ -44,38 +44,16 @@ DCF_YEARS     = 10
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _safe(val) -> float | None:
-    return mu.safe_float(val)
-
-
-def _first(records: list) -> float | None:
-    for r in records:
-        v = _safe(r.get("value"))
-        if v is not None:
-            return v
-    return None
+_safe = mu.safe_float
+_first = mu.first_record_value
 
 
 def _values(records: list, n: int = 10) -> list[float]:
     """Return up to n most-recent non-None values, newest first."""
-    out = []
-    for r in records:
-        v = _safe(r.get("value"))
-        if v is not None:
-            out.append(v)
-            if len(out) >= n:
-                break
-    return out
+    return mu.record_values(records, limit=n)
 
 
-def _by_year(records: list) -> dict[int, float]:
-    result = {}
-    for r in records:
-        yr = r.get("year")
-        v  = _safe(r.get("value"))
-        if yr is not None and v is not None:
-            result[int(yr)] = v
-    return result
+_by_year = mu.records_by_year
 
 
 def _roe_series(net_inc_records, equity_records, n: int = 7) -> list[float]:

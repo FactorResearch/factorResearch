@@ -25,7 +25,6 @@ Simulation output:
   montecarlo — 2-year forward projection: 1,000 paths → p10/p50/p90 bands
 """
 
-import math
 import time
 import datetime
 import hashlib
@@ -942,10 +941,9 @@ def compare_portfolios(
     benchmark_symbol = str(benchmark_symbol or "SPY").upper().strip()
 
     def _run(name: str) -> dict:
-        try:
-            return run_simulation(user_id, name, benchmark_symbol)
-        except TypeError:
-            return run_simulation(name)
+        if benchmark_symbol == "SPY":
+            return run_simulation(user_id, name)
+        return run_simulation(user_id, name, benchmark_symbol)
 
     sim_a = _run(portfolio_a_name)
     sim_b = _run(portfolio_b_name)

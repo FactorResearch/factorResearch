@@ -69,4 +69,4 @@ def test_dash_registers_global_callbacks_on_first_request():
 
         assert callback_response.status_code == 200
         assert "Loading screener data" not in callback_response.get_data(as_text=True)
-        assert "No Canada screener data loaded yet" in callback_response.get_data(as_text=True)
+        assert "Screener is waiting for cached" in callback_response.get_data(as_text=True)

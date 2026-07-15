@@ -157,15 +157,9 @@ def company_analysis_page(slug: str):
         flask.abort(404)
     except Exception as exc:
         print(f"Company snapshot lookup failed for {slug}: {type(exc).__name__}: {exc}")
-        fallback = _dash_shell_response()
-        if fallback is not None:
-            return fallback
-        flask.abort(404)
+        return _dash_shell_or_404()
     if not history:
-        fallback = _dash_shell_response()
-        if fallback is not None:
-            return fallback
-        flask.abort(404)
+        return _dash_shell_or_404()
     latest = history[0]
     if not ticker and company_slug(latest.company_name) != slug:
         flask.abort(404)
@@ -240,6 +234,13 @@ def _dash_shell_response():
     if dash_view is None:
         return None
     return dash_view(flask.request.path.lstrip("/"))
+
+
+def _dash_shell_or_404():
+    response = _dash_shell_response()
+    if response is not None:
+        return response
+    flask.abort(404)
 
 
 def _fmt(value, suffix: str = "") -> str:
@@ -685,16 +686,10 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
         flask.abort(404)
     except Exception as exc:
         print(f"Analysis snapshot lookup failed for {ticker}/{yyyymmdd}: {type(exc).__name__}: {exc}")
-        fallback = _dash_shell_response()
-        if fallback is not None:
-            return fallback
-        flask.abort(404)
+        return _dash_shell_or_404()
 
     if snapshot is None:
-        fallback = _dash_shell_response()
-        if fallback is not None:
-            return fallback
-        flask.abort(404)
+        return _dash_shell_or_404()
 
     compare_date = flask.request.args.get("compare", "").strip()
     if compare_date and not _DATE_RE.match(compare_date):

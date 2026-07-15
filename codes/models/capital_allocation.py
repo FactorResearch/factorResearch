@@ -46,41 +46,22 @@ Integration:
 
 from __future__ import annotations
 
-import math
-import statistics
-from typing import Any
 
 from codes.core import model_utils as mu
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _safe(val: Any) -> float | None:
-    return mu.safe_float(val)
-
-
-def _first(records: list) -> float | None:
-    for r in records:
-        v = _safe(r.get("value"))
-        if v is not None:
-            return v
-    return None
+_safe = mu.safe_float
+_first = mu.first_record_value
 
 
 def _values(records: list, n: int = 10) -> list[float]:
     """Return up to n most-recent non-None values, newest first."""
-    out: list[float] = []
-    for r in records:
-        v = _safe(r.get("value"))
-        if v is not None:
-            out.append(v)
-            if len(out) >= n:
-                break
-    return out
+    return mu.record_values(records, limit=n)
 
 
-def _clamp(v: float, lo: float, hi: float) -> float:
-    return mu.clamp(v, lo, hi)
+_clamp = mu.clamp
 
 
 # ── Signal mapping ────────────────────────────────────────────────────────────
