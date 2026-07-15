@@ -30,7 +30,6 @@ from . import factor_backtest, user_strategy
 
 DATA_VERSION = "v1"          # bump manually when factor_scores semantics change
 REBALANCE_FREQUENCY = "none"  # current backtest is buy-and-hold, no rebalancing
-CACHE_TTL_SECONDS = 24 * 3600  # re-run once a day even for unchanged configs
 
 
 def strategy_hash(weights: dict[str, float]) -> str:
@@ -51,14 +50,6 @@ def _cache_key(weights: dict[str, float], top_n: int, years: int) -> str:
     h = strategy_hash(weights)
     end_date = datetime.date.today().isoformat()
     return f"{DATA_VERSION}:{h}:{REBALANCE_FREQUENCY}:{top_n}:{years}y:{end_date}"
-
-
-def _is_fresh(computed_at_iso: str) -> bool:
-    try:
-        computed = datetime.datetime.fromisoformat(computed_at_iso)
-    except ValueError:
-        return False
-    return (datetime.datetime.utcnow() - computed).total_seconds() < CACHE_TTL_SECONDS
 
 
 def get_or_run_backtest(weights: dict[str, float], top_n: int = 10, years: int = 5,

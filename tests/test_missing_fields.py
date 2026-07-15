@@ -19,7 +19,8 @@ import os
 from unittest.mock import patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from codes import altman, graham, risk_metrics, scorer
+from codes.engine import scorer
+from codes.models import altman, graham, risk_metrics
 
 
 def _rec(v):

@@ -17,7 +17,7 @@ import math
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from codes import piotroski, graham
+from codes.models import graham, piotroski
 
 
 # ── Helper ────────────────────────────────────────────────────────────────────

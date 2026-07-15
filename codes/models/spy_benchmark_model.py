@@ -17,7 +17,6 @@ mirroring the Monte Carlo approach already used in codes/portfolio.py.
 
 from __future__ import annotations
 
-import math
 from typing import Any
 
 import numpy as np

@@ -26,19 +26,15 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt pytest
+          python -m pip install -r requirements.txt -r requirements-proof.txt pytest
 
-      - name: Compile application
-        run: python -m compileall -q codes
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
 
-      - name: Run stable shared regression tests
-        run: |
-          pytest -q \
-            tests/test_security.py \
-            tests/test_app_flags_markets.py \
-            tests/test_market_provider_registry.py \
-            tests/test_screener_market_routing.py \
-            tests/test_track_b_canada_db.py \
-            tests/test_track_b_canada_ingestion.py \
-            tests/test_track_b_canada_provider.py \
-            tests/test_track_b_canada_sec.py
+      - name: Install frontend audit dependencies
+        run: npm ci
+
+      - name: Run release integrity gate
+        run: ./scripts/release-gate.sh

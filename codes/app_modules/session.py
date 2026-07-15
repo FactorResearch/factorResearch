@@ -1,6 +1,5 @@
 """User/session and per-user portfolio-cache helpers."""
 
-import os
 import threading
 
 import flask
@@ -8,6 +7,7 @@ import flask
 from codes import auth
 import codes.portfolio as portfolio_engine
 from codes.core.redis_client import get_redis, json_get, json_set
+from codes.core.config import is_production
 
 # ── Screener ──────────────────────────────────────────────────────────────────
 # Per-session portfolio cache (ISSUE-006) — scoped by Flask session id so one
@@ -31,7 +31,7 @@ def get_user_id() -> str:
         return user_id
     
     # Fallback to session UUID only in non-production environments.
-    if os.environ.get("FLASK_ENV", "").lower() == "production":
+    if is_production():
         raise RuntimeError(
             "Authenticated user required in production. "
             "Set AUTH_PROVIDER and ensure auth is configured."
