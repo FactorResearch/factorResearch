@@ -94,7 +94,8 @@ _pool_lock = threading.Lock()
 
 def _database_url() -> str | None:
     return (
-        os.environ.get("ANALYTICS_DATABASE_URL")
+        os.environ.get("DATABASE_ANALYTICS_URL")
+        or os.environ.get("ANALYTICS_DATABASE_URL")
         or os.environ.get("FACTORRESEARCH_ANALYTICS_DATABASE_URL")
         or os.environ.get("DATABASE_URL")
         or os.environ.get("DATABASE_MARKET_URL")
@@ -103,6 +104,7 @@ def _database_url() -> str | None:
 
 def _database_urls() -> list[str]:
     urls = [
+        os.environ.get("DATABASE_ANALYTICS_URL"),
         os.environ.get("ANALYTICS_DATABASE_URL"),
         os.environ.get("FACTORRESEARCH_ANALYTICS_DATABASE_URL"),
         os.environ.get("DATABASE_URL"),
@@ -134,9 +136,13 @@ def _connect() -> Iterator:
                         connect,
                         max_size=int(os.environ.get("SNAPSHOT_DATABASE_POOL_SIZE", "3")),
                     )
+            pool.check_connection()
             break
         except Exception as exc:
             last_error = exc
+            with _pool_lock:
+                _pools.pop(dsn, None)
+            pool = None
     if pool is None:
         raise last_error or RuntimeError("Unable to connect to snapshot storage.")
     with pool.connection() as conn:

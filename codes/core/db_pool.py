@@ -67,6 +67,11 @@ class ConnectionPool:
         finally:
             self._release(connection)
 
+    def check_connection(self) -> None:
+        """Open and release one connection so configuration failures surface now."""
+        connection = self._acquire()
+        self._release(connection)
+
     def stats(self) -> dict:
         self._reset_after_fork()
         with self._lock:
