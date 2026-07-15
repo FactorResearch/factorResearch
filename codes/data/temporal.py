@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS securities (
 );
 CREATE TABLE IF NOT EXISTS security_listings (
     listing_id UUID PRIMARY KEY, security_id UUID NOT NULL REFERENCES securities(security_id),
-    market_code TEXT NOT NULL, exchange_code TEXT, currency TEXT,
+    market_code TEXT NOT NULL, exchange_code TEXT NOT NULL DEFAULT '', currency TEXT,
     valid_from DATE NOT NULL, valid_to DATE, status TEXT NOT NULL DEFAULT 'active',
     UNIQUE (security_id, market_code, exchange_code, valid_from)
 );
@@ -123,7 +123,7 @@ def ensure_schema() -> None:
 def register_security(identity: SecurityIdentity, *, source: str, confidence: str = "provider_normalized_internal_only") -> str:
     """Idempotently register an entity, security, listing, and symbol."""
     ensure_schema()
-    values = asdict(identity)
+    values = {**asdict(identity), "exchange_code": identity.exchange_code or ""}
     values.update(source=source, confidence=confidence, valid_from=dt.date(1900, 1, 1))
     with db._conn() as con:
         con.execute("INSERT INTO security_entities (entity_id, legal_name) VALUES (%(entity_id)s, %(legal_name)s) ON CONFLICT (entity_id) DO UPDATE SET legal_name=excluded.legal_name", values)
@@ -157,7 +157,12 @@ def resolve_security(namespace: str, identifier: str, as_of: dt.date | None = No
                                     l.market_code, l.exchange_code, l.currency, l.status
                              FROM security_identifiers i JOIN securities s USING (security_id)
                              JOIN security_entities e USING (entity_id)
-                             LEFT JOIN security_listings l ON l.security_id=i.security_id AND l.valid_from <= %(as_of)s AND (l.valid_to IS NULL OR l.valid_to >= %(as_of)s)
+                             LEFT JOIN LATERAL (
+                                 SELECT listing.* FROM security_listings listing
+                                 WHERE listing.security_id=i.security_id
+                                 ORDER BY CASE WHEN listing.valid_from <= %(as_of)s AND (listing.valid_to IS NULL OR listing.valid_to >= %(as_of)s) THEN 0 ELSE 1 END,
+                                          listing.valid_from DESC LIMIT 1
+                             ) l ON TRUE
                              WHERE i.namespace=%(namespace)s AND i.identifier=%(identifier)s
                                AND (%(market_code)s IS NULL OR i.scope=%(market_code)s)
                                AND i.valid_from <= %(as_of)s AND (i.valid_to IS NULL OR i.valid_to >= %(as_of)s)
