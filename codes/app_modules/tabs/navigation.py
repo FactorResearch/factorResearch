@@ -1,7 +1,7 @@
 """Top-level tab navigation and theme callbacks."""
 
 import dash
-from dash import Input, Output, State, callback, clientside_callback
+from dash import Input, Output, callback, clientside_callback
 
 # ── Tab Navigation ───────────────────────────────────────────────────────────
 @callback(

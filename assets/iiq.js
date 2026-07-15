@@ -1,4 +1,32 @@
 if (!window.dash_clientside) { window.dash_clientside = {}; }
+
+(function preserveScrollAcrossOrientationChange() {
+    let savedScroll = 0;
+    window.addEventListener('orientationchange', function() {
+        savedScroll = window.scrollY;
+    });
+    window.addEventListener('resize', function() {
+        if (savedScroll > 0) {
+            requestAnimationFrame(function() { window.scrollTo(0, savedScroll); });
+        }
+    });
+})();
+
+document.addEventListener('DOMContentLoaded', function() {
+    function normalizeHiddenDropdownFocusTargets(root) {
+        const scope = root && root.querySelectorAll ? root : document;
+        scope.querySelectorAll('.dash-dropdown-focus-target[aria-hidden=true]')
+            .forEach(function(target) { target.tabIndex = -1; });
+    }
+
+    normalizeHiddenDropdownFocusTargets(document);
+    new MutationObserver(function(records) {
+        records.forEach(function(record) {
+            record.addedNodes.forEach(normalizeHiddenDropdownFocusTargets);
+        });
+    }).observe(document.body, {childList: true, subtree: true});
+});
+
 window.dash_clientside.iiq = {
 
     broadcastTicker: function(ticker) {

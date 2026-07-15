@@ -43,7 +43,6 @@ Integration:
 from __future__ import annotations
 
 import math
-from typing import Any
 
 from codes.core import financial_math as fm
 from codes.core import model_utils as mu
@@ -53,24 +52,15 @@ YEARS_REQUIRED = 10  # strict 10-year look-back
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _safe(val: Any) -> float | None:
-    return mu.safe_float(val)
+_safe = mu.safe_float
 
 
 def _values(records: list, n: int = 11) -> list[float]:
     """Return up to n most-recent non-None values, newest first."""
-    out: list[float] = []
-    for r in records:
-        v = _safe(r.get("value"))
-        if v is not None:
-            out.append(v)
-            if len(out) >= n:
-                break
-    return out
+    return mu.record_values(records, limit=n)
 
 
-def _clamp(v: float, lo: float, hi: float) -> float:
-    return mu.clamp(v, lo, hi)
+_clamp = mu.clamp
 
 
 def _cagr(start: float, end: float, years: int) -> float | None:

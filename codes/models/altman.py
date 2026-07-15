@@ -38,7 +38,6 @@ weight that was available, so missing components do not artificially
 depress the Z-score.  The available_fraction is logged in the return dict.
 """
 
-import math
 
 from codes.core import model_utils as mu
 

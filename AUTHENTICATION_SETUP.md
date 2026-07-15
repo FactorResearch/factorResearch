@@ -62,6 +62,8 @@ export FLASK_ENV="production"
 ```bash
 export AUTH_PROVIDER="clerk"
 export CLERK_PUBLIC_KEY="your_public_key"
+export CLERK_ISSUER="https://your-clerk-issuer"
+export CLERK_AUDIENCE="your-factorresearch-audience"
 export CALLBACK_URL="https://yourapp.com/callback"
 ```
 
@@ -79,6 +81,7 @@ export CALLBACK_URL="https://yourapp.com/callback"
 export AUTH_PROVIDER="supabase"
 export SUPABASE_URL="https://your-project.supabase.co"
 export SUPABASE_API_KEY="your_anon_key"
+export SUPABASE_JWT_AUDIENCE="authenticated"
 export CALLBACK_URL="https://yourapp.com/callback"
 ```
 

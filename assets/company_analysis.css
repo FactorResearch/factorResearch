@@ -266,7 +266,6 @@ time {
   border: 1px solid rgba(0, 230, 118, 0.2);
   border-radius: 999px;
   padding: 5px 9px;
-  height: -moz-max-content;
   height: max-content;
 }
 
@@ -728,4 +727,4 @@ html.light nav[aria-label="History pages"] a {
     grid-template-columns: 1fr;
     gap: 4px;
   }
-}/*# sourceMappingURL=company_analysis.css.map */
+}

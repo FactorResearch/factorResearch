@@ -12,7 +12,7 @@ from codes.engine.scorer import verdict_for_score
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.company_identity import company_logo
 from codes.app_modules.config import (
-    AMBER, BLUE, GREEN, MUTED, RED, PAGE_SIZE,
+    GREEN, MUTED, PAGE_SIZE,
     get_score_class, get_verdict_class,
 )
 from codes.app_modules.screener_markets import (
@@ -50,29 +50,6 @@ def _quick_peek_row(symbol: str) -> dict | None:
         if row.get("symbol") == symbol:
             return row
     return None
-
-
-def _quick_peek_takeaway(row: dict, analysis: dict | None) -> str:
-    if analysis:
-        enhanced = analysis.get("enhanced") or {}
-        verdict = (enhanced.get("verdict") or "").replace("_", " ").title()
-        score = enhanced.get("composite_score")
-        buffett = analysis.get("buffett") or {}
-        risk = analysis.get("risk") or {}
-        price = analysis.get("price")
-        intrinsic = buffett.get("intrinsic_value")
-        if price and intrinsic:
-            if price <= intrinsic and (score or 0) >= 70:
-                return f"{verdict or 'Favorable'} setup with price below modeled moat value."
-            if price > intrinsic and (score or 0) < 50:
-                return "Quality may exist, but valuation and score both need work."
-        if risk.get("sharpe") is not None and risk.get("sharpe", 0) < 0.5:
-            return "Fundamentals may be acceptable, but risk-adjusted returns are currently weak."
-        if score is not None:
-            return f"Composite score sits at {score:.0f}/100 with a {verdict.lower() or 'mixed'} profile."
-    if row.get("analyzed"):
-        return "Cached summary available. Open the full report for full factor detail."
-    return "Not fully analyzed yet. Use this quick peek for triage, then open the full report if it survives the first pass."
 
 
 def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
