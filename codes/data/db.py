@@ -25,9 +25,11 @@ Table: sec_facts
 
 import os
 import datetime
+import threading
 from contextlib import contextmanager
 import json
 from dotenv import load_dotenv
+from codes.core.db_pool import ConnectionPool
 load_dotenv()
 try:
     import psycopg
@@ -40,6 +42,8 @@ except ImportError:  # pragma: no cover
 
 _market_initialized = False
 _users_initialized = False
+_pools: dict[str, ConnectionPool] = {}
+_pools_lock = threading.Lock()
 
 _CREATE_MARKET_TABLES = """
 CREATE TABLE IF NOT EXISTS sec_facts_meta (
@@ -94,6 +98,7 @@ CREATE TABLE IF NOT EXISTS analysis_cache (
     data_json  TEXT NOT NULL,
     updated_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_analysis_cache_updated_at ON analysis_cache(updated_at);
 CREATE TABLE IF NOT EXISTS company_logo_cache (
     provider_key TEXT PRIMARY KEY,
     symbol       TEXT NOT NULL,
@@ -434,6 +439,13 @@ ON CONFLICT (ticker) DO UPDATE SET
 """
 _SELECT_ANALYSIS = "SELECT data_json, updated_at FROM analysis_cache WHERE ticker = %(ticker)s"
 _SELECT_ANALYSIS_TICKERS = "SELECT ticker FROM analysis_cache"
+_SELECT_ALL_ANALYSES = "SELECT ticker, data_json, updated_at FROM analysis_cache ORDER BY ticker"
+_SELECT_ANALYSES = """
+SELECT ticker, data_json, updated_at
+FROM analysis_cache
+WHERE ticker = ANY(%(tickers)s)
+ORDER BY ticker
+"""
 _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
 _SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
 
@@ -728,12 +740,7 @@ def upsert_analysis(ticker: str, data: dict) -> None:
         })
 
 
-def get_analysis_entry(ticker: str) -> dict | None:
-    """Return {'data': dict, 'updated_at': iso_str} or None."""
-    _ensure_init()
-    with _conn() as con:
-        con.row_factory = dict_row
-        row = con.execute(_SELECT_ANALYSIS, {"ticker": ticker.upper()}).fetchone()
+def _analysis_entry_from_row(row) -> dict | None:
     if not row:
         return None
     try:
@@ -741,6 +748,15 @@ def get_analysis_entry(ticker: str) -> dict | None:
     except (TypeError, ValueError):
         return None
     return {"data": data, "updated_at": row["updated_at"]}
+
+
+def get_analysis_entry(ticker: str) -> dict | None:
+    """Return {'data': dict, 'updated_at': iso_str} or None."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_ANALYSIS, {"ticker": ticker.upper()}).fetchone()
+    return _analysis_entry_from_row(row)
 
 
 def get_analysis(ticker: str) -> dict | None:
@@ -755,6 +771,35 @@ def list_analysis_tickers() -> list[str]:
     with _conn() as con:
         rows = con.execute(_SELECT_ANALYSIS_TICKERS).fetchall()
     return sorted(r[0] for r in rows)
+
+
+def list_analysis_entries() -> dict[str, dict]:
+    """Return all valid persisted analyses in one database round trip."""
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_ALL_ANALYSES).fetchall()
+    return {
+        row["ticker"]: entry
+        for row in rows
+        if (entry := _analysis_entry_from_row(row)) is not None
+    }
+
+
+def get_analysis_entries(tickers) -> dict[str, dict]:
+    """Return selected persisted analyses in one database round trip."""
+    normalized = sorted({str(ticker).strip().upper() for ticker in tickers if str(ticker).strip()})
+    if not normalized:
+        return {}
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_ANALYSES, {"tickers": normalized}).fetchall()
+    return {
+        row["ticker"]: entry
+        for row in rows
+        if (entry := _analysis_entry_from_row(row)) is not None
+    }
 
 
 def upsert_sec_8k_filings(ticker: str, filings: list[dict]) -> None:
@@ -994,25 +1039,6 @@ def upsert_market_canonical_facts(
             )
 
 
-def upsert_canada_canonical_facts(
-    symbol: str,
-    financials,
-    shares,
-    quality_report,
-    *,
-    screener_row: dict | None = None,
-) -> None:
-    """Backward-compatible Canada wrapper around generic market storage."""
-    upsert_market_canonical_facts(
-        "CA",
-        symbol,
-        financials,
-        shares,
-        quality_report,
-        screener_row=screener_row,
-    )
-
-
 def get_market_company_profile(market_code: str, symbol: str) -> dict | None:
     params = _market_key(market_code, symbol)
     _ensure_init()
@@ -1032,10 +1058,6 @@ def get_market_company_profile(market_code: str, symbol: str) -> dict | None:
     }
 
 
-def get_canada_company_profile(symbol: str) -> dict | None:
-    return get_market_company_profile("CA", symbol)
-
-
 def get_market_financial_periods(market_code: str, symbol: str) -> list[dict]:
     params = _market_key(market_code, symbol)
     _ensure_init()
@@ -1043,10 +1065,6 @@ def get_market_financial_periods(market_code: str, symbol: str) -> list[dict]:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_MARKET_PERIODS, params).fetchall()
     return [dict(row) for row in rows]
-
-
-def get_canada_financial_periods(symbol: str) -> list[dict]:
-    return get_market_financial_periods("CA", symbol)
 
 
 def get_market_statement_facts(
@@ -1075,14 +1093,6 @@ def get_market_statement_facts(
     return list(results.values())
 
 
-def get_canada_statement_facts(symbol: str, statement_type: str) -> list[dict]:
-    return get_market_statement_facts("CA", symbol, statement_type)
-
-
-def get_canada_filings(symbol: str) -> list[dict]:
-    return get_canada_source_documents(symbol)
-
-
 def get_market_source_documents(market_code: str, symbol: str) -> list[dict]:
     params = _market_key(market_code, symbol)
     _ensure_init()
@@ -1090,10 +1100,6 @@ def get_market_source_documents(market_code: str, symbol: str) -> list[dict]:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_MARKET_DOCUMENTS, params).fetchall()
     return [dict(row) for row in rows]
-
-
-def get_canada_source_documents(symbol: str) -> list[dict]:
-    return get_market_source_documents("CA", symbol)
 
 
 def get_market_shares_outstanding(market_code: str, symbol: str) -> dict | None:
@@ -1105,10 +1111,6 @@ def get_market_shares_outstanding(market_code: str, symbol: str) -> dict | None:
     return dict(row) if row else None
 
 
-def get_canada_shares_outstanding(symbol: str) -> dict | None:
-    return get_market_shares_outstanding("CA", symbol)
-
-
 def get_market_statement_provenance(market_code: str, symbol: str) -> list[dict]:
     params = _market_key(market_code, symbol)
     _ensure_init()
@@ -1116,10 +1118,6 @@ def get_market_statement_provenance(market_code: str, symbol: str) -> list[dict]
         con.row_factory = dict_row
         rows = con.execute(_SELECT_MARKET_PROVENANCE, params).fetchall()
     return [dict(row) for row in rows]
-
-
-def get_canada_statement_provenance(symbol: str) -> list[dict]:
-    return get_market_statement_provenance("CA", symbol)
 
 
 def get_market_quality_report(market_code: str, symbol: str) -> dict | None:
@@ -1134,10 +1132,6 @@ def get_market_quality_report(market_code: str, symbol: str) -> dict | None:
     result = dict(report)
     result["issues"] = [dict(issue) for issue in issues]
     return result
-
-
-def get_canada_quality_report(symbol: str) -> dict | None:
-    return get_market_quality_report("CA", symbol)
 
 
 def get_market_screener_rows(market_codes: list[str] | tuple[str, ...] | None = None) -> list[dict]:
@@ -1675,6 +1669,12 @@ ORDER BY snapshot_date DESC
 LIMIT 1
 """
 _SELECT_SNAPSHOT_DATES = "SELECT DISTINCT snapshot_date FROM factor_score_snapshots WHERE ticker = %(ticker)s ORDER BY snapshot_date"
+_SELECT_FACTOR_SNAPSHOT_HISTORY = """
+SELECT ticker, factor_name, snapshot_date, score, max_score
+FROM factor_score_snapshots
+WHERE ticker = ANY(%(tickers)s)
+ORDER BY ticker, factor_name, snapshot_date
+"""
 _UPSERT_COMPOSITE_SNAPSHOT = """
 INSERT INTO composite_score_snapshots (
     ticker, snapshot_date, algorithm_version, composite_score, verdict, recorded_at
@@ -1731,6 +1731,18 @@ def list_snapshot_dates(ticker: str) -> list[str]:
     return [r[0] for r in rows]
 
 
+def list_factor_snapshot_history(tickers: list[str]) -> list[dict]:
+    """Return all dated factor scores for the requested symbols in one query."""
+    normalized = sorted({ticker.strip().upper() for ticker in tickers if ticker and ticker.strip()})
+    if not normalized:
+        return []
+    _ensure_init()
+    with _conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_FACTOR_SNAPSHOT_HISTORY, {"tickers": normalized}).fetchall()
+    return [dict(row) for row in rows]
+
+
 def record_composite_score_snapshot(
     ticker: str,
     composite_score: float,
@@ -1779,27 +1791,33 @@ def _users_db_url() -> str:
     )
 
 
-def _pg_conn():
-    import psycopg
-    return psycopg.connect(_db_url())
+def _pool(url: str) -> ConnectionPool:
+    with _pools_lock:
+        return _pools.setdefault(
+            url,
+            ConnectionPool(
+                lambda: psycopg.connect(url),
+                max_size=int(os.environ.get("DATABASE_POOL_SIZE", "5")),
+            ),
+        )
 
 
-def _users_pg_conn():
-    import psycopg
-    return psycopg.connect(_users_db_url())
+def pool_health() -> dict:
+    with _pools_lock:
+        return {f"pool_{index + 1}": pool.stats() for index, pool in enumerate(_pools.values())}
 
 
 @contextmanager
 def _conn():
     """Yield a pooled Postgres connection (returned to the pool on exit)."""
-    with _pg_conn() as con:
+    with _pool(_db_url()).connection() as con:
         yield con
 
 
 @contextmanager
 def _users_conn():
     """Yield a Postgres connection for user/account state."""
-    with _users_pg_conn() as con:
+    with _pool(_users_db_url()).connection() as con:
         yield con
 
 
@@ -1811,6 +1829,17 @@ def init_db() -> None:
 def init_user_db() -> None:
     with _users_conn() as con:
         con.execute(_CREATE_USER_TABLES)
+
+
+def delete_user_records(user_id: str) -> dict[str, int]:
+    """Delete all user-owned account, entitlement, usage, and strategy records."""
+    _ensure_user_init()
+    deleted = {}
+    with _users_conn() as con:
+        for table in ("user_weights", "user_usage", "subscriptions"):
+            # Table names come only from the fixed tuple above; user data remains parameterized.
+            deleted[table] = con.execute(f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}).rowcount  # nosec B608
+    return deleted
 
 
 def _ensure_init() -> None:
@@ -1930,7 +1959,7 @@ def get_all(order_by: str = "market_cap") -> list[dict]:
     with _conn() as con:
         con.row_factory = dict_row
         rows = con.execute(
-            f"SELECT * FROM value_metrics ORDER BY {col} IS NULL, {col} DESC"
+            f"SELECT * FROM value_metrics ORDER BY {col} IS NULL, {col} DESC"  # nosec B608
         ).fetchall()
     return [dict(r) for r in rows]
 

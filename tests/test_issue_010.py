@@ -2,7 +2,7 @@ import re
 import time
 import pytest
 
-from codes import app as app_mod
+from codes.app_modules import rate_limit as app_mod
 
 
 def test_ticker_regex_accepts_valid_tickers():
@@ -45,13 +45,13 @@ def test_in_memory_rate_limiter_enforces_limit():
     app_mod._RATE_LIMIT_STORE.clear()
 
     # Allow 2 calls within period
-    app_mod._check_rate_limit(action, calls=2, period_seconds=5, key=key)
-    app_mod._check_rate_limit(action, calls=2, period_seconds=5, key=key)
+    app_mod.check_rate_limit(action, calls=2, period_seconds=5, key=key)
+    app_mod.check_rate_limit(action, calls=2, period_seconds=5, key=key)
 
     # Third call should raise RateLimited
     with pytest.raises(app_mod.RateLimited):
-        app_mod._check_rate_limit(action, calls=2, period_seconds=5, key=key)
+        app_mod.check_rate_limit(action, calls=2, period_seconds=5, key=key)
 
     # After waiting past the period, it should allow calls again
     time.sleep(5)
-    app_mod._check_rate_limit(action, calls=2, period_seconds=5, key=key)
+    app_mod.check_rate_limit(action, calls=2, period_seconds=5, key=key)

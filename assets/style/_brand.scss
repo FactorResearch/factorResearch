@@ -1,0 +1,14 @@
+/* Product branding. */
+.topbar-logo {
+  width: 38px !important;
+  height: 32px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+body.light .topbar-logo {
+  filter: none;
+}

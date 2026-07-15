@@ -8,6 +8,7 @@ import json
 import os
 
 from dotenv import load_dotenv
+from codes.core.db_pool import ConnectionPool
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ except ImportError:  # pragma: no cover
 
 
 _initialized = False
+_pool = None
 
 _CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS analytics_events (
@@ -85,14 +87,18 @@ def _db_url() -> str:
 
 @contextmanager
 def _conn():
+    global _pool
     if psycopg is None:
         raise RuntimeError("psycopg is required for analytics event storage.")
-    con = psycopg.connect(_db_url())
-    try:
+    if _pool is None:
+        url = _db_url()
+        _pool = ConnectionPool(lambda: psycopg.connect(url), max_size=int(os.environ.get("ANALYTICS_DATABASE_POOL_SIZE", "2")))
+    with _pool.connection() as con:
         yield con
-        con.commit()
-    finally:
-        con.close()
+
+
+def pool_health() -> dict:
+    return _pool.stats() if _pool is not None else {"created": 0, "available": 0, "in_use": 0, "max_size": 2, "utilization": 0.0}
 
 
 def ensure_schema() -> None:
@@ -117,6 +123,16 @@ def insert_event(*, user_id: str | None, anonymous_id: str | None, event_name: s
     }
     with _conn() as con:
         con.execute(_INSERT_EVENT, payload)
+
+
+def delete_identity_events(identity: str) -> int:
+    ensure_schema()
+    with _conn() as con:
+        result = con.execute(
+            "DELETE FROM analytics_events WHERE user_id = %(identity)s OR anonymous_id = %(identity)s",
+            {"identity": identity},
+        )
+    return result.rowcount
 
 
 def list_recent_events(limit: int = 50) -> list[dict]:
