@@ -1,7 +1,15 @@
 """Top-level tab navigation and theme callbacks."""
 
+import re
+
 import dash
 from dash import Input, Output, callback, clientside_callback
+
+
+_ANALYZE_PATH_RE = re.compile(
+    r"^(?:/analyze/[A-Za-z]{1,6}(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?"
+    r"|/[A-Za-z]{1,6}/analyze/(?:\d{8}|\d{4}-\d{2}-\d{2}))/?$"
+)
 
 # ── Tab Navigation ───────────────────────────────────────────────────────────
 @callback(
@@ -43,7 +51,7 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open
         return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if triggered == "tab-pricing-btn":
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
-    if (pathname or "").startswith("/analyze/"):
+    if _ANALYZE_PATH_RE.fullmatch(pathname or ""):
         return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if (pathname or "") == "/pricing":
         return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE

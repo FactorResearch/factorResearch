@@ -14,7 +14,7 @@ def test_analyze_path_selects_analyze_tab_even_when_initial_trigger_is_not_url()
             None,
             None,
             None,
-            "/analyze/AAPL/20260711",
+            "/AAPL/analyze/20260711",
         )
 
     assert result[0] == {"display": "none"}
@@ -33,7 +33,7 @@ def test_explicit_tab_click_can_leave_analyze_path():
             None,
             None,
             None,
-            "/analyze/AAPL/20260711",
+            "/AAPL/analyze/20260711",
         )
 
     assert result[0] == {"display": "none"}
@@ -52,7 +52,7 @@ def test_explicit_screener_click_can_leave_analyze_path():
             None,
             None,
             None,
-            "/analyze/AAPL/20260711",
+            "/AAPL/analyze/20260711",
         )
 
     assert result[0] == {"display": "block"}

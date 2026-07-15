@@ -68,6 +68,7 @@ def test_dash_analysis_parser_accepts_bare_and_dated_ticker_urls():
     assert _ticker_from_analyze_path("/analyze/NVDA/") == "NVDA"
     assert _ticker_from_analyze_path("/analyze/NVDA/20260710") == "NVDA"
     assert _ticker_from_analyze_path("/analyze/nvda/2026-07-10") == "NVDA"
+    assert _ticker_from_analyze_path("/NVDA/analyze/20260710") == "NVDA"
 
 
 def test_ticker_page_bootstraps_first_snapshot_from_cached_official_analysis():

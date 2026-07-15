@@ -25,7 +25,8 @@ from codes.app_modules.tabs.pricing import open_upgrade_funnel
 
 
 _ANALYZE_PATH_RE = re.compile(
-    r"^/analyze/([A-Za-z]{1,6})(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?/?$"
+    r"^(?:/analyze/([A-Za-z]{1,6})(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?"
+    r"|/([A-Za-z]{1,6})/analyze/(?:\d{8}|\d{4}-\d{2}-\d{2}))/?$"
 )
 
 
@@ -129,7 +130,7 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
     match = _ANALYZE_PATH_RE.fullmatch(pathname or "")
     if not match:
         return None
-    return match.group(1).upper()
+    return (match.group(1) or match.group(2)).upper()
 
 
 # ── Analyze ───────────────────────────────────────────────────────────────────
@@ -281,7 +282,7 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
     client_result = _client_analysis_payload(result)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return (
-        dash.no_update if triggered in ("url", None) else f"/analyze/{symbol}/{_time.strftime('%Y%m%d')}",
+        dash.no_update if triggered in ("url", None) else f"/{symbol}/analyze/{_time.strftime('%Y%m%d')}",
         content,
         client_result,
         f"✅ {result['name']} ({symbol}) — Analysis complete{usage_msg}",

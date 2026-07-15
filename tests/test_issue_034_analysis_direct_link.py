@@ -1,5 +1,6 @@
 from types import SimpleNamespace
 from unittest.mock import patch
+import re
 
 from codes.app_modules.tabs import analyze as analyze_tab
 
@@ -22,12 +23,13 @@ def test_dated_direct_link_ticker_drives_analysis_when_input_is_empty():
         output = analyze_tab.run_analysis(
             None,
             None,
-            "/analyze/AAPL/20260711",
+            "/AAPL/analyze/20260711",
             None,
             [],
         )
 
     analyze_stock.assert_called_once_with("AAPL")
+    assert re.fullmatch(r"/AAPL/analyze/\d{8}", output[0])
     assert output[1] == ["content"]
     assert output[6] == "AAPL"
     assert output[8] == "AAPL"

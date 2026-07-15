@@ -1131,7 +1131,7 @@ def _build_analysis_content(data: dict) -> list:
                                     html.H2(
                                         dcc.Link(
                                             f"{symbol} — {name}",
-                                            href=f"/analyze/{symbol}/",
+                                            href=f"/{symbol}",
                                             refresh=True,
                                             className="company-title-link",
                                             title=f"Open {name} company research",

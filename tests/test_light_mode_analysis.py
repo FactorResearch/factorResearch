@@ -15,5 +15,5 @@ def test_analysis_uses_semantic_tone_classes_and_company_link():
     css = (ROOT / "assets/style.css").read_text()
     source = (ROOT / "codes/app_modules/analysis_ui.py").read_text()
     assert ".tone-positive" in css
-    assert 'href=f"/analyze/{symbol}/"' in source
+    assert 'href=f"/{symbol}"' in source
     assert 'className="company-title-link"' in source
