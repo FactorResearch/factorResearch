@@ -62,6 +62,17 @@ def test_as_of_facts_filter_public_availability(monkeypatch):
     assert params["as_of"] == as_of
 
 
+def test_security_resolution_uses_non_nullable_scope_query(monkeypatch):
+    conn = _Connection([{"security_id": "s", "identifier": "ESNT"}])
+    monkeypatch.setattr(temporal, "ensure_schema", lambda: None)
+    monkeypatch.setattr(temporal.db, "_conn", _connection(conn))
+    assert temporal.resolve_security("TICKER", "ESNT", market_code="US")["security_id"] == "s"
+    sql, params = conn.calls[-1]
+    assert "i.scope=%(market_code)s" in sql
+    assert "market_code)s IS NULL" not in sql
+    assert params["market_code"] == "US"
+
+
 def test_fx_identity_and_historical_lookup(monkeypatch):
     assert temporal.get_fx_rate("USD", "USD", dt.date(2020, 1, 1)) == 1.0
     conn = _Connection([(1.25,)])
@@ -119,3 +130,16 @@ def test_company_data_page_escapes_and_separates_research(monkeypatch):
     assert response.status_code == 200
     assert "Company Data" in body and "A&amp;B &lt;Corp&gt;" in body
     assert "No sourced corporate actions" in body
+
+
+def test_company_data_page_has_honest_pending_state(monkeypatch):
+    app = flask.Flask(__name__)
+    app.register_blueprint(company_data_pages)
+    monkeypatch.setattr(temporal, "resolve_security", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("codes.routes.company_data.db.get_analysis", lambda _ticker: {"name": "Essent Group"})
+    response = app.test_client().get("/data/ESNT")
+    body = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "Essent Group" in body
+    assert "coverage pending" in body
+    assert "No sourced filings" in body

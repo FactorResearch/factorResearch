@@ -7,7 +7,7 @@ import re
 
 import flask
 
-from codes.data import temporal
+from codes.data import db, temporal
 
 
 company_data_pages = flask.Blueprint("company_data_pages", __name__)
@@ -25,11 +25,12 @@ def company_data(symbol: str):
         flask.abort(404)
     identity = temporal.resolve_security("TICKER", ticker, market_code="CA" if ticker.endswith(".TO") else "US")
     if not identity:
-        flask.abort(404)
+        cached = db.get_analysis(ticker) or {}
+        identity = {"security_id": None, "legal_name": cached.get("name") or ticker, "market_code": cached.get("market_code") or ("CA" if ticker.endswith(".TO") else "US"), "status": "coverage pending"}
     security_id = identity["security_id"]
-    actions = temporal.list_corporate_actions(security_id)
-    restatements = temporal.list_restatements(security_id)
-    history = temporal.company_data_history(security_id)
+    actions = temporal.list_corporate_actions(security_id) if security_id else []
+    restatements = temporal.list_restatements(security_id) if security_id else []
+    history = temporal.company_data_history(security_id) if security_id else {"identifiers": [], "filings": [], "universes": []}
     identifiers = "".join(
         f"<li><strong>{_value(row.get('namespace'))}</strong> {_value(row.get('identifier'))} <small>{_value(row.get('source'))}</small></li>"
         for row in history["identifiers"]

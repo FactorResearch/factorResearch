@@ -162,9 +162,13 @@ def add_identifier(security_id: str, namespace: str, identifier: str, *, source:
 def resolve_security(namespace: str, identifier: str, as_of: dt.date | None = None, *, market_code: str | None = None) -> dict | None:
     ensure_schema()
     date = as_of or dt.date.today()
+    scope_filter = "AND i.scope=%(market_code)s" if market_code else ""
+    params = {"namespace": namespace.upper(), "identifier": identifier.upper(), "as_of": date}
+    if market_code:
+        params["market_code"] = market_code.upper()
     with db._conn() as con:
         con.row_factory = dict_row
-        row = con.execute("""SELECT i.security_id::text, i.namespace, i.identifier, e.legal_name,
+        row = con.execute(f"""SELECT i.security_id::text, i.namespace, i.identifier, e.legal_name,
                                     l.market_code, l.exchange_code, l.currency, l.status
                              FROM security_identifiers i JOIN securities s USING (security_id)
                              JOIN security_entities e USING (entity_id)
@@ -175,10 +179,10 @@ def resolve_security(namespace: str, identifier: str, as_of: dt.date | None = No
                                           listing.valid_from DESC LIMIT 1
                              ) l ON TRUE
                              WHERE i.namespace=%(namespace)s AND i.identifier=%(identifier)s
-                               AND (%(market_code)s IS NULL OR i.scope=%(market_code)s)
+                               {scope_filter}
                                AND i.valid_from <= %(as_of)s AND (i.valid_to IS NULL OR i.valid_to >= %(as_of)s)
                              ORDER BY i.valid_from DESC LIMIT 1""",
-                          {"namespace": namespace.upper(), "identifier": identifier.upper(), "as_of": date, "market_code": market_code.upper() if market_code else None}).fetchone()
+                          params).fetchone()
     return dict(row) if row else None
 
 
