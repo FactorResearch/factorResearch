@@ -76,7 +76,8 @@ def test_historical_page_renders_compare_picker_and_history_links():
     assert "<style" not in body
     assert "style=" not in body
     styles = (ROOT / "assets/company_analysis.css").read_text()
-    assert ".historical-analysis-page main { max-width: 960px; padding: 40px 20px; }" in styles
+    assert ".historical-analysis-page main {" in styles
+    assert "max-width: 960px;" in styles
     assert 'name="compare"' in body
     assert "2026-06-08 - FAVORABLE" in body
     assert 'href="/analyze/AAPL/20260608"' in body

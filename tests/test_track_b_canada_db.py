@@ -143,7 +143,8 @@ def test_canada_canonical_facts_are_persisted_relationally(monkeypatch):
     monkeypatch.setattr(db, "_market_initialized", True)
     monkeypatch.setattr(db, "_conn", lambda: _ctx(conn))
 
-    db.upsert_canada_canonical_facts(
+    db.upsert_market_canonical_facts(
+        "CA",
         "shop.to",
         _financials(),
         _shares(),
@@ -177,13 +178,12 @@ def test_canada_canonical_facts_are_persisted_relationally(monkeypatch):
 
 
 def test_canada_database_source_reads_normalized_rows(monkeypatch):
-    monkeypatch.setattr(db, "get_canada_company_profile", lambda symbol: {"issuer_name": "Shopify Inc."})
-    monkeypatch.setattr(db, "get_canada_financial_periods", lambda symbol: [{"fiscal_year": 2025}])
-    monkeypatch.setattr(db, "get_canada_statement_facts", lambda symbol, statement: [{"statement": statement}])
-    monkeypatch.setattr(db, "get_canada_filings", lambda symbol: [{"document_id": "sedar-shop-2025"}])
-    monkeypatch.setattr(db, "get_canada_shares_outstanding", lambda symbol: {"shares_outstanding": 1234})
-    monkeypatch.setattr(db, "get_canada_source_documents", lambda symbol: [{"document_id": "sedar-shop-2025"}])
-    monkeypatch.setattr(db, "get_canada_statement_provenance", lambda symbol: [{"fact_name": "revenue"}])
+    monkeypatch.setattr(db, "get_market_company_profile", lambda market, symbol: {"issuer_name": "Shopify Inc."})
+    monkeypatch.setattr(db, "get_market_financial_periods", lambda market, symbol: [{"fiscal_year": 2025}])
+    monkeypatch.setattr(db, "get_market_statement_facts", lambda market, symbol, statement: [{"statement": statement}])
+    monkeypatch.setattr(db, "get_market_shares_outstanding", lambda market, symbol: {"shares_outstanding": 1234})
+    monkeypatch.setattr(db, "get_market_source_documents", lambda market, symbol: [{"document_id": "sedar-shop-2025"}])
+    monkeypatch.setattr(db, "get_market_statement_provenance", lambda market, symbol: [{"fact_name": "revenue"}])
 
     source = CanadaDatabaseDataSource()
 
@@ -201,18 +201,20 @@ def test_canada_database_source_reads_normalized_rows(monkeypatch):
 def test_ingest_verified_canada_financials_stores_quality_report(monkeypatch):
     saved = {}
 
-    def _save(symbol, financials, shares, quality_report, *, screener_row=None):
+    def _save(market, symbol, financials, shares, quality_report, *, screener_row=None):
+        saved["market"] = market
         saved["symbol"] = symbol
         saved["financials"] = financials
         saved["shares"] = shares
         saved["quality_report"] = quality_report
         saved["screener_row"] = screener_row
 
-    monkeypatch.setattr(db, "upsert_canada_canonical_facts", _save)
+    monkeypatch.setattr(db, "upsert_market_canonical_facts", _save)
 
     result = ingest_verified_canada_financials("shop:tsx", _financials(), _shares())
 
     assert result.can_score is True
+    assert saved["market"] == "CA"
     assert saved["symbol"] == "SHOP.TO"
     assert saved["quality_report"].can_score is True
     assert saved["quality_report"].confidence == "regulatory_verified"
@@ -227,11 +229,12 @@ def test_ingest_verified_canada_financials_stores_quality_report(monkeypatch):
 def test_internal_canada_import_is_not_added_to_public_screener(monkeypatch):
     saved = {}
 
-    def _save(symbol, financials, shares, quality_report, *, screener_row=None):
+    def _save(market, symbol, financials, shares, quality_report, *, screener_row=None):
+        saved["market"] = market
         saved["quality_report"] = quality_report
         saved["screener_row"] = screener_row
 
-    monkeypatch.setattr(db, "upsert_canada_canonical_facts", _save)
+    monkeypatch.setattr(db, "upsert_market_canonical_facts", _save)
 
     result = ingest_verified_canada_financials(
         "SHOP.TO",

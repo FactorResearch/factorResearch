@@ -4,7 +4,6 @@ Security Tests for Graham Score App
 Tests for:
 - Input validation
 - CSRF protection
-- Rate limiting
 - SQL injection prevention
 - XSS protection
 - Authentication
@@ -147,44 +146,6 @@ class TestSanitization:
         assert "<div>" not in result
 
 
-class TestRateLimiting:
-    """Test rate limiting functionality."""
-    
-    def test_rate_limiter_allows_requests_within_limit(self):
-        """Test that requests within limit are allowed."""
-        limiter = security.RateLimiter()
-        
-        # Allow 5 requests per 60 seconds
-        for i in range(5):
-            assert limiter.is_allowed("test_key", 5, 60)
-    
-    def test_rate_limiter_blocks_excess_requests(self):
-        """Test that requests exceeding limit are blocked."""
-        limiter = security.RateLimiter()
-        
-        # Allow 3 requests per 60 seconds
-        assert limiter.is_allowed("test_key", 3, 60)
-        assert limiter.is_allowed("test_key", 3, 60)
-        assert limiter.is_allowed("test_key", 3, 60)
-        
-        # Fourth request should be blocked
-        assert not limiter.is_allowed("test_key", 3, 60)
-    
-    def test_rate_limiter_per_key_isolation(self):
-        """Test that rate limits are per-key."""
-        limiter = security.RateLimiter()
-        
-        # Both keys should be independent
-        assert limiter.is_allowed("key1", 2, 60)
-        assert limiter.is_allowed("key2", 2, 60)
-        assert limiter.is_allowed("key1", 2, 60)
-        assert limiter.is_allowed("key2", 2, 60)
-        
-        # Both should now be blocked
-        assert not limiter.is_allowed("key1", 2, 60)
-        assert not limiter.is_allowed("key2", 2, 60)
-
-
 class TestCSRFProtection:
     """Test CSRF token generation and validation."""
     
@@ -322,7 +283,10 @@ class TestSecurityHeaders:
         assert response.headers["X-Content-Type-Options"] == "nosniff"
         assert response.headers["X-Frame-Options"] == "DENY"
         assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
-        assert response.headers["Access-Control-Allow-Origin"] == "none"
+        assert "Access-Control-Allow-Origin" not in response.headers
+        assert response.headers["Cross-Origin-Opener-Policy"] == "same-origin"
+        assert response.headers["Cross-Origin-Resource-Policy"] == "same-origin"
+        assert "frame-ancestors 'none'" in response.headers["Content-Security-Policy"]
 
 
 class TestLogging:

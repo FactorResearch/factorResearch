@@ -10,13 +10,15 @@ Environment variables required:
   AUTH0_CLIENT_ID:        Auth0 application client ID
   AUTH0_CLIENT_SECRET:    Auth0 application client secret
   CLERK_PUBLIC_KEY:       Clerk public key (for local dev token validation)
+  CLERK_ISSUER:           Expected Clerk token issuer
+  CLERK_AUDIENCE:         Expected Clerk token audience
   SUPABASE_URL:           Supabase project URL
   SUPABASE_API_KEY:       Supabase anon/public key
+  SUPABASE_JWT_AUDIENCE:  Expected Supabase token audience (default: authenticated)
   CALLBACK_URL:           Callback URL for auth provider redirects
 """
 
 import os
-import json
 import secrets
 import requests
 from functools import wraps
@@ -24,12 +26,13 @@ from typing import Optional, Tuple
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-from jose import jwt
-from jose.exceptions import JWTError
+import jwt
+from jwt.exceptions import PyJWTError
 
 # Import Flask and related libraries
 import flask
 from flask import redirect, request, session, url_for
+from codes.core.config import is_production
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -46,10 +49,13 @@ AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET")
 
 # Clerk Configuration
 CLERK_PUBLIC_KEY = os.environ.get("CLERK_PUBLIC_KEY")
+CLERK_ISSUER = os.environ.get("CLERK_ISSUER")
+CLERK_AUDIENCE = os.environ.get("CLERK_AUDIENCE")
 
 # Supabase Configuration
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+SUPABASE_JWT_AUDIENCE = os.environ.get("SUPABASE_JWT_AUDIENCE", "authenticated")
 
 # Cache for verified tokens (to reduce external API calls)
 _token_cache: dict[str, Tuple[str, datetime]] = {}
@@ -122,26 +128,24 @@ def _fetch_jwks(jwks_url: str) -> Optional[dict]:
 
 
 def _decode_jwt(token: str, jwks_url: str, audience: Optional[str] = None, issuer: Optional[str] = None) -> Optional[dict]:
-    unverified_header = jwt.get_unverified_header(token)
-    jwks = _fetch_jwks(jwks_url)
-    if not jwks or "keys" not in jwks:
-        return None
-
-    key = next((k for k in jwks["keys"] if k.get("kid") == unverified_header.get("kid")), None)
-    if key is None:
-        return None
-
     try:
+        unverified_header = jwt.get_unverified_header(token)
+        jwks = _fetch_jwks(jwks_url)
+        if not jwks or "keys" not in jwks:
+            return None
+        key = next((k for k in jwks["keys"] if k.get("kid") == unverified_header.get("kid")), None)
+        if key is None:
+            return None
         options = {"verify_aud": audience is not None}
         return jwt.decode(
             token,
-            key,
+            jwt.PyJWK.from_dict(key).key,
             algorithms=["RS256"],
             audience=audience,
             issuer=issuer,
             options=options,
         )
-    except JWTError as e:
+    except (PyJWTError, ValueError) as e:
         print(f"[AUTH] JWT verification failed: {e}")
         return None
 
@@ -207,8 +211,8 @@ def _verify_auth0_token(token: str) -> Optional[str]:
 
 def _verify_clerk_token(token: str) -> Optional[str]:
     """Verify Clerk JWT token."""
-    if not CLERK_PUBLIC_KEY:
-        print("[AUTH] Clerk public key not configured")
+    if not CLERK_PUBLIC_KEY or not CLERK_ISSUER or not CLERK_AUDIENCE:
+        print("[AUTH] Clerk token verification is not fully configured")
         return None
 
     try:
@@ -216,11 +220,12 @@ def _verify_clerk_token(token: str) -> Optional[str]:
             token,
             CLERK_PUBLIC_KEY,
             algorithms=["RS256"],
-            options={"verify_aud": False},
+            audience=CLERK_AUDIENCE,
+            issuer=CLERK_ISSUER,
         )
         user_id = payload.get("sub") or payload.get("user_id")
         return user_id
-    except JWTError as e:
+    except PyJWTError as e:
         print(f"[AUTH] Clerk token verification failed: {e}")
     return None
 
@@ -234,7 +239,12 @@ def _verify_supabase_token(token: str) -> Optional[str]:
     token = token.strip()
     if token.count(".") == 2:
         jwks_url = SUPABASE_URL.rstrip("/") + "/auth/v1/.well-known/jwks.json"
-        payload = _decode_jwt(token, jwks_url, audience=None, issuer=None)
+        payload = _decode_jwt(
+            token,
+            jwks_url,
+            audience=SUPABASE_JWT_AUDIENCE,
+            issuer=SUPABASE_URL.rstrip("/") + "/auth/v1",
+        )
         if payload:
             user_id = payload.get("sub") or payload.get("user_id") or payload.get("id")
             if user_id:
@@ -263,7 +273,7 @@ def _verify_supabase_token(token: str) -> Optional[str]:
 
 
 def _is_dev_mode() -> bool:
-    return os.environ.get("FLASK_ENV", "").lower() != "production"
+    return not is_production()
 
 
 def get_dev_persona() -> Optional[dict]:
@@ -330,16 +340,13 @@ def get_authenticated_user_id() -> Optional[str]:
         user_id = verify_token(token)
         if user_id:
             session["_authenticated_user_id"] = user_id
-            session["_auth_token"] = token
             return user_id
     return None
 
 
-def set_authenticated_user(user_id: str, token: str = "") -> None:
-    """Store authenticated user_id in Flask session."""
+def set_authenticated_user(user_id: str) -> None:
+    """Store only the nonsecret authenticated user ID in the client session."""
     session["_authenticated_user_id"] = user_id
-    if token:
-        session["_auth_token"] = token
 
 
 def clear_authenticated_user() -> None:
@@ -452,7 +459,7 @@ def setup_auth0_routes(app_server):
             # Verify and store user info
             user_id = verify_token(access_token)
             if user_id:
-                set_authenticated_user(user_id, access_token)
+                set_authenticated_user(user_id)
                 return redirect("/")  # Redirect to app
         except Exception as e:
             print(f"[AUTH] Callback error type: {type(e).__name__}")
@@ -488,15 +495,14 @@ def configure_secure_cookies(app_server):
       HttpOnly=true     (No JavaScript access)
       SameSite=Lax|Strict (CSRF protection)
     """
-    # Determine if running in production (no debug mode)
-    is_production = not app_server.debug or os.environ.get("FLASK_ENV") == "production"
+    production = is_production()
     
     app_server.config.update(
-        SESSION_COOKIE_SECURE=is_production,  # HTTPS only in production
+        SESSION_COOKIE_SECURE=production,  # HTTPS only in production
         SESSION_COOKIE_HTTPONLY=True,  # Never expose to JavaScript
         SESSION_COOKIE_SAMESITE="Lax",  # CSRF protection (use "Strict" if no cross-site forms)
         SESSION_COOKIE_NAME="intrinsic_iq_session",  # Explicit cookie name
-        PERMANENT_SESSION_LIFETIME=timedelta(days=30),  # Session expiry
+        PERMANENT_SESSION_LIFETIME=timedelta(hours=24),
         SESSION_REFRESH_EACH_REQUEST=True,  # Refresh session on each request
     )
     
@@ -505,7 +511,7 @@ def configure_secure_cookies(app_server):
         """Mark session as permanent to enforce lifetime."""
         session.permanent = True
     
-    secure_str = "Secure" if is_production else "insecure (dev mode)"
+    secure_str = "Secure" if production else "insecure (dev mode)"
     print(f"[AUTH] Secure cookies configured ({secure_str})")
 
 
@@ -534,7 +540,7 @@ def init_auth(app_server):
     """
     print(f"\n[AUTH] Initializing authentication (provider={AUTH_PROVIDER})")
 
-    if os.environ.get("FLASK_ENV", "").lower() == "production" and not AUTH_PROVIDER:
+    if is_production() and not AUTH_PROVIDER:
         raise RuntimeError("AUTH_PROVIDER must be configured in production.")
 
     configure_secure_cookies(app_server)
