@@ -18,11 +18,13 @@ _ANALYZE_PATH_RE = re.compile(
     Output("tab-portfolio",    "style"),
     Output("tab-factorlab",    "style"),
     Output("tab-pricing",      "style"),
+    Output("profile-page",     "style"),
     Output("tab-screener-btn", "className"),
     Output("tab-analyze-btn",  "className"),
     Output("tab-portfolio-btn","className"),
     Output("tab-factorlab-btn", "className"),
     Output("tab-pricing-btn", "className"),
+    Output("profile-menu-btn", "className"),
     Input("tab-screener-btn",     "n_clicks"),
     Input("tab-analyze-btn",      "n_clicks"),
     Input("tab-portfolio-btn",    "n_clicks"),
@@ -37,67 +39,43 @@ def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
+    if (pathname or "") == "/profile":
+        return HIDE, HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, IDLE, ACTIVE
     if triggered == "screener-open-analysis-symbol" and open_analysis_symbol:
-        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if triggered == "upgrade-funnel-store" and upgrade_context:
-        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+        return HIDE, HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if triggered == "tab-screener-btn" and n_screener:
-        return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
+        return SHOW, HIDE, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE, IDLE
     if triggered == "tab-analyze-btn":
-        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if triggered == "tab-portfolio-btn":
-        return HIDE, HIDE, SHOW, HIDE, HIDE, IDLE, IDLE, ACTIVE, IDLE, IDLE
+        return HIDE, HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if triggered == "tab-factorlab-btn":
-        return HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE
+        return HIDE, HIDE, HIDE, SHOW, HIDE, HIDE, IDLE, IDLE, IDLE, ACTIVE, IDLE, IDLE
     if triggered == "tab-pricing-btn":
-        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
+        return HIDE, HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if _ANALYZE_PATH_RE.fullmatch(pathname or ""):
-        return HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE
+        return HIDE, SHOW, HIDE, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE, IDLE
     if (pathname or "") == "/pricing":
-        return HIDE, HIDE, HIDE, HIDE, SHOW, IDLE, IDLE, IDLE, IDLE, ACTIVE
-    return SHOW, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE
+        return HIDE, HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, IDLE, ACTIVE, IDLE
+    return SHOW, HIDE, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE, IDLE
 
 
 # ── Theme Toggle ────────────────────────────────────────────────────────────
-def _make_theme_js(target_theme):
-    return f"""
-    function(n) {{
-        if (!n) return "";
-        localStorage.setItem("fr-theme", "{target_theme}");
-        var light = "{target_theme}" === "light" ||
-            ("{target_theme}" === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
-        document.documentElement.classList.toggle("light", light);
-        document.body.classList.toggle("light", light);
-        document.querySelectorAll(".theme-btn").forEach(function(btn) {{
-            btn.classList.toggle("active", btn.dataset.theme === "{target_theme}");
-        }});
-        return "";
-    }}
-    """
-
-for btn_id, theme_val in [("theme-light", "light"), ("theme-system", "system"), ("theme-dark", "dark")]:
-    clientside_callback(
-        _make_theme_js(theme_val),
-        Output("theme-dummy", f"data-{theme_val}"),
-        Input(btn_id, "n_clicks"),
-        prevent_initial_call=True,
-    )
-
 clientside_callback(
     """
-    function() {
-        var theme = localStorage.getItem("fr-theme") || "system";
+    function(settings) {
+        var theme = (settings && settings.appearance && settings.appearance.theme) || localStorage.getItem("fr-theme") || "system";
+        localStorage.setItem("fr-theme", theme);
         var light = theme === "light" ||
             (theme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
         document.documentElement.classList.toggle("light", light);
         document.body.classList.toggle("light", light);
-        document.querySelectorAll(".theme-btn").forEach(function(btn) {
-            btn.classList.toggle("active", btn.dataset.theme === theme);
-        });
         return "";
     }
     """,
     Output("theme-dummy", "data-init"),
-    Input("theme-toggle", "id"),
+    Input("user-settings-store", "data"),
     prevent_initial_call=False,
 )

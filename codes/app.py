@@ -318,7 +318,7 @@ def _logging_callback(self, *args, **kwargs):
 dash.Dash.callback = _logging_callback
 
 # Importing tab modules registers their Dash callbacks.
-from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, screener as screener_tab  # noqa: F401
+from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, profile, screener as screener_tab  # noqa: F401
 
 app.index_string = app.index_string.replace('<html>', '<html lang="en">')
 app.index_string = app.index_string.replace(

@@ -3634,7 +3634,7 @@ Risk If Not Fixed:HIGH
 
 ## ISSUE_043
 
-Status: [ ]
+Status: [x]
 
 Title: User Profile & Preferences System
 
@@ -3676,7 +3676,7 @@ Priority: Medium (Launch)
 
 ## ISSUE_044
 
-Status: [ ]
+Status: [x]
 
 Title: Move Theme Preferences into User Settings
 

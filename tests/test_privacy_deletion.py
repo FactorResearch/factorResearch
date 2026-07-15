@@ -16,8 +16,8 @@ def test_delete_user_records_covers_all_user_tables(monkeypatch):
     monkeypatch.setattr(db, "_ensure_user_init", lambda: None)
     monkeypatch.setattr(db, "_users_conn", lambda: _connection(connection))
     result = db.delete_user_records("user-1")
-    assert result == {"user_weights": 1, "user_usage": 1, "subscriptions": 1}
-    assert connection.execute.call_count == 3
+    assert result == {"user_weights": 1, "user_usage": 1, "subscriptions": 1, "user_settings": 1}
+    assert connection.execute.call_count == 4
 
 
 def test_delete_analytics_matches_authenticated_and_anonymous_identity(monkeypatch):

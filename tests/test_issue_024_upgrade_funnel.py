@@ -44,7 +44,7 @@ def test_navigation_switches_to_pricing_when_upgrade_store_is_set():
     with patch.object(navigation.dash, "ctx", SimpleNamespace(triggered_id="upgrade-funnel-store")):
         result = navigation.switch_tabs(0, 0, 0, 0, 0, None, {"feature": "analysis"}, "/")
     assert result[4] == {"display": "block"}
-    assert result[-1] == "topbar-nav-btn tab-btn active"
+    assert result[-2] == "topbar-nav-btn tab-btn active"
 
 
 def test_analyze_lock_routes_user_to_pricing(monkeypatch):

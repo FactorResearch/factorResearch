@@ -19,8 +19,8 @@ def test_analyze_path_selects_analyze_tab_even_when_initial_trigger_is_not_url()
 
     assert result[0] == {"display": "none"}
     assert result[1] == {"display": "block"}
-    assert result[5] == "topbar-nav-btn tab-btn"
-    assert result[6] == "topbar-nav-btn tab-btn active"
+    assert result[6] == "topbar-nav-btn tab-btn"
+    assert result[7] == "topbar-nav-btn tab-btn active"
 
 
 def test_explicit_tab_click_can_leave_analyze_path():
@@ -39,7 +39,7 @@ def test_explicit_tab_click_can_leave_analyze_path():
     assert result[0] == {"display": "none"}
     assert result[1] == {"display": "none"}
     assert result[2] == {"display": "block"}
-    assert result[7] == "topbar-nav-btn tab-btn active"
+    assert result[8] == "topbar-nav-btn tab-btn active"
 
 
 def test_explicit_screener_click_can_leave_analyze_path():
@@ -57,4 +57,4 @@ def test_explicit_screener_click_can_leave_analyze_path():
 
     assert result[0] == {"display": "block"}
     assert result[1] == {"display": "none"}
-    assert result[5] == "topbar-nav-btn tab-btn active"
+    assert result[6] == "topbar-nav-btn tab-btn active"

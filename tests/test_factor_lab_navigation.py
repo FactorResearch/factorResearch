@@ -26,26 +26,30 @@ def test_topbar_exposes_factor_lab_beside_portfolio():
     topbar = layout._topbar()
     nav = _find_by_id(topbar, "tab-factorlab-btn")
     portfolio = _find_by_id(topbar, "tab-portfolio-btn")
+    profile_button = _find_by_id(topbar, "profile-menu-btn")
 
     assert nav.children == "Factor Lab"
     assert topbar.children[1].children.index(nav) == topbar.children[1].children.index(portfolio) + 1
+    assert profile_button is not None
 
 
 def test_factor_lab_button_shows_page_and_sets_active_state():
     with patch.object(navigation.dash, "ctx", SimpleNamespace(triggered_id="tab-factorlab-btn")):
         result = navigation.switch_tabs(0, 0, 0, 1, 0, None, None, "/")
 
-    assert result[:5] == (
+    assert result[:6] == (
         {"display": "none"},
         {"display": "none"},
         {"display": "none"},
         {"display": "block"},
         {"display": "none"},
+        {"display": "none"},
     )
-    assert result[5:] == (
+    assert result[6:] == (
         "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn active",
+        "topbar-nav-btn tab-btn",
         "topbar-nav-btn tab-btn",
     )

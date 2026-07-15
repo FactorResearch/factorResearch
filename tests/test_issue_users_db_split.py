@@ -78,6 +78,22 @@ def test_subscription_lookup_uses_users_connection(monkeypatch):
     assert len(market_conn.calls) == 0
 
 
+def test_total_usage_lookup_handles_dict_rows_from_users_connection(monkeypatch):
+    users_conn = _FakeConn("users", row={"usage_count": 7})
+    market_conn = _FakeConn("market")
+
+    monkeypatch.setattr(db, "_users_initialized", True)
+    monkeypatch.setattr(db, "_market_initialized", True)
+    monkeypatch.setattr(db, "_users_conn", lambda: _ctx(users_conn))
+    monkeypatch.setattr(db, "_conn", lambda: _ctx(market_conn))
+
+    result = db.get_total_usage("u1", "analysis")
+
+    assert result == 7
+    assert len(users_conn.calls) == 1
+    assert len(market_conn.calls) == 0
+
+
 def test_market_data_stays_on_market_connection(monkeypatch):
     users_conn = _FakeConn("users")
     market_conn = _FakeConn("market", row={"ticker": "AAPL", "market_cap": 1})

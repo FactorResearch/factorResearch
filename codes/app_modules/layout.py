@@ -65,10 +65,57 @@ def _topbar():
             html.Button("Pricing", id="tab-pricing-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "pricing"}),
         ]),
         html.Div(className="topbar-actions", children=[
-            html.Div(id="theme-toggle", className="theme-toggle", children=[
-                html.Button("☀", id="theme-light", className="theme-btn", **{"data-theme": "light", "aria-label": "Use light theme"}),
-                html.Button("◐", id="theme-system", className="theme-btn active", **{"data-theme": "system", "aria-label": "Use system theme"}),
-                html.Button("☾", id="theme-dark", className="theme-btn", **{"data-theme": "dark", "aria-label": "Use dark theme"}),
+            html.Div(className="profile-menu-shell", children=[
+                html.Button(
+                    id="profile-menu-btn",
+                    className="topbar-nav-btn tab-btn",
+                    n_clicks=0,
+                    type="button",
+                    children=[
+                        html.Span("👤", className="mr-6"),
+                        html.Span("Hi there", id="profile-menu-label"),
+                        html.Span("▾", id="profile-menu-chevron", className="profile-menu-chevron ml-6"),
+                    ],
+                ),
+                html.Div(id="profile-quick-panel", className="scorecard is-hidden", children=[
+                    html.Div("Quick settings", className="scorecard-header"),
+                    html.Div(className="p-16", children=[
+                        html.Label("Setting", htmlFor="profile-quick-section-dropdown", className="fs-13 clr-muted"),
+                        dcc.Dropdown(
+                            id="profile-quick-section-dropdown",
+                            options=[
+                                {"label": "Account", "value": "account"},
+                                {"label": "Subscription", "value": "subscription"},
+                                {"label": "Appearance", "value": "appearance"},
+                                {"label": "Notifications", "value": "notifications"},
+                                {"label": "Saved portfolios", "value": "portfolios"},
+                                {"label": "Saved screeners", "value": "screeners"},
+                                {"label": "Security", "value": "security"},
+                            ],
+                            value="appearance",
+                            clearable=False,
+                            className="mb-16 min-w-240",
+                        ),
+                        html.Label("Theme", htmlFor="profile-quick-theme-dropdown", className="fs-13 clr-muted"),
+                        dcc.Dropdown(
+                            id="profile-quick-theme-dropdown",
+                            options=[
+                                {"label": "System", "value": "system"},
+                                {"label": "Light", "value": "light"},
+                                {"label": "Dark", "value": "dark"},
+                            ],
+                            clearable=False,
+                            className="mb-16 min-w-220",
+                        ),
+                        html.Div(id="profile-quick-summary", className="mb-12 text-muted"),
+                        html.Div(id="profile-quick-detail", className="mb-16"),
+                        html.Div(className="d-flex gap-12 flex-wrap", children=[
+                            html.Button("Save", id="profile-quick-save-btn", className="analyze-btn", n_clicks=0),
+                            dcc.Link("More settings", id="profile-nav-link", href="/profile", className="load-btn"),
+                        ]),
+                        html.Div(id="profile-quick-msg", className="fs-13 mt-6"),
+                    ]),
+                ]),
             ]),
             html.Div(id="theme-dummy", className="d-none"),
         ]),
@@ -411,6 +458,87 @@ def build_layout():
             ]),
         ]),
         html.Div(id="tab-pricing", className="main-content is-hidden", children=[]),
+        html.Div(id="profile-page", className="main-content is-hidden", children=[
+            html.Div(className="app-header mb-24", children=[
+                html.Div("👤", className="app-header-icon"),
+                html.Div(className="app-header-content", children=[
+                    html.H1("Profile"),
+                    html.P("Manage account details, subscription state, saved research settings, and reusable screener preferences."),
+                ]),
+            ]),
+            html.Div(className="scorecard mb-16", children=[
+                html.Div("Settings", className="scorecard-header"),
+                html.Div(className="p-16", children=[
+                    html.Label("Jump to setting", htmlFor="profile-section-dropdown", className="fs-13 clr-muted"),
+                    dcc.Dropdown(
+                        id="profile-section-dropdown",
+                        options=[
+                            {"label": "Account", "value": "account"},
+                            {"label": "Subscription", "value": "subscription"},
+                            {"label": "Appearance", "value": "appearance"},
+                            {"label": "Notifications", "value": "notifications"},
+                            {"label": "Saved portfolios", "value": "portfolios"},
+                            {"label": "Saved screeners", "value": "screeners"},
+                            {"label": "Security", "value": "security"},
+                            {"label": "API keys", "value": "api_keys"},
+                        ],
+                        value="appearance",
+                        clearable=False,
+                        className="max-w-240 mb-16",
+                    ),
+                    html.Div(id="profile-section-summary", className="mb-12 text-muted"),
+                    html.Label("Theme", htmlFor="profile-theme-dropdown", className="fs-13 clr-muted"),
+                    dcc.Dropdown(
+                        id="profile-theme-dropdown",
+                        options=[
+                            {"label": "System", "value": "system"},
+                            {"label": "Light", "value": "light"},
+                            {"label": "Dark", "value": "dark"},
+                        ],
+                        clearable=False,
+                        className="max-w-220 mb-16",
+                    ),
+                    html.Label("Notifications", htmlFor="profile-notifications-checklist", className="fs-13 clr-muted"),
+                    dcc.Checklist(
+                        id="profile-notifications-checklist",
+                        options=[
+                            {"label": "Product updates", "value": "product_updates"},
+                            {"label": "Research digest", "value": "research_digest"},
+                            {"label": "Security alerts", "value": "security_alerts"},
+                        ],
+                        inline=False,
+                        className="mb-16",
+                    ),
+                    html.Button("Save settings", id="profile-save-settings-btn", className="analyze-btn", n_clicks=0),
+                    html.Div(id="profile-settings-msg", className="fs-13 mt-6"),
+                ]),
+            ]),
+            html.Div(id="profile-screeners-panel", className="scorecard mb-16 is-hidden", children=[
+                html.Div("Saved screeners", className="scorecard-header"),
+                html.Div(className="p-16", children=[
+                    html.Div(id="profile-saved-screeners-card", className="mb-16"),
+                    dcc.Input(
+                        id="profile-save-screener-name",
+                        type="text",
+                        placeholder="Save current screener as…",
+                        className="ticker-input max-w-240",
+                    ),
+                    html.Div(className="d-flex gap-12 flex-wrap mt-12", children=[
+                        html.Button("Save current screener", id="profile-save-screener-btn", className="analyze-btn", n_clicks=0),
+                        dcc.Dropdown(
+                            id="profile-saved-screener-select",
+                            options=[],
+                            placeholder="Select saved screener…",
+                            clearable=True,
+                            className="min-w-240",
+                        ),
+                        html.Button("Delete saved screener", id="profile-delete-screener-btn", className="load-btn", n_clicks=0),
+                    ]),
+                    html.Div(id="profile-screener-msg", className="fs-13 mt-6"),
+                ]),
+            ]),
+            html.Div(id="profile-detail-card", className="scorecard"),
+        ]),
 
         _legal_modal("legal-terms", "Terms of Service", "/terms", _legal_terms_content()),
         _legal_modal("legal-privacy", "Privacy Policy", "/privacy", _legal_privacy_content()),
@@ -436,6 +564,11 @@ def build_layout():
         dcc.Store(id="portfolio-refresh-store", data=0),  # increment to trigger refresh
         dcc.Store(id="active-analysis-symbol"),           # symbol currently analyzed
         dcc.Store(id="upgrade-funnel-store", data=None),
+        dcc.Store(id="user-settings-store", data=None),
+        dcc.Store(
+            id="screener-context-store",
+            data={"market": DEFAULT_SCREENER_MARKET, "sector": "", "indexes": []},
+        ),
         dcc.Store(id="screener-ready-store",  data=0),    # bumped once when loading completes
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab

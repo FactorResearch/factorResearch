@@ -378,6 +378,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer
 CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_stripe_subscription
     ON subscriptions(stripe_subscription_id)
     WHERE stripe_subscription_id IS NOT NULL;
+CREATE TABLE IF NOT EXISTS user_settings (
+    user_id       TEXT PRIMARY KEY,
+    settings_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 CREATE TABLE IF NOT EXISTS user_usage (
     user_id       TEXT NOT NULL,
     period_start  TIMESTAMPTZ NOT NULL,
@@ -1402,6 +1407,7 @@ _DELETE_STRATEGY_CACHE_PREFIX = "DELETE FROM strategy_backtest_cache WHERE cache
 _SELECT_SUBSCRIPTION = "SELECT * FROM subscriptions WHERE user_id = %(user_id)s"
 _SELECT_SUBSCRIPTION_BY_CUSTOMER = "SELECT * FROM subscriptions WHERE stripe_customer_id = %(stripe_customer_id)s"
 _SELECT_SUBSCRIPTION_BY_STRIPE_ID = "SELECT * FROM subscriptions WHERE stripe_subscription_id = %(stripe_subscription_id)s"
+_SELECT_USER_SETTINGS = "SELECT settings_json FROM user_settings WHERE user_id = %(user_id)s"
 _UPSERT_SUBSCRIPTION = """
 INSERT INTO subscriptions (
     user_id, plan, status, start_date, end_date,
@@ -1420,6 +1426,14 @@ ON CONFLICT (user_id) DO UPDATE SET
     stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
     stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
     updated_at = NOW()
+"""
+_UPSERT_USER_SETTINGS = """
+INSERT INTO user_settings (user_id, settings_json, updated_at)
+VALUES (%(user_id)s, %(settings_json)s::jsonb, NOW())
+ON CONFLICT (user_id) DO UPDATE SET
+    settings_json = excluded.settings_json,
+    updated_at = NOW()
+RETURNING settings_json
 """
 _SELECT_USAGE = """
 SELECT usage_count, feature_usage, period_start, period_end
@@ -1557,6 +1571,30 @@ def upsert_subscription(
     return dict(row)
 
 
+def get_user_settings(user_id: str) -> dict:
+    _ensure_user_init()
+    with _users_conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(_SELECT_USER_SETTINGS, {"user_id": user_id}).fetchone()
+    if not row:
+        return {}
+    return dict(row.get("settings_json") or {})
+
+
+def upsert_user_settings(user_id: str, settings: dict) -> dict:
+    _ensure_user_init()
+    with _users_conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(
+            _UPSERT_USER_SETTINGS,
+            {
+                "user_id": user_id,
+                "settings_json": json.dumps(settings, default=str),
+            },
+        ).fetchone()
+    return dict(row.get("settings_json") or {}) if row else {}
+
+
 def get_usage(user_id: str, feature_name: str) -> dict:
     _ensure_user_init()
     with _users_conn() as con:
@@ -1575,11 +1613,16 @@ def get_usage(user_id: str, feature_name: str) -> dict:
 def get_total_usage(user_id: str, feature_name: str) -> int:
     _ensure_user_init()
     with _users_conn() as con:
+        con.row_factory = dict_row
         row = con.execute(_SELECT_TOTAL_USAGE, {
             "user_id": user_id,
             "feature_name": feature_name,
         }).fetchone()
-    return int(row[0] or 0) if row else 0
+    if not row:
+        return 0
+    if isinstance(row, dict):
+        return int(row.get("usage_count") or 0)
+    return int(row[0] or 0)
 
 
 def increment_usage(user_id: str, feature_name: str, usage_key: str | None = None) -> dict:
@@ -1836,7 +1879,7 @@ def delete_user_records(user_id: str) -> dict[str, int]:
     _ensure_user_init()
     deleted = {}
     with _users_conn() as con:
-        for table in ("user_weights", "user_usage", "subscriptions"):
+        for table in ("user_weights", "user_usage", "subscriptions", "user_settings"):
             # Table names come only from the fixed tuple above; user data remains parameterized.
             deleted[table] = con.execute(f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}).rowcount  # nosec B608
     return deleted
