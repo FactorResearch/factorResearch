@@ -13,6 +13,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import dash
 import functools
 import flask
+import hmac
+import re
+import time
+import uuid
 from markupsafe import escape
 try:
     from flask_limiter import Limiter
@@ -23,6 +27,7 @@ except Exception:
 from codes import auth
 from codes import billing
 from codes import security
+from codes.core.config import is_production
 from flask import render_template
 from codes.data import sec_data
 from codes.engine import screener, universe
@@ -33,11 +38,13 @@ from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
+from codes.services import performance_metrics, provider_gateway
+from codes.services import analysis_jobs, component_cache
 from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
-from codes.app_modules.analysis import backfill_cached_analysis_models, is_production
+from codes.app_modules.analysis import backfill_cached_analysis_models
 from codes.app_modules.layout import build_layout
 from codes.app_modules.rate_limit import clear_rate_limits_for_user
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
@@ -53,25 +60,113 @@ app = dash.Dash(
         r".*\.scss$|"
         r"^(company_analysis|error_pages|landing|legal_pages|waitlist)\.css$"
     ),
-    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}]
+    meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1, viewport-fit=cover"},
+        {"name": "theme-color", "content": "#0f1b2d"},
+        {"name": "mobile-web-app-capable", "content": "yes"},
+        {"name": "apple-mobile-web-app-capable", "content": "yes"},
+        {"name": "apple-mobile-web-app-status-bar-style", "content": "black-translucent"},
+    ]
 )
 server = app.server
+server.config["MAX_CONTENT_LENGTH"] = int(os.environ.get("MAX_REQUEST_BYTES", str(2 * 1024 * 1024)))
+trusted_hosts = [host.strip() for host in os.environ.get("TRUSTED_HOSTS", "").split(",") if host.strip()]
+if trusted_hosts:
+    server.config["TRUSTED_HOSTS"] = trusted_hosts
 secret_key = os.environ.get("FLASK_SECRET_KEY")
-if not secret_key and os.environ.get("FLASK_ENV", "").lower() == "production":
+if not secret_key and is_production():
     raise RuntimeError("FLASK_SECRET_KEY must be set in production to protect session cookies.")
 server.secret_key = secret_key or os.urandom(24)
+
+
+@server.before_request
+def reject_untrusted_host():
+    # Accessing request.host invokes Flask/Werkzeug's TRUSTED_HOSTS validation.
+    flask.request.host
+
+
 server.register_blueprint(analyze_pages)
 server.register_blueprint(chart_pages)
-try:
-    ensure_schema_if_configured()
-except Exception as e:
-    print(f"Analysis snapshot schema init failed: {type(e).__name__}: {e}")
 
 
 auth.init_auth(server)
 billing.init_billing(server)
 register_landing_pages(server)
 register_error_pages(server)
+
+
+@server.route("/manifest.webmanifest")
+def web_manifest():
+    return flask.jsonify({
+        "name": "FactorResearch",
+        "short_name": "FactorResearch",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#0f1b2d",
+        "theme_color": "#0f1b2d",
+        "description": "Fast, model-driven company research.",
+    }), 200, {"Content-Type": "application/manifest+json", "Cache-Control": "public, max-age=86400"}
+
+
+@server.route("/service-worker.js")
+def service_worker():
+    script = """
+const CACHE = 'factorresearch-shell-v2';
+self.addEventListener('install', event => event.waitUntil(caches.open(CACHE)));
+self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  if (event.request.method !== 'GET' || url.origin !== location.origin || !url.pathname.startsWith('/assets/')) return;
+  event.respondWith(caches.open(CACHE).then(async cache => {
+    const cached = await cache.match(event.request);
+    if (cached) return cached;
+    const response = await fetch(event.request);
+    if (response.ok) cache.put(event.request, response.clone());
+    return response;
+  }));
+});
+"""
+    return flask.Response(script, mimetype="application/javascript", headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"})
+
+
+@server.route("/_internal/performance")
+def internal_performance():
+    expected = os.environ.get("INTERNAL_METRICS_TOKEN")
+    supplied = flask.request.headers.get("X-Internal-Metrics-Token", "")
+    if not expected or not hmac.compare_digest(expected, supplied):
+        flask.abort(404)
+    from codes.data import analytics_db, db
+    from codes.services import analysis_snapshot_service
+    return flask.jsonify({
+        "performance": performance_metrics.snapshot(),
+        "providers": provider_gateway.health(),
+        "component_cache": component_cache.stats(),
+        "jobs": analysis_jobs.health(),
+        "database_pools": {
+            "application": db.pool_health(),
+            "analytics": analytics_db.pool_health(),
+            "snapshots": analysis_snapshot_service.pool_health(),
+        },
+    })
+
+
+_REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")
+
+
+@server.before_request
+def start_request_metrics():
+    supplied = flask.request.headers.get("X-Request-ID", "")
+    flask.g.request_id = supplied if _REQUEST_ID.fullmatch(supplied) else uuid.uuid4().hex
+    flask.g.request_started = time.perf_counter()
+
+
+@server.after_request
+def finish_request_metrics(response):
+    started = getattr(flask.g, "request_started", time.perf_counter())
+    route = flask.request.url_rule.rule if flask.request.url_rule else "unmatched"
+    performance_metrics.record_request(route, flask.request.method, response.status_code, (time.perf_counter() - started) * 1000)
+    response.headers["X-Request-ID"] = getattr(flask.g, "request_id", uuid.uuid4().hex)
+    return response
 
 
 @server.route("/company-logo")
@@ -100,10 +195,17 @@ def cached_company_logo():
 
 
 @server.route("/account/delete", methods=["POST"])
+@auth.require_auth
 def delete_account():
     user_id = get_user_id()
 
+    from codes.data import analytics_db, db
+    from codes.services.analysis_snapshot_service import delete_user_snapshots
+
     summary = portfolio_engine.delete_all_user_data(user_id)
+    summary["database_records"] = db.delete_user_records(user_id)
+    summary["analytics_events"] = analytics_db.delete_identity_events(user_id)
+    summary["custom_snapshots"] = delete_user_snapshots(user_id)
     security.audit_log_access("DELETE_ACCOUNT", "user_data", user_id)
 
     # Purge in-memory/session-scoped state tied to this user
@@ -139,12 +241,12 @@ def update_analytics_preference():
 
 @server.route("/sitemap-analysis.xml")
 def analysis_sitemap():
-    base_url = flask.request.url_root.rstrip("/")
+    base_url = (os.environ.get("PUBLIC_BASE_URL") or flask.request.url_root).rstrip("/")
     return flask.Response(generate_analysis_sitemap(base_url), mimetype="application/xml")
 
 @server.route("/robots.txt")
 def robots_txt():
-    base_url = flask.request.url_root.rstrip("/")
+    base_url = (os.environ.get("PUBLIC_BASE_URL") or flask.request.url_root).rstrip("/")
     body = (
         "User-agent: *\n"
         "Allow: /analyze/\n"
@@ -155,17 +257,46 @@ def robots_txt():
 # ── Initialize Comprehensive Security ──────────────────────────────────────────
 security.init_security(server)
 
+
+@server.errorhandler(413)
+def request_too_large(_error):
+    return flask.jsonify({"error": "request too large"}), 413
+
+
+@server.errorhandler(429)
+def request_rate_limited(_error):
+    return flask.jsonify({"error": "rate limit exceeded"}), 429
+
+
+@server.before_request
+def apply_endpoint_body_limit():
+    if flask.request.path == "/billing/webhook":
+        flask.request.max_content_length = int(os.environ.get("STRIPE_WEBHOOK_MAX_BYTES", str(256 * 1024)))
+
 # Initialize Flask-Limiter if available (best-effort; dev may omit package)
 if Limiter is not None:
-    limiter = Limiter(app=server, key_func=get_remote_address, default_limits=[])
+    rate_limit_storage = os.environ.get("RATELIMIT_STORAGE_URI") or os.environ.get("REDIS_URL")
+    if is_production() and not rate_limit_storage:
+        raise RuntimeError("RATELIMIT_STORAGE_URI or REDIS_URL is required in production.")
+    limiter = Limiter(
+        app=server,
+        key_func=get_remote_address,
+        default_limits=[os.environ.get("DEFAULT_RATE_LIMIT", "600 per minute")],
+        storage_uri=rate_limit_storage or "memory://",
+    )
+    for endpoint, limit in {
+        "/_dash-update-component": "240 per minute",
+        "_stripe_webhook": "120 per minute",
+        "landing_waitlist": "5 per minute",
+        "cached_company_logo": "60 per minute",
+        "_checkout": "20 per minute",
+        "_portal": "20 per minute",
+        "dev_impersonate": "20 per minute",
+    }.items():
+        if endpoint in server.view_functions:
+            server.view_functions[endpoint] = limiter.limit(limit)(server.view_functions[endpoint])
 else:
     limiter = None
-
-@server.after_request
-def _log_errors(response):
-    # Security headers are now handled by security.init_security()
-    # This function is kept for backward compatibility and additional logging
-    return response
 
 # Patch Dash's internal callback handler to log exceptions minimally (no stack traces)
 _orig_dispatch = app.server.dispatch_request if hasattr(app.server, 'dispatch_request') else None
@@ -178,6 +309,7 @@ def _logging_callback(self, *args, **kwargs):
             try:
                 return func(*a, **kw)
             except Exception as e:
+                performance_metrics.record_failure(f"callback:{func.__name__}", e)
                 # Log only exception type and short message to avoid leaking secrets
                 print(f"[CALLBACK ERROR] in {func.__name__}: {type(e).__name__}: {str(e)}", flush=True)
                 # Raise a generic error to avoid exposing internal details to UI
@@ -190,59 +322,16 @@ dash.Dash.callback = _logging_callback
 from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, screener as screener_tab  # noqa: F401
 
 app.index_string = app.index_string.replace('<html>', '<html lang="en">')
+app.index_string = app.index_string.replace(
+    '</head>',
+    '<link rel="manifest" href="/manifest.webmanifest">'
+    '<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));}</script>'
+    '</head>'
+)
 
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<script>'
-    '(function(){'
-    '  let savedScroll = 0;'
-    '  window.addEventListener("orientationchange", function(){'
-    '    savedScroll = window.scrollY;'
-    '  });'
-    '  window.addEventListener("resize", function(){'
-    '    if (savedScroll > 0) {'
-    '      requestAnimationFrame(function(){'
-    '        window.scrollTo(0, savedScroll);'
-    '      });'
-    '    }'
-    '  });'
-    '})();'
-    '</script></head>'
-)
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<script>'
-    '(function(){'
-    '  function normalizeHiddenDropdownFocusTargets(root){'
-    '    const scope = root && root.querySelectorAll ? root : document;'
-    '    scope.querySelectorAll(".dash-dropdown-focus-target[aria-hidden=true]")'
-    '      .forEach(function(target){ target.tabIndex = -1; });'
-    '  }'
-    '  document.addEventListener("DOMContentLoaded", function(){'
-    '    normalizeHiddenDropdownFocusTargets(document);'
-    '    new MutationObserver(function(records){'
-    '      records.forEach(function(record){'
-    '        record.addedNodes.forEach(normalizeHiddenDropdownFocusTargets);'
-    '      });'
-    '    }).observe(document.body, {childList: true, subtree: true});'
-    '  });'
-    '})();'
-    '</script></head>'
-)
 app.index_string = app.index_string.replace(
     '</head>',
     build_head_snippets() + '</head>'
-)
-
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<script>'
-    'const APP_VERSION = "v8.5";'  # bump this on each deploy
-    'if (localStorage.getItem("app_version") !== APP_VERSION) {'
-    '    localStorage.setItem("app_version", APP_VERSION);'
-    '    location.reload(true);'
-    '}'
-    '</script></head>'
 )
 
 app.layout = build_layout()
@@ -252,7 +341,9 @@ screener_tab.register_clientside_callbacks(app)
 def startup():
     print("\n🚀 Graham Score — Quant Edition")
     from codes.data import db
-    db.init_db()
+    if not is_production() or os.environ.get("RUN_SCHEMA_MIGRATIONS_ON_STARTUP") == "1":
+        db.init_db()
+        ensure_schema_if_configured()
     sec_data.get_ticker_map()
     universe.get_universe()
     try:
@@ -260,15 +351,19 @@ def startup():
     except Exception as e:
         print(f"Cached analysis backfill failed at startup: {type(e).__name__}: {e}")
     results = screener.load_cached_only()
+    from codes.services.analysis_scheduler import start_background_maintenance
+    start_background_maintenance()
     print(f"✅ {len(results)} cached stocks ready\n")
 
-startup()
+if os.environ.get("APP_SKIP_STARTUP") != "1":
+    startup()
 
 if __name__ == "__main__":
    
     
+    # Production ingress must reach the process; the edge controls public exposure.
     app.run(
-        host="0.0.0.0" if is_production() else "127.0.0.1",
+        host="0.0.0.0" if is_production() else "127.0.0.1",  # nosec B104
         debug=not is_production(),
         port=int(os.environ.get("PORT", 8050)),
     )

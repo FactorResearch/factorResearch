@@ -6,7 +6,8 @@ import os
 
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from codes.sec_data import (
+from codes.data import sec_data
+from codes.data.sec_data import (
     get_ticker_map, get_cik, _sector_class, _annual_df,
     _revenue_concepts, fetch_company_facts, _latest_filing_date
 )
@@ -21,11 +22,13 @@ def mock_requests():
 
 @pytest.fixture
 def mock_cache():
-    with patch('codes.cache') as mock_c:
+    sec_data._tickermap = None
+    with patch.object(sec_data, 'cache') as mock_c:
         mock_c.is_ticker_map_stale.return_value = False
         mock_c.read.return_value = MOCK_TICKER_MAP
         mock_c.is_stale_for_company.return_value = False
         yield mock_c
+    sec_data._tickermap = None
 
 def test_get_ticker_map(mock_cache):
     m = get_ticker_map()
@@ -82,5 +85,4 @@ def test_fetch_company_facts_mocked(mock_requests, mock_cache):
     ]
     # Extend with more detailed mocks as needed for full integration testing
     pass
-
 

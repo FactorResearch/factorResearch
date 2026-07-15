@@ -1,0 +1,218 @@
+[
+  {
+    "key": "graham",
+    "version": "1",
+    "section": "valuation",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "quality",
+    "version": "1",
+    "section": "quality",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "momentum",
+    "version": "1",
+    "section": "market",
+    "disclosure": "investigate",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "piotroski",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "altman",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "beneish",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "dechow",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "accounting_quality",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "fraud_dashboard",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "investigate",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "risk",
+    "version": "1",
+    "section": "risk",
+    "disclosure": "understand",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "greenblatt",
+    "version": "1",
+    "section": "valuation",
+    "disclosure": "investigate",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "buffett",
+    "version": "1",
+    "section": "quality",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "earnings_revision",
+    "version": "1",
+    "section": "market",
+    "disclosure": "investigate",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "profitability",
+    "version": "1",
+    "section": "quality",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "fcf_quality",
+    "version": "1",
+    "section": "accounting",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "capital_allocation",
+    "version": "1",
+    "section": "quality",
+    "disclosure": "investigate",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "growth_quality",
+    "version": "1",
+    "section": "quality",
+    "disclosure": "investigate",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "insider_activity",
+    "version": "1",
+    "section": "ownership",
+    "disclosure": "investigate",
+    "cost": "high",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "factor_momentum",
+    "version": "1",
+    "section": "market",
+    "disclosure": "investigate",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "alternative_data",
+    "version": "1",
+    "section": "market",
+    "disclosure": "investigate",
+    "cost": "high",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "market_fear",
+    "version": "1",
+    "section": "market",
+    "disclosure": "glance",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "regime",
+    "version": "1",
+    "section": "market",
+    "disclosure": "understand",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "spy_benchmark",
+    "version": "1",
+    "section": "risk",
+    "disclosure": "investigate",
+    "cost": "medium",
+    "cacheable": true,
+    "backfills_existing": true
+  },
+  {
+    "key": "bias",
+    "version": "1",
+    "section": "risk",
+    "disclosure": "understand",
+    "cost": "low",
+    "cacheable": true,
+    "backfills_existing": true
+  }
+]

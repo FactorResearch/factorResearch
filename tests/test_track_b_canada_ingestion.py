@@ -126,7 +126,7 @@ def test_canada_verified_csv_import_persists_without_json_files(tmp_path, monkey
 
     monkeypatch.setattr("codes.data.providers.canada_ingestion.ingest_verified_canada_financials", _save)
     monkeypatch.setattr(
-        "codes.data.providers.canada_db.db.upsert_canada_canonical_facts",
+        "codes.data.providers.canada_db.db.upsert_market_canonical_facts",
         lambda *args, **kwargs: None,
     )
 
@@ -140,7 +140,7 @@ def test_canada_verified_csv_import_persists_without_json_files(tmp_path, monkey
 
 def test_canada_ingest_worker_reports_status(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(
-        "codes.data.providers.canada_db.db.upsert_canada_canonical_facts",
+        "codes.data.providers.canada_db.db.upsert_market_canonical_facts",
         lambda *args, **kwargs: None,
     )
     bundle = _bundle(tmp_path)

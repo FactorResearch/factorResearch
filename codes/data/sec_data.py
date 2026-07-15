@@ -352,21 +352,6 @@ def _try_concepts(facts: dict, concepts: list, unit: str = "USD",
     return pd.DataFrame()
 
 
-def _try_concepts_multins(facts: dict,
-                          concept_ns_pairs: list[tuple[str, str]],
-                          unit: str = "USD",
-                          years: int = 11) -> pd.DataFrame:
-    """
-    Try (concept, namespace) pairs in order.  Enables fallback across
-    namespaces, e.g. (concept, 'us-gaap') then (concept, 'dei').
-    """
-    for concept, ns in concept_ns_pairs:
-        df = _annual_df(facts, concept, unit, years, ns=ns)
-        if not df.empty:
-            return df
-    return pd.DataFrame()
-
-
 # ── Sector-aware concept lists ────────────────────────────────────────────────
 
 def _revenue_concepts(sector: str) -> list[str]:
