@@ -1146,7 +1146,7 @@ def _build_analysis_content(data: dict) -> list:
                                     html.Span(f"Sector · {sector}", className="analysis-hero-meta-item"),
                                     html.Span(f"Verdict · {verdict}", className="analysis-hero-meta-item"),
                                     html.Span(f"Updated · {_fmt_updated(data.get('updated_at'))}", className="analysis-hero-meta-item"),
-                                    dcc.Link("Company Data", href=f"/data/{symbol}", refresh=True, className="analysis-hero-meta-item"),
+                                    dcc.Link("Company Data", href=f"/{symbol}/data", refresh=True, className="analysis-hero-meta-item"),
                                 ],
                             ),
                             html.Div(lead_copy, className="analysis-hero-lead"),

@@ -2,6 +2,7 @@ import datetime as dt
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 import flask
 
@@ -128,7 +129,7 @@ def test_company_data_page_escapes_and_separates_research(monkeypatch):
     monkeypatch.setattr(temporal, "list_corporate_actions", lambda *_args: [])
     monkeypatch.setattr(temporal, "list_restatements", lambda *_args: [])
     monkeypatch.setattr(temporal, "company_data_history", lambda *_args: {"identifiers": [], "filings": [], "universes": []})
-    response = app.test_client().get("/data/TEST")
+    response = app.test_client().get("/TEST/data")
     body = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "Company Data" in body and "A&amp;B &lt;Corp&gt;" in body
@@ -144,12 +145,25 @@ def test_company_data_page_has_honest_pending_state(monkeypatch):
     app.register_blueprint(company_data_pages)
     monkeypatch.setattr(temporal, "resolve_security", lambda *_args, **_kwargs: None)
     monkeypatch.setattr("codes.routes.company_data.db.get_analysis", lambda _ticker: {"name": "Essent Group"})
-    response = app.test_client().get("/data/ESNT")
+    response = app.test_client().get("/ESNT/data")
     body = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "Essent Group" in body
     assert "coverage pending" in body
     assert "No sourced filings" in body
+
+
+def test_legacy_company_data_route_redirects_without_lookup(monkeypatch):
+    app = flask.Flask(__name__)
+    app.register_blueprint(company_data_pages)
+    lookup = Mock()
+    monkeypatch.setattr(temporal, "resolve_security", lookup)
+
+    response = app.test_client().get("/data/esnt?source=legacy")
+
+    assert response.status_code == 308
+    assert response.headers["Location"] == "/ESNT/data?source=legacy"
+    lookup.assert_not_called()
 
 
 def test_company_data_styles_use_shared_tokens_and_media_partial():

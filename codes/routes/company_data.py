@@ -19,11 +19,16 @@ def _value(value) -> str:
     return html.escape(str(value)) if value not in (None, "") else "Not available"
 
 
+@company_data_pages.get("/<symbol>/data")
 @company_data_pages.get("/data/<symbol>")
 def company_data(symbol: str):
     ticker = symbol.strip().upper()
     if not _SYMBOL.fullmatch(ticker):
         flask.abort(404)
+    if flask.request.path.startswith("/data/") or symbol != ticker:
+        query = flask.request.query_string.decode("ascii", errors="ignore")
+        path = f"/{ticker}/data"
+        return flask.redirect(f"{path}?{query}" if query else path, code=308)
     identity = temporal.resolve_security("TICKER", ticker, market_code="CA" if ticker.endswith(".TO") else "US")
     if not identity:
         cached = db.get_analysis(ticker) or {}
