@@ -112,4 +112,5 @@ def test_callback_accepts_matching_state_and_exchanges_token(app, monkeypatch):
     assert token_called
     with client.session_transaction() as session:
         assert session["_authenticated_user_id"] == "user-123"
+        assert "_auth_token" not in session
         assert auth.AUTH0_OAUTH_STATE_KEY not in session

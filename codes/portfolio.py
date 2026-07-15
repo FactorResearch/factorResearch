@@ -25,7 +25,6 @@ Simulation output:
   montecarlo — 2-year forward projection: 1,000 paths → p10/p50/p90 bands
 """
 
-import math
 import time
 import datetime
 import hashlib

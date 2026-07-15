@@ -3,20 +3,19 @@ Comprehensive Security Module
 """
 
 import os
+import base64
 import hashlib
 import hmac
 import logging
 import json
 import re
-import time
-from typing import Optional, Any, Dict, List, Tuple
+from typing import Optional, Any
 from functools import wraps
-from datetime import datetime, timedelta
-from urllib.parse import quote, unquote
-import threading
+from datetime import timedelta
 import markupsafe
 import flask
-from flask import request, session, abort, jsonify, has_request_context, request
+from flask import request, session, abort
+from codes.core.config import is_production
 
 try:
     from cryptography.fernet import Fernet
@@ -28,11 +27,7 @@ SECURITY_LOGGER = logging.getLogger("graham.security")
 SECURITY_LOG_LEVEL = os.environ.get("SECURITY_LOG_LEVEL", "INFO").upper()
 SECURITY_LOGGER.setLevel(getattr(logging, SECURITY_LOG_LEVEL, logging.INFO))
 
-IS_PRODUCTION = os.environ.get("FLASK_ENV", "").lower() == "production"
-
-
-def _is_production() -> bool:
-    return os.environ.get("FLASK_ENV", "").lower() == "production"
+IS_PRODUCTION = is_production()
 
 
 SENSITIVE_PATTERNS = [
@@ -53,6 +48,7 @@ _STRIPE_WEBHOOK_PATH = "/billing/webhook"
 
 _TICKER_RE = re.compile(r"^(?=.*[A-Z])[A-Z][A-Z0-9.-]{0,9}$", re.IGNORECASE)
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+_INLINE_SCRIPT_RE = re.compile(r"<script\b[^>]*>(.*?)</script>", re.IGNORECASE | re.DOTALL)
 
 
 def validate_ticker(value: Any) -> bool:
@@ -106,29 +102,6 @@ def validate_json_payload(payload: Any, max_size: int = 1_000_000) -> bool:
     return len(encoded) <= max_size
 
 
-class RateLimiter:
-    """Simple in-memory fixed-window limiter for local security checks/tests."""
-
-    def __init__(self):
-        self._requests: dict[str, list[float]] = {}
-        self._lock = threading.Lock()
-
-    def is_allowed(self, key: str, limit: int, window_seconds: int) -> bool:
-        if limit <= 0 or window_seconds <= 0:
-            return False
-
-        now = time.monotonic()
-        cutoff = now - window_seconds
-        with self._lock:
-            recent = [ts for ts in self._requests.get(key, []) if ts > cutoff]
-            if len(recent) >= limit:
-                self._requests[key] = recent
-                return False
-            recent.append(now)
-            self._requests[key] = recent
-            return True
-
-
 def _mask_sensitive_details(value: Any) -> Any:
     if isinstance(value, dict):
         masked: dict[Any, Any] = {}
@@ -161,7 +134,7 @@ class SensitiveDataEncryptor:
 
         key = os.environ.get("ENCRYPTION_KEY")
         if not key:
-            if _is_production():
+            if is_production():
                 SECURITY_LOGGER.error("ENCRYPTION_KEY is required in production")
                 return
             key = Fernet.generate_key().decode("ascii")
@@ -218,7 +191,7 @@ def _same_origin(origin_or_referer: str, host: str) -> bool:
 def init_csrf_protection(app: flask.Flask) -> None:
     """Initialize CSRF protection for the Flask app."""
     app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-    app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
+    app.config["SESSION_COOKIE_SECURE"] = is_production()
     app.config["SESSION_COOKIE_HTTPONLY"] = True
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
 
@@ -253,7 +226,7 @@ def init_csrf_protection(app: flask.Flask) -> None:
         if request.path == _STRIPE_WEBHOOK_PATH:
             return None
 
-        if not IS_PRODUCTION and os.environ.get("DISABLE_CSRF_DEV") == "1":
+        if not is_production() and os.environ.get("DISABLE_CSRF_DEV") == "1":
             return None
 
         origin = request.headers.get("Origin") or request.headers.get("Referer")
@@ -278,7 +251,7 @@ def get_csrf_token() -> str:
 
 def verify_csrf_token(token: Optional[str] = None) -> bool:
     """Verify CSRF token from request."""
-    if not IS_PRODUCTION:
+    if not is_production():
         if os.environ.get("DISABLE_CSRF_DEV") == "1":
             return True
 
@@ -315,18 +288,27 @@ def init_security(app: flask.Flask) -> None:
         response.headers.setdefault(
             "Permissions-Policy", "geolocation=(), microphone=(), camera=()"
         )
-        if IS_PRODUCTION:
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault("Cross-Origin-Resource-Policy", "same-origin")
+        script_hashes = ""
+        if response.mimetype == "text/html":
+            hashes = {
+                base64.b64encode(hashlib.sha256(script.encode()).digest()).decode()
+                for script in _INLINE_SCRIPT_RE.findall(response.get_data(as_text=True))
+                if script.strip()
+            }
+            script_hashes = " " + " ".join(f"'sha256-{value}'" for value in sorted(hashes)) if hashes else ""
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self' https://browser.sentry-cdn.com https://www.clarity.ms"
+            f"{script_hashes}; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; "
+            "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img.logo.dev; connect-src 'self'; "
+            "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+        )
+        if is_production():
             response.headers.setdefault(
                 "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
             )
-        return response
-
-    @app.after_request
-    def _cors_headers(response):
-        # No cross-origin API surface today (Dash serves its own frontend).
-        # Deny by default; add allow-list here if a JS client on another
-        # origin needs to call this API later.
-        response.headers.setdefault("Access-Control-Allow-Origin", "none")
         return response
     
     SECURITY_LOGGER.info("Security module initialized (CSRF + headers)")

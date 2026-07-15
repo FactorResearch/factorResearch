@@ -6,6 +6,9 @@ from contextlib import contextmanager
 from datetime import date, datetime
 from typing import Any, Iterator
 import uuid
+import threading
+
+from codes.core.db_pool import ConnectionPool
 
 from codes.models.analysis_snapshot import (
     AnalysisSnapshot,
@@ -85,6 +88,8 @@ CREATE TABLE IF NOT EXISTS custom_analysis_snapshots (
 CREATE INDEX IF NOT EXISTS idx_custom_analysis_owner_ticker_date
 ON custom_analysis_snapshots(user_id, ticker, analysis_date DESC, created_at DESC);
 """
+_pools: dict[str, ConnectionPool] = {}
+_pool_lock = threading.Lock()
 
 
 def _database_url() -> str | None:
@@ -112,36 +117,48 @@ def _connect() -> Iterator:
     if not urls:
         raise RuntimeError("An analytics or market database URL is required for analysis snapshots.")
 
-    conn = None
+    pool = None
     last_error = None
     for dsn in urls:
         try:
-            try:
-                import psycopg
-                conn = psycopg.connect(dsn)
-            except ImportError:
-                import psycopg2
-                conn = psycopg2.connect(dsn)
+            with _pool_lock:
+                pool = _pools.get(dsn)
+                if pool is None:
+                    try:
+                        import psycopg
+                        connect = lambda dsn=dsn: psycopg.connect(dsn)
+                    except ImportError:
+                        import psycopg2
+                        connect = lambda dsn=dsn: psycopg2.connect(dsn)
+                    pool = _pools[dsn] = ConnectionPool(
+                        connect,
+                        max_size=int(os.environ.get("SNAPSHOT_DATABASE_POOL_SIZE", "3")),
+                    )
             break
         except Exception as exc:
             last_error = exc
-    if conn is None:
+    if pool is None:
         raise last_error or RuntimeError("Unable to connect to snapshot storage.")
-
-    try:
+    with pool.connection() as conn:
         yield conn
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
 
 
 def initialize_schema() -> None:
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(SNAPSHOT_DDL)
+
+
+def pool_health() -> dict:
+    with _pool_lock:
+        return {f"pool_{index + 1}": pool.stats() for index, pool in enumerate(_pools.values())}
+
+
+def delete_user_snapshots(user_id: str) -> int:
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM custom_analysis_snapshots WHERE user_id = %s", (user_id,))
+            return cur.rowcount
 
 
 def ensure_schema_if_configured() -> bool:
@@ -172,7 +189,6 @@ def save_standard_snapshot(
     if not snapshot.ticker:
         return None
 
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -221,7 +237,6 @@ def save_standard_snapshot(
 
 def get_company_snapshots_by_slug(slug: str, *, limit: int = 12, offset: int = 0) -> list[AnalysisSnapshot]:
     """Return a paginated official history for an exact normalized company slug."""
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -270,7 +285,6 @@ def save_custom_snapshot(
     )
     if not snapshot.user_id or not snapshot.ticker:
         raise ValueError("user_id and ticker are required")
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -303,7 +317,6 @@ def _custom_from_row(row) -> CustomAnalysisSnapshot:
 
 
 def list_custom_snapshots(user_id: str, ticker: str, *, limit: int = 12, offset: int = 0) -> list[CustomAnalysisSnapshot]:
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -321,7 +334,6 @@ def list_custom_snapshots(user_id: str, ticker: str, *, limit: int = 12, offset:
 
 
 def get_custom_snapshot_for_owner(snapshot_id: str, user_id: str) -> CustomAnalysisSnapshot | None:
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -338,7 +350,6 @@ def get_custom_snapshot_for_owner(snapshot_id: str, user_id: str) -> CustomAnaly
 
 def get_snapshot(ticker: str, yyyymmdd: str) -> AnalysisSnapshot | None:
     analysis_date = datetime.strptime(yyyymmdd, "%Y%m%d").date()
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -379,7 +390,6 @@ def get_snapshot(ticker: str, yyyymmdd: str) -> AnalysisSnapshot | None:
 
 
 def list_ticker_snapshots(ticker: str, limit: int = 24) -> list[AnalysisSnapshot]:
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -422,7 +432,6 @@ def list_ticker_snapshots(ticker: str, limit: int = 24) -> list[AnalysisSnapshot
 
 
 def list_public_snapshots(limit: int = 500) -> list[AnalysisSnapshot]:
-    initialize_schema()
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -490,7 +499,6 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
     Links are intentionally based only on stored STANDARD snapshots so public
     pages do not expose user-specific or experimental analysis data.
     """
-    initialize_schema()
     sector = (snapshot.sector or "").strip()
     params = {
         "ticker": snapshot.ticker.upper(),
@@ -513,7 +521,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                base_select
+                base_select  # nosec B608
                 + """
                 SELECT *
                 FROM latest
@@ -540,7 +548,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
             competitors = []
             if sector:
                 cur.execute(
-                    base_select
+                    base_select  # nosec B608
                     + """
                     SELECT *
                     FROM latest
@@ -553,7 +561,7 @@ def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[s
                 competitors = [_snapshot_from_row(row) for row in cur.fetchall()]
 
             cur.execute(
-                base_select
+                base_select  # nosec B608
                 + """
                 SELECT DISTINCT ON (sector) *
                 FROM latest

@@ -1,19 +1,17 @@
 import json
 import math
-import os
 import re
 import time
 from pathlib import Path
 
 from codes import security
+from codes.core.config import cache_root, is_production
 
-CACHE_DIR = Path(".cache")
+CACHE_DIR = cache_root()
 
 # Fallback TTL used only for the ticker map (not for company facts).
 # Company facts are invalidated by filing date, not wall-clock time.
 TICKER_MAP_TTL = 7 * 24 * 60 * 60   # 7 days in seconds
-
-CACHE_DIR.mkdir(exist_ok=True)
 
 # SECURITY (NEW-1): cache keys become filenames — enforce an allow-list
 # as a hard backstop against path traversal.
@@ -85,10 +83,6 @@ _ENCRYPTED_KINDS = {"portfolio"}
 _encryptor: "security.SensitiveDataEncryptor | None" = None
 
 
-def _is_production() -> bool:
-    return os.environ.get("FLASK_ENV", "").lower() == "production"
-
-
 def _get_encryptor() -> "security.SensitiveDataEncryptor":
     global _encryptor
     if _encryptor is None:
@@ -118,7 +112,7 @@ def _dumps(data, *, latest_filing: str | None = None, kind: str | None = None) -
         if cipher is not None:
             stored_data = cipher
             encrypted = True
-        elif _is_production():
+        elif is_production():
             raise RuntimeError(f"Encryption unavailable for sensitive cache kind: {kind}")
 
     payload: dict = {"ts": time.time(), "data": stored_data, "encrypted": encrypted}
@@ -210,6 +204,7 @@ def is_stale_for_company(symbol: str, sec_latest_filing: str) -> bool:
 
 def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> bool:
     try:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
         _path(kind, key).write_text(_dumps(data, latest_filing=latest_filing, kind=kind))
         suffix = f" (filing {latest_filing})" if latest_filing else ""
         if kind!="company_meta":
