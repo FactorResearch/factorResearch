@@ -4,7 +4,7 @@ import math
 from urllib.parse import parse_qs
 
 import dash
-from dash import Input, Output, State, callback, html
+from dash import Input, Output, State, callback, clientside_callback, html
 
 from codes.data import db
 from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
@@ -301,10 +301,11 @@ def open_full_analysis_from_peek(n_clicks, symbol):
 
 @callback(
     Output("index-filter", "data", allow_duplicate=True),
+    Output("sector-filter", "value", allow_duplicate=True),
     Input("url", "pathname"),
     prevent_initial_call=True
 )
-def reset_index_filter_for_market(pathname):
+def reset_filters_for_market(pathname):
     market = market_from_path(pathname)
     try:
         product_analytics.track_event(
@@ -314,16 +315,32 @@ def reset_index_filter_for_market(pathname):
         )
     except Exception:
         pass
-    return []
+    return [], ""
 
 
 @callback(
-    Output("sector-filter", "value"),
+    Output("index-filter", "data", allow_duplicate=True),
+    Output("sector-filter", "value", allow_duplicate=True),
     Input("url", "pathname"),
     Input("url", "search"),
+    prevent_initial_call=True,
 )
-def apply_sector_filter_from_url(_pathname, search):
-    return _sector_from_search(search)
+def apply_url_filters_compatibly(_pathname, search):
+    """Keep pre-reload Dash pages valid while applying query filters."""
+    return [], _sector_from_search(search)
+
+
+clientside_callback(
+    """
+    function(search) {
+        var sector = new URLSearchParams(search || '').get('sector') || '';
+        return sector.trim().slice(0, 100);
+    }
+    """,
+    Output("sector-filter", "value"),
+    Input("url", "search"),
+    prevent_initial_call=False,
+)
 
 
 @callback(
