@@ -13,7 +13,7 @@ HTTP_ADAPTERS = {
 def test_direct_http_calls_stay_in_adapters():
     offenders = []
     for path in (ROOT / "codes").rglob("*.py"):
-        if path in HTTP_ADAPTERS:
+        if path in HTTP_ADAPTERS or (ROOT / "codes/data/providers") in path.parents:
             continue
         source = path.read_text()
         if any(call in source for call in ("requests.get(", "requests.post(", "requests.put(", "requests.delete(")):

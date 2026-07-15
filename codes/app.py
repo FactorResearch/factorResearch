@@ -33,6 +33,7 @@ from codes.data import sec_data
 from codes.engine import screener, universe
 from codes.routes.analyze import analyze_pages
 from codes.routes.charts import chart_pages
+from codes.routes.company_data import company_data_pages
 from codes.error_pages import register_error_pages
 from codes.landing_pages import register_landing_pages
 from codes.services.analysis_snapshot_service import ensure_schema_if_configured
@@ -86,6 +87,7 @@ def reject_untrusted_host():
 
 server.register_blueprint(analyze_pages)
 server.register_blueprint(chart_pages)
+server.register_blueprint(company_data_pages)
 
 
 auth.init_auth(server)
