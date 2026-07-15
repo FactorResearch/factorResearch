@@ -32,7 +32,7 @@ import numpy as np
 import pandas as pd
 from codes.core import financial_math as fm
 from .data import cache
-from .data import api_fetcher
+from .data import api_fetcher, temporal
 
 MAX_HOLDINGS  = 10
 MIN_SHARES    = 5
@@ -52,6 +52,19 @@ def _splits_since(symbol: str, since_date: str) -> list[dict]:
     Uses an in-process memo so the same symbol isn't re-fetched within a session.
     """
     now = time.time()
+    try:
+        identity = temporal.resolve_security("TICKER", symbol, market_code="CA" if symbol.upper().endswith(".TO") else "US")
+        if identity:
+            actions = temporal.list_corporate_actions(identity["security_id"])
+            splits = [
+                {"date": str(action["effective_date"]), "ratio": float(action["ratio"])}
+                for action in actions
+                if action.get("action_type") == "split" and action.get("ratio")
+            ]
+            if splits:
+                return sorted((split for split in splits if split["date"] >= since_date), key=lambda split: split["date"])
+    except Exception as exc:
+        print(f"Track E split lookup unavailable for {symbol}: {type(exc).__name__}")
     if symbol in _splits_memo:
         ts, data = _splits_memo[symbol]
         if now - ts < _SPLITS_TTL:

@@ -1,8 +1,10 @@
 import time
 import requests
+import datetime as dt
 
 from ..data import cache
 from ..data import sec_data
+from ..data import temporal
 
 # ISSUE_003: rate gap for the eligibility sweep — matches the existing
 # ~3 req/sec convention used by screener.py / sec_refresh_worker.py.
@@ -103,6 +105,11 @@ def get_universe() -> list[str]:
         cache.write("universe", "sec_all", universe)
 
     return universe
+
+
+def get_universe_as_of(code: str, as_of: dt.date) -> list[str]:
+    """Return a sourced historical universe without a current-membership fallback."""
+    return [row["symbol"] for row in temporal.get_universe_members(code, as_of) if row.get("symbol")]
 
 
 def get_cached_universe() -> list[str]:

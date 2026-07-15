@@ -73,6 +73,7 @@ import pandas as pd
 from pathlib import Path
 
 from .cache import read, read_entry, write
+from . import temporal
 from codes.core.config import cache_root
 
 
@@ -768,6 +769,16 @@ def get_price_history(symbol: str, years: int = 10) -> pd.DataFrame:
     Raises RateLimitError if the active provider is near its ceiling.
     """
     symbol = symbol.upper().strip()
+    try:
+        identity = temporal.resolve_security("TICKER", symbol, market_code="CA" if symbol.endswith(".TO") else "US")
+        if identity:
+            end = pd.Timestamp.utcnow().date()
+            start = end.replace(year=end.year - years)
+            rows = temporal.get_price_history(identity["security_id"], start, end)
+            if rows:
+                return pd.DataFrame(rows)
+    except Exception as exc:
+        print(f"Track E price lookup unavailable for {symbol}: {type(exc).__name__}")
     lock_path = _price_history_lock_path / f"hist-{symbol.lower()}.lock"
 
     with _FileLock(lock_path):
