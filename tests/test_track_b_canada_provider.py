@@ -144,14 +144,14 @@ def test_canada_market_is_feature_gated(monkeypatch, tmp_path):
     set_markets({"US": True, "CA": False})
     reload(screener_markets)
 
-    assert screener_markets.get_screener_country("CA")["code"] == "US"
+    assert screener_markets.get_screener_market("CA").code == "US"
     assert provider_for_symbol("SHOP.TO") is None
 
     set_markets({"US": True, "CA": True})
     reload(screener_markets)
 
-    assert screener_markets.get_screener_country("CA")["code"] == "CA"
-    assert screener_markets.row_matches_country({"country": "Canada"}, "CA") is True
+    assert screener_markets.get_screener_market("CA").code == "CA"
+    assert screener_markets.row_matches_market({"country": "Canada"}, "CA") is True
     assert isinstance(provider_for_symbol("SHOP.TO"), CanadaProviderAdapter)
 
     set_markets({"US": True, "CA": False})

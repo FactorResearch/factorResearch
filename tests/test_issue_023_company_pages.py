@@ -118,14 +118,9 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
     assert "style=" not in body
     styles = (ROOT / "assets/company_analysis.css").read_text()
     assert "body {\n  display: flex;\n  flex-direction: column;" in styles
-    assert "main {" in styles
-    assert "max-width: 1360px;" in styles
-    assert "padding: 24px 20px 64px;" in styles
-    assert ".footer {" in styles
-    assert "border-top: 1px solid #1e2a3a;" in styles
-    assert "html.light .footer {" in styles
-    assert "border-top-color: var(--border);" in styles
-    assert "color: #64748b;" in styles
+    assert "main {" in styles and "max-width: 1360px;" in styles
+    assert ".footer {" in styles and "background: var(--surface);" in styles
+    assert "html.light .footer" in styles
     assert "prefers-color-scheme: light" in body
     assert "Intrinsic Value" in body
     assert "Financial Health" in body

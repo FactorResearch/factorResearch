@@ -58,7 +58,11 @@ def _render_unhandled_error(error: Exception):
 def _render_error(error: Exception):
     status_code = getattr(error, "code", 500)
     if status_code not in ERROR_PAGE_COPY:
-        status_code = 500
+        try:
+            reason = HTTPStatus(status_code).phrase
+        except ValueError:
+            reason = "Request failed"
+        return flask.Response(f"{status_code} {reason}\n", status=status_code, mimetype="text/plain")
     return render_error_page(status_code, error), status_code
 
 

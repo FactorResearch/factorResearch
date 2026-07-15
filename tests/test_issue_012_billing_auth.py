@@ -37,6 +37,8 @@ def _billing_module(monkeypatch):
         get_or_create_subscription=lambda user_id: {},
     )
     services.product_analytics = types.SimpleNamespace(track_event=lambda *args, **kwargs: None)
+    core = types.ModuleType("codes.core")
+    core.app_flags = types.SimpleNamespace(billing_checks_disabled=lambda: False)
 
     monkeypatch.setitem(sys.modules, "codes", codes)
     monkeypatch.setitem(sys.modules, "codes.app_modules", app_modules)
@@ -44,6 +46,8 @@ def _billing_module(monkeypatch):
     monkeypatch.setitem(sys.modules, "codes.payments", payments)
     monkeypatch.setitem(sys.modules, "codes.services", services)
     monkeypatch.setitem(sys.modules, "codes.services.product_analytics", services.product_analytics)
+    monkeypatch.setitem(sys.modules, "codes.core", core)
+    monkeypatch.setitem(sys.modules, "codes.core.app_flags", core.app_flags)
 
     spec = importlib.util.spec_from_file_location("issue012_billing", ROOT / "codes" / "billing.py")
     module = importlib.util.module_from_spec(spec)
