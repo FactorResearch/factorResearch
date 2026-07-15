@@ -3389,6 +3389,348 @@ implementation_phases:
 risk_if_not_fixed: HIGH
 
 ---
+## ISSUE_042
+
+**Status:** [ ]
+
+**Title:** Private User Analysis Sessions with Shared Backend Cache
+
+**Category:** performance-and-data-isolation
+
+**Files:**
+
+* `codes/engine/`
+* `codes/data/`
+* `codes/cache/`
+* `codes/analytics/`
+* `codes/app.py`
+
+**Problem:** >
+
+User analysis activity must be isolated.
+
+One user must never see another user’s recently analyzed stocks, analysis history, portfolio activity, screener activity, custom settings, or custom model results.
+
+However, recalculating and reloading the same public financial data separately for every user would create unnecessary database queries, API calls, and processing costs.
+
+The platform should keep the user experience private while internally reusing shared public-market data and default analysis results.
+
+**Product Goal:** >
+
+Users should spend time discovering companies through the screener, portfolios, watchlists, and analysis tools.
+
+The interface should not expose a global list such as:
+
+* Most recently analyzed by all users
+* Stocks other users are viewing
+* Global analysis history
+* Public user activity feeds
+
+Popularity data may be collected internally for performance optimization, but it should not be displayed in a way that encourages users to bypass the screener or reveals other users’ behaviour.
+
+**Required Architecture:** >
+
+Separate the system into two layers:
+
+### 1. Private User Layer
+
+Store user-specific activity separately using `user_id`.
+
+This includes:
+
+* User analysis history
+* Recently viewed stocks
+* Saved analyses
+* Watchlists
+* Portfolios
+* Screener filters
+* Custom factor weights
+* Custom formulas
+* Custom backtest results
+* Preferred currency
+* Theme and display settings
+* User-created notes
+
+All queries for this information must be scoped to the authenticated user.
+
+Example:
+
+```text
+user_analysis_history
+- id
+- user_id
+- ticker
+- analysis_type
+- shared_analysis_id
+- created_at
+- last_viewed_at
+```
+
+The `shared_analysis_id` may reference a reusable backend result, but the user activity record remains private.
+
+### 2. Shared Market-Data and Analysis Layer
+
+Reuse public and non-user-specific information across all users.
+
+This includes:
+
+* SEC filing data
+* Company facts
+* Market prices
+* Financial statements
+* Ratios
+* Market capitalization
+* Sector and industry classifications
+* Default Factor Research model calculations
+* Default analysis snapshots
+* Filing-date metadata
+* Data-provider responses
+
+Example:
+
+```text
+shared_analysis_cache
+- id
+- ticker
+- model_version
+- filing_date
+- market_data_timestamp
+- result_json
+- created_at
+- expires_at
+- request_count
+- last_requested_at
+```
+
+When multiple users analyze the same stock using the same default model and the underlying data has not changed, the backend should return the same cached analysis result.
+
+The application should still create separate private activity records for each user.
+
+**Request Flow:** >
+
+When a user analyzes a stock:
+
+1. Confirm the user is authenticated.
+2. Check for a valid shared analysis result using:
+
+   * ticker
+   * model version
+   * latest filing date
+   * relevant market-data timestamp
+3. If a valid shared result exists:
+
+   * return the cached result
+   * create or update the user’s private analysis-history record
+4. If no valid result exists:
+
+   * load the required financial data
+   * calculate the analysis
+   * store the result in the shared cache
+   * create the user’s private analysis-history record
+5. Display only the requesting user’s activity and preferences.
+
+**Intelligent Cache Behaviour:** >
+
+Track aggregate demand internally and retain the 100 most frequently requested default analyses in the fastest cache layer.
+
+The ranking may consider:
+
+* Request count
+* Unique-user count
+* Recent request frequency
+* Calculation cost
+* Database cost
+* Data freshness
+* Last-requested timestamp
+
+Popularity statistics are for backend optimization only.
+
+Do not expose identifiable user activity or a global recent-analysis feed.
+
+**Cache Layers:** >
+
+Recommended order:
+
+1. In-memory or Redis cache for the hottest 100 analyses
+2. PostgreSQL shared analysis cache
+3. PostgreSQL normalized market-data tables
+4. External data provider or SEC request only when required
+
+The top-100 list should be updated periodically rather than recalculated on every request.
+
+**Cache Key:** >
+
+A cache key must contain enough information to prevent outdated or incompatible results from being reused.
+
+Example:
+
+```text
+analysis:{ticker}:{model_version}:{filing_date}:{market_data_version}
+```
+
+For calculations affected by the current stock price, either:
+
+* include the quote timestamp or price-data version in the key, or
+* cache fundamental calculations separately from price-dependent calculations.
+
+**Custom Analysis Rules:** >
+
+User-created calculations must not automatically enter the shared global cache.
+
+The following should remain user-isolated:
+
+* Custom factor weights
+* Custom formulas
+* Private assumptions
+* User-entered growth rates
+* User-entered discount rates
+* Custom backtests
+* Private portfolio calculations
+
+A custom result may be cached under a user-specific or formula-specific key:
+
+```text
+custom_analysis:{user_id}:{ticker}:{formula_hash}:{data_version}
+```
+
+Identical anonymous calculation components may be reused internally only when this cannot expose user information or proprietary formulas.
+
+**Privacy Requirements:** >
+
+* No user may query another user’s analysis history.
+* No user identifier may be stored in the shared market-data cache.
+* Shared cache entries must contain only reusable market data and default platform calculations.
+* Analytics dashboards should use aggregated statistics.
+* Administrative access to usage analytics must be role-restricted.
+* Logs must not expose custom formulas or sensitive portfolio information unnecessarily.
+
+**Constraints:**
+
+* Do not duplicate SEC or provider data per user.
+* Do not calculate identical default analyses independently for every user.
+* Do not expose aggregate usage behaviour in the normal customer interface.
+* User-specific results must always be scoped by `user_id`.
+* Cache invalidation must occur when filings, prices, formulas, or model versions change.
+* Shared cache results must be deterministic for the same inputs.
+* The cache must never override subscription or analysis-limit enforcement.
+
+**Acceptance Criteria:**
+
+* Two users analyzing the same stock receive the same reusable default calculation when its inputs are unchanged.
+* Each user sees only their own analysis history.
+* One user cannot access another user’s saved analysis through URLs, API requests, or modified request parameters.
+* Popular stocks are served from the fast cache without repeated database calculation.
+* The system maintains up to 100 hot default analyses in the fastest cache layer.
+* User activity contributes only aggregated statistics to cache ranking.
+* Custom formulas and custom results remain private.
+* New filings invalidate affected fundamental analysis results.
+* Material price updates invalidate or refresh price-dependent results.
+* Updating the Factor Research model version generates a new cache namespace.
+* Cache hits, misses, refreshes, and evictions are visible in internal analytics.
+* Analysis limits and subscription permissions are checked even when the requested result is already cached.
+
+Risk If Not Fixed:HIGH
+---
+
+## ISSUE_043
+
+Status: [ ]
+
+Title: User Profile & Preferences System
+
+Category: user-experience
+
+Problem:
+Currently the platform has no user profile page. Users cannot manage their account, preferences, subscriptions, or saved settings.
+
+Required Features:
+
+User profile page
+Account information
+Subscription management
+Password & security
+Notification preferences
+Saved portfolios
+Saved screeners
+User settings integration
+Future API key management
+
+Future Expansion:
+
+Public profile
+Shared portfolios
+Activity history
+Analysis history
+Saved custom factor models
+
+Acceptance Criteria:
+
+Single Profile page accessible from navigation
+All user-specific preferences stored per account
+Extensible without database redesign
+
+Priority: Medium (Launch)
+
+---
+
+
+## ISSUE_044
+
+Status: [ ]
+
+Title: Move Theme Preferences into User Settings
+
+Category: user-experience
+
+Problem:
+
+Dark Mode and Light Mode are currently treated as application-level options instead of user preferences.
+
+Required Fix:
+
+Move appearance configuration into the User Settings system.
+
+Settings:
+
+Theme
+System
+Light
+Dark
+
+Future User Settings:
+
+Appearance
+
+Theme
+Font Size
+Density
+
+Analysis
+
+Preferred Currency
+Number Format
+Default Analysis Model
+Default Portfolio
+
+Notifications
+
+Email Updates
+Product News
+Market Alerts
+
+Privacy
+
+Analytics Opt-in
+Cookies
+Data Export
+
+Acceptance Criteria:
+
+Theme persists across devices after login
+Theme loads before UI rendering
+Easily expandable to additional user preferences
+
+Priority: Medium
 # AI EXECUTION PROTOCOL
 
 When fixing an issue:
