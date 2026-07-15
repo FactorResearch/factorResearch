@@ -1932,6 +1932,169 @@ body.light .analysis-jump-dot {
     padding: 0 16px 16px;
   }
 }
+.company-data-page .company-data-main {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding-inline: 24px;
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .company-data-page .company-data-main {
+    padding-inline: 20px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .company-data-page .company-data-main {
+    padding-inline: 16px;
+  }
+}
+.company-data-page .company-data-main {
+  width: 100%;
+  padding-top: 32px;
+  padding-bottom: 56px;
+}
+.company-data-page .company-data-breadcrumbs {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+  color: var(--fr-text-dim);
+}
+.company-data-page .company-data-breadcrumbs a:hover {
+  color: var(--fr-text);
+}
+.company-data-page .company-data-hero {
+  margin-bottom: 24px;
+  padding: 28px;
+  border: 1px solid var(--fr-border);
+  border-radius: var(--fr-radius-card);
+  background: linear-gradient(135deg, var(--fr-card-raised), var(--fr-card));
+  box-shadow: var(--fr-shadow-sm);
+}
+.company-data-page .company-data-hero .company-data-kicker {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0 0 8px;
+  color: var(--fr-accent-soft);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.company-data-page .company-data-hero h1 {
+  margin: 0;
+  color: var(--fr-text);
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.1;
+}
+.company-data-page .company-data-hero h1 span {
+  color: var(--fr-text-dim);
+  font-size: 0.58em;
+}
+.company-data-page .company-data-hero p:last-child {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: var(--fr-text-dim);
+}
+.company-data-page .company-data-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.company-data-page .company-data-section {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--fr-border);
+  border-radius: var(--fr-radius-card);
+  background: var(--fr-card);
+  box-shadow: var(--fr-shadow-sm);
+}
+.company-data-page .company-data-section.company-data-section--wide {
+  grid-column: 1/-1;
+}
+.company-data-page .company-data-section h2 {
+  margin: 0 0 16px;
+  color: var(--fr-text);
+  font-size: 18px;
+}
+.company-data-page .company-data-section ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--fr-text-dim);
+}
+.company-data-page .company-data-section small {
+  color: var(--fr-text-muted);
+}
+.company-data-page .company-data-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--fr-border);
+  border-radius: 3px;
+  background: var(--fr-border);
+}
+.company-data-page .company-data-metrics span {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 12px;
+  background: var(--fr-surface-soft);
+  color: var(--fr-text-dim);
+}
+.company-data-page .company-data-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.company-data-page table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--fr-text-dim);
+}
+.company-data-page table th,
+.company-data-page table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--fr-border);
+  text-align: left;
+  white-space: nowrap;
+}
+.company-data-page table th {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--fr-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+@media screen and (max-width: 1024px) {
+  .company-data-page .topbar {
+    position: sticky;
+  }
+  .company-data-page .company-data-grid {
+    grid-template-columns: 1fr;
+  }
+  .company-data-page .company-data-section--wide {
+    grid-column: auto;
+  }
+}
+@media screen and (max-width: 767px) {
+  .company-data-page .company-data-main {
+    padding-top: 20px;
+    padding-bottom: 36px;
+  }
+  .company-data-page .company-data-hero,
+  .company-data-page .company-data-section {
+    padding: 18px;
+  }
+  .company-data-page .company-data-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
 .scorecard {
   overflow: hidden;
 }
