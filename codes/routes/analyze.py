@@ -4,6 +4,7 @@ import html
 import hashlib
 import json
 import re
+from urllib.parse import urlencode
 
 import flask
 
@@ -190,6 +191,7 @@ def company_analysis_page(slug: str):
     }, separators=(",", ":")).replace("</", "<\\/")
     user_id = auth.get_authenticated_user_id()
     custom_column = _custom_history_column(user_id, latest.ticker)
+    sector_query = html.escape(urlencode({"tab": "screener", "sector": latest.sector}))
     pagination = (
         f'<nav aria-label="History pages"><a href="?page={page - 1}">Newer</a></nav>'
         if page > 1 else
@@ -204,7 +206,7 @@ def company_analysis_page(slug: str):
 <script type="application/ld+json">{landing_schema}</script>
 <script>(function(){{try{{var t=localStorage.getItem("fr-theme")||"system";var light=t==="light"||(t==="system"&&window.matchMedia("(prefers-color-scheme: light)").matches);if(light)document.documentElement.classList.add("light");}}catch(e){{}}}})();</script>
 </head>
-<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}?tab=analyze">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a><a href="/{html.escape(latest.ticker)}/data">Company Data</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">FactorResearch company dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span class="ticker-symbol">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?tab=screener&amp;sector={html.escape(latest.sector)}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
+<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}?tab=analyze">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a><a href="/{html.escape(latest.ticker)}/data">Company Data</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">FactorResearch company dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span class="ticker-symbol">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?{sector_query}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
 <nav class="tabs" aria-label="Analysis sections">FactorResearch History&nbsp;&nbsp;·&nbsp;&nbsp;My Custom Models</nav><div class="columns"><section class="section-shell"><div class="section-title"><div><h2>FactorResearch History</h2><p>Immutable results from the official methodology</p></div></div>{_official_history_cards(history)}{pagination}</section><div>{custom_column}</div></div></main><footer class="footer">© FactorResearch · Independent financial research · Company-inspired visuals use abstract, non-proprietary design elements.</footer></body></html>"""
     response = flask.Response(body, mimetype="text/html")
     response.headers["Cache-Control"] = "private, no-store" if user_id else "public, max-age=300"

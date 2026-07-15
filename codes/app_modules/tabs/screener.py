@@ -1,6 +1,7 @@
 """Screener tab callbacks."""
 
 import math
+from urllib.parse import parse_qs
 
 import dash
 from dash import Input, Output, State, callback, html
@@ -29,6 +30,11 @@ last_progress_bar_state = None
 
 def _filter_results_by_market(results, market_code):
     return [r for r in results if row_matches_market(r, market_code)]
+
+
+def _sector_from_search(search: str | None) -> str:
+    sector = parse_qs((search or "").lstrip("?")).get("sector", [""])[0].strip()
+    return sector[:100]
 
 
 def _index_pill_buttons(selected_indices=None):
@@ -297,9 +303,10 @@ def open_full_analysis_from_peek(n_clicks, symbol):
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
     Input("url", "pathname"),
+    Input("url", "search"),
     prevent_initial_call=True
 )
-def reset_filters_for_market(pathname):
+def reset_filters_for_market(pathname, search):
     market = market_from_path(pathname)
     try:
         product_analytics.track_event(
@@ -309,7 +316,7 @@ def reset_filters_for_market(pathname):
         )
     except Exception:
         pass
-    return [], ""
+    return [], _sector_from_search(search)
 
 
 @callback(
