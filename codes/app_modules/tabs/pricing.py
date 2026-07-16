@@ -6,6 +6,8 @@ import time
 
 from dash import Input, Output, callback, dcc, html
 
+from codes.app_modules.design_system.primitives import link
+
 from codes import billing
 from codes.app_modules.session import get_user_id
 from codes.services import product_analytics
@@ -50,7 +52,7 @@ def build_upgrade_prompt(*, title: str, body: str, source: str, feature: str) ->
                     html.Div(
                         className="d-flex gap-12 flex-wrap",
                         children=[
-                            dcc.Link("Compare plans", href="/pricing", className="analyze-btn"),
+                            link("Compare plans", href="/pricing", className="analyze-btn"),
                             html.A(
                                 "Start Premium",
                                 href=billing.get_billing_entry_url(

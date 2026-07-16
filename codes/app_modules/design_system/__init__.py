@@ -9,8 +9,20 @@ from .financial import (
     score_badge,
 )
 from .layouts import analysis_grid, container, dashboard_grid, page_header, stack
-from .primitives import alert, button, card, empty_state, form_field, status_region
-from .schemas import SectionDefinition, SectionRegistry, SectionState, UIState
+from .primitives import (
+    alert,
+    banner,
+    button,
+    card,
+    confirmation_dialog,
+    empty_state,
+    form_field,
+    retry_panel,
+    search_control,
+    status_region,
+    tab,
+)
+from .schemas import InteractionState, SectionDefinition, SectionRegistry, SectionState, UIState
 from .states import (
     background_job_status,
     card_skeleton,
@@ -28,14 +40,17 @@ __all__ = [
     "SectionRegistry",
     "SectionState",
     "UIState",
+    "InteractionState",
     "alert",
     "analysis_grid",
     "background_job_status",
+    "banner",
     "button",
     "card_skeleton",
     "chart_skeleton",
     "card",
     "container",
+    "confirmation_dialog",
     "dashboard_grid",
     "data_freshness",
     "delta",
@@ -47,11 +62,14 @@ __all__ = [
     "model_verdict",
     "page_header",
     "partial_data_notice",
+    "retry_panel",
     "score_badge",
     "section_error",
+    "search_control",
     "stack",
     "stage_progress",
     "stale_data_notice",
     "status_region",
     "table_skeleton",
+    "tab",
 ]

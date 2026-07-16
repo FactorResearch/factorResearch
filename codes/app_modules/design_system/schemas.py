@@ -19,6 +19,22 @@ class UIState(StrEnum):
     DISABLED = "disabled"
 
 
+class InteractionState(StrEnum):
+    """Documented visual/semantic states shared by interactive primitives."""
+
+    DEFAULT = "default"
+    HOVER = "hover"
+    FOCUS_VISIBLE = "focus-visible"
+    ACTIVE = "active"
+    SELECTED = "selected"
+    DISABLED = "disabled"
+    LOADING = "loading"
+    SUCCESS = "success"
+    WARNING = "warning"
+    ERROR = "error"
+    READ_ONLY = "read-only"
+
+
 @dataclass(frozen=True)
 class SectionState:
     state: UIState

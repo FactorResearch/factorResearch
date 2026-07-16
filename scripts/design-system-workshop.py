@@ -10,7 +10,7 @@ app = Dash(
     __name__,
     title="Factor Research design system",
     assets_folder=str(Path(__file__).resolve().parents[1] / "assets"),
-    assets_ignore=r"^(?!style\.css$).*",
+    assets_ignore=r"^(?!(style\.css|adaptive_loading\.js|design_system\.js)$).*",
 )
 app.layout = build_catalogue()
 server = app.server

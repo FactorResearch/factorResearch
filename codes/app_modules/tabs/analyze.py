@@ -155,8 +155,8 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
 def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, viewed_list):
     """
     Single callback: fetch + score + render.
-    Because analysis-content is a child of dcc.Loading(id='analysis-loading'),
-    Dash shows the spinner for the entire duration of this callback.
+    The shared scoped loading container delays feedback and keeps the application
+    shell interactive for the duration of this callback.
     """
     triggered = dash.ctx.triggered_id
     route_ticker = _ticker_from_analyze_path(pathname)

@@ -11,7 +11,7 @@ from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.config import AMBER, BLUE, GREEN, MUTED, RED, TEXT
 from codes.app_modules.css_classes import tone_class
-from codes.app_modules.design_system.primitives import empty_state
+from codes.app_modules.design_system.primitives import empty_state, table
 from codes.app_modules.design_system.states import background_job_status, section_error
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
@@ -65,7 +65,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
         try:
             check_rate_limit("backtest", calls=3, period_seconds=60)
         except RateLimited as rl:
-            return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger p-20")], "⏳ Rate limited", None
+            return [section_error(f"Backtest rate limited. Try again in {rl.retry_after}s.")], "⏳ Rate limited", None
 
     from codes.engine import strategy_cache, user_strategy
 
@@ -90,7 +90,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
                     source="factor_lab_lock",
                 )
         except Exception:
-            return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable", None
+            return [section_error("Billing is unavailable. Please try again later.")], "🔒 Billing unavailable", None
 
     # Layer 4: cache-aware backtest, reused across identical configs
     product_analytics.track_event(
@@ -121,7 +121,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
                 "duration_ms": int((_time.perf_counter() - started_at) * 1000),
             },
         )
-        return [html.Div("❌ Internal backtest error", className="text-danger p-20")], "❌ Error", None
+        return [section_error("The backtest could not be completed.", technical_id=type(e).__name__)], "❌ Error", None
 
     if result.get("error"):
         duration_ms = (_time.perf_counter() - started_at) * 1000
@@ -138,7 +138,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
                 "duration_ms": int((_time.perf_counter() - started_at) * 1000),
             },
         )
-        return [html.Div(f"❌ {result['error']}", className="text-danger p-20")], "❌ Error", None
+        return [section_error(str(result["error"]))], "❌ Error", None
 
     permissions.record_feature_usage(uid, permissions.Feature.BACKTEST)
     product_analytics.track_event(
@@ -292,7 +292,7 @@ def _render_fb_results(r: dict) -> list:
             "Green = custom beats default. Equal-weight buy-and-hold on stocks in your analysis cache.",
             className="factor-lab-summary-note fs-12 clr-muted fsi",
         ),
-        html.Table(className="screener-table", children=[
+        table(className="screener-table", children=[
             html.Thead(html.Tr([
                 html.Th("Metric"),
                 html.Th("Custom Weights", className="clr-blue"),
@@ -346,7 +346,7 @@ def _render_fb_results(r: dict) -> list:
 
     weight_table = html.Div(className="scorecard mt-16", children=[
         html.Div("⚖️ Weight Changes vs Default", className="scorecard-header"),
-        html.Table(className="screener-table", children=[
+        table(className="screener-table", children=[
             html.Thead(html.Tr([html.Th("Factor"), html.Th("Custom"), html.Th("Default"), html.Th("Δ pp")])),
             html.Tbody(wc_rows),
         ]),
@@ -383,7 +383,7 @@ def _render_fb_results(r: dict) -> list:
             f"{', '.join(overlap) if overlap else 'none in common'}",
             className="factor-lab-overlap-note fs-12 clr-muted fsi",
         ),
-        html.Table(className="screener-table", children=[
+        table(className="screener-table", children=[
             html.Thead(html.Tr([
                 html.Th("Ticker"), html.Th("Name"),
                 html.Th("Custom Score", className="clr-blue"),

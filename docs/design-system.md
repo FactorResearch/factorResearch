@@ -14,6 +14,25 @@ To add a token, choose an intent-based name, add it to the appropriate `TokenGro
 
 Use `primitives.py` for buttons, links, form fields and controls, cards, badges, alerts, overlays, tabs, menus, tables, pagination, loading indicators, status regions, empty states, and notifications. Each component owns its semantic roles, touch target, focus-visible treatment, disabled/loading behavior, and theme behavior. Add a variant only when it represents reusable intent; implement it through a modifier class and semantic tokens, then add it to `catalogue.py` and the accessibility/visual contract tests.
 
+`InteractionState` is the shared vocabulary for default, hover, focus-visible,
+active, selected, disabled, loading, success, warning, error, and read-only
+states. Real pseudo-classes drive normal interaction; the matching state class
+exists so documentation and deterministic visual tests can exercise every
+state. Warning means caution. Danger is reserved for destructive actions,
+unavailable output, or material risk.
+
+Search, select, slider, tooltip, banner, retry panel, toast, modal, drawer, and
+confirmation patterns are central primitives. Tooltips expose supplementary
+content on hover and keyboard focus and must never contain the only copy of
+essential information. Skeletons are decorative by default and hidden from the
+accessibility tree; a nearby status region owns the loading announcement.
+
+Modal and drawer surfaces use the shared overlay contract. The browser adapter
+locks background scrolling, moves focus into a newly opened overlay, traps Tab,
+closes through the declared control on Escape, and returns focus after close.
+Permanent destructive actions use `confirmation_dialog`; reversible actions
+prefer in-context undo without an unnecessary modal.
+
 Use `financial.py` for currency, percent, ratio, multiple, compact-number, metric, score, verdict, delta, freshness, missing-data, and confidence presentation. Financial direction includes a shape or word cue, never color alone. Add a formatter by extending `FinancialFormat`, defining null and negative behavior, and adding boundary tests.
 
 Use `layouts.py` for containers, stacks, clusters, responsive grids, reading/sidebar arrangements, headers, sticky regions, and mobile actions. Page modules supply content; breakpoint rules remain in the layout engine.
@@ -31,6 +50,11 @@ For repeated sections, define a `SectionDefinition` with a stable ID, component 
 Run the workshop with `PYTHONPATH=. python scripts/design-system-workshop.py`. With WebDriver on port 4444, `npm run audit:design-system` runs axe and compares real browser screenshots for light/dark at mobile/desktop sizes. More than 1% materially changed pixels fails. Set `UPDATE_VISUALS=1` only to approve an intentional baseline change during review; candidate images are uploaded by CI.
 
 Before review, run `./scripts/release-gate.sh`. A pull request changing tokens or components must include the generated CSS, catalogue coverage, contract snapshots, and an explanation for intentional visual changes.
+
+Complete [`design-system-review-checklist.md`](design-system-review-checklist.md)
+for production UI changes. The automated check rejects new direct button, link,
+or loading constructors outside the design system so new one-off patterns cannot
+quietly enter major screens.
 
 ## Reference migrations
 

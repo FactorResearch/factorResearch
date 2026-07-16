@@ -9,6 +9,7 @@ from dash import dcc, html
 from codes.app_modules.company_identity import company_logo
 from codes.app_modules.design_system.layouts import analysis_grid, container
 from codes.app_modules.design_system.schemas import SectionDefinition
+from codes.app_modules.design_system.primitives import link, loading_container
 from codes.app_modules.design_system.states import chart_skeleton
 from codes.services import chart_service
 
@@ -1412,7 +1413,7 @@ def _build_analysis_content(data: dict) -> list:
                                 children=[
                                     company_logo(symbol, name, "company-logo company-logo--hero"),
                                     html.H2(
-                                        dcc.Link(
+                                        link(
                                             f"{symbol} — {name}",
                                             href=f"/{symbol}",
                                             refresh=True,
@@ -1730,7 +1731,7 @@ def _build_analysis_content(data: dict) -> list:
                         ("Price", "History"),
                     ],
                     [
-                        dcc.Loading(
+                        loading_container(
                             type="circle",
                             delay_show=250,
                             delay_hide=200,

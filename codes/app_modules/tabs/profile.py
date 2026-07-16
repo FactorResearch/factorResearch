@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import dash
-from dash import Input, Output, State, callback, dcc, html
+from dash import Input, Output, State, callback, html
 
-from codes import auth, billing
-from codes.app_modules.session import get_user_id
-from codes.app_modules.screener_markets import market_from_path
 import codes.portfolio as portfolio_engine
+from codes import auth, billing
+from codes.app_modules.design_system.primitives import button
+from codes.app_modules.screener_markets import market_from_path
+from codes.app_modules.session import get_user_id
 from codes.services import permissions, user_settings
 
 
@@ -134,7 +135,7 @@ def _quick_section_content(section_key: str, settings: dict, user_id: str):
                     html.Form(
                         action="/account/delete",
                         method="post",
-                        children=[html.Button("Delete account", type="submit", className="load-btn portfolio-delete-btn")],
+                        children=[button("Delete account", type="submit", variant="danger", className="load-btn portfolio-delete-btn")],
                     ),
                 ], className="d-flex gap-12 flex-wrap"),
             ]),
@@ -250,7 +251,7 @@ def render_profile(settings_data, _portfolio_refresh, active_section):
                     html.Form(
                         action="/account/delete",
                         method="post",
-                        children=[html.Button("Delete account", type="submit", className="load-btn portfolio-delete-btn")],
+                        children=[button("Delete account", type="submit", variant="danger", className="load-btn portfolio-delete-btn")],
                     ),
                 ],
                 className="d-flex gap-12 flex-wrap",

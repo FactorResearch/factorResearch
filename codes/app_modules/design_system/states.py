@@ -2,7 +2,7 @@
 
 from dash import html
 
-from .primitives import alert, button, empty_state, progress, skeleton, status_region
+from .primitives import alert, button, empty_state, progress, retry_panel, skeleton, status_region
 from .schemas import SectionState, UIState
 
 
@@ -73,18 +73,7 @@ def background_job_status(snapshot: dict, *, cancel_id=None):
 
 
 def section_error(message: str, *, retry_id=None, technical_id: str | None = None):
-    technical = (
-        html.Details(
-            [html.Summary("Technical details"), html.Code(technical_id)],
-            className="ds-error__technical",
-        )
-        if technical_id
-        else None
-    )
-    retry = button("Retry section", id=retry_id, variant="secondary") if retry_id else None
-    return alert(
-        [html.P(message), retry, technical], tone="danger", title="This section could not load"
-    )
+    return retry_panel(message, retry_id=retry_id, technical_id=technical_id)
 
 
 def stale_data_notice(message: str = "Showing the last successful result while an update runs."):

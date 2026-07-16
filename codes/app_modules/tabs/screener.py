@@ -16,7 +16,7 @@ from codes.app_modules.config import (
     get_score_class,
     get_verdict_class,
 )
-from codes.app_modules.design_system.primitives import button, empty_state
+from codes.app_modules.design_system.primitives import button, empty_state, table
 from codes.app_modules.design_system.states import stage_progress
 from codes.app_modules.screener_markets import (
     market_from_path,
@@ -45,7 +45,7 @@ def _sector_from_search(search: str | None) -> str:
 def _index_pill_buttons(selected_indices=None):
     selected = set(selected_indices or [])
     return [
-        html.Button(
+        button(
             index["label"],
             id={"type": "index-filter-pill", "index": index["value"]},
             className="screener-index-pill" + (" active" if index["value"] in selected else ""),
@@ -232,7 +232,7 @@ def _build_quick_peek(symbol: str) -> html.Div:
             html.Div(
                 className="quick-peek-actions",
                 children=[
-                    html.Button(
+                    button(
                         "Open Full Analysis",
                         id="quick-peek-open-analysis-btn",
                         className="quick-peek-open-analysis-btn",
@@ -615,7 +615,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         th_class = f"{th_class} table-tooltip" if tooltip else th_class
         if sort_key:
             header_cells.append(html.Th(
-                html.Button(
+                button(
                     label,
                     id={"type": "screener-sort-btn", "index": sort_key},
                     className="sort-header-btn", n_clicks=0,
@@ -779,13 +779,13 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
                   className="text-muted"),
     ], className="fs-11 px-4 py-8 fsi")
-    table = html.Table(className="screener-table", children=[
+    table_component = table(className="screener-table", children=[
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
     ])
     # Pagination controls
     pagination = html.Div(className="pagination-controls", children=[
-        html.Button(
+        button(
             "◀ Prev",
             id={"type": "screener-page-btn", "index": "prev"},
             className="pagination-btn pagination-btn--prev",
@@ -796,7 +796,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
             className="pagination-info",
         ),
-        html.Button(
+        button(
             "Next ▶",
             id={"type": "screener-page-btn", "index": "next"},
             className="pagination-btn pagination-btn--next",
@@ -811,7 +811,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         first_useful_ms=(_time.perf_counter() - started_at) * 1000,
     )
     return html.Div([
-        table,
+        table_component,
         html.Div(accordion_items, className="screener-accordion"),
         note,
         pagination,

@@ -1,8 +1,9 @@
 """Reusable usage banner for Free-plan analysis limits."""
 
-from dash import dcc, html
+from dash import html
 
 from codes import billing
+from codes.app_modules.design_system.primitives import link
 
 
 def UpgradeBanner(*, remaining: int, limit: int = 3) -> html.Div:
@@ -15,7 +16,7 @@ def UpgradeBanner(*, remaining: int, limit: int = 3) -> html.Div:
                 className="p-20 d-flex gap-12 flex-wrap",
                 children=[
                     html.Span(f"{remaining} free analyses remaining", className="clr-muted"),
-                    dcc.Link("Unlock Premium", href=billing.get_billing_entry_url(
+                    link("Unlock Premium", href=billing.get_billing_entry_url(
                         plan="premium", source="analysis_usage_banner", feature="analysis"
                     ), className="analyze-btn"),
                 ],

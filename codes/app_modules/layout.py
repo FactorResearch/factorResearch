@@ -3,6 +3,15 @@
 from dash import dcc, html
 
 from codes.app_modules.company_identity import logo_attribution
+from codes.app_modules.design_system.primitives import (
+    button,
+    checkbox_group,
+    input_control,
+    link,
+    loading_container,
+    select_control,
+    slider,
+)
 from codes.data.us_indices import US_INDEX_DEFINITIONS
 from codes.engine import scorer
 
@@ -21,7 +30,7 @@ def _screener_market_links(active_market=DEFAULT_SCREENER_MARKET):
         className="screener-country-tabs",
         **{"aria-label": "Screener market"},
         children=[
-            dcc.Link(
+            link(
                 [
                     html.Img(src=market.flag_src, alt="", className="screener-country-flag"),
                     html.Span(market.short_label, className="screener-country-label"),
@@ -40,7 +49,7 @@ def _screener_market_links(active_market=DEFAULT_SCREENER_MARKET):
 def _screener_index_pills(selected=None):
     selected = set(selected or [])
     return [
-        html.Button(
+        button(
             index["label"],
             id={"type": "index-filter-pill", "index": index["value"]},
             className="screener-index-pill" + (" active" if index["value"] in selected else ""),
@@ -58,15 +67,15 @@ def _topbar():
             html.Span("FactorResearch", className="topbar-title"),
         ]),
         html.Nav(className="topbar-nav", **{"aria-label": "Primary navigation"}, children=[
-            html.Button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", **{"data-tab": "screener"}),
-            html.Button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", **{"data-tab": "analyze"}),
-            html.Button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "portfolio"}),
-            html.Button("Factor Lab", id="tab-factorlab-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "factorlab"}),
-            html.Button("Pricing", id="tab-pricing-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "pricing"}),
+            button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", **{"data-tab": "screener"}),
+            button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", **{"data-tab": "analyze"}),
+            button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "portfolio"}),
+            button("Factor Lab", id="tab-factorlab-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "factorlab"}),
+            button("Pricing", id="tab-pricing-btn", className="topbar-nav-btn tab-btn", **{"data-tab": "pricing"}),
         ]),
         html.Div(className="topbar-actions", children=[
             html.Div(className="profile-menu-shell", children=[
-                html.Button(
+                button(
                     id="profile-menu-btn",
                     className="topbar-nav-btn tab-btn",
                     n_clicks=0,
@@ -81,7 +90,7 @@ def _topbar():
                     html.Div("Quick settings", className="scorecard-header"),
                     html.Div(className="p-16", children=[
                         html.Label("Setting", htmlFor="profile-quick-section-dropdown", className="fs-13 clr-muted"),
-                        dcc.Dropdown(
+                        select_control(
                             id="profile-quick-section-dropdown",
                             options=[
                                 {"label": "Account", "value": "account"},
@@ -97,7 +106,7 @@ def _topbar():
                             className="mb-16 min-w-240",
                         ),
                         html.Label("Theme", htmlFor="profile-quick-theme-dropdown", className="fs-13 clr-muted"),
-                        dcc.Dropdown(
+                        select_control(
                             id="profile-quick-theme-dropdown",
                             options=[
                                 {"label": "System", "value": "system"},
@@ -110,8 +119,8 @@ def _topbar():
                         html.Div(id="profile-quick-summary", className="mb-12 text-muted"),
                         html.Div(id="profile-quick-detail", className="mb-16"),
                         html.Div(className="d-flex gap-12 flex-wrap", children=[
-                            html.Button("Save", id="profile-quick-save-btn", className="analyze-btn", n_clicks=0),
-                            dcc.Link("More settings", id="profile-nav-link", href="/profile", className="load-btn"),
+                            button("Save", id="profile-quick-save-btn", className="analyze-btn", n_clicks=0),
+                            link("More settings", id="profile-nav-link", href="/profile", className="load-btn"),
                         ]),
                         html.Div(id="profile-quick-msg", className="fs-13 mt-6"),
                     ]),
@@ -192,7 +201,7 @@ def build_layout():
                     ]),
                     html.Div(className="filters",children=[
                     html.Label("Filter by sector:", htmlFor="sector-filter", className="text-sm text-muted"),
-                    dcc.Dropdown(
+                    select_control(
                         id="sector-filter",
                         options=[{"label": "All Sectors", "value": ""}],
                         value="",
@@ -205,7 +214,7 @@ def build_layout():
             html.Div(id="screener-progress", className="mb-2xl"),
             html.Div(className="screener-market-shell", children=[
                 _screener_market_links(),
-                dcc.Loading(
+                loading_container(
                     id="screener-loading",
                     type="default",
                     color=BLUE,
@@ -223,7 +232,7 @@ def build_layout():
                     id="screener-quick-peek-shell",
                     className="quick-peek-shell",
                     children=[
-                        html.Button(
+                        button(
                             id="quick-peek-backdrop",
                             className="quick-peek-backdrop",
                             n_clicks=0,
@@ -247,7 +256,7 @@ def build_layout():
                                                         html.H3("Stock snapshot", className="quick-peek-title"),
                                                     ],
                                                 ),
-                                                html.Button(
+                                                button(
                                                     "Close",
                                                     id="quick-peek-close-btn",
                                                     className="quick-peek-close-btn",
@@ -273,7 +282,7 @@ def build_layout():
             html.Div(className="analyze-header", children=[
                 html.Div(className="analyze-ticker-input", children=[
                     html.Label("Stock ticker", htmlFor="ticker-input", className="sr-only"),
-                    dcc.Input(
+                    input_control(
                         id="ticker-input",
                         type="text",
                         placeholder="Enter stock ticker (e.g. KO, JNJ, XOM)",
@@ -281,14 +290,14 @@ def build_layout():
                         className="ticker-input",
                         disabled=False
                     ),
-                    html.Button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False)
+                    button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False)
                 ]),
                 html.Span(id="analyze-current", className="analyze-current"),
                 html.Div(id="status-msg", className="status-msg w-full"),
             ]),
             html.Div(id="history-section", className="history-section"),
 
-            dcc.Loading(
+            loading_container(
                 id="analysis-loading",
                 type="default",
                 color=BLUE,
@@ -309,21 +318,21 @@ def build_layout():
                     ]),
                     html.Div(className="portfolio-add-controls", children=[
                         html.Label("Portfolio", htmlFor="portfolio-select-dropdown", className="sr-only"),
-                        dcc.Dropdown(
+                        select_control(
                             id="portfolio-select-dropdown",
                             placeholder="Select or create portfolio…",
                             clearable=True,
                             className="min-w-220",
                         ),
                         html.Label("New portfolio name", htmlFor="portfolio-new-name", className="sr-only"),
-                        dcc.Input(
+                        input_control(
                             id="portfolio-new-name",
                             type="text",
                             placeholder="Or type new portfolio name…",
                             className="max-w-220 ticker-input"
                         ),
                         html.Label("Number of shares", htmlFor="portfolio-shares-input", className="sr-only"),
-                        dcc.Input(
+                        input_control(
                             id="portfolio-shares-input",
                             type="number",
                             placeholder="Shares (min 5)",
@@ -331,7 +340,7 @@ def build_layout():
                             step=1,
                             className="ticker-input max-w-130"
                         ),
-                        html.Button("Add", id="portfolio-add-btn", className="analyze-btn", n_clicks=0),
+                        button("Add", id="portfolio-add-btn", className="analyze-btn", n_clicks=0),
                     ]),
                     html.Div(id="portfolio-add-msg", className="fs-13 mt-6"),
                 ])
@@ -344,21 +353,21 @@ def build_layout():
             html.Div(className="screener-toolbar", children=[
                 html.Div(className="screener-controls", children=[
                     html.Label("Active portfolio", htmlFor="portfolio-active-dropdown", className="sr-only"),
-                    dcc.Dropdown(
+                    select_control(
                         id="portfolio-active-dropdown",
                         placeholder="Select a portfolio…",
                         clearable=False,
                         className="min-w-240",
                     ),
-                    html.Button("＋ New Portfolio", id="portfolio-new-btn",
+                    button("＋ New Portfolio", id="portfolio-new-btn",
                                 className="load-btn", n_clicks=0),
-                    html.Button("🗑 Delete", id="portfolio-delete-btn",
+                    button("🗑 Delete", id="portfolio-delete-btn", variant="danger",
                                 className="load-btn portfolio-delete-btn",
                                 n_clicks=0),
                 ]),
                 html.Div(className="screener-controls", children=[
                     html.Label("Compare:", htmlFor="portfolio-compare-dropdown", className="fs-13 clr-muted"),
-                    dcc.Dropdown(
+                    select_control(
                         id="portfolio-compare-dropdown",
                         placeholder="Add portfolio to compare…",
                         clearable=True,
@@ -370,12 +379,12 @@ def build_layout():
             html.Div(id="portfolio-create-panel", className="hidden", children=[
                 html.Div(className="portfolio-add-panel", children=[
                     html.Label("Name your portfolio:", htmlFor="portfolio-create-name", className="text-primary"),
-                    dcc.Input(id="portfolio-create-name", type="text",
+                    input_control(id="portfolio-create-name", type="text",
                               placeholder="e.g. Value Picks Q1",
                               className="ticker-input max-w-240"),
-                    html.Button("Create", id="portfolio-create-confirm-btn",
+                    button("Create", id="portfolio-create-confirm-btn",
                                 className="analyze-btn", n_clicks=0),
-                    html.Button("Cancel", id="portfolio-create-cancel-btn",
+                    button("Cancel", id="portfolio-create-cancel-btn", variant="secondary",
                                 className="load-btn", n_clicks=0),
                     html.Div(id="portfolio-create-msg",
                              className="fs-13 clr-red"),
@@ -383,7 +392,7 @@ def build_layout():
             ]),
             html.Div(id="portfolio-msg", className="portfolio-message fs-13"),
             # Main portfolio content (holdings + run sim button)
-            dcc.Loading(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
+            loading_container(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
                 html.Div(id="portfolio-content", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[
                     html.Div("Select or create a portfolio to get started.",
                              className="tac p-60 clr-muted")
@@ -413,17 +422,17 @@ def build_layout():
                 html.Div(className="screener-controls flex-wrap gap-20", children=[
                     html.Div([
                         html.Label("Top N stocks", htmlFor="fb-top-n", className="fs-12 clr-muted"),
-                        dcc.Slider(id="fb-top-n", min=3, max=20, step=1, value=10,
+                        slider(id="fb-top-n", min=3, max=20, step=1, value=10,
                                    marks={3: "3", 5: "5", 10: "10", 15: "15", 20: "20"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
                     ], className="control-width-200"),
                     html.Div([
                         html.Label("Backtest years", htmlFor="fb-years", className="fs-12 clr-muted"),
-                        dcc.Slider(id="fb-years", min=1, max=10, step=1, value=5,
+                        slider(id="fb-years", min=1, max=10, step=1, value=5,
                                    marks={1: "1", 3: "3", 5: "5", 7: "7", 10: "10"},
                                    tooltip={"placement": "bottom", "always_visible": False}),
                     ], className="control-width-200"),
-                    html.Button("▶ Run Backtest", id="fb-run-btn", className="analyze-btn as-end",
+                    button("▶ Run Backtest", id="fb-run-btn", className="analyze-btn as-end",
                                 n_clicks=0),
                     html.Div(id="fb-status", className="as-end fs-13 clr-muted"),
                 ]),
@@ -437,7 +446,7 @@ def build_layout():
                             html.Div(className="d-flex jc-between mb-4", children=[
                                 html.Label(lbl, htmlFor=f"fb-w-{key}", className="fs-13 fw-600"),
                             ]),
-                            dcc.Slider(
+                            slider(
                                 id=f"fb-w-{key}",
                                 min=0, max=40, step=1,
                                 value=round(scorer.ENHANCED_WEIGHTS.get(key, 0) * 100),
@@ -464,7 +473,7 @@ def build_layout():
                          children="Weight sum: 100% ✓"),
             ]),
 
-            dcc.Loading(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
+            loading_container(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
                 html.Div(id="fb-results", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[])
             ]),
             html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "fb-results", "data-loading-label": "Running factor backtest"}),
@@ -484,7 +493,7 @@ def build_layout():
                 html.Div("Settings", className="scorecard-header"),
                 html.Div(className="p-16", children=[
                     html.Label("Jump to setting", htmlFor="profile-section-dropdown", className="fs-13 clr-muted"),
-                    dcc.Dropdown(
+                    select_control(
                         id="profile-section-dropdown",
                         options=[
                             {"label": "Account", "value": "account"},
@@ -502,7 +511,7 @@ def build_layout():
                     ),
                     html.Div(id="profile-section-summary", className="mb-12 text-muted"),
                     html.Label("Theme", htmlFor="profile-theme-dropdown", className="fs-13 clr-muted"),
-                    dcc.Dropdown(
+                    select_control(
                         id="profile-theme-dropdown",
                         options=[
                             {"label": "System", "value": "system"},
@@ -513,7 +522,7 @@ def build_layout():
                         className="max-w-220 mb-16",
                     ),
                     html.Label("Notifications", htmlFor="profile-notifications-checklist", className="fs-13 clr-muted"),
-                    dcc.Checklist(
+                    checkbox_group(
                         id="profile-notifications-checklist",
                         options=[
                             {"label": "Product updates", "value": "product_updates"},
@@ -523,7 +532,7 @@ def build_layout():
                         inline=False,
                         className="mb-16",
                     ),
-                    html.Button("Save settings", id="profile-save-settings-btn", className="analyze-btn", n_clicks=0),
+                    button("Save settings", id="profile-save-settings-btn", className="analyze-btn", n_clicks=0),
                     html.Div(id="profile-settings-msg", className="fs-13 mt-6"),
                 ]),
             ]),
@@ -531,22 +540,22 @@ def build_layout():
                 html.Div("Saved screeners", className="scorecard-header"),
                 html.Div(className="p-16", children=[
                     html.Div(id="profile-saved-screeners-card", className="mb-16"),
-                    dcc.Input(
+                    input_control(
                         id="profile-save-screener-name",
                         type="text",
                         placeholder="Save current screener as…",
                         className="ticker-input max-w-240",
                     ),
                     html.Div(className="d-flex gap-12 flex-wrap mt-12", children=[
-                        html.Button("Save current screener", id="profile-save-screener-btn", className="analyze-btn", n_clicks=0),
-                        dcc.Dropdown(
+                        button("Save current screener", id="profile-save-screener-btn", className="analyze-btn", n_clicks=0),
+                        select_control(
                             id="profile-saved-screener-select",
                             options=[],
                             placeholder="Select saved screener…",
                             clearable=True,
                             className="min-w-240",
                         ),
-                        html.Button("Delete saved screener", id="profile-delete-screener-btn", className="load-btn", n_clicks=0),
+                        button("Delete saved screener", id="profile-delete-screener-btn", variant="danger", className="load-btn", n_clicks=0),
                     ]),
                     html.Div(id="profile-screener-msg", className="fs-13 mt-6"),
                 ]),
@@ -595,7 +604,7 @@ def build_layout():
         # polls the screener tab's scroll position so it can be restored on tab switch
         dcc.Interval(id="screener-scroll-poll-interval", interval=1000, disabled=False),
         dcc.Interval(id="analysis-secondary-interval", interval=1200, disabled=False),
-        dcc.Loading(
+        loading_container(
             id="loading",
             type="circle",
             color=BLUE,

@@ -23,7 +23,14 @@ from codes.app_modules.config import (
 from codes.app_modules.css_classes import tone_class
 from codes.app_modules.design_system.financial import FinancialFormat, delta, metric_value
 from codes.app_modules.design_system.layouts import container, dashboard_grid, mobile_action_bar
-from codes.app_modules.design_system.primitives import card, empty_state, responsive_table
+from codes.app_modules.design_system.primitives import (
+    button,
+    card,
+    empty_state,
+    input_control,
+    responsive_table,
+    table,
+)
 from codes.app_modules.design_system.states import background_job_status, section_error
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
@@ -308,7 +315,7 @@ def render_portfolio_holdings(active, refresh):
                                         className="shares-input-label",
                                         children=[
                                             html.Span(f"Shares of {sym}", className="sr-only"),
-                                            dcc.Input(
+                                            input_control(
                                                 id={
                                                     "type": "shares-edit-input",
                                                     "index": f"{active}|{sym}",
@@ -322,7 +329,7 @@ def render_portfolio_holdings(active, refresh):
                                             ),
                                         ],
                                     ),
-                                    html.Button(
+                                    button(
                                         "✓",
                                         id={"type": "shares-save-btn", "index": f"{active}|{sym}"},
                                         n_clicks=0,
@@ -346,7 +353,7 @@ def render_portfolio_holdings(active, refresh):
                             delta(gain_pct, label="Return"), className=f"pcol-return {gain_class}"
                         ),
                         html.Td(
-                            html.Button(
+                            button(
                                 "✕",
                                 n_clicks=0,
                                 id={"type": "remove-holding-btn", "index": f"{active}|{sym}"},
@@ -382,7 +389,7 @@ def render_portfolio_holdings(active, refresh):
         ready = count >= 10
         actions = mobile_action_bar(
             [
-                html.Button(
+                button(
                     "🚀 Run Simulation" + (f" ({count}/10)" if not ready else ""),
                     id="run-simulation-btn",
                     className="portfolio-action-btn primary",
@@ -589,7 +596,7 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
         className="scorecard",
         children=[
             html.Div("Holdings Performance (10yr backtest period)", className="scorecard-header"),
-            html.Table(
+            table(
                 className="screener-table",
                 children=[
                     html.Thead(
@@ -690,7 +697,7 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
             html.Div("🔍 Weak Link Analysis", className="scorecard-header"),
             html.Div(gap_text, className=f"fs-13 mb-14 px-4 {tone_class(gap_col)}"),
             banner,
-            html.Table(
+            table(
                 className="screener-table",
                 children=[
                     html.Thead(

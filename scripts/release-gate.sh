@@ -14,6 +14,7 @@ PYTHONPATH=. python scripts/check-design-system.py
 node --check assets/iiq.js
 node --check assets/legal_pages.js
 node --check assets/adaptive_loading.js
+node --check assets/design_system.js
 node --check scripts/audit-accessibility.mjs
 mkdir -p /tmp/factorresearch-css
 npx --no-install sass assets/style.scss /tmp/factorresearch-css/style.css
