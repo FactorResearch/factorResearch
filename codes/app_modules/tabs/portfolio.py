@@ -43,6 +43,86 @@ PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
 
 
+def _analysis_score(analysis: dict | None) -> float | None:
+    if not analysis:
+        return None
+    value = (analysis.get("enhanced") or {}).get("composite_score")
+    if value is None:
+        value = analysis.get("composite_score")
+    if value is None:
+        value = (analysis.get("composite") or {}).get("composite_score")
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
+    """Build the summary-first portfolio hierarchy from holdings and cached research."""
+    positions = []
+    for symbol, holding in holdings.items():
+        current_price = holding.get("current_price") or holding.get("price_at_add") or 0
+        current_value = (holding.get("shares") or 0) * current_price
+        entry = analysis_entries.get(symbol) or {}
+        analysis = entry.get("data") or {}
+        positions.append(
+            {
+                "symbol": symbol,
+                "value": current_value,
+                "score": _analysis_score(analysis),
+                "updated_at": entry.get("updated_at") or analysis.get("updated_at"),
+                "sector": analysis.get("sector") or "Unknown",
+            }
+        )
+    total_value = sum(position["value"] for position in positions)
+    for position in positions:
+        position["weight"] = position["value"] / total_value * 100 if total_value else 0
+
+    scored = [position for position in positions if position["score"] is not None]
+    avg_score = sum(position["score"] for position in scored) / len(scored) if scored else 0
+    coverage = len(scored) / len(positions) * 100 if positions else 0
+    largest = max(positions, key=lambda position: position["weight"], default=None)
+    weak_link = min(scored, key=lambda position: position["score"], default=None)
+    if coverage < 60 or avg_score < 45:
+        health = "Needs review"
+    elif coverage < 100 or avg_score < 65:
+        health = "Mixed"
+    else:
+        health = "Strong"
+
+    risks = []
+    if largest and largest["weight"] >= 25:
+        risks.append(
+            f"{largest['symbol']} is {largest['weight']:.1f}% of current value, creating concentration risk."
+        )
+    if coverage < 100:
+        risks.append(f"Research coverage is {coverage:.0f}%; refresh unscored holdings before relying on the aggregate.")
+    if len(positions) < 10:
+        risks.append(f"Only {len(positions)} holdings are present, so diversification may be limited.")
+    if weak_link:
+        risks.append(
+            f"{weak_link['symbol']} is the weakest researched holding at {weak_link['score']:.0f}/100."
+        )
+    if not risks:
+        risks.append("No critical concentration or research-coverage warning is active.")
+
+    sectors = {position["sector"] for position in positions if position["sector"] != "Unknown"}
+    freshness = max(
+        (str(position["updated_at"]) for position in positions if position["updated_at"]),
+        default="Unavailable",
+    )
+    return {
+        "health": health,
+        "average_score": avg_score,
+        "coverage": coverage,
+        "largest": largest,
+        "weak_link": weak_link,
+        "risks": risks,
+        "sector_count": len(sectors),
+        "freshness": freshness,
+    }
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Portfolio callbacks
 # ══════════════════════════════════════════════════════════════════════════════
@@ -237,6 +317,7 @@ def render_portfolio_holdings(active, refresh):
         # ── Summary cards ──
         analysis_entries = db.get_analysis_entries(holdings)
         analyses = {symbol: (analysis_entries.get(symbol) or {}).get("data") for symbol in holdings}
+        health = portfolio_health_snapshot(holdings, analysis_entries)
         scores = [
             analysis["composite_score"]
             for analysis in analyses.values()
@@ -260,6 +341,76 @@ def render_portfolio_holdings(active, refresh):
             className="portfolio-summary portfolio-design-engine-reference",
             minimum="sm",
             **{"data-design-system": "issue-075"},
+        )
+        weak_link = health["weak_link"]
+        largest = health["largest"]
+        portfolio_health = html.Section(
+            className="portfolio-health",
+            **{"aria-labelledby": "portfolio-health-title"},
+            children=[
+                html.Div(
+                    className="portfolio-health-lead",
+                    children=[
+                        html.Div("Portfolio research snapshot", className="portfolio-health-kicker"),
+                        html.H3(health["health"], id="portfolio-health-title"),
+                        html.P(
+                            f"{health['coverage']:.0f}% research coverage across {count} holdings; "
+                            f"{health['sector_count']} known sectors.",
+                            className="portfolio-health-copy",
+                        ),
+                    ],
+                ),
+                html.Div(
+                    className="portfolio-health-metrics",
+                    children=[
+                        html.Div(
+                            [html.Strong(f"{health['average_score']:.0f}"), html.Span("Health score")],
+                            className="portfolio-health-metric",
+                        ),
+                        html.Div(
+                            [html.Strong(f"{largest['weight']:.1f}%" if largest else "—"), html.Span("Largest weight")],
+                            className="portfolio-health-metric",
+                        ),
+                        html.Div(
+                            [html.Strong(health["freshness"]), html.Span("Latest research")],
+                            className="portfolio-health-metric",
+                        ),
+                    ],
+                ),
+                html.Div(
+                    className="portfolio-observations",
+                    children=[
+                        html.Div(
+                            [
+                                html.Span("Weak link", className="portfolio-observation-label"),
+                                html.A(
+                                    f"{weak_link['symbol']} · {weak_link['score']:.0f}/100",
+                                    href=f"#portfolio-holding-{weak_link['symbol']}",
+                                )
+                                if weak_link
+                                else html.Span("Run research to identify it"),
+                            ],
+                            className="portfolio-observation portfolio-observation--critical",
+                        ),
+                        *[
+                            html.Div(
+                                [
+                                    html.Span("Risk", className="portfolio-observation-label"),
+                                    html.Span(risk),
+                                ],
+                                className="portfolio-observation",
+                                role="alert" if index == 0 else None,
+                            )
+                            for index, risk in enumerate(health["risks"][:3])
+                        ],
+                    ],
+                ),
+                html.P(
+                    "Why this matters: review the weakest holding and concentration warning before charts or simulation. "
+                    "These are research observations, not personal financial advice.",
+                    className="portfolio-health-guidance",
+                ),
+            ],
         )
         # ── Holdings table ──
         rows = []
@@ -360,7 +511,8 @@ def render_portfolio_holdings(active, refresh):
                                 className="portfolio-remove-btn",
                             )
                         ),
-                    ]
+                    ],
+                    id=f"portfolio-holding-{sym}",
                 )
             )
         table = responsive_table(
@@ -399,7 +551,7 @@ def render_portfolio_holdings(active, refresh):
             ]
         )
         actions.className = "ds-mobile-actions portfolio-actions mt-16 d-flex gap-8"
-        body = html.Div([summary_cards, actions, table], className="portfolio-body")
+        body = html.Div([portfolio_health, summary_cards, actions, table], className="portfolio-body")
     return container([header, body], size="wide", className="portfolio-reference-layout")
 
 

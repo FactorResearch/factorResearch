@@ -1847,6 +1847,23 @@ body.light .analysis-jump-dot {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.analysis-decision-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.analysis-decision-grid .analysis-summary-point {
+  min-height: 126px;
+}
+
+.analysis-critical-warning {
+  padding: 13px 16px;
+  border: 1px solid color-mix(in srgb, var(--fr-danger) 55%, transparent);
+  border-radius: var(--fr-radius-card);
+  background: rgba(202, 95, 87, 0.16);
+  color: var(--fr-text);
+}
+
 .analysis-mini-metric,
 .analysis-summary-point {
   background: var(--fr-card);
@@ -1964,6 +1981,12 @@ body.light .analysis-jump-dot {
   display: inline;
 }
 
+.analysis-jump-link[aria-current=location] {
+  border-color: color-mix(in srgb, var(--fr-accent-soft) 65%, transparent);
+  background: color-mix(in srgb, var(--fr-accent-soft) 12%, transparent);
+  color: var(--fr-text);
+}
+
 .analysis-disclosure-body {
   width: 100%;
   min-width: 0;
@@ -2075,6 +2098,7 @@ body.light .analysis-jump-dot {
   }
   .analysis-hero,
   .analysis-mini-metrics,
+  .analysis-decision-grid,
   .analysis-summary-points,
   .analysis-disclosure-metrics,
   .analysis-card-grid.analysis-card-grid--three {
@@ -2090,6 +2114,7 @@ body.light .analysis-jump-dot {
   }
   .analysis-hero,
   .analysis-mini-metrics,
+  .analysis-decision-grid,
   .analysis-summary-points,
   .analysis-disclosure-metrics,
   .analysis-card-grid.analysis-card-grid--two,
@@ -2653,6 +2678,89 @@ body.light .portfolio-delete-btn {
   color: var(--fr-text-muted);
   text-transform: uppercase;
 }
+#tab-portfolio .portfolio-health {
+  background: var(--fr-card);
+  border: 1px solid var(--fr-border);
+  box-shadow: var(--fr-shadow-sm);
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: minmax(190px, 0.65fr) minmax(280px, 0.9fr) minmax(320px, 1.4fr);
+  gap: 18px;
+  padding: 22px;
+  margin-bottom: 14px;
+  background: radial-gradient(circle at top left, color-mix(in srgb, var(--fr-accent-soft) 12%, transparent), transparent 32%), var(--fr-surface);
+}
+#tab-portfolio .portfolio-health-kicker,
+#tab-portfolio .portfolio-observation-label {
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fr-text-muted);
+  text-transform: uppercase;
+}
+#tab-portfolio .portfolio-health-lead h3 {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 7px 0;
+}
+#tab-portfolio .portfolio-health-copy,
+#tab-portfolio .portfolio-health-guidance {
+  margin: 0;
+  color: var(--fr-text-dim);
+  line-height: 1.55;
+}
+#tab-portfolio .portfolio-health-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+#tab-portfolio .portfolio-health-metric {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--fr-border);
+  border-radius: var(--fr-radius-card);
+}
+#tab-portfolio .portfolio-health-metric strong {
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+#tab-portfolio .portfolio-health-metric span {
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--fr-text-muted);
+}
+#tab-portfolio .portfolio-observations {
+  display: grid;
+  gap: 8px;
+}
+#tab-portfolio .portfolio-observation {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  gap: 10px;
+  padding: 9px 11px;
+  border-left: 3px solid var(--fr-warning);
+  background: color-mix(in srgb, var(--fr-warning) 7%, transparent);
+}
+#tab-portfolio .portfolio-observation--critical {
+  border-left-color: var(--fr-danger);
+  background: rgba(202, 95, 87, 0.16);
+}
+#tab-portfolio .portfolio-observation a {
+  color: var(--fr-link);
+  font-weight: 700;
+}
+#tab-portfolio .portfolio-health-guidance {
+  grid-column: 1/-1;
+  padding-top: 12px;
+  border-top: 1px solid var(--fr-border);
+  font-size: 13px;
+}
 #tab-portfolio .portfolio-table-wrap {
   background: var(--fr-card);
   border: 1px solid var(--fr-border);
@@ -2909,6 +3017,13 @@ body.light .risk-row .metric_cell {
   .portfolio-add-controls {
     flex-direction: column;
     align-items: stretch;
+  }
+  #tab-portfolio .portfolio-health {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+  #tab-portfolio .portfolio-health-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   #tab-portfolio .portfolio-header {
     align-items: flex-start;

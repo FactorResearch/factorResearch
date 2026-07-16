@@ -26,6 +26,72 @@ def _clamp_pct(value) -> float:
         return 0.0
 
 
+def _normalized_score(payload: dict, *keys: str) -> float | None:
+    """Return a defensively normalized 0-100 score from an analysis payload."""
+    for key in keys:
+        value = payload.get(key)
+        if value is None:
+            continue
+        try:
+            score = float(value)
+            maximum = float(payload.get("total_max") or 100)
+        except (TypeError, ValueError):
+            continue
+        if maximum <= 0:
+            continue
+        return min(max(score / maximum * 100, 0), 100)
+    return None
+
+
+def analysis_score_drivers(data: dict) -> tuple[list[tuple[str, float]], list[tuple[str, float]]]:
+    """Rank the strongest and weakest research factors for first-view disclosure."""
+    enhanced = data.get("enhanced") or {}
+    candidates = {
+        "Valuation": _normalized_score(
+            enhanced, "graham_pct", "valuation_score"
+        )
+        or _normalized_score(data.get("graham") or {}, "total_score", "score"),
+        "Quality": _normalized_score(enhanced, "quality_pct")
+        or _normalized_score(data.get("quality") or {}, "total_score", "score"),
+        "Profitability": _normalized_score(
+            data.get("profitability") or {}, "profitability_score", "total_score"
+        ),
+        "Momentum": _normalized_score(enhanced, "momentum_pct")
+        or _normalized_score(data.get("momentum") or {}, "total_score", "score"),
+        "Growth": _normalized_score(enhanced, "growth_quality_pct")
+        or _normalized_score(
+            data.get("growth_quality") or {}, "growth_quality_score", "total_score"
+        ),
+        "Cash quality": _normalized_score(
+            data.get("fcf_quality") or {}, "fcf_quality_score", "total_score"
+        ),
+    }
+    ranked = sorted(
+        ((label, score) for label, score in candidates.items() if score is not None),
+        key=lambda item: (-item[1], item[0]),
+    )
+    if not ranked:
+        return [], []
+    return ranked[:2], sorted(ranked, key=lambda item: (item[1], item[0]))[:2]
+
+
+def critical_analysis_warnings(data: dict) -> list[str]:
+    """Keep material research caveats visible outside expandable methodology."""
+    warnings = []
+    altman = str((data.get("altman") or {}).get("zone_label") or "").lower()
+    f_score = (data.get("piotroski") or {}).get("f_score")
+    if "distress" in altman:
+        warnings.append("Balance-sheet model is in the Altman distress zone.")
+    if f_score is not None and f_score <= 3:
+        warnings.append(f"Accounting strength is weak at F-Score {f_score}/9.")
+    comp = (data.get("enhanced") or {}).get("composite_score")
+    if comp is None:
+        comp = data.get("composite_score")
+    if comp is not None and comp < 40:
+        warnings.append(f"Composite score is low at {comp:.0f}/100.")
+    return warnings
+
+
 def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure:
     """Render a six-axis score profile; outward always means stronger."""
     import math
@@ -1345,6 +1411,10 @@ def _build_analysis_content(data: dict) -> list:
                     id=f"{section_id}-disclosure",
                     className="analysis-disclosure",
                     open=open_by_default,
+                    **{
+                        "data-persist-disclosure": "true",
+                        "data-disclosure-key": f"{symbol}:{section_id}",
+                    },
                     children=[
                         html.Summary(
                             className="analysis-disclosure-summary",
@@ -1354,7 +1424,13 @@ def _build_analysis_content(data: dict) -> list:
                                     className="analysis-disclosure-copy",
                                     children=[
                                         html.Div(title, className="analysis-disclosure-title"),
-                                        html.Div(summary, className="analysis-disclosure-text"),
+                                        html.Div(
+                                            [
+                                                html.Strong("Why this matters: "),
+                                                summary,
+                                            ],
+                                            className="analysis-disclosure-text",
+                                        ),
                                     ],
                                 ),
                                 html.Div(
@@ -1397,6 +1473,12 @@ def _build_analysis_content(data: dict) -> list:
         lead_copy = "Mixed setup. Worth a quick review, but not an obvious yes on first pass."
     else:
         lead_copy = "Current setup is weak on a first-pass read. Keep it on the watchlist only if a specific thesis exists."
+
+    positive_drivers, weak_drivers = analysis_score_drivers(data)
+    strongest = positive_drivers[0] if positive_drivers else ("Not enough data", 0)
+    weakest = weak_drivers[0] if weak_drivers else ("Not enough data", 0)
+    warnings = critical_analysis_warnings(data)
+    risk_copy = warnings[0] if warnings else "No critical model warning is active; review the Risk section for fragility."
 
     overview = html.Div(
         className="analysis-overview-shell",
@@ -1469,6 +1551,36 @@ def _build_analysis_content(data: dict) -> list:
                 ],
             ),
             html.Div(
+                className="analysis-decision-grid",
+                children=[
+                    _summary_point("Primary conclusion", lead_copy),
+                    _summary_point(
+                        "Strongest driver",
+                        f"{strongest[0]} leads the factor set at {strongest[1]:.0f}/100.",
+                    ),
+                    _summary_point(
+                        "Weakest factor",
+                        f"{weakest[0]} is the weakest measured factor at {weakest[1]:.0f}/100.",
+                    ),
+                    _summary_point("Key risk", risk_copy),
+                    _summary_point(
+                        "Data freshness",
+                        f"Model inputs updated {_fmt_updated(data.get('updated_at'))}.",
+                    ),
+                ],
+            ),
+            *[
+                html.Div(
+                    [
+                        html.Strong("Critical warning: "),
+                        html.Span(warning),
+                    ],
+                    className="analysis-critical-warning",
+                    role="alert",
+                )
+                for warning in warnings
+            ],
+            html.Div(
                 className="analysis-summary-points",
                 children=[
                     _summary_point(
@@ -1476,7 +1588,7 @@ def _build_analysis_content(data: dict) -> list:
                         f"P/E {_fmt_number(g.get('pe'), 1, 'x')}, P/B {_fmt_number(g.get('pb'), 2, 'x')}, moat grade {b_data.get('grade', 'N/A')}.",
                     ),
                     _summary_point(
-                        "Accounting",
+                        "Financial strength",
                         f"F-Score {p_data.get('f_score', 'N/A')}/9 and Altman {a_data.get('zone_label', 'N/A')} set the accounting tone.",
                     ),
                     _summary_point(
@@ -1575,10 +1687,10 @@ def _build_analysis_content(data: dict) -> list:
         ),
         (
             "analysis-accounting",
-            "Accounting",
+            "Financial strength",
             _section(
                 "analysis-accounting",
-                "Accounting",
+                "Financial strength",
                 "Keep accounting separate from the overview: cash quality, balance-sheet safety, and reporting quality live here.",
                 [
                     (

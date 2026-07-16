@@ -25,6 +25,62 @@
     if (target) target.focus();
   }
 
+  const disclosureStorageKey = 'fr:analysis-disclosures:v1';
+
+  function readDisclosureState() {
+    try {
+      return JSON.parse(window.sessionStorage.getItem(disclosureStorageKey) || '{}');
+    } catch (_error) {
+      return {};
+    }
+  }
+
+  function restoreDisclosures(root) {
+    const state = readDisclosureState();
+    const scope = root && root.querySelectorAll ? root : document;
+    scope.querySelectorAll('details[data-persist-disclosure="true"]').forEach(function (details) {
+      const key = details.dataset.disclosureKey;
+      if (key && Object.prototype.hasOwnProperty.call(state, key)) {
+        details.open = Boolean(state[key]);
+      }
+    });
+  }
+
+  function syncSectionNavigation() {
+    const activeId = window.location.hash.slice(1);
+    document.querySelectorAll('.analysis-jump-link').forEach(function (link) {
+      if (link.getAttribute('href') === '#' + activeId) {
+        link.setAttribute('aria-current', 'location');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  document.addEventListener('toggle', function (event) {
+    const details = event.target.closest && event.target.closest('details[data-persist-disclosure="true"]');
+    if (!details) return;
+    const key = details.dataset.disclosureKey;
+    if (!key) return;
+    const state = readDisclosureState();
+    state[key] = details.open;
+    try {
+      window.sessionStorage.setItem(disclosureStorageKey, JSON.stringify(state));
+    } catch (_error) {
+      // Storage can be disabled; native disclosure behavior remains available.
+    }
+  }, true);
+
+  window.addEventListener('hashchange', syncSectionNavigation);
+  window.addEventListener('popstate', function () {
+    restoreDisclosures(document);
+    syncSectionNavigation();
+  });
+  window.addEventListener('pageshow', function () {
+    restoreDisclosures(document);
+    syncSectionNavigation();
+  });
+
   document.addEventListener('keydown', function (event) {
     const overlay = visibleOverlay();
     if (!overlay) return;
@@ -62,6 +118,8 @@
       if (target && target.isConnected) target.focus();
     });
     syncOverlay();
+    restoreDisclosures(document);
+    syncSectionNavigation();
   }).observe(document.documentElement, {
     subtree: true,
     childList: true,
@@ -70,8 +128,14 @@
   });
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', syncOverlay);
+    document.addEventListener('DOMContentLoaded', function () {
+      syncOverlay();
+      restoreDisclosures(document);
+      syncSectionNavigation();
+    });
   } else {
     syncOverlay();
+    restoreDisclosures(document);
+    syncSectionNavigation();
   }
 })();

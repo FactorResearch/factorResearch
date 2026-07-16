@@ -119,6 +119,95 @@ body.light {
     }
   }
 
+  .portfolio-health {
+    @include panel;
+    display: grid;
+    grid-template-columns: minmax(190px, 0.65fr) minmax(280px, 0.9fr) minmax(320px, 1.4fr);
+    gap: 18px;
+    padding: 22px;
+    margin-bottom: 14px;
+    background:
+      radial-gradient(circle at top left, color-mix(in srgb, var(--fr-accent-soft) 12%, transparent), transparent 32%),
+      var(--fr-surface);
+  }
+
+  .portfolio-health-kicker,
+  .portfolio-observation-label {
+    @include mono(11px, 600);
+    color: var(--fr-text-muted);
+    text-transform: uppercase;
+  }
+
+  .portfolio-health-lead h3 {
+    @include heading(32px, 800);
+    margin: 7px 0;
+  }
+
+  .portfolio-health-copy,
+  .portfolio-health-guidance {
+    margin: 0;
+    color: var(--fr-text-dim);
+    line-height: 1.55;
+  }
+
+  .portfolio-health-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .portfolio-health-metric {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--fr-border);
+    border-radius: var(--fr-radius-card);
+
+    strong {
+      font-size: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    span {
+      margin-top: 5px;
+      font-size: 11px;
+      color: var(--fr-text-muted);
+    }
+  }
+
+  .portfolio-observations {
+    display: grid;
+    gap: 8px;
+  }
+
+  .portfolio-observation {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px 11px;
+    border-left: 3px solid var(--fr-warning);
+    background: color-mix(in srgb, var(--fr-warning) 7%, transparent);
+
+    &--critical {
+      border-left-color: var(--fr-danger);
+      background: $red-glow;
+    }
+
+    a {
+      color: var(--fr-link);
+      font-weight: 700;
+    }
+  }
+
+  .portfolio-health-guidance {
+    grid-column: 1 / -1;
+    padding-top: 12px;
+    border-top: 1px solid var(--fr-border);
+    font-size: 13px;
+  }
+
   .portfolio-table-wrap {
     @include panel;
     width: 100%;
@@ -391,6 +480,15 @@ body.light .risk-row .metric_cell {
   }
 
   #tab-portfolio {
+    .portfolio-health {
+      grid-template-columns: 1fr;
+      padding: 18px;
+    }
+
+    .portfolio-health-metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .portfolio-header {
       align-items: flex-start;
       flex-direction: column;

@@ -269,6 +269,24 @@ body.light {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.analysis-decision-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
+  gap: 12px;
+
+  .analysis-summary-point {
+    min-height: 126px;
+  }
+}
+
+.analysis-critical-warning {
+  padding: 13px 16px;
+  border: 1px solid color-mix(in srgb, var(--fr-danger) 55%, transparent);
+  border-radius: var(--fr-radius-card);
+  background: $red-glow;
+  color: var(--fr-text);
+}
+
 .analysis-mini-metric,
 .analysis-summary-point {
   @include panel;
@@ -356,6 +374,12 @@ body.light {
       display: inline;
     }
   }
+}
+
+.analysis-jump-link[aria-current='location'] {
+  border-color: color-mix(in srgb, var(--fr-accent-soft) 65%, transparent);
+  background: color-mix(in srgb, var(--fr-accent-soft) 12%, transparent);
+  color: var(--fr-text);
 }
 
 .analysis-disclosure-body {
@@ -487,6 +511,7 @@ body.light {
 
   .analysis-hero,
   .analysis-mini-metrics,
+  .analysis-decision-grid,
   .analysis-summary-points,
   .analysis-disclosure-metrics,
   .analysis-card-grid.analysis-card-grid--three {
@@ -507,6 +532,7 @@ body.light {
 
   .analysis-hero,
   .analysis-mini-metrics,
+  .analysis-decision-grid,
   .analysis-summary-points,
   .analysis-disclosure-metrics,
   .analysis-card-grid.analysis-card-grid--two,
