@@ -3872,6 +3872,67 @@ body.light .app-footer {
   font-size: var(--fr-text-lg);
 }
 
+.ds-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fr-space-2);
+  min-height: var(--fr-target-minimum);
+}
+
+.ds-pending .ds-spinner {
+  display: inline-block;
+}
+
+.ds-skeleton-frame {
+  min-height: 8rem;
+  padding: var(--fr-space-4);
+  border: var(--fr-border-thin) solid var(--fr-color-border-default);
+  border-radius: var(--fr-radius-lg);
+}
+
+.ds-skeleton-frame--table {
+  min-height: 18rem;
+  display: grid;
+  align-content: start;
+  gap: var(--fr-space-3);
+}
+
+.ds-skeleton-frame--chart {
+  min-height: var(--fr-chart-height-md);
+  display: grid;
+  align-content: center;
+}
+
+.ds-stage {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--fr-space-2);
+  align-items: center;
+}
+
+.ds-stage .ds-progress {
+  grid-column: 1/-1;
+}
+
+.ds-stage__detail, .ds-job__id {
+  color: var(--fr-color-text-muted);
+  font: var(--fr-text-xs)/var(--fr-text-line-body) var(--fr-font-family-numeric);
+}
+
+.ds-job {
+  display: grid;
+  gap: var(--fr-space-3);
+  padding: var(--fr-space-4);
+  background: var(--fr-color-surface-raised);
+  border: var(--fr-border-thin) solid var(--fr-color-border-default);
+  border-radius: var(--fr-radius-lg);
+}
+
+.ds-error__technical {
+  margin-top: var(--fr-space-2);
+  color: var(--fr-color-text-muted);
+}
+
 .ds-state {
   padding: var(--fr-space-6);
   text-align: center;

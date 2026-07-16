@@ -58,7 +58,11 @@ try {
   for (const viewport of viewports) {
     await request('POST', `${base}/window/rect`, viewport);
     for (const theme of themes) {
-      await execute(`document.querySelector('#theme-${theme}').click()`);
+      await execute(`
+        document.documentElement.classList.toggle('light', ${theme === 'light'});
+        document.body.classList.toggle('light', ${theme === 'light'});
+        document.documentElement.dataset.theme = ${JSON.stringify(theme)};
+      `);
       for (const tab of tabs) {
         await execute(`document.querySelector(${JSON.stringify(tab.selector)}).click()`);
         await new Promise((resolve) => setTimeout(resolve, 350));

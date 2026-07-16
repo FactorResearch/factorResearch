@@ -1,20 +1,24 @@
 """Factor Lab tab callbacks."""
 
-from math import isclose
+import json
 import time as _time
+from math import isclose
 
+import dash
 from dash import Input, Output, State, callback, dcc, html
 
 from codes.app_modules.analysis_ui import _chart_layout
+from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.config import AMBER, BLUE, GREEN, MUTED, RED, TEXT
+from codes.app_modules.css_classes import tone_class
+from codes.app_modules.design_system.primitives import empty_state
+from codes.app_modules.design_system.states import background_job_status, section_error
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
-from codes.engine import scorer
-from codes.services import permissions
-from codes.services import product_analytics
-from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
-from codes.app_modules.css_classes import tone_class
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
+from codes.engine import scorer
+from codes.services import performance_metrics, permissions, product_analytics
+from codes.services.adaptive_loading import AsyncStatus, jobs
 
 # ── Factor Lab callbacks ─────────────────────────────────────────────────────
 
@@ -53,47 +57,40 @@ def update_weight_sum(*values):
                  "color": color, "fontStyle": "italic"}
 
 
-@callback(
-    Output("fb-results", "children"),
-    Output("fb-status",  "children"),
-    Output("upgrade-funnel-store", "data", allow_duplicate=True),
-    Input("fb-run-btn",  "n_clicks"),
-    State("fb-top-n",    "value"),
-    State("fb-years",    "value"),
-    *[State(f"fb-w-{k}", "value") for k in _FB_WEIGHT_KEYS],
-    prevent_initial_call=True,
-)
-def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
+def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _skip_guards=False):
+    """Execute a backtest; the UI submits this helper as a resumable job."""
     if not n_clicks:
         return [], "", None
-    try:
-        check_rate_limit("backtest", calls=3, period_seconds=60)
-    except RateLimited as rl:
-        return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger p-20")], "⏳ Rate limited", None
+    if not _skip_guards:
+        try:
+            check_rate_limit("backtest", calls=3, period_seconds=60)
+        except RateLimited as rl:
+            return [html.Div(f"⏳ Backtest rate limited — try again in {rl.retry_after}s.", className="text-danger p-20")], "⏳ Rate limited", None
 
     from codes.engine import strategy_cache, user_strategy
 
-    custom_weights = dict(zip(_FB_WEIGHT_KEYS, (v or 0 for v in weight_vals)))
+    custom_weights = dict(zip(_FB_WEIGHT_KEYS, (v or 0 for v in weight_vals), strict=True))
 
     # Layer 3: persist this user's weight config
-    uid = get_user_id()
+    uid = _uid or get_user_id()
     user_strategy.set_user_weights(uid, custom_weights)
-    try:
-        access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
-        if not access.allowed:
-            product_analytics.track_event(
-                uid,
-                "upgrade_viewed",
-                {"feature": "backtest", "source": "factor_lab_lock", "plan": "premium"},
-            )
-            return [FeatureLockedModal(feature="backtest", source="factor_lab_lock")], "🔒 Premium required", open_upgrade_funnel(
-                feature="backtest",
-                feature_label="Historical backtesting",
-                reason=access.message,
-                source="factor_lab_lock",
-            )
-    except Exception:
-        return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable", None
+    if not _skip_guards:
+        try:
+            access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
+            if not access.allowed:
+                product_analytics.track_event(
+                    uid,
+                    "upgrade_viewed",
+                    {"feature": "backtest", "source": "factor_lab_lock", "plan": "premium"},
+                )
+                return [FeatureLockedModal(feature="backtest", source="factor_lab_lock")], "🔒 Premium required", open_upgrade_funnel(
+                    feature="backtest",
+                    feature_label="Historical backtesting",
+                    reason=access.message,
+                    source="factor_lab_lock",
+                )
+        except Exception:
+            return [html.Div("🔒 Billing unavailable — please try later.", className="text-danger p-20")], "🔒 Billing unavailable", None
 
     # Layer 4: cache-aware backtest, reused across identical configs
     product_analytics.track_event(
@@ -110,6 +107,10 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
             years=years or 5,
         )
     except Exception as e:
+        duration_ms = (_time.perf_counter() - started_at) * 1000
+        performance_metrics.record_ui_operation(
+            "factor-backtest", duration_ms, outcome="error", section="factor-results"
+        )
         product_analytics.track_event(
             uid,
             "backtest_failed",
@@ -123,6 +124,10 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         return [html.Div("❌ Internal backtest error", className="text-danger p-20")], "❌ Error", None
 
     if result.get("error"):
+        duration_ms = (_time.perf_counter() - started_at) * 1000
+        performance_metrics.record_ui_operation(
+            "factor-backtest", duration_ms, outcome="error", section="factor-results"
+        )
         product_analytics.track_event(
             uid,
             "backtest_failed",
@@ -148,11 +153,107 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals):
         },
     )
     cache_note = " (cached)" if result.get("cache_hit") else ""
+    duration_ms = (_time.perf_counter() - started_at) * 1000
+    performance_metrics.record_ui_operation(
+        "factor-backtest",
+        duration_ms,
+        section="factor-results",
+        first_useful_ms=duration_ms,
+    )
     return _render_fb_results(result), (
         f"✅ {result['n_analysed']} stocks scored · "
         f"top {result['top_n']} selected · "
         f"{result['years']}yr backtest{cache_note}"
     ), None
+
+
+@callback(
+    Output("fb-results", "children"),
+    Output("fb-status", "children"),
+    Output("factor-job-store", "data"),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Input("fb-run-btn", "n_clicks"),
+    State("fb-top-n", "value"),
+    State("fb-years", "value"),
+    *[State(f"fb-w-{k}", "value") for k in _FB_WEIGHT_KEYS],
+    prevent_initial_call=True,
+)
+def start_factor_backtest_job(n_clicks, top_n, years, *weight_vals):
+    if not n_clicks:
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    uid = get_user_id()
+    try:
+        access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
+    except Exception:
+        return section_error("Billing is temporarily unavailable."), "Billing unavailable", dash.no_update, None
+    if not access.allowed:
+        result, status, upgrade = run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals)
+        return result, status, dash.no_update, upgrade
+    try:
+        check_rate_limit("backtest", calls=3, period_seconds=60)
+    except RateLimited as rl:
+        return section_error(f"Backtest rate limited. Try again in {rl.retry_after}s."), "Rate limited", dash.no_update, None
+
+    weights = dict(zip(_FB_WEIGHT_KEYS, (value or 0 for value in weight_vals), strict=True))
+    dedupe_key = json.dumps(
+        {"weights": weights, "top_n": top_n or 10, "years": years or 5},
+        sort_keys=True,
+    )
+
+    def work(context):
+        context.update("Scoring available companies", completed_units=1)
+        context.raise_if_cancelled()
+        result = run_factor_backtest_cb(
+            1, top_n, years, *weight_vals, _uid=uid, _skip_guards=True
+        )
+        context.update("Comparing strategy paths", completed_units=2)
+        return result
+
+    snapshot = jobs.submit(
+        operation="factor-backtest",
+        owner=uid,
+        dedupe_key=dedupe_key,
+        work=work,
+        total_units=2,
+    )
+    return (
+        background_job_status(snapshot.public_dict(), cancel_id="factor-job-cancel"),
+        snapshot.stage,
+        snapshot.public_dict(),
+        None,
+    )
+
+
+@callback(
+    Output("fb-results", "children", allow_duplicate=True),
+    Output("fb-status", "children", allow_duplicate=True),
+    Output("factor-job-store", "data", allow_duplicate=True),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Input("factor-job-interval", "n_intervals"),
+    Input("factor-job-cancel", "n_clicks"),
+    State("factor-job-store", "data"),
+    prevent_initial_call=True,
+)
+def poll_factor_backtest_job(_tick, cancel_clicks, stored):
+    if not stored or not stored.get("job_id"):
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    uid = get_user_id()
+    job_id = stored["job_id"]
+    if dash.ctx.triggered_id == "factor-job-cancel" and cancel_clicks:
+        jobs.cancel(job_id, owner=uid)
+    snapshot = jobs.snapshot(job_id, owner=uid)
+    if snapshot is None:
+        return section_error("This backtest is no longer available."), "Unavailable", None, None
+    public = snapshot.public_dict()
+    if snapshot.status == AsyncStatus.SUCCESS:
+        result = jobs.result(job_id, owner=uid)
+        if result is not None:
+            return result[0], result[1], public, result[2]
+    if snapshot.status == AsyncStatus.ERROR:
+        return section_error("The backtest failed. You can safely run it again.", technical_id=snapshot.error_code), "Failed", public, None
+    if snapshot.status == AsyncStatus.CANCELLED:
+        return empty_state("Backtest cancelled", "Your factor weights remain saved."), "Cancelled", public, None
+    return background_job_status(public, cancel_id="factor-job-cancel"), snapshot.stage, public, None
 
 
 def _render_fb_results(r: dict) -> list:

@@ -1,16 +1,18 @@
 """Rendering helpers for the stock analysis view and shared charts."""
 
 from datetime import datetime
-from dash import dcc, html
-import plotly.graph_objects as go
 from urllib.parse import quote
 
-from codes.services import chart_service
+import plotly.graph_objects as go
+from dash import dcc, html
+
 from codes.app_modules.company_identity import company_logo
 from codes.app_modules.design_system.layouts import analysis_grid, container
 from codes.app_modules.design_system.schemas import SectionDefinition
+from codes.app_modules.design_system.states import chart_skeleton
+from codes.services import chart_service
 
-from .config import AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE, _MOAT_TOOLTIPS
+from .config import _MOAT_TOOLTIPS, AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE
 from .css_classes import tone_class
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
@@ -1730,10 +1732,17 @@ def _build_analysis_content(data: dict) -> list:
                     [
                         dcc.Loading(
                             type="circle",
+                            delay_show=250,
+                            delay_hide=200,
+                            show_initially=False,
                             children=html.Div(
-                                "Expand Charts to render historical figures.",
+                                [
+                                    chart_skeleton(label="Historical charts are deferred"),
+                                    html.P("Expand Charts to render historical figures."),
+                                ],
                                 id="analysis-charts-content",
                                 className="analysis-charts-placeholder",
+                                **{"aria-busy": "false", "data-adaptive-loading": "true"},
                             ),
                         ),
                         html.Div(id="analysis-chart-resize-trigger", className="d-none"),

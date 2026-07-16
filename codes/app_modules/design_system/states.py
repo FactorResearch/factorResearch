@@ -6,6 +6,100 @@ from .primitives import alert, button, empty_state, progress, skeleton, status_r
 from .schemas import SectionState, UIState
 
 
+def inline_pending_indicator(label: str):
+    return status_region(
+        [html.Span(className="ds-spinner", **{"aria-hidden": "true"}), label],
+        className="ds-pending",
+        **{"aria-busy": "true"},
+    )
+
+
+def card_skeleton(*, label: str = "Loading card"):
+    return html.Div(
+        skeleton(lines=4, label=label), className="ds-skeleton-frame ds-skeleton-frame--card"
+    )
+
+
+def table_skeleton(*, rows: int = 5, label: str = "Loading table rows"):
+    return html.Div(
+        [skeleton(lines=1, label=label) for _ in range(max(1, rows))],
+        className="ds-skeleton-frame ds-skeleton-frame--table",
+        **{"aria-hidden": "true"},
+    )
+
+
+def chart_skeleton(*, label: str = "Loading chart"):
+    return html.Div(
+        [skeleton(lines=2, label=label), html.P("Chart area reserved")],
+        className="ds-skeleton-frame ds-skeleton-frame--chart",
+        **{"aria-hidden": "true"},
+    )
+
+
+def stage_progress(stage: str, *, completed: int | None = None, total: int | None = None):
+    value = round(completed / total * 100) if completed is not None and total else None
+    detail = f"{completed} of {total}" if completed is not None and total else "In progress"
+    return html.Div(
+        [
+            html.Strong(stage),
+            html.Span(detail, className="ds-stage__detail"),
+            progress(value, label=stage),
+        ],
+        className="ds-stage",
+        **{"aria-busy": "true"},
+    )
+
+
+def background_job_status(snapshot: dict, *, cancel_id=None):
+    status = str(snapshot.get("status", "loading"))
+    cancel = (
+        button("Cancel", id=cancel_id, variant="secondary")
+        if cancel_id and status in {"loading", "progress"}
+        else None
+    )
+    return html.Div(
+        [
+            html.Div(f"Job {snapshot.get('job_id', '')}", className="ds-job__id"),
+            stage_progress(
+                str(snapshot.get("stage", "Working")),
+                completed=snapshot.get("completed_units"),
+                total=snapshot.get("total_units"),
+            ),
+            cancel,
+        ],
+        className=f"ds-job ds-job--{status}",
+        **{"data-job-id": snapshot.get("job_id", "")},
+    )
+
+
+def section_error(message: str, *, retry_id=None, technical_id: str | None = None):
+    technical = (
+        html.Details(
+            [html.Summary("Technical details"), html.Code(technical_id)],
+            className="ds-error__technical",
+        )
+        if technical_id
+        else None
+    )
+    retry = button("Retry section", id=retry_id, variant="secondary") if retry_id else None
+    return alert(
+        [html.P(message), retry, technical], tone="danger", title="This section could not load"
+    )
+
+
+def stale_data_notice(message: str = "Showing the last successful result while an update runs."):
+    return alert(message, tone="warning", title="Updating cached data")
+
+
+def partial_data_notice(missing_sections: list[str] | tuple[str, ...]):
+    names = ", ".join(missing_sections) if missing_sections else "optional sections"
+    return alert(
+        f"Available results are usable. Still unavailable: {names}.",
+        tone="warning",
+        title="Partial results",
+    )
+
+
 def analysis_section(
     title: str, content, state: SectionState, *, section_id: str, optional: bool = False
 ):

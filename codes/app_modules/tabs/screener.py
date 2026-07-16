@@ -1,28 +1,33 @@
 """Screener tab callbacks."""
 
 import math
+import time as _time
 from urllib.parse import parse_qs
 
 import dash
 from dash import Input, Output, State, callback, clientside_callback, html
 
-from codes.data import db
-from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
-from codes.engine import screener
-from codes.engine.scorer import verdict_for_score
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.company_identity import company_logo
 from codes.app_modules.config import (
-    GREEN, MUTED, PAGE_SIZE,
-    get_score_class, get_verdict_class,
+    GREEN,
+    MUTED,
+    PAGE_SIZE,
+    get_score_class,
+    get_verdict_class,
 )
+from codes.app_modules.design_system.primitives import button, empty_state
+from codes.app_modules.design_system.states import stage_progress
 from codes.app_modules.screener_markets import (
     market_from_path,
     row_matches_market,
 )
-from codes.app_modules.session import get_portfolio_symbols
-from codes.app_modules.session import get_user_id
-from codes.services import product_analytics
+from codes.app_modules.session import get_portfolio_symbols, get_user_id
+from codes.data import db
+from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
+from codes.engine import screener
+from codes.engine.scorer import verdict_for_score
+from codes.services import performance_metrics, product_analytics
 
 last_progress_state = None
 last_progress_bar_state = None
@@ -372,6 +377,18 @@ def render_index_filter_pills(selected_indices):
 
 
 @callback(
+    Output("index-filter", "data", allow_duplicate=True),
+    Output("sector-filter", "value", allow_duplicate=True),
+    Input("screener-reset-filters", "n_clicks"),
+    prevent_initial_call=True,
+)
+def clear_screener_filters(n_clicks):
+    if not n_clicks:
+        return dash.no_update, dash.no_update
+    return [], ""
+
+
+@callback(
     Output({"type": "screener-market-link", "index": dash.ALL}, "className"),
     Input("url", "pathname"),
     State({"type": "screener-market-link", "index": dash.ALL}, "id"),
@@ -456,15 +473,16 @@ def update_progress_bar(n):
     eta_text = f"~{minutes}m {seconds:02d}s remaining" if prog["running"] and eta_seconds > 0 else (
         "Complete" if not prog["running"] else "Almost done..."
     )
-    return html.Div(className="progress-container mb-3xl", children=[
-        html.Div([
-            html.Span("Processing Universe Data", className="font-semibold"),
-            html.Span(f"({pct}%) {eta_text}", className="text-xs text-muted")
-        ], className="flex justify-between mb-lg"),
-        html.Div(className="progress-bar-wrapper", children=[
-            html.Progress(value=str(pct), max="100", className="progress-bar-fill")
-        ])
-    ])
+    return html.Div(
+        [
+            stage_progress(
+                f"Processing universe data · {eta_text}",
+                completed=prog["done"],
+                total=prog["total"],
+            )
+        ],
+        className="progress-container mb-3xl",
+    )
 
 @callback(
     Output("screener-table-container", "children"),
@@ -481,6 +499,7 @@ def update_progress_bar(n):
     prevent_initial_call=True
 )
 def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
+    started_at = _time.perf_counter()
     triggered_id = dash.ctx.triggered_id
     active_market = market_from_path(pathname)
     results = _filter_results_by_market(screener.get_screener_results(), active_market.code)
@@ -515,18 +534,19 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             )
         if prog["running"]:
             return (
-                html.Div([
-                    html.Div("⚡ Loading in background…",
-                             className="clr-blue fw-600 mb-8"),
-                    html.Div("Table will appear automatically when loading finishes.",
-                             className="clr-muted fs-13"),
-                ], className="tac p-40"),
+                stage_progress(
+                    "Loading verified universe data in the background",
+                    completed=prog.get("done"),
+                    total=prog.get("total"),
+                ),
                 sector_options,
                 page_reset,
             )
         return (
-            html.Div("Screener is waiting for cached universe data.",
-                     className="text-center p-4xl text-muted"),
+            empty_state(
+                "No screener data available",
+                "Screener is waiting for cached verified-universe data. Refresh after ingestion completes.",
+            ),
             sector_options,
             page_reset,
         )
@@ -535,6 +555,26 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         r for r in index_filtered_results
         if not sector_filter or r.get("sector") == sector_filter
     ]
+    if not filtered:
+        performance_metrics.record_ui_operation(
+            "screener-refresh",
+            (_time.perf_counter() - started_at) * 1000,
+            outcome="empty",
+            section="screener-table",
+        )
+        return (
+            empty_state(
+                "No stocks match these filters",
+                "The universe is loaded, but the active market, index, and sector filters return no matches. Clear or broaden a filter to continue.",
+                action=button(
+                    "Clear filters",
+                    id="screener-reset-filters",
+                    variant="secondary",
+                ),
+            ),
+            sector_options,
+            page_reset,
+        )
     
     text_cols = {"symbol", "name", "sector", "updated_at"}
     if sort_col in text_cols:
@@ -731,6 +771,10 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
     n_portfolio = sum(1 for r in filtered if portfolio_symbols.get(r["symbol"]))
     note = html.Div([
         html.Span(f"{len(filtered):,} stocks", className="font-semibold"),
+        html.Span(
+            f"{len(selected_indices or []) + bool(sector_filter)} active filters",
+            className="text-xs text-muted",
+        ),
         html.Span(f" · {n_analyzed} analyzed · {n_portfolio} in portfolio"
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
                   className="text-muted"),
@@ -760,6 +804,12 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             disabled=(page >= total_pages),
         ),
     ])
+    performance_metrics.record_ui_operation(
+        "screener-refresh",
+        (_time.perf_counter() - started_at) * 1000,
+        section="screener-table",
+        first_useful_ms=(_time.perf_counter() - started_at) * 1000,
+    )
     return html.Div([
         table,
         html.Div(accordion_items, className="screener-accordion"),

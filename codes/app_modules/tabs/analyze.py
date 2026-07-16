@@ -1,28 +1,26 @@
 """Analyze tab callbacks."""
 
+import json
 import re
 import time as _time
-import json
 
 import dash
 from dash import Input, Output, State, callback, clientside_callback
 from dash.exceptions import PreventUpdate
 
-from codes.engine import screener
-from codes.data import db
-from codes.services.stock_analysis import analyze_stock_primary as analyze_stock, _is_rate_limit_error
-from codes.core.config import is_production
 from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
-from codes.app_modules.rate_limit import RateLimited, check_rate_limit
-from codes.app_modules.session import get_user_id
-from codes.services import permissions
-from codes.services import product_analytics
-from codes.services import performance_metrics
-from codes.services import analysis_demand
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.components.upgrade_banner import UpgradeBanner
+from codes.app_modules.design_system.states import section_error
+from codes.app_modules.rate_limit import RateLimited, check_rate_limit
+from codes.app_modules.session import get_user_id
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
-
+from codes.core.config import is_production
+from codes.data import db
+from codes.engine import screener
+from codes.services import analysis_demand, performance_metrics, permissions, product_analytics
+from codes.services.stock_analysis import _is_rate_limit_error
+from codes.services.stock_analysis import analyze_stock_primary as analyze_stock
 
 _ANALYZE_PATH_RE = re.compile(
     r"^(?:/analyze/([A-Za-z]{1,6})(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?"
@@ -218,6 +216,9 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         result = analyze_stock(symbol)
     except Exception as e:
         duration_ms = int((_time.perf_counter() - started_at) * 1000)
+        performance_metrics.record_ui_operation(
+            "fresh-analysis", duration_ms, outcome="error", section="analysis"
+        )
         if _is_rate_limit_error(e):
             message = getattr(e, "user_message", str(e))
             product_analytics.track_event(
@@ -245,6 +246,9 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         return dash.no_update, [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
     if "error" in result:
         duration_ms = int((_time.perf_counter() - started_at) * 1000)
+        performance_metrics.record_ui_operation(
+            "fresh-analysis", duration_ms, outcome="error", section="analysis"
+        )
         product_analytics.track_event(
             user_id,
             "analysis_failed",
@@ -257,6 +261,14 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         )
         return dash.no_update, [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
     duration_ms = int((_time.perf_counter() - started_at) * 1000)
+    operation = "cached-analysis" if result.get("cache_hit") else "fresh-analysis"
+    performance_metrics.record_ui_operation(
+        operation,
+        duration_ms,
+        outcome="partial" if result.get("secondary_status") == "pending" else "success",
+        section="analysis-overview",
+        first_useful_ms=duration_ms,
+    )
     product_analytics.track_event(
         user_id,
         "analysis_completed",
@@ -297,16 +309,43 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
 @callback(
     Output("analysis-charts-content", "children"),
     Input("analysis-charts-summary", "n_clicks"),
+    Input("analysis-charts-retry", "n_clicks"),
     State("analysis-store", "data"),
     prevent_initial_call=True,
 )
-def render_analysis_charts_on_demand(n_clicks, analysis):
-    if not n_clicks or not analysis:
+def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None):
+    if analysis is None and isinstance(retry_clicks, dict):
+        analysis, retry_clicks = retry_clicks, None
+    if not (n_clicks or retry_clicks) or not analysis:
         return dash.no_update
+    started_at = _time.perf_counter()
     chart_analysis = analysis
     if not analysis.get("price_history"):
         chart_analysis = db.get_analysis(analysis.get("symbol", "")) or analysis
-    return build_analysis_charts(chart_analysis)
+    if not chart_analysis.get("price_history") and not (chart_analysis.get("graham") or {}).get("eps_history"):
+        performance_metrics.record_ui_operation("chart-render", 0, outcome="empty", section="analysis-charts")
+        return section_error("Historical observations are not available for this company.")
+    try:
+        rendered = build_analysis_charts(chart_analysis)
+    except Exception as error:
+        performance_metrics.record_failure("analysis-charts", error)
+        performance_metrics.record_ui_operation(
+            "chart-render",
+            (_time.perf_counter() - started_at) * 1000,
+            outcome="error",
+            section="analysis-charts",
+        )
+        return section_error(
+            "The historical charts failed independently. The analysis above remains usable.",
+            retry_id="analysis-charts-retry",
+            technical_id=type(error).__name__,
+        )
+    performance_metrics.record_ui_operation(
+        "chart-render",
+        (_time.perf_counter() - started_at) * 1000,
+        section="analysis-charts",
+    )
+    return rendered
 
 
 @callback(

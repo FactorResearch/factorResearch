@@ -1,13 +1,17 @@
 """Portfolio tab callbacks and rendering helpers."""
 
+import json
+import time as _time
+
 import dash
-from dash import Input, Output, State, callback, dcc, html
 import plotly.graph_objects as go
+from dash import Input, Output, State, callback, dcc, html
 
 import codes.portfolio as portfolio_engine
 from codes import security
-from codes.data import db
 from codes.app_modules.analysis_ui import _chart_layout
+from codes.app_modules.company_identity import company_logo
+from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.config import (
     AMBER,
     BLUE,
@@ -16,17 +20,17 @@ from codes.app_modules.config import (
     RED,
     validate_portfolio_name,
 )
-from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
-from codes.app_modules.rate_limit import RateLimited, check_rate_limit
-from codes.services import permissions
-from codes.services import product_analytics
-from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
-from codes.app_modules.tabs.pricing import open_upgrade_funnel
 from codes.app_modules.css_classes import tone_class
-from codes.app_modules.company_identity import company_logo
 from codes.app_modules.design_system.financial import FinancialFormat, delta, metric_value
 from codes.app_modules.design_system.layouts import container, dashboard_grid, mobile_action_bar
 from codes.app_modules.design_system.primitives import card, empty_state, responsive_table
+from codes.app_modules.design_system.states import background_job_status, section_error
+from codes.app_modules.rate_limit import RateLimited, check_rate_limit
+from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
+from codes.app_modules.tabs.pricing import open_upgrade_funnel
+from codes.data import db
+from codes.services import performance_metrics, permissions, product_analytics
+from codes.services.adaptive_loading import AsyncStatus, jobs
 
 PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
@@ -902,49 +906,44 @@ def _build_comparison_view(
 
 
 # ── Run simulation ────────────────────────────────────────────────────────────
-@callback(
-    Output("portfolio-sim-results", "children"),
-    Output("upgrade-funnel-store", "data", allow_duplicate=True),
-    Input("run-simulation-btn", "n_clicks"),
-    State("portfolio-active-dropdown", "value"),
-    State("portfolio-compare-dropdown", "value"),
-    prevent_initial_call=True,
-)
-def run_simulation(n, active, compare):
+def run_simulation(n, active, compare, *, _uid=None, _skip_guards=False):
+    """Execute a simulation; the UI submits this helper as a resumable job."""
     if not n or not active:
         return [], None
-    uid = get_user_id()
-    access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
-    if not access.allowed:
-        product_analytics.track_event(
-            uid,
-            "upgrade_viewed",
-            {"feature": "portfolio_analytics", "source": "portfolio_sim_lock", "plan": "premium"},
-        )
-        return FeatureLockedModal(
-            feature="portfolio_analytics",
-            source="portfolio_sim_lock",
-        ), open_upgrade_funnel(
-            feature="portfolio_analytics",
-            feature_label="Portfolio analytics",
-            reason=access.message,
-            source="portfolio_sim_lock",
-        )
-    try:
-        check_rate_limit(
-            "portfolio_simulation",
-            calls=PORTFOLIO_SIMULATION_CALLS,
-            period_seconds=PORTFOLIO_SIMULATION_PERIOD_SECONDS,
-            key=uid,
-        )
-    except RateLimited as exc:
-        wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
-        product_analytics.track_event(
-            uid, "backtest_failed", {"source": "portfolio", "reason": "rate_limit"}
-        )
-        return html.Div(
-            f"⏳ Portfolio simulation rate limit reached.{wait}", className="text-danger"
-        ), None
+    uid = _uid or get_user_id()
+    if not _skip_guards:
+        access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
+        if not access.allowed:
+            product_analytics.track_event(
+                uid,
+                "upgrade_viewed",
+                {"feature": "portfolio_analytics", "source": "portfolio_sim_lock", "plan": "premium"},
+            )
+            return FeatureLockedModal(
+                feature="portfolio_analytics",
+                source="portfolio_sim_lock",
+            ), open_upgrade_funnel(
+                feature="portfolio_analytics",
+                feature_label="Portfolio analytics",
+                reason=access.message,
+                source="portfolio_sim_lock",
+            )
+        try:
+            check_rate_limit(
+                "portfolio_simulation",
+                calls=PORTFOLIO_SIMULATION_CALLS,
+                period_seconds=PORTFOLIO_SIMULATION_PERIOD_SECONDS,
+                key=uid,
+            )
+        except RateLimited as exc:
+            wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
+            product_analytics.track_event(
+                uid, "backtest_failed", {"source": "portfolio", "reason": "rate_limit"}
+            )
+            return html.Div(
+                f"⏳ Portfolio simulation rate limit reached.{wait}", className="text-danger"
+            ), None
+    started_at = _time.perf_counter()
     product_analytics.track_event(
         uid,
         "backtest_started",
@@ -1090,6 +1089,12 @@ def run_simulation(n, active, compare):
             "backtest_completed",
             {"source": "portfolio", "portfolio_name": active, "compare": compare},
         )
+        performance_metrics.record_ui_operation(
+            "portfolio-simulation",
+            (_time.perf_counter() - started_at) * 1000,
+            section="portfolio-simulation",
+            first_useful_ms=(_time.perf_counter() - started_at) * 1000,
+        )
         return result, None
     result = [
         html.Div(f"📊 {active}", className="scorecard-header mt-24 fs-16"),
@@ -1102,4 +1107,95 @@ def run_simulation(n, active, compare):
         product_analytics.track_event(
             uid, "backtest_completed", {"source": "portfolio", "portfolio_name": active}
         )
+    performance_metrics.record_ui_operation(
+        "portfolio-simulation",
+        (_time.perf_counter() - started_at) * 1000,
+        outcome=("partial" if any(getattr(component, "className", None) == "text-danger" for component in result) else "success"),
+        section="portfolio-simulation",
+        first_useful_ms=(_time.perf_counter() - started_at) * 1000,
+    )
     return result, None
+
+
+@callback(
+    Output("portfolio-sim-results", "children"),
+    Output("portfolio-job-store", "data"),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Input("run-simulation-btn", "n_clicks"),
+    State("portfolio-active-dropdown", "value"),
+    State("portfolio-compare-dropdown", "value"),
+    prevent_initial_call=True,
+)
+def start_simulation_job(n, active, compare):
+    if not n or not active:
+        return dash.no_update, dash.no_update, dash.no_update
+    uid = get_user_id()
+    access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
+    if not access.allowed:
+        locked, upgrade = run_simulation(n, active, compare)
+        return locked, dash.no_update, upgrade
+    try:
+        check_rate_limit(
+            "portfolio_simulation",
+            calls=PORTFOLIO_SIMULATION_CALLS,
+            period_seconds=PORTFOLIO_SIMULATION_PERIOD_SECONDS,
+            key=uid,
+        )
+    except RateLimited as exc:
+        wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
+        return html.Div(
+            f"Portfolio simulation rate limit reached.{wait}", className="text-danger"
+        ), dash.no_update, None
+
+    dedupe_key = json.dumps({"active": active, "compare": compare or ""}, sort_keys=True)
+
+    def work(context):
+        context.update("Loading portfolio holdings", completed_units=1)
+        context.raise_if_cancelled()
+        result = run_simulation(1, active, compare, _uid=uid, _skip_guards=True)
+        context.update("Rendering simulation results", completed_units=2)
+        return result
+
+    snapshot = jobs.submit(
+        operation="portfolio-simulation",
+        owner=uid,
+        dedupe_key=dedupe_key,
+        work=work,
+        total_units=2,
+    )
+    return (
+        background_job_status(snapshot.public_dict(), cancel_id="portfolio-job-cancel"),
+        snapshot.public_dict(),
+        None,
+    )
+
+
+@callback(
+    Output("portfolio-sim-results", "children", allow_duplicate=True),
+    Output("portfolio-job-store", "data", allow_duplicate=True),
+    Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Input("portfolio-job-interval", "n_intervals"),
+    Input("portfolio-job-cancel", "n_clicks"),
+    State("portfolio-job-store", "data"),
+    prevent_initial_call=True,
+)
+def poll_simulation_job(_tick, cancel_clicks, stored):
+    if not stored or not stored.get("job_id"):
+        return dash.no_update, dash.no_update, dash.no_update
+    uid = get_user_id()
+    job_id = stored["job_id"]
+    if dash.ctx.triggered_id == "portfolio-job-cancel" and cancel_clicks:
+        jobs.cancel(job_id, owner=uid)
+    snapshot = jobs.snapshot(job_id, owner=uid)
+    if snapshot is None:
+        return section_error("This simulation is no longer available."), None, None
+    public = snapshot.public_dict()
+    if snapshot.status == AsyncStatus.SUCCESS:
+        result = jobs.result(job_id, owner=uid)
+        if result is not None:
+            return result[0], public, result[1]
+    if snapshot.status == AsyncStatus.ERROR:
+        return section_error("The simulation failed. You can safely run it again.", technical_id=snapshot.error_code), public, None
+    if snapshot.status == AsyncStatus.CANCELLED:
+        return empty_state("Simulation cancelled", "Your portfolios and previous saved data were not changed."), public, None
+    return background_job_status(public, cancel_id="portfolio-job-cancel"), public, None

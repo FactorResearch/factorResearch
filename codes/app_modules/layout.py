@@ -1,8 +1,9 @@
 """Dash layout composition."""
 
 from dash import dcc, html
-from codes.app_modules.company_identity import logo_attribution
 
+from codes.app_modules.company_identity import logo_attribution
+from codes.data.us_indices import US_INDEX_DEFINITIONS
 from codes.engine import scorer
 
 from .config import BLUE
@@ -11,7 +12,6 @@ from .screener_markets import (
     available_screener_markets,
     get_screener_market,
 )
-from codes.data.us_indices import US_INDEX_DEFINITIONS
 
 
 def _screener_market_links(active_market=DEFAULT_SCREENER_MARKET):
@@ -209,12 +209,16 @@ def build_layout():
                     id="screener-loading",
                     type="default",
                     color=BLUE,
+                    delay_show=250,
+                    delay_hide=200,
+                    show_initially=False,
                     children=[
-                        html.Div(id="screener-table-container", className="screener-table-wrap", children=[
+                        html.Div(id="screener-table-container", className="screener-table-wrap", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[
                             html.Div("Loading screener data...", className="text-center p-4xl text-muted")
                         ])
                     ]
                 ),
+                html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "screener-table-container", "data-loading-label": "Updating screener rows"}),
                 html.Div(
                     id="screener-quick-peek-shell",
                     className="quick-peek-shell",
@@ -288,10 +292,14 @@ def build_layout():
                 id="analysis-loading",
                 type="default",
                 color=BLUE,
+                delay_show=250,
+                delay_hide=200,
+                show_initially=False,
                 children=[
-                    html.Div(id="analysis-content", children=[])
+                    html.Div(id="analysis-content", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[])
                 ]
             ),
+            html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "analysis-content", "data-loading-label": "Updating analysis sections"}),
             # ── Add to Portfolio panel (shown after analysis completes) ──────────
             html.Div(id="add-to-portfolio-panel", className="d-none", children=[
                 html.Div(className="portfolio-add-panel", children=[
@@ -375,14 +383,17 @@ def build_layout():
             ]),
             html.Div(id="portfolio-msg", className="portfolio-message fs-13"),
             # Main portfolio content (holdings + run sim button)
-            dcc.Loading(type="default", color="#448aff", children=[
-                html.Div(id="portfolio-content", children=[
+            dcc.Loading(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
+                html.Div(id="portfolio-content", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[
                     html.Div("Select or create a portfolio to get started.",
                              className="tac p-60 clr-muted")
                 ])
             ]),
+            html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "portfolio-content", "data-loading-label": "Updating portfolio holdings"}),
             # Simulation results (charts)
             html.Div(id="portfolio-sim-results", children=[]),
+            dcc.Store(id="portfolio-job-store", storage_type="local"),
+            dcc.Interval(id="portfolio-job-interval", interval=800, disabled=False),
         ]),
         # ── Tab: Factor Lab ─────────────────────────────────────────────────────
         html.Div(id="tab-factorlab", className="main-content is-hidden", children=[
@@ -453,9 +464,12 @@ def build_layout():
                          children="Weight sum: 100% ✓"),
             ]),
 
-            dcc.Loading(type="default", color="#448aff", children=[
-                html.Div(id="fb-results", children=[])
+            dcc.Loading(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
+                html.Div(id="fb-results", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[])
             ]),
+            html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "fb-results", "data-loading-label": "Running factor backtest"}),
+            dcc.Store(id="factor-job-store", storage_type="local"),
+            dcc.Interval(id="factor-job-interval", interval=800, disabled=False),
         ]),
         html.Div(id="tab-pricing", className="main-content is-hidden", children=[]),
         html.Div(id="profile-page", className="main-content is-hidden", children=[
@@ -581,5 +595,25 @@ def build_layout():
         # polls the screener tab's scroll position so it can be restored on tab switch
         dcc.Interval(id="screener-scroll-poll-interval", interval=1000, disabled=False),
         dcc.Interval(id="analysis-secondary-interval", interval=1200, disabled=False),
-        dcc.Loading(id="loading", type="circle", color=BLUE, children=html.Div(id="loading-trigger"))
+        dcc.Loading(
+            id="loading",
+            type="circle",
+            color=BLUE,
+            delay_show=250,
+            delay_hide=200,
+            show_initially=False,
+            children=html.Div(
+                id="loading-trigger",
+                **{"aria-busy": "false", "data-adaptive-loading": "true"},
+            ),
+        ),
+        html.Div(
+            className="sr-only",
+            role="status",
+            **{
+                "aria-live": "polite",
+                "data-loading-for": "loading-trigger",
+                "data-loading-label": "Updating application state",
+            },
+        ),
     ])
