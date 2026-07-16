@@ -39,6 +39,7 @@ PRESENTATION_ALLOWED_DOMAIN_IMPORTS = {
 }
 PROTECTED_CYCLE_PREFIXES = ("codes.core", "codes.models")
 SERVICE_BOUNDARY_ADAPTERS = {
+    "codes/api/v1.py",
     "codes/app_modules/tabs/analyze.py",
     "codes/app_modules/tabs/portfolio.py",
     "codes/app_modules/tabs/pricing.py",

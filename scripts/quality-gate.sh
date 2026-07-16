@@ -5,6 +5,9 @@ export APP_SKIP_STARTUP=1
 export APP_FEATURE_FLAG=V1
 
 PROTECTED_PYTHON=(
+  codes/api/contracts.py
+  codes/api/schemas.py
+  codes/api/v1.py
   codes/core/ports.py
   codes/composition.py
   codes/data/providers/sec_universe.py
@@ -16,6 +19,7 @@ PROTECTED_PYTHON=(
   scripts/architecture-report.py
   tests/test_issue_076_architecture.py
   tests/test_issue_077_migrations.py
+  tests/api/test_v1_contract.py
 )
 
 ruff check "${PROTECTED_PYTHON[@]}"

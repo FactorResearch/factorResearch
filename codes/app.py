@@ -25,6 +25,7 @@ except Exception:
 from codes import auth
 from codes import billing
 from codes import security
+from codes.api import api_v1
 from codes.composition import compose_runtime
 from codes.core.config import is_production
 from flask import render_template
@@ -85,6 +86,7 @@ def reject_untrusted_host():
 
 server.register_blueprint(analyze_pages)
 server.register_blueprint(chart_pages)
+server.register_blueprint(api_v1)
 
 
 auth.init_auth(server)

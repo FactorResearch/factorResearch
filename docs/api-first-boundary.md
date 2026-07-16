@@ -19,7 +19,12 @@ logging, or audit facilities. Browser clients must never connect directly to
 PostgreSQL or receive database credentials. New UI callbacks and routes must use an
 existing service boundary or introduce a narrow service operation with tests.
 
+Public client operations must use the versioned contract described in
+`docs/public-api-v1.md` and `openapi.yaml`. Existing browser HTML, provider
+callback, telemetry, and internal operations endpoints are not public client
+contracts.
+
 These modules intentionally provide stable use-case operations while legacy engines
 and repositories are incrementally decomposed. API contracts and transport-neutral
-response models are handled by ISSUE_060 and ISSUE_061; this boundary avoids
-pre-empting those contracts.
+domain response models are handled by ISSUE_061; this boundary avoids pre-empting
+that separation.

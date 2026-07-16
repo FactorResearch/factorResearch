@@ -1,0 +1,106 @@
+"""Typed shapes generated from and checked against the public v1 contract.
+
+These types describe transport payloads only.  Domain response models remain a
+separate concern; API adapters deliberately project service results into these
+stable, allow-listed fields.
+"""
+
+from __future__ import annotations
+
+from typing import TypedDict
+
+
+class ApiMeta(TypedDict):
+    api_version: str
+    request_id: str
+
+
+class Pagination(TypedDict):
+    page: int
+    page_size: int
+    total_items: int
+    total_pages: int
+
+
+class ErrorDetail(TypedDict):
+    code: str
+    message: str
+
+
+class ErrorResponse(TypedDict):
+    error: ErrorDetail
+    meta: ApiMeta
+
+
+class AnalysisResource(TypedDict):
+    symbol: str
+    company_name: str
+    sector: str
+    market_code: str
+    price: float | int | None
+    market_cap: float | int | None
+    composite_score: float | int | None
+    verdict: str
+    analysis_version: str
+    generated_at: str | None
+
+
+class ScreenerResource(TypedDict):
+    symbol: str
+    name: str
+    sector: str
+    market_code: str
+    composite_score: float | int
+    verdict: str
+    price: float | int | None
+    market_cap: float | int | None
+    analyzed: bool
+    updated_at: str | None
+
+
+class PortfolioSummary(TypedDict):
+    name: str
+    holdings: int
+
+
+class AppearanceSettings(TypedDict):
+    theme: str
+
+
+class NotificationSettings(TypedDict):
+    product_updates: bool
+    research_digest: bool
+    security_alerts: bool
+
+
+class AccountSettings(TypedDict):
+    appearance: AppearanceSettings
+    notifications: NotificationSettings
+
+
+class AccountResource(TypedDict):
+    display_name: str
+    auth_provider: str
+    settings: AccountSettings
+
+
+class BillingResource(TypedDict):
+    plan: str
+    status: str
+    trial_usage: int
+    paid: bool
+
+
+class DataResponse(TypedDict):
+    data: object
+    meta: ApiMeta
+
+
+class CollectionResponse(TypedDict):
+    data: list[object]
+    pagination: Pagination
+    meta: ApiMeta
+
+
+class HealthResource(TypedDict):
+    status: str
