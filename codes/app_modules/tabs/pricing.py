@@ -109,7 +109,7 @@ def build_pricing_tab(context: dict | None = None) -> html.Div:
             html.Div(
                 className="app-header mb-24",
                 children=[
-                    html.Div("💳", className="app-header-icon"),
+                    html.Div("💳", className="app-header-icon", **{"aria-hidden": "true"}),
                     html.Div(
                         className="app-header-content",
                         children=[

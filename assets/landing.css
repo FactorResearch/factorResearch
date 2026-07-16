@@ -218,7 +218,7 @@ body.landing {
 .product-preview small,
 .analysis-preview small {
     font: 10px Inter;
-    color: #6b7890
+    color: #52627c
 }
 
 .preview-grid,
@@ -245,7 +245,7 @@ body.landing {
 .preview-grid em,
 .score-row em {
     display: block;
-    color: #13a568;
+    color: #087447;
     font-style: normal
 }
 
@@ -447,7 +447,7 @@ blockquote cite {
 }
 
 .analysis-body h2 em {
-    color: #16a867;
+    color: #087447;
     font-style: normal;
     font-size: 10px
 }
@@ -472,7 +472,7 @@ blockquote cite {
 .score-bars {
     font-size: 9px;
     line-height: 2;
-    color: #3984e8
+    color: #1d5fae
 }
 
 .chart {

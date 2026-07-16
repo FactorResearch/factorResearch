@@ -507,3 +507,21 @@ Work is complete only when:
 
 If external proof is missing, implementation may be complete while production
 certification remains blocked. Never confuse those states.
+
+## Design Documentation
+
+Visual implementation does not come from this file.
+
+Before implementing any UI work the AI MUST read
+
+design/README.md
+
+Follow the reading order documented there.
+
+Never redesign.
+
+Never simplify.
+
+Never remove information.
+
+Implement exactly as documented.

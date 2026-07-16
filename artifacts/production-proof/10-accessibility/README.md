@@ -1,14 +1,16 @@
 # Phase 10 UX and Accessibility Evidence
 
-**Status:** Automated WCAG 2.2 and responsive audit expanded; full browser/device and manual assistive-technology certification remains open.
-**Evidence date:** 2026-07-14
+**Status:** Critical-journey WCAG 2.2 AA automation is enforced in PR CI; physical-device and assistive-technology certification remains a human release sign-off.
+**Evidence date:** 2026-07-16
 
 ## Automated Contract
 
-- Firefox audits screener, analyze, and portfolio at desktop, tablet, and mobile widths.
+- Firefox audits Screener, Analyze, Portfolio, Factor Lab, Pricing, landing, legal, and error-state surfaces at desktop, tablet, and mobile widths.
 - Every route/width is tested in light and dark themes against WCAG 2.0, 2.1, and 2.2 A/AA axe rules.
 - Horizontal document overflow fails the audit, including a 200% mobile scenario.
 - The audit verifies a reduced-motion media rule exists.
+- Shared runtime checks require skip navigation, scoped table headers, named buttons, and text equivalents for every rendered Plotly chart.
+- Authentication failures use the same structured, focusable error-page contract and never reflect provider details.
 - Machine-readable output is retained as `accessibility-audit-results.json`; a nonzero exit blocks certification.
 
 ## Manual and External Gates

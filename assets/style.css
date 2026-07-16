@@ -3925,6 +3925,22 @@ body.light .app-footer {
   gap: var(--fr-space-2);
 }
 
+.ds-slider {
+  width: 100%;
+  min-height: var(--fr-target-minimum);
+  padding-inline: var(--fr-space-3);
+  color: var(--fr-color-text-primary);
+  background: var(--fr-color-surface-base);
+  border: var(--fr-border-thin) solid var(--fr-color-border-default);
+  border-radius: var(--fr-radius-md);
+  font: var(--fr-font-weight-bold) var(--fr-text-md)/1 var(--fr-font-family-numeric);
+}
+
+.dash-input-stepper {
+  min-width: var(--fr-target-minimum) !important;
+  min-height: var(--fr-target-minimum) !important;
+}
+
 .ds-segmented, .ds-pagination {
   display: flex;
   align-items: center;

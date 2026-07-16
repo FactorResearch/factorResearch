@@ -46,6 +46,14 @@ const tabs = [
   {name: 'screener', selector: '#tab-screener-btn'},
   {name: 'analyze', selector: '#tab-analyze-btn'},
   {name: 'portfolio', selector: '#tab-portfolio-btn'},
+  {name: 'factor-lab', selector: '#tab-factorlab-btn'},
+  {name: 'pricing', selector: '#tab-pricing-btn'},
+];
+const standalonePages = [
+  {name: 'landing', path: 'landing/post-a'},
+  {name: 'terms', path: 'terms'},
+  {name: 'privacy', path: 'privacy'},
+  {name: 'error-state', path: 'landing/not-a-real-variant'},
 ];
 const themes = ['light', 'dark'];
 const audits = [];
@@ -79,17 +87,76 @@ try {
     }
   }
 
+  for (const viewport of viewports.filter((item) => item.name !== 'tablet')) {
+    await request('POST', `${base}/window/rect`, viewport);
+    for (const page of standalonePages) {
+      await request('POST', `${base}/url`, {url: new URL(page.path, appUrl).href});
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      await execute(axeSource);
+      const result = await executeAsync(`
+        const done = arguments[arguments.length - 1];
+        const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+        axe.run(document, {
+          runOnly: {type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa']}
+        }).then((axeResult) => done({...axeResult, overflow})).catch((error) => done({error: error.message}));
+      `);
+      if (result.error) throw new Error(result.error);
+      audits.push({viewport: viewport.name, theme: 'system', tab: page.name, overflow: result.overflow, violations: result.violations});
+    }
+  }
+
   // Browser zoom halves the available CSS-pixel viewport; use that equivalent
   // without relying on browser-specific zoom controls.
+  await request('POST', `${base}/url`, {url: appUrl});
+  await new Promise((resolve) => setTimeout(resolve, 350));
+  await execute(`document.querySelector('#tab-portfolio-btn').click()`);
+  const keyboardContract = await executeAsync(`
+    const done = arguments[arguments.length - 1];
+    const firstTab = document.querySelector('#tab-screener-btn');
+    const secondTab = document.querySelector('#tab-analyze-btn');
+    firstTab.focus();
+    firstTab.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+    const arrowNavigation = document.activeElement === secondTab;
+    setTimeout(() => {
+      const legalTrigger = document.querySelector('a[href="#legal-terms"]');
+      legalTrigger.focus();
+      legalTrigger.click();
+      setTimeout(() => {
+        const modal = document.querySelector('#legal-terms');
+        const dialogFocus = modal.contains(document.activeElement);
+        document.activeElement.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+        setTimeout(() => done({
+          arrowNavigation,
+          dialogFocus,
+          focusRestored: document.activeElement === legalTrigger,
+          restoredElement: document.activeElement?.outerHTML?.slice(0, 240) || 'none',
+          triggerConnected: legalTrigger.isConnected,
+        }), 120);
+      }, 80);
+    }, 250);
+  `);
   await request('POST', `${base}/window/rect`, {width: 195, height: 422});
   const constrained = await execute(`return {
     overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     reducedMotionRules: [...document.styleSheets].some((sheet) => {
       try { return [...sheet.cssRules].some((rule) => rule.conditionText?.includes('prefers-reduced-motion')); }
       catch (_) { return false; }
-    })
+    }),
+    skipLink: Boolean(document.querySelector('.skip-link[href^="#"]')),
+    scopedHeaders: [...document.querySelectorAll('thead th')].every((cell) => cell.getAttribute('scope') === 'col'),
+    namedIconButtons: [...document.querySelectorAll('button')].every((button) => (button.getAttribute('aria-label') || button.textContent).trim().length > 0),
+    chartEquivalents: [...document.querySelectorAll('.js-plotly-plot')].every((chart) => chart.nextElementSibling?.classList.contains('ds-chart-data')),
   }`);
-  audits.push({viewport: 'mobile-200-percent', theme: 'dark', tab: 'portfolio', ...constrained, violations: []});
+  const contractViolations = Object.entries({
+    'skip-link': constrained.skipLink,
+    'table-header-scope': constrained.scopedHeaders,
+    'button-name': constrained.namedIconButtons,
+    'chart-equivalent': constrained.chartEquivalents,
+    'keyboard-tab-navigation': keyboardContract.arrowNavigation,
+    'dialog-focus-entry': keyboardContract.dialogFocus,
+    'dialog-focus-restoration': keyboardContract.focusRestored,
+  }).filter(([, passing]) => !passing).map(([id]) => ({id, nodes: [{html: id}]}));
+  audits.push({viewport: 'mobile-200-percent', theme: 'dark', tab: 'portfolio', ...constrained, keyboardContract, violations: contractViolations});
 } finally {
   await request('DELETE', base).catch(() => undefined);
 }

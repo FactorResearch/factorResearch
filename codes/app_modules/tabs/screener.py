@@ -614,17 +614,21 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         th_class = "ch" if tooltip else ""
         th_class = f"{th_class} table-tooltip" if tooltip else th_class
         if sort_key:
+            sort_state = (
+                "ascending" if sort_asc else "descending"
+            ) if sort_col == sort_key else "none"
             header_cells.append(html.Th(
                 button(
                     label,
                     id={"type": "screener-sort-btn", "index": sort_key},
                     className="sort-header-btn", n_clicks=0,
                     title=tooltip or "",
+                    **{"aria-label": f"Sort by {label.replace(' ↕', '')}; currently {sort_state}"},
                 ),
-                title=tooltip or "", className=th_class,
+                title=tooltip or "", className=th_class, scope="col", **{"aria-sort": sort_state},
             ))
         else:
-            header_cells.append(html.Th(label, title=tooltip or "", className=th_class))
+            header_cells.append(html.Th(label, title=tooltip or "", className=th_class, scope="col"))
     rows = []
     accordion_items = []
     # Pagination — show PAGE_SIZE rows for the current page
@@ -665,6 +669,9 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             id={"type": "screener-ticker-btn", "index": sym, "source": "table"},
             n_clicks=0,
             className="ticker-cell ticker-cell-touch cp",
+            role="button",
+            tabIndex=0,
+            **{"aria-label": f"Analyze {sym}, {r.get('name') or sym}"},
         )
         # Graham Number cell — populated after full analysis
         gn    = r.get("graham_number")
@@ -752,7 +759,8 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
         acc_rows.append(
             html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym, "source": "mobile"},
-                     n_clicks=0, className="accordion-analyze-btn")
+                     n_clicks=0, className="accordion-analyze-btn", role="button", tabIndex=0,
+                     **{"aria-label": f"Analyze {sym}, {r.get('name') or sym}"})
         )
         accordion_items.append(html.Details(
             className="accordion-item" + (" in-portfolio" if in_port else "") + (" viewed" if viewed else ""),
@@ -779,7 +787,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
                   className="text-muted"),
     ], className="fs-11 px-4 py-8 fsi")
-    table_component = table(className="screener-table", children=[
+    table_component = table(className="screener-table", caption="Stock screener results", children=[
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
     ])

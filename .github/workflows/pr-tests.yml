@@ -52,6 +52,20 @@ jobs:
           done
           npm run audit:design-system
 
+      - name: Run critical-journey WCAG 2.2 AA audit
+        env:
+          WEBDRIVER_URL: http://127.0.0.1:4445
+          A11Y_APP_URL: http://127.0.0.1:8055/
+          A11Y_OUTPUT: /tmp/accessibility-audit-results.json
+        run: |
+          APP_SKIP_STARTUP=1 APP_FEATURE_FLAG=V1 gunicorn --bind 127.0.0.1:8055 codes.app:server >/tmp/a11y-app.log 2>&1 &
+          geckodriver --port 4445 >/tmp/a11y-geckodriver.log 2>&1 &
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8055/ >/dev/null && curl --fail --silent http://127.0.0.1:4445/status >/dev/null && break
+            sleep 1
+          done
+          npm run audit:a11y
+
       - name: Upload architecture quality reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -60,6 +74,7 @@ jobs:
           path: |
             /tmp/architecture-report.json
             /tmp/coverage.json
+            /tmp/accessibility-audit-results.json
 
       - name: Upload design-system visual candidates
         if: always()

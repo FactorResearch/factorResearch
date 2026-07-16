@@ -35,7 +35,7 @@ body.legal-page {
 }
 
 .legal-page a {
-  color: #1677ff;
+  color: #0b5fc0;
   font-weight: 700;
 }
 
@@ -194,4 +194,6 @@ body.light .legal-modal-secondary {
     align-items: stretch;
     flex-direction: column;
   }
-}/*# sourceMappingURL=legal_pages.css.map */
+}
+
+/*# sourceMappingURL=legal_pages.css.map */

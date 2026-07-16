@@ -2,6 +2,7 @@
   'use strict';
 
   const announceTimers = new WeakMap();
+  const busyStates = new WeakMap();
 
   function syncBusyState(root) {
     const nodes = root.querySelectorAll ? root.querySelectorAll('[data-dash-is-loading]') : [];
@@ -13,9 +14,15 @@
       if (!region) return;
       clearTimeout(announceTimers.get(region));
       if (!busy) {
-        region.textContent = '';
+        if (busyStates.get(node) === true) {
+          region.textContent = region.dataset.completeLabel || 'Update complete';
+          const timer = setTimeout(function () { region.textContent = ''; }, 1500);
+          announceTimers.set(region, timer);
+        }
+        busyStates.set(node, false);
         return;
       }
+      busyStates.set(node, true);
       const timer = setTimeout(function () {
         if (node.getAttribute('data-dash-is-loading') === 'true') {
           region.textContent = region.dataset.loadingLabel || 'Updating section';

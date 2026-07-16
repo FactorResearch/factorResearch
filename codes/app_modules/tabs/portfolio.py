@@ -750,6 +750,7 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
             html.Div("Holdings Performance (10yr backtest period)", className="scorecard-header"),
             table(
                 className="screener-table",
+                caption=f"{port_name} holdings backtest performance",
                 children=[
                     html.Thead(
                         html.Tr(
@@ -851,6 +852,7 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
             banner,
             table(
                 className="screener-table",
+                caption=f"{port_name} weak-link analysis",
                 children=[
                     html.Thead(
                         html.Tr(

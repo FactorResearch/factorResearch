@@ -91,7 +91,11 @@ def test_render_screener_table_filters_by_index(monkeypatch):
         [],
     )
 
-    tbody = table_container.children[0].children[1]
+    tbody = next(
+        child
+        for child in table_container.children[0].children
+        if getattr(child, "_type", "") == "Tbody"
+    )
     assert len(tbody.children) == 1
     assert "AAPL" in str(tbody.children[0])
     assert page_reset == 1

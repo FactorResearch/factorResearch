@@ -33,7 +33,8 @@ def test_callback_provider_error_does_not_reflect_raw_error(monkeypatch):
 
     body = response.get_data(as_text=True)
     assert response.status_code == 400
-    assert body == auth.GENERIC_AUTH_ERROR
+    assert auth.GENERIC_AUTH_ERROR in body
+    assert '<main id="main-content"' in body
     assert "<script>alert(1)</script>" not in body
 
 
@@ -53,5 +54,6 @@ def test_callback_token_exchange_failure_does_not_expose_response_body(monkeypat
 
     body = response.get_data(as_text=True)
     assert response.status_code == 400
-    assert body == auth.GENERIC_AUTH_ERROR
+    assert auth.GENERIC_AUTH_ERROR in body
+    assert 'role="alert"' in body
     assert "token exchange secret details" not in body

@@ -22,6 +22,20 @@
   },
   {
     "viewport": "desktop",
+    "theme": "light",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "light",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
     "theme": "dark",
     "tab": "screener",
     "overflow": 0,
@@ -42,6 +56,20 @@
     "violations": []
   },
   {
+    "viewport": "desktop",
+    "theme": "dark",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "dark",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
     "viewport": "tablet",
     "theme": "light",
     "tab": "screener",
@@ -64,6 +92,20 @@
   },
   {
     "viewport": "tablet",
+    "theme": "light",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "light",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
     "theme": "dark",
     "tab": "screener",
     "overflow": 0,
@@ -84,6 +126,20 @@
     "violations": []
   },
   {
+    "viewport": "tablet",
+    "theme": "dark",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "tablet",
+    "theme": "dark",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
     "viewport": "mobile",
     "theme": "light",
     "tab": "screener",
@@ -106,6 +162,20 @@
   },
   {
     "viewport": "mobile",
+    "theme": "light",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "light",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
     "theme": "dark",
     "tab": "screener",
     "overflow": 0,
@@ -122,6 +192,76 @@
     "viewport": "mobile",
     "theme": "dark",
     "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "dark",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "dark",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "system",
+    "tab": "landing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "system",
+    "tab": "terms",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "system",
+    "tab": "privacy",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "desktop",
+    "theme": "system",
+    "tab": "error-state",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "system",
+    "tab": "landing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "system",
+    "tab": "terms",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "system",
+    "tab": "privacy",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "mobile",
+    "theme": "system",
+    "tab": "error-state",
     "overflow": 0,
     "violations": []
   },
@@ -131,6 +271,17 @@
     "tab": "portfolio",
     "overflow": 0,
     "reducedMotionRules": true,
+    "skipLink": true,
+    "scopedHeaders": true,
+    "namedIconButtons": true,
+    "chartEquivalents": true,
+    "keyboardContract": {
+      "arrowNavigation": true,
+      "dialogFocus": true,
+      "focusRestored": true,
+      "restoredElement": "<a class=\"clr-muted\" href=\"#legal-terms\">Terms of Service</a>",
+      "triggerConnected": true
+    },
     "violations": []
   }
 ]

@@ -292,7 +292,7 @@ def _render_fb_results(r: dict) -> list:
             "Green = custom beats default. Equal-weight buy-and-hold on stocks in your analysis cache.",
             className="factor-lab-summary-note fs-12 clr-muted fsi",
         ),
-        table(className="screener-table", children=[
+        table(className="screener-table", caption="Backtest performance comparison", children=[
             html.Thead(html.Tr([
                 html.Th("Metric"),
                 html.Th("Custom Weights", className="clr-blue"),
@@ -346,7 +346,7 @@ def _render_fb_results(r: dict) -> list:
 
     weight_table = html.Div(className="scorecard mt-16", children=[
         html.Div("⚖️ Weight Changes vs Default", className="scorecard-header"),
-        table(className="screener-table", children=[
+        table(className="screener-table", caption="Custom and default factor weights", children=[
             html.Thead(html.Tr([html.Th("Factor"), html.Th("Custom"), html.Th("Default"), html.Th("Δ pp")])),
             html.Tbody(wc_rows),
         ]),
@@ -383,7 +383,7 @@ def _render_fb_results(r: dict) -> list:
             f"{', '.join(overlap) if overlap else 'none in common'}",
             className="factor-lab-overlap-note fs-12 clr-muted fsi",
         ),
-        table(className="screener-table", children=[
+        table(className="screener-table", caption="Custom and default stock rankings", children=[
             html.Thead(html.Tr([
                 html.Th("Ticker"), html.Th("Name"),
                 html.Th("Custom Score", className="clr-blue"),

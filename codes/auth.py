@@ -89,6 +89,18 @@ DEV_PERSONAS = {
 }
 
 
+def _auth_error_response(status_code: int = 400):
+    """Return a safe, structured authentication error that remains keyboard-readable."""
+    body = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentication error | FactorResearch</title><link rel="stylesheet" href="/assets/error_pages.css"><link rel="stylesheet" href="/assets/accessibility.css"></head>
+<body class="error-page"><a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" class="error-shell" tabindex="-1"><section class="error-card" role="alert">
+<h1>Authentication error</h1><p>{GENERIC_AUTH_ERROR}</p><a class="primary-action" href="/login">Try signing in again</a>
+</section></main></body></html>"""
+    return flask.Response(body, status=status_code, mimetype="text/html")
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Token Verification (Provider-Agnostic)
 # ──────────────────────────────────────────────────────────────────────────────
@@ -428,14 +440,14 @@ def setup_auth0_routes(app_server):
         
         if error:
             print("[AUTH] Callback received provider error")
-            return GENERIC_AUTH_ERROR, 400
+            return _auth_error_response(400)
 
         if not expected_state or not returned_state or not secrets.compare_digest(expected_state, returned_state):
             print("[AUTH] Callback rejected invalid OAuth state")
-            return GENERIC_AUTH_ERROR, 400
+            return _auth_error_response(400)
         
         if not code:
-            return "Missing authorization code", 400
+            return _auth_error_response(400)
         
         # Exchange code for token
         try:
@@ -451,7 +463,7 @@ def setup_auth0_routes(app_server):
             
             if response.status_code != 200:
                 print(f"[AUTH] Token exchange failed with status {response.status_code}")
-                return GENERIC_AUTH_ERROR, 400
+                return _auth_error_response(400)
             
             token_data = response.json()
             access_token = token_data.get("access_token")
@@ -463,9 +475,9 @@ def setup_auth0_routes(app_server):
                 return redirect("/")  # Redirect to app
         except Exception as e:
             print(f"[AUTH] Callback error type: {type(e).__name__}")
-            return GENERIC_AUTH_ERROR, 500
+            return _auth_error_response(500)
         
-        return GENERIC_AUTH_ERROR, 400
+        return _auth_error_response(400)
     
     @app_server.route("/logout")
     def auth_logout():

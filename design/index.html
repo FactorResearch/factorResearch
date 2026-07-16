@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Factor Research UI Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <div class="brand"><span class="brand-mark">F</span><span>FactorResearch</span></div>
+    
+      <nav class="rail-nav">
+        <button data-page="screener" class="nav-item active"><span>Screener</span></button>
+         <form class="sidebar-analyze" id="sidebarAnalyzeForm" role="search">
+        
+        <div class="sidebar-analyze-control">
+          
+          <input id="sidebarTicker" name="ticker" autocomplete="off" spellcheck="false" placeholder="Analyze ticker" aria-label="Analyze ticker from any page">
+          <button type="submit" aria-label="Open ticker analysis">↗</button>
+        </div>
+     
+      </form>
+        <button data-page="portfolio" class="nav-item"><span>Portfolio</span></button>
+        <button data-page="factorlab" class="nav-item"><span>Factor Lab</span></button>
+      </nav>
+      <div class="rail-footer">
+        <button class="nav-item"><span>Support</span></button>
+        <button class="profile"><span class="avatar">AM</span><span><strong>Amin</strong><small>Pro plan</small></span></button>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">F</span><strong>FactorResearch</strong></div>
+        <form class="mobile-analyze" id="mobileAnalyzeForm" role="search">
+          <input name="ticker" aria-label="Analyze ticker" placeholder="Analyze ticker..."><button type="submit" aria-label="Open ticker analysis">↗</button>
+        </form>
+        <div class="top-actions">
+          <span class="market-stamp">Market data as of May 16, 2025 9:30 AM ET</span>
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">◐</button>
+          <button class="icon-btn" aria-label="Notifications">◔</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="page-screener" class="page active reference-page screener-reference">
+          <section class="card table-card screener-table-card">
+            <div class="responsive-table">
+              <table>
+                <thead><tr><th>Company</th><th>Score </th><th>Price</th><th>Valuation </th><th>Quality </th><th>Trend</th><th>Updated</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="company"><span class="logo apple-logo">●</span><span><strong>Apple Inc. (AAPL)</strong></span></div></td><td><span class="score-number">82</span></td><td>$191.21</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                  <tr class="selected-row"><td><div class="company"><span class="logo microsoft-logo">▦</span><span><strong>Microsoft Corp. (MSFT)</strong></span></div></td><td><span class="score-number">78</span></td><td>$413.45</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                  <tr><td><div class="company"><span class="logo nvidia-logo">◉</span><span><strong>NVIDIA Corp. (NVDA)</strong></span></div></td><td><span class="score-number">75</span></td><td>$929.54</td><td><strong class="negative">Rich</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                  <tr><td><div class="company"><span class="logo berkshire-logo">B</span><span><strong>Berkshire Hathaway (BRK.B)</strong></span></div></td><td><span class="score-number">73</span></td><td>$507.80</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">Very High</span></td><td><span class="spark flat"></span></td><td>May 16, 2025</td></tr>
+                  <tr><td><div class="company"><span class="logo jpm-logo">JPM</span><span><strong>JPMorgan Chase (JPM)</strong></span></div></td><td><span class="score-number">70</span></td><td>$196.58</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer"><span>Showing 1 to 5 of 50 companies</span><div class="pagination"><button>20 per page⌄</button><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div>
+          </section>
+
+          <div class="screener-detail-grid">
+            <section class="card quick-overview-card">
+              <div class="section-title"><span class="section-index">A</span><h2>Quick Overview – Microsoft Corp. (MSFT)</h2></div>
+              <div class="quick-overview-body">
+                <div class="overview-score"><span>Factor Score</span><strong>78<small>/100</small></strong><div class="mini-divider"></div><div class="overview-values"><div><small>Industry Value</small><b>$470.00</b></div><div><small>vs. Current Price</small><b>$413.45</b></div><div><small>Upside</small><b class="positive">+13.7%</b></div></div><button class="outline-primary">Open full analysis →</button></div>
+                <div class="overview-verdict"><span>Verdict</span><strong class="positive">Attractive</strong></div>
+                <div class="overview-signals"><span>Top Strengths</span><ul><li>✓ Strong balance sheet & cash generation</li><li>✓ High returns on capital</li><li>✓ Durable competitive moat</li></ul><span>Main Concern</span><p class="warning-text"> Valuation is above 5-year average</p></div>
+              </div>
+            </section>
+
+            <section class="card score-development-card">
+              <div class="section-title score-title"><span class="section-index">B</span><h2>Score Development – Microsoft Corp. (MSFT)</h2><button>1Y⌄</button></div>
+              <div class="score-development-body">
+                <div class="score-side"><span>Current Score</span><strong>78<small>/100</small></strong><span>Trend</span><b class="positive">Improving</b><div class="delta-box"><strong>+6 pts</strong><small>vs. 1 year ago</small></div></div>
+                <svg class="score-line-chart" viewBox="0 0 520 250" aria-label="Score development chart"><path class="gridline" d="M20 20H500M20 80H500M20 140H500M20 200H500"/><path class="axis" d="M20 20V220H500"/><path class="line blue" d="M20 88 L60 76 L100 70 L140 78 L180 80 L220 66 L260 74 L300 112 L340 124 L380 96 L420 90 L460 66 L500 54"/><circle cx="500" cy="54" r="8" class="chart-dot"/></svg>
+                <div class="score-explainer"><a>What drove the change?</a><p>Score improved due to stronger earnings quality, better capital efficiency, and reduced leverage. Partially offset by higher valuation.</p><a>View score breakdown →</a></div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="page-analyze" class="page reference-page analysis-reference">
+          <div class="analysis-toolbar"><div class="breadcrumbs">Analyze <span>›</span> AAPL <span>›</span> Apple Inc.</div><div class="button-row"><button class="secondary-btn">☆ Watchlist</button><button class="secondary-btn">⇩ Download</button><button class="secondary-btn">•••</button></div></div>
+          <section class="card company-hero-card">
+            <div class="company-title"><span class="hero-logo apple-logo">●</span><div><h1>Apple Inc. <span>AAPL　•　NASDAQ</span></h1><p>Technology　•　Consumer Electronics</p></div></div>
+            <div class="hero-price"><strong>$198.53</strong><span class="positive">+2.41 (+1.23%)</span><small>May 16, 2025 · 4:00 PM ET</small></div>
+            <div class="hero-score"><span>Overall Score　</span><strong>78<small>/100</small></strong><b class="positive">Attractive</b><span class="spark up"></span></div>
+          </section>
+
+          <section class="analysis-metric-strip">
+            <article class="metric card"><span>Intrinsic Value</span><strong>$232.00</strong><small>Fair Value</small></article><article class="metric card"><span>Upside / Downside</span><strong class="positive">+16.9%</strong><small class="positive">Upside</small></article><article class="metric card"><span>Quality Score</span><strong>83 <small>/100</small></strong><small class="positive">High Quality</small></article><article class="metric card"><span>Piotroski F-Score</span><strong>8 <small>/9</small></strong><small class="positive">Strong</small></article><article class="metric card"><span>Dividend Yield</span><strong>0.52%</strong><small>Low</small></article><article class="metric card"><span>P/E (TTM)</span><strong>29.1x</strong><small class="negative">Premium</small></article><article class="metric card"><span>EV / EBIT (TTM)</span><strong>22.4x</strong><small class="negative">Premium</small></article>
+          </section>
+
+          <section class="card highlights-bar"><strong>Investment Highlights</strong><span>Brand & ecosystem moat</span><span>High returns on capital</span><span>Strong balance sheet</span><span>Consistent cash generation</span><span>AI integration across products</span><span>Global scale & pricing power</span></section>
+
+          <section class="analysis-data-grid">
+            <article class="card data-card"><h2>Valuation Summary</h2><dl><div><dt>Fair Value (Intrinsic)</dt><dd>$232.00</dd></div><div><dt>Current Price</dt><dd>$198.53</dd></div><div><dt>Margin of Safety</dt><dd class="positive">16.9%</dd></div><div><dt>Value Score</dt><dd class="positive">78 /100</dd></div></dl><h3>Multiples (TTM)</h3><dl><div><dt>P/E</dt><dd>29.1x</dd></div><div><dt>EV / EBITDA</dt><dd>20.3x</dd></div><div><dt>EV / EBIT</dt><dd>22.4x</dd></div><div><dt>Price / FCF</dt><dd>28.7x</dd></div></dl></article>
+            <article class="card data-card"><h2>Financial Health</h2><dl><div><dt>Overall Health</dt><dd><span class="badge positive-bg">Strong</span></dd></div><div><dt>Net Debt / EBITDA</dt><dd>-0.32x</dd></div><div><dt>Interest Coverage</dt><dd>34.2x</dd></div><div><dt>Current Ratio</dt><dd>1.34x</dd></div><div><dt>Quick Ratio</dt><dd>0.98x</dd></div><div><dt>Debt / Equity</dt><dd>1.17x</dd></div><div><dt>Altman Z-Score</dt><dd>6.41</dd></div></dl><small>Low bankruptcy risk</small></article>
+            <article class="card data-card"><h2>Profitability / Quality</h2><dl><div><dt>ROIC (TTM)</dt><dd>33.6%</dd></div><div><dt>ROE (TTM)</dt><dd>14.72%</dd></div><div><dt>ROA (TTM)</dt><dd>29.1%</dd></div><div><dt>Gross Margin</dt><dd>46.4%</dd></div><div><dt>Operating Margin</dt><dd>30.1%</dd></div><div><dt>Net Margin</dt><dd>25.3%</dd></div><div><dt>Revenue Quality</dt><dd><span class="badge positive-bg">High</span></dd></div></dl></article>
+            <article class="card data-card"><h2>Risk & Volatility</h2><dl><div><dt>Beta (5Y)</dt><dd>1.16</dd></div><div><dt>S&P Dev (5Y)</dt><dd>25.9%</dd></div><div><dt>Downside Deviation</dt><dd>18.2%</dd></div><div><dt>Max Drawdown (5Y)</dt><dd class="negative">-27.3%</dd></div><div><dt>Sharpe Ratio (5Y)</dt><dd>0.76</dd></div><div><dt>Price Volatility (5Y)</dt><dd>24.1%</dd></div><div><dt>Value at Risk (95%)</dt><dd class="negative">-4.8%</dd></div></dl></article>
+          </section>
+
+          <section class="analysis-middle-grid">
+            <article class="card sentiment-card"><div class="card-header"><h2>Market Sentiment</h2><strong class="positive">Bullish</strong></div><div class="sentiment-meter"><span></span></div><div class="sentiment-labels"><small>Bullish 46%</small><small>Neutral 22%</small><small>Bearish 10%</small></div><dl><div><dt>Put / Call Ratio (5D)</dt><dd>0.65</dd></div><div><dt>Short Interest</dt><dd>0.72%</dd></div><div><dt>Market Cap</dt><dd>$3.02T</dd></div><div><dt>Avg. Daily Volume (3M)</dt><dd>57.4M</dd></div></dl></article>
+            <article class="card factor-breakdown"><h2>Factor Model Breakdown</h2><div class="model-cards"><div><small>Z-Score Model</small><strong class="positive">Z = 6.41</strong><span>Very Safe</span><ul><li>Low bankruptcy risk</li><li>Strong liquidity & solvency</li><li>Excellent cash generation</li></ul><footer>Score 85/100　Weight 20%</footer></div><div><small>Piotroski F-Score</small><strong class="positive">8 /9</strong><span>Strong</span><ul><li>Profitable & efficient</li><li>Strong balance sheet</li><li>Positive operating trend</li></ul><footer>Score 82/100　Weight 15%</footer></div><div><small>ROIC Quality Model</small><strong class="positive">33.6%</strong><span>Excellent</span><ul><li>High returns on capital</li><li>Sustainable advantage</li><li>Above cost of capital</li></ul><footer>Score 88/100　Weight 20%</footer></div><div><small>Value Model (EV/EBIT)</small><strong>22.4x</strong><span class="warning-text">Fair</span><ul><li>Slightly above median</li><li>Growth justifies multiple</li><li>Fair valuation</li></ul><footer>Score 65/100　Weight 15%</footer></div><div><small>Momentum Model</small><strong class="positive">+18.2%</strong><span>Positive</span><ul><li>Uptrend over 12 months</li><li>Strong relative performance</li><li>Above 50/200-day MA</li></ul><footer>Score 71/100　Weight 10%</footer></div><div><small>Sentiment Model</small><strong class="positive">Bullish</strong><span>Positive</span><ul><li>Analysts bullish</li><li>Low short interest</li><li>Positive news flow</li></ul><footer>Score 72/100　Weight 10%</footer></div></div></article>
+          </section>
+
+          <section class="analysis-chart-grid">
+            <article class="card chart-card"><h2>Price vs. Intrinsic Value</h2><div class="legend"><span>— Price</span><span>--- Intrinsic Value</span><span>--- Fair Value</span></div><svg class="chart" viewBox="0 0 520 220"><path class="gridline" d="M30 20H500M30 70H500M30 120H500M30 170H500"/><path class="line blue" d="M30 180L65 150L95 165L130 120L165 140L200 110L235 115L270 80L305 102L340 65L375 78L410 48L445 70L500 58"/><path class="line green" d="M30 140L65 132L95 120L130 126L165 105L200 100L235 87L270 52L305 72L340 40L375 52L410 35L445 50L500 45"/></svg></article>
+            <article class="card chart-card"><h2>Factor Score History</h2><div class="legend"><span>Quality</span><span>Value</span><span>Momentum</span><span>Overall Score</span></div><svg class="chart" viewBox="0 0 520 220"><path class="gridline" d="M30 20H500M30 70H500M30 120H500M30 170H500"/><path class="line green" d="M30 125L90 115L150 122L210 105L270 120L330 112L390 130L450 110L500 96"/><path class="line purple" d="M30 70L90 63L150 72L210 58L270 70L330 66L390 78L450 62L500 58"/><path class="line yellow" d="M30 165L90 150L150 160L210 145L270 155L330 142L390 151L450 137L500 124"/><path class="line blue" d="M30 118L90 110L150 116L210 100L270 110L330 104L390 115L450 98L500 88"/></svg></article>
+            <article class="card comparison-card"><h2>Factor Comparison (vs. Sector Median)</h2><div class="bar-row"><span>Quality</span><div><i style="width:83%"></i></div><b>83　–　62</b></div><div class="bar-row"><span>Value</span><div><i style="width:62%"></i></div><b>50</b></div><div class="bar-row"><span>Momentum</span><div><i style="width:71%"></i></div><b>71　–　48</b></div><div class="bar-row"><span>Sentiment</span><div><i style="width:72%"></i></div><b>72　–　55</b></div></article>
+          </section>
+        </section>
+
+        <section id="page-portfolio" class="page">
+          <div class="page-heading"><div><p class="eyebrow">Portfolio intelligence</p><h1>Core Portfolio</h1><p>Risk, return, concentration, and scenario analysis.</p></div><div class="button-row"><button class="secondary-btn">Edit holdings</button><button class="primary-btn">Run analysis</button></div></div>
+          <section class="metric-strip">
+            <article class="metric card"><span>Total value</span><strong>$118,458</strong><small class="positive">+$2,104 today</small></article>
+            <article class="metric card"><span>Portfolio score</span><strong>76</strong><small>Above benchmark</small></article>
+            <article class="metric card"><span>Expected return</span><strong>8.4%</strong><small>10-year annualized</small></article>
+            <article class="metric card"><span>Risk</span><strong>Medium</strong><small>14.8% volatility</small></article>
+          </section>
+          <div class="content-grid">
+            <section class="card span-2"><div class="card-header"><div><h2>Projected portfolio range</h2><p>1,000 Monte Carlo paths · 24 months</p></div><span class="badge neutral">Base case</span></div><svg class="chart tall" viewBox="0 0 700 260"><path class="gridline" d="M0 40H700M0 95H700M0 150H700M0 205H700"/><path class="fan" d="M0 180 C140 170,250 120,360 130 S570 65,700 50 L700 210 C560 190,450 205,340 190 S130 205,0 190Z"/><path class="line" d="M0 185 C120 175,245 155,350 150 S550 110,700 100"/></svg></section>
+            <section class="card"><div class="card-header"><div><h2>Allocation</h2><p>By sector</p></div></div><div class="donut"><div class="donut-ring"></div><ul><li><span></span>Technology 42%</li><li><span></span>Healthcare 21%</li><li><span></span>Financials 18%</li><li><span></span>Other 19%</li></ul></div></section>
+            <section class="card span-2 table-card"><div class="card-header"><div><h2>Holdings</h2><p>6 positions</p></div></div><div class="responsive-table"><table><thead><tr><th>Holding</th><th>Weight</th><th>Value</th><th>Return</th><th>Score</th><th>Risk</th></tr></thead><tbody><tr><td>Apple Inc.</td><td>22.4%</td><td>$26,535</td><td class="positive">+18.2%</td><td>82</td><td>Low</td></tr><tr><td>Microsoft</td><td>19.8%</td><td>$23,454</td><td class="positive">+21.6%</td><td>78</td><td>Low</td></tr><tr><td>Johnson & Johnson</td><td>16.3%</td><td>$19,309</td><td class="negative">−2.4%</td><td>71</td><td>Low</td></tr></tbody></table></div></section>
+            <section class="card"><div class="card-header"><div><h2>Weak link</h2><p>Largest score drag</p></div></div><div class="weak-link"><span class="logo">T</span><div><strong>Tesla Inc.</strong><p>High valuation and volatility reduce portfolio resilience.</p><button class="text-btn">Review position</button></div></div></section>
+          </div>
+        </section>
+
+        <section id="page-factorlab" class="page">
+          <div class="page-heading"><div><p class="eyebrow">Research workspace</p><h1>Factor Weight Lab</h1><p>Build, test, and compare custom factor configurations.</p></div><div class="button-row"><button class="secondary-btn">Reset default</button><button class="primary-btn">Run backtest</button></div></div>
+          <section class="lab-toolbar card"><label><span>Configuration</span><select><option>Balanced quality</option></select></label><label><span>Universe</span><select><option>S&amp;P 500</option></select></label><label><span>Rebalance</span><select><option>Quarterly</option></select></label><div class="total-weight"><span>Total weight</span><strong>100%</strong></div></section>
+          <section class="factor-grid">
+            <article class="factor-card card"><div><strong>Value</strong><small>Price relative to fundamentals</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Quality</strong><small>Profitability and durability</small></div><output>18%</output><input type="range" value="18" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Momentum</strong><small>Price and earnings trend</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Profitability</strong><small>Margins and capital efficiency</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>FCF Quality</strong><small>Cash conversion and stability</small></div><output>10%</output><input type="range" value="10" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Earnings revisions</strong><small>Direction of analyst estimates</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Capital allocation</strong><small>Buybacks, debt, and reinvestment</small></div><output>8%</output><input type="range" value="8" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Growth quality</strong><small>Sustainable growth characteristics</small></div><output>7%</output><input type="range" value="7" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Risk</strong><small>Volatility and downside resilience</small></div><output>6%</output><input type="range" value="6" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Altman</strong><small>Financial distress protection</small></div><output>3%</output><input type="range" value="3" min="0" max="30"></article>
+          </section>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Mobile navigation">
+        <button data-page="screener" class="active"><small>Screener</small></button>
+        <button data-page="analyze"><small>Analyze</small></button>
+        <button data-page="portfolio"><small>Portfolio</small></button>
+        <button data-page="factorlab"><small>Factor Lab</small></button>
+      </nav>
+    </div>
+  </div>
+<script>
+const root=document.documentElement;
+document.getElementById('themeToggle').addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark'});
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===`page-${name}`));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));}
+document.querySelectorAll('[data-page]').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)));
+function openTickerAnalysis(form){
+  const input=form.querySelector('input[name="ticker"]');
+  const ticker=input.value.trim().toUpperCase();
+  if(!ticker){input.focus();return;}
+  document.querySelector('.breadcrumbs').innerHTML=`Analyze <span>›</span> ${ticker} <span>›</span> Company analysis`;
+  showPage('analyze');
+  history.replaceState(null,'',`#analyze/${encodeURIComponent(ticker)}`);
+  input.value=ticker;
+  document.querySelector('#page-analyze').scrollIntoView({behavior:'smooth',block:'start'});
+}
+['sidebarAnalyzeForm','mobileAnalyzeForm'].forEach(id=>document.getElementById(id).addEventListener('submit',event=>{event.preventDefault();openTickerAnalysis(event.currentTarget);}));
+document.querySelectorAll('input[type="range"]').forEach(slider=>slider.addEventListener('input',()=>slider.closest('.factor-card').querySelector('output').textContent=`${slider.value}%`));
+</script>
+</body>
+</html>

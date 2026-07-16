@@ -50,6 +50,33 @@ def format_financial(
     return f"{prefix}{numeric:,.{decimals}f}{suffix}"
 
 
+def format_financial_spoken(
+    value,
+    kind: FinancialFormat | str = FinancialFormat.NUMBER,
+    *,
+    decimals: int = 1,
+    currency: str = "$",
+) -> str:
+    """Spell out financial signs and units for assistive technology."""
+    number = _number(value)
+    if number is None:
+        return "Not available"
+    kind = FinancialFormat(kind)
+    numeric = float(number)
+    sign = "negative " if numeric < 0 else ""
+    magnitude = f"{abs(numeric):,.{decimals}f}"
+    if kind == FinancialFormat.CURRENCY:
+        unit = "US dollars" if currency == "$" else f"{currency} currency units"
+        return f"{sign}{magnitude} {unit}"
+    if kind == FinancialFormat.PERCENT:
+        return f"{sign}{magnitude} percent"
+    if kind == FinancialFormat.MULTIPLE:
+        return f"{sign}{magnitude} times"
+    if kind == FinancialFormat.RATIO:
+        return f"{sign}{magnitude} ratio"
+    return f"{sign}{magnitude}"
+
+
 def score_badge(score, *, label: str = "Score"):
     numeric = float(_number(score) or 0)
     tone, word = (
@@ -89,11 +116,18 @@ def metric_value(
     hint: str = "",
 ):
     formatted = format_financial(value, kind, decimals=decimals)
+    spoken = format_financial_spoken(value, kind, decimals=decimals)
     return html.Div(
         [
             html.Div(label, className="ds-metric__label"),
             html.Div(
-                [formatted, html.Span(unit, className="ds-metric__unit")],
+                [
+                    html.Span(
+                        [formatted, html.Span(unit, className="ds-metric__unit")],
+                        **{"aria-hidden": "true"},
+                    ),
+                    html.Span(f"{label}: {spoken}{f' {unit}' if unit else ''}", className="sr-only"),
+                ],
                 className="ds-metric__value",
             ),
             html.Div(hint, className="ds-metric__hint") if hint else None,
@@ -108,7 +142,13 @@ def delta(value, *, label: str = "Change"):
         ("▲", "positive") if numeric > 0 else ("▼", "danger") if numeric < 0 else ("●", "neutral")
     )
     return html.Span(
-        [html.Span(cue, **{"aria-hidden": "true"}), f" {label} {numeric:+.1f}%"],
+        [
+            html.Span(f"{cue} {label} {numeric:+.1f}%", **{"aria-hidden": "true"}),
+            html.Span(
+                f"{label}: {'negative ' if numeric < 0 else 'positive ' if numeric > 0 else ''}{abs(numeric):.1f} percent",
+                className="sr-only",
+            ),
+        ],
         className=f"ds-delta ds-delta--{tone}",
     )
 

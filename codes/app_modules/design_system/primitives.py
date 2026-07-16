@@ -78,8 +78,10 @@ def form_field(
     label: str, control: Any, *, hint: str = "", error: str = "", required: bool = False
 ):
     control_id = getattr(control, "id", None)
+    message_id = f"{control_id}-message" if control_id else None
     return html.Div(
         className=_classes("ds-field", "is-error" if error else None),
+        **{"data-required": str(required).lower()},
         children=[
             html.Label(
                 [label, html.Span(" *", **{"aria-hidden": "true"}) if required else None],
@@ -87,7 +89,12 @@ def form_field(
                 className="ds-field__label",
             ),
             control,
-            html.Div(error or hint, className="ds-field__message", role="alert" if error else None),
+            html.Div(
+                error or hint,
+                id=message_id,
+                className="ds-field__message",
+                role="alert" if error else None,
+            ),
         ],
     )
 
@@ -222,10 +229,19 @@ def slider(
 ):
     control_id = props.pop("id", control_id)
     state = InteractionState(state)
-    return dcc.Slider(
+    if state in {InteractionState.DISABLED, InteractionState.READ_ONLY}:
+        props["disabled"] = True
+    # Dash's Radix thumb is clipped below WCAG's target minimum at narrow widths.
+    # A number input preserves exact min/max/step editing and native arrow-key behavior.
+    props.pop("marks", None)
+    props.pop("tooltip", None)
+    props.pop("allow_direct_input", None)
+    return dcc.Input(
         id=control_id,
+        type="number",
         min=min,
         max=max,
+        step=props.pop("step", 1),
         value=value,
         className=_classes("ds-slider", f"is-{state.value}", props.pop("className", "")),
         **props,
@@ -400,7 +416,7 @@ def pagination(current: int, total: int, *, previous_id, next_id):
 
 def responsive_table(children: Any, *, label: str):
     return html.Div(
-        table(children),
+        table(children, caption=label),
         className="ds-table-wrap",
         role="region",
         tabIndex=0,
@@ -408,8 +424,26 @@ def responsive_table(children: Any, *, label: str):
     )
 
 
-def table(children: Any = None, *, className: str = "", **props):
+def _scope_table_headers(node: Any) -> None:
+    if isinstance(node, (list, tuple)):
+        for child in node:
+            _scope_table_headers(child)
+        return
+    if getattr(node, "_type", "") == "Th" and not getattr(node, "scope", None):
+        node.scope = "col"
+    children = getattr(node, "children", None)
+    if children is not None:
+        _scope_table_headers(children)
+
+
+def table(children: Any = None, *, caption: str = "", className: str = "", **props):
     children = props.pop("children", children)
+    _scope_table_headers(children)
+    if caption:
+        if isinstance(children, (list, tuple)):
+            children = [html.Caption(caption, className="sr-only"), *children]
+        else:
+            children = [html.Caption(caption, className="sr-only"), children]
     return html.Table(
         children,
         className=_classes("ds-table", className),
