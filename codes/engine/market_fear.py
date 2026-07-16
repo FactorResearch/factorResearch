@@ -6,11 +6,10 @@ rankings, or portfolio sizing.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from statistics import mean, stdev
-from typing import Iterable
 
 from codes.core import model_utils as mu
-
 
 VERY_LOW_FEAR = "VERY_LOW_FEAR"
 NORMAL = "NORMAL"

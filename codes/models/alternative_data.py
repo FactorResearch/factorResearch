@@ -11,8 +11,9 @@ sources are wired in.
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Iterable
+from typing import Any
 
 from codes.core import model_utils as mu
 

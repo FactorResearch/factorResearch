@@ -197,8 +197,6 @@ def calc_cluster_buying_score(
       - recency (linear decay: most-recent = 1.0, oldest in window = ~0.0)
     """
     ref = reference_date or datetime.utcnow()
-    cutoff = ref - timedelta(days=CLUSTER_WINDOW_DAYS)
-
     buys = [
         t for t in _filter_transactions(transactions,
                                         lookback_days=CLUSTER_WINDOW_DAYS,

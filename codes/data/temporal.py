@@ -294,7 +294,7 @@ def upsert_price(row: dict) -> None:
 def get_price_history(security_id: str, start: dt.date, end: dt.date, *, as_of: dt.datetime | None = None) -> list[dict]:
     """Return observations known by ``as_of``; never substitute current prices."""
     ensure_schema()
-    cutoff = as_of or dt.datetime.now(dt.timezone.utc)
+    cutoff = as_of or dt.datetime.now(dt.UTC)
     with db._conn() as con:
         con.row_factory = dict_row
         rows = con.execute("""SELECT price_date AS "Date", close AS "Close", adjusted_close AS "AdjClose", currency, source

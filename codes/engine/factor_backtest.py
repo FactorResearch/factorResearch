@@ -34,9 +34,9 @@ import numpy as np
 import pandas as pd
 
 from codes.core import financial_math as fm
-from .scorer import ENHANCED_WEIGHTS
-from ..data import  api_fetcher, db
 
+from ..data import api_fetcher, db
+from .scorer import ENHANCED_WEIGHTS
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -99,7 +99,7 @@ def _normalise_weights(raw: dict[str, float]) -> dict[str, float]:
     total = sum(cleaned.values())
     if total <= 0:
         n = len(cleaned)
-        return {k: 1.0 / n for k in cleaned}
+        return dict.fromkeys(cleaned, 1.0 / n)
     return {k: v / total for k, v in cleaned.items()}
 
 

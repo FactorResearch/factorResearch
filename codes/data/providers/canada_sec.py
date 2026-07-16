@@ -27,8 +27,7 @@ from . import (
 )
 from .canada import is_canadian_symbol, normalize_canada_symbol
 from .canada_db import ingest_verified_canada_financials
-from .canada_normalization import CanadaNormalizationResult, REQUIRED_FIELDS
-
+from .canada_normalization import REQUIRED_FIELDS, CanadaNormalizationResult
 
 TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"

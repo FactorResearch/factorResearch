@@ -8,15 +8,17 @@ Usage:
     python -m codes.workers.sec_refresh_worker
 """
 
-import sys
 import os
+import sys
 import time
+
 from dotenv import load_dotenv
+
 load_dotenv()
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from codes.data import sec_data, db
+from codes.data import db, sec_data
 from codes.engine import universe
 
 _MIN_GAP_SECONDS = 0.34   # ~3 req/sec, matches screener.py's existing SEC rate limit

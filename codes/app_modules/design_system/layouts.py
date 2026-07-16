@@ -17,12 +17,6 @@ def stack(children, *, gap: str = "4", className: str = "", **props):
     if gap not in {"0", "1", "2", "3", "4", "5", "6", "section"}:
         raise ValueError("gap must use the semantic spacing scale")
     return html.Div(children, className=_join(f"ds-stack ds-stack--gap-{gap}", className), **props)
-
-
-def cluster(children, *, className: str = "", **props):
-    return html.Div(children, className=_join("ds-cluster", className), **props)
-
-
 def dashboard_grid(children, *, minimum: str = "md", className: str = "", **props):
     if minimum not in {"sm", "md", "lg"}:
         raise ValueError("minimum must be sm, md, or lg")
@@ -49,17 +43,5 @@ def page_header(
         ],
         className=_join("ds-page-header", className),
     )
-
-
-def split_layout(main, sidebar, *, sticky: bool = False):
-    return html.Div(
-        [
-            html.Main(main),
-            html.Aside(sidebar, className="ds-split__sidebar" + (" is-sticky" if sticky else "")),
-        ],
-        className="ds-split",
-    )
-
-
 def mobile_action_bar(children):
     return html.Div(children, className="ds-mobile-actions")

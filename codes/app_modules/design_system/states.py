@@ -6,14 +6,6 @@ from .primitives import alert, button, empty_state, progress, retry_panel, skele
 from .schemas import SectionState, UIState
 
 
-def inline_pending_indicator(label: str):
-    return status_region(
-        [html.Span(className="ds-spinner", **{"aria-hidden": "true"}), label],
-        className="ds-pending",
-        **{"aria-busy": "true"},
-    )
-
-
 def card_skeleton(*, label: str = "Loading card"):
     return html.Div(
         skeleton(lines=4, label=label), className="ds-skeleton-frame ds-skeleton-frame--card"

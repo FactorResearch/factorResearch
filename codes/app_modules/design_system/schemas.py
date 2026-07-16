@@ -1,8 +1,8 @@
 """Typed schema and asynchronous-state contracts for repeatable UI sections."""
 
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Callable, Mapping, Sequence
 
 
 class UIState(StrEnum):

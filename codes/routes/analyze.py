@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import html
 import hashlib
+import html
 import json
 import re
 from urllib.parse import urlencode
@@ -20,7 +20,6 @@ from codes.services.analysis_snapshot_service import (
     list_ticker_snapshots,
     save_standard_snapshot,
 )
-
 
 analyze_pages = flask.Blueprint("analysis_pages", __name__)
 _TICKER_RE = re.compile(r"^[A-Z]{1,6}(\.[A-Z])?$")

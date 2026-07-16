@@ -5,11 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-from codes.core import app_flags
+
 from codes import auth
+from codes.core import app_flags
 from codes.data import db
 from codes.services.pricing import FREE, PLANS, PREMIUM, normalize_plan
-
 
 ACTIVE_SUBSCRIPTION_STATUSES = {"active", "trialing", "past_due"}
 TRIAL_ANALYSIS_LIMIT = PLANS[FREE]["analysis_limit"]

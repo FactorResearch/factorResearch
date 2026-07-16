@@ -2,7 +2,6 @@
 
 from codes.core.production_readiness import validate_production_environment
 
-
 if __name__ == "__main__":
     failures = validate_production_environment()
     if failures:

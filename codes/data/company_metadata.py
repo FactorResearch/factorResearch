@@ -5,12 +5,11 @@ Decouples screener filter metadata (sector, industry, exchange) from the
 lazy, per-user SEC analysis pipeline (sec_data.fetch_company_facts()).
 """
 
+import os
 import threading
 import time
-import os
 
-from . import cache
-from . import sec_data
+from . import cache, sec_data
 
 _KIND = "company_meta"
 _KEY = "map"

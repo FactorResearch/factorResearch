@@ -48,11 +48,12 @@ Mitigation in this module:
 
 import html
 import re
-
-import requests
-import pandas as pd
-from . import cache,db
 from datetime import datetime
+
+import pandas as pd
+import requests
+
+from . import cache, db
 
 SEC_HEADERS = {"User-Agent": "GrahamScoreApp/1.0 contact@example.com"}
 FACTS_URL   = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json"
@@ -153,7 +154,7 @@ def _recent_8k_metadata(subs: dict, limit: int) -> list[dict]:
     documents = recent.get("primaryDocument") or []
 
     rows = []
-    for form, filing_date, accession, document in zip(forms, dates, accessions, documents):
+    for form, filing_date, accession, document in zip(forms, dates, accessions, documents, strict=False):
         if form not in {"8-K", "8-K/A"} or not accession or not document:
             continue
         rows.append({
@@ -242,7 +243,7 @@ def _latest_filing_date(subs: dict) -> str | None:
         forms  = recent.get("form", [])
         dates  = recent.get("filingDate", [])
         target = {"10-K","10-Q","20-F","40-F","10-K/A","10-Q/A","20-F/A","40-F/A"}
-        matches = [date for form, date in zip(forms, dates) if form in target]
+        matches = [date for form, date in zip(forms, dates, strict=False) if form in target]
         return max(matches) if matches else None
     except (KeyError, TypeError):
         return None

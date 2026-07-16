@@ -44,7 +44,6 @@ from datetime import datetime, timedelta
 
 from codes.core import model_utils as mu
 
-
 # ── Internal helpers ──────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:

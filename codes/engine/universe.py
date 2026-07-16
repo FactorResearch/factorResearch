@@ -1,12 +1,10 @@
-import time
 import datetime as dt
+import time
 
 from codes.core.ports import TickerUniverseReader
 from codes.data.providers.sec_universe import SecTickerUniverseAdapter
 
-from ..data import cache
-from ..data import sec_data
-from ..data import temporal
+from ..data import cache, sec_data, temporal
 
 # ISSUE_003: rate gap for the eligibility sweep — matches the existing
 # ~3 req/sec convention used by screener.py / sec_refresh_worker.py.

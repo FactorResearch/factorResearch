@@ -17,9 +17,14 @@ from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
 from codes.core.config import is_production
-from codes.services import analysis_demand, performance_metrics, permissions, product_analytics
+from codes.services import (
+    analysis_demand,
+    performance_metrics,
+    permissions,
+    product_analytics,
+    stock_analysis,
+)
 from codes.services import screener_service as screener
-from codes.services import stock_analysis
 from codes.services.stock_analysis import _is_rate_limit_error
 from codes.services.stock_analysis import analyze_stock_primary as analyze_stock
 

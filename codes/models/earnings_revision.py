@@ -60,11 +60,10 @@ Note on revision proxies:
 """
 
 import math
-from typing import Optional
 
 from codes.core import model_utils as mu
-from ..data import api_fetcher as _av
 
+from ..data import api_fetcher as _av
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -88,11 +87,11 @@ _FH_PAID_METHODS = {
 
 # ── Pure helpers ──────────────────────────────────────────────────────────────
 
-def _safe(val) -> Optional[float]:
+def _safe(val) -> float | None:
     return mu.safe_float(val)
 
 
-def _pct_change(old, new) -> Optional[float]:
+def _pct_change(old, new) -> float | None:
     """Percentage change; returns None when old ≈ 0."""
     return mu.percent_change(old, new)
 
@@ -103,7 +102,7 @@ def _sigmoid_score(value: float, center: float = 0.0, scale: float = 5.0) -> flo
     return 100.0 / (1.0 + math.exp(-z))
 
 
-def _linear_slope(values: list) -> Optional[float]:
+def _linear_slope(values: list) -> float | None:
     """
     OLS slope of a sequence, normalised by |mean|.
     Returns % change per period; positive = rising trend.
@@ -247,7 +246,7 @@ def _fetch_recommendation_trends(symbol: str) -> list:
 
 # ── Metric calculators (pure — no I/O, fully testable) ───────────────────────
 
-def calc_eps_revision(eps_estimates: list, lookback_periods: int = 1) -> Optional[float]:
+def calc_eps_revision(eps_estimates: list, lookback_periods: int = 1) -> float | None:
     """
     EPS revision proxy: % change from the estimate N periods ago to the most
     recent estimate across the available forward consensus series.
@@ -267,7 +266,7 @@ def calc_eps_revision(eps_estimates: list, lookback_periods: int = 1) -> Optiona
     return _linear_slope(chronological)
 
 
-def calc_revenue_revision(rev_estimates: list, lookback_periods: int = 1) -> Optional[float]:
+def calc_revenue_revision(rev_estimates: list, lookback_periods: int = 1) -> float | None:
     """Revenue revision proxy — same approach as EPS revision."""
     values = [d["rev_avg"] for d in rev_estimates if d.get("rev_avg") is not None]
     if len(values) < 2:
@@ -278,7 +277,7 @@ def calc_revenue_revision(rev_estimates: list, lookback_periods: int = 1) -> Opt
     return _linear_slope(chronological)
 
 
-def calc_earnings_surprise_avg(surprises: list, n_quarters: int = 4) -> Optional[float]:
+def calc_earnings_surprise_avg(surprises: list, n_quarters: int = 4) -> float | None:
     """
     Average earnings surprise % over last N quarters, outliers filtered at 3σ.
     Positive = company consistently beats estimates (implicit upward revision signal).
@@ -291,7 +290,7 @@ def calc_earnings_surprise_avg(surprises: list, n_quarters: int = 4) -> Optional
     return sum(filtered) / len(filtered) if filtered else None
 
 
-def calc_revision_breadth(rec_trends: list) -> Optional[float]:
+def calc_revision_breadth(rec_trends: list) -> float | None:
     """
     Net analyst sentiment ∈ [-1, +1].
     Uses change in bull/bear ratio between the two most recent monthly snapshots.
@@ -315,7 +314,7 @@ def calc_revision_breadth(rec_trends: list) -> Optional[float]:
 
 # ── Component scorers (sigmoid-based, return (score, note)) ──────────────────
 
-def _score_eps_revision_30d(rev_pct: Optional[float]) -> tuple:
+def _score_eps_revision_30d(rev_pct: float | None) -> tuple:
     max_pts = 35
     if rev_pct is None:
         return max_pts * 0.5, "Analyst estimate data unavailable (neutral)"
@@ -333,7 +332,7 @@ def _score_eps_revision_30d(rev_pct: Optional[float]) -> tuple:
     return round(s, 1), note
 
 
-def _score_eps_revision_90d(rev_pct: Optional[float]) -> tuple:
+def _score_eps_revision_90d(rev_pct: float | None) -> tuple:
     max_pts = 25
     if rev_pct is None:
         return max_pts * 0.5, "Analyst estimate data unavailable (neutral)"
@@ -349,7 +348,7 @@ def _score_eps_revision_90d(rev_pct: Optional[float]) -> tuple:
     return round(s, 1), note
 
 
-def _score_revenue_revision(rev_pct: Optional[float]) -> tuple:
+def _score_revenue_revision(rev_pct: float | None) -> tuple:
     max_pts = 20
     if rev_pct is None:
         return max_pts * 0.5, "Revenue estimate data unavailable (neutral)"
@@ -365,7 +364,7 @@ def _score_revenue_revision(rev_pct: Optional[float]) -> tuple:
     return round(s, 1), note
 
 
-def _score_earnings_surprise(surp_avg: Optional[float]) -> tuple:
+def _score_earnings_surprise(surp_avg: float | None) -> tuple:
     max_pts = 20
     if surp_avg is None:
         return max_pts * 0.5, "No earnings surprise history (neutral)"

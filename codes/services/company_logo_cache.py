@@ -65,7 +65,7 @@ def get_or_fetch_logo(symbol: str, company_name: str) -> dict | None:
 
     content, mime_type = fetched
     content_hash = hashlib.sha256(content).hexdigest()
-    expires_at = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=_CACHE_DAYS)
+    expires_at = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=_CACHE_DAYS)
     try:
         db.upsert_company_logo(
             key,

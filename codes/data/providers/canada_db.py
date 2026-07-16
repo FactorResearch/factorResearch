@@ -79,6 +79,8 @@ def ingest_verified_canada_financials(
 
 def materialize_canada_screener_projection(symbol: str) -> bool:
     """Backfill a verified Canada row from already-persisted canonical facts."""
+    from .canada import CanadaProviderAdapter
+
     normalized_symbol = normalize_canada_symbol(symbol)
     provider = CanadaProviderAdapter(CanadaDatabaseDataSource())
     result = build_canada_scoring_facts(provider, normalized_symbol)

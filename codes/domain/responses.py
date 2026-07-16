@@ -7,9 +7,10 @@ own formatting, CSS classes, component selection, layout, links, and HTTP envelo
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Any, Mapping
+from typing import Any
 
 JsonValue = None | bool | int | float | str | list["JsonValue"] | dict[str, "JsonValue"]
 
@@ -127,7 +128,7 @@ class FactorResponse:
     metrics: Mapping[str, JsonValue] = field(default_factory=lambda: MappingProxyType({}))
 
     @classmethod
-    def from_mapping(cls, key: str, raw: Mapping[str, Any] | None) -> "FactorResponse":
+    def from_mapping(cls, key: str, raw: Mapping[str, Any] | None) -> FactorResponse:
         metrics = _immutable_mapping(raw)
         return cls(
             key=key, score=_factor_score(metrics), status=_factor_status(metrics), metrics=metrics
@@ -169,7 +170,7 @@ class AnalysisResponse:
     _details: Mapping[str, JsonValue] = field(repr=False, compare=False)
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any], symbol: str = "") -> "AnalysisResponse":
+    def from_mapping(cls, raw: Mapping[str, Any], symbol: str = "") -> AnalysisResponse:
         enhanced = raw.get("enhanced") or raw.get("composite") or {}
         if not isinstance(enhanced, Mapping):
             enhanced = {}
@@ -269,7 +270,7 @@ class ScreenerResponse:
     _details: Mapping[str, JsonValue] = field(repr=False, compare=False)
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any]) -> "ScreenerResponse":
+    def from_mapping(cls, raw: Mapping[str, Any]) -> ScreenerResponse:
         return cls(
             symbol=str(raw.get("symbol") or "").upper(),
             name=str(raw.get("name") or raw.get("symbol") or ""),
@@ -310,7 +311,7 @@ class PortfolioResponse:
     holdings: int
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any]) -> "PortfolioResponse":
+    def from_mapping(cls, raw: Mapping[str, Any]) -> PortfolioResponse:
         return cls(name=str(raw.get("name") or ""), holdings=max(0, int(raw.get("holdings") or 0)))
 
     def to_dict(self) -> dict[str, JsonValue]:
@@ -324,7 +325,7 @@ class UserResponse:
     settings: Mapping[str, JsonValue]
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any]) -> "UserResponse":
+    def from_mapping(cls, raw: Mapping[str, Any]) -> UserResponse:
         settings = raw.get("settings") if isinstance(raw.get("settings"), Mapping) else {}
         appearance = (
             settings.get("appearance") if isinstance(settings.get("appearance"), Mapping) else {}
@@ -364,7 +365,7 @@ class SubscriptionResponse:
     paid: bool
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any]) -> "SubscriptionResponse":
+    def from_mapping(cls, raw: Mapping[str, Any]) -> SubscriptionResponse:
         return cls(
             plan=str(raw.get("plan") or "free"),
             status=str(raw.get("status") or "trialing"),

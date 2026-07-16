@@ -37,7 +37,6 @@ Requires new sec_facts keys added to sec_data.py:
 
 from codes.core import model_utils as mu
 
-
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:
@@ -102,7 +101,6 @@ def compute_single(price: float | None, sec: dict) -> dict:
     """
     ebit    = _first(sec.get("op_income", []))     # operating income ≈ EBIT
     shares  = _first(sec.get("shares",    []))
-    lt_debt = _first(sec.get("lt_debt",   []))
     cur_lib = _first(sec.get("cur_lib",   []))
     cur_ast = _first(sec.get("cur_ast",   []))
     ppe     = _first(sec.get("ppe_net",   []))      # net PP&E (new field)

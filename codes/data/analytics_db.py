@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from contextlib import contextmanager
 import datetime as _dt
 import json
 import os
+from contextlib import contextmanager
 
 from dotenv import load_dotenv
+
 from codes.core.db_pool import ConnectionPool
 
 load_dotenv()
@@ -114,7 +115,7 @@ def insert_event(*, user_id: str | None, anonymous_id: str | None, event_name: s
                  page_path: str | None, metadata: dict | None) -> None:
     ensure_schema()
     payload = {
-        "occurred_at": _dt.datetime.now(_dt.timezone.utc),
+        "occurred_at": _dt.datetime.now(_dt.UTC),
         "user_id": user_id,
         "anonymous_id": anonymous_id,
         "event_name": event_name,

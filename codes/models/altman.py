@@ -41,7 +41,6 @@ depress the Z-score.  The available_fraction is logged in the return dict.
 
 from codes.core import model_utils as mu
 
-
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _safe(val) -> float | None:

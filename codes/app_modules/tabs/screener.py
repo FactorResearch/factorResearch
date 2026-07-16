@@ -10,8 +10,6 @@ from dash import Input, Output, State, callback, clientside_callback, html
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.company_identity import company_logo
 from codes.app_modules.config import (
-    GREEN,
-    MUTED,
     PAGE_SIZE,
     get_score_class,
     get_verdict_class,
@@ -118,131 +116,6 @@ def _verdict_presentation_label(verdict: object) -> str:
     }.get(normalized, normalized)
 
 
-def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
-    if not analysis:
-        return [
-            html.Div(
-                className="quick-peek-section",
-                children=[
-                    html.Div("Valuation", className="quick-peek-section-title"),
-                    html.Div(
-                        "Quick view only. Full valuation detail appears after a full analysis run.",
-                        className="quick-peek-section-copy",
-                    ),
-                ],
-            ),
-            html.Div(
-                className="quick-peek-section",
-                children=[
-                    html.Div("Accounting", className="quick-peek-section-title"),
-                    html.Div(
-                        "Accounting diagnostics are not available yet for this cached screener row.",
-                        className="quick-peek-section-copy",
-                    ),
-                ],
-            ),
-            html.Div(
-                className="quick-peek-section",
-                children=[
-                    html.Div("Risk", className="quick-peek-section-title"),
-                    html.Div(
-                        "Use the screener score as a first filter, then open the full report for drawdown and safety detail.",
-                        className="quick-peek-section-copy",
-                    ),
-                ],
-            ),
-            html.Div(
-                className="quick-peek-section",
-                children=[
-                    html.Div("Growth", className="quick-peek-section-title"),
-                    html.Div(
-                        "Growth quality and capital allocation become available after full analysis.",
-                        className="quick-peek-section-copy",
-                    ),
-                ],
-            ),
-        ]
-
-    graham = analysis.get("graham") or {}
-    buffett = analysis.get("buffett") or {}
-    piotroski = analysis.get("piotroski") or {}
-    fcf_quality = analysis.get("fcf_quality") or {}
-    altman = analysis.get("altman") or {}
-    risk = analysis.get("risk") or {}
-    growth_quality = analysis.get("growth_quality") or {}
-    capital_allocation = analysis.get("capital_allocation") or {}
-    earnings_revision = analysis.get("earnings_revision") or {}
-    price = analysis.get("price")
-    intrinsic = buffett.get("intrinsic_value")
-
-    valuation_copy = "Intrinsic value not available yet."
-    if price and intrinsic:
-        direction = "below" if price <= intrinsic else "above"
-        valuation_copy = f"Price is {direction} moat value. P/E {graham.get('pe', 0):.1f}x and P/B {graham.get('pb', 0):.2f}x frame the current setup."
-
-    accounting_bits = []
-    if piotroski.get("f_score") is not None:
-        accounting_bits.append(f"F-Score {piotroski['f_score']}/9")
-    if fcf_quality.get("fcf_quality_score") is not None:
-        accounting_bits.append(f"FCF quality {fcf_quality['fcf_quality_score']:.0f}/100")
-    if altman.get("zone_label"):
-        accounting_bits.append(altman["zone_label"])
-    accounting_copy = (
-        " · ".join(accounting_bits) or "Accounting diagnostics are limited for this report."
-    )
-
-    risk_bits = []
-    if risk.get("beta") is not None:
-        risk_bits.append(f"Beta {risk['beta']:.2f}")
-    if risk.get("sharpe") is not None:
-        risk_bits.append(f"Sharpe {risk['sharpe']:.2f}")
-    if altman.get("z_score") is not None:
-        risk_bits.append(f"Altman {altman['z_score']:.2f}")
-    risk_copy = " · ".join(risk_bits) or "Open full analysis for risk detail."
-
-    growth_bits = []
-    if growth_quality.get("growth_quality_score") is not None:
-        growth_bits.append(f"Growth quality {growth_quality['growth_quality_score']:.0f}/100")
-    if capital_allocation.get("capital_allocation_score") is not None:
-        growth_bits.append(
-            f"Capital allocation {capital_allocation['capital_allocation_score']:.0f}/100"
-        )
-    if earnings_revision.get("total_score") is not None:
-        growth_bits.append(f"Revisions {earnings_revision['total_score']:.0f}/100")
-    growth_copy = " · ".join(growth_bits) or "Growth signals not available yet."
-
-    return [
-        html.Div(
-            className="quick-peek-section",
-            children=[
-                html.Div("Valuation", className="quick-peek-section-title"),
-                html.Div(valuation_copy, className="quick-peek-section-copy"),
-            ],
-        ),
-        html.Div(
-            className="quick-peek-section",
-            children=[
-                html.Div("Accounting", className="quick-peek-section-title"),
-                html.Div(accounting_copy, className="quick-peek-section-copy"),
-            ],
-        ),
-        html.Div(
-            className="quick-peek-section",
-            children=[
-                html.Div("Risk", className="quick-peek-section-title"),
-                html.Div(risk_copy, className="quick-peek-section-copy"),
-            ],
-        ),
-        html.Div(
-            className="quick-peek-section",
-            children=[
-                html.Div("Growth", className="quick-peek-section-title"),
-                html.Div(growth_copy, className="quick-peek-section-copy"),
-            ],
-        ),
-    ]
-
-
 def _build_quick_peek(symbol: str) -> html.Div:
     row = _quick_peek_row(symbol) or {
         "symbol": symbol,
@@ -256,16 +129,15 @@ def _build_quick_peek(symbol: str) -> html.Div:
     price = (analysis or {}).get("price") or row.get("price")
     moat_value = buffett.get("intrinsic_value") or row.get("buffett_iv")
     verdict = enhanced.get("verdict")
-    verdict_label = _verdict_presentation_label(enhanced.get("verdict"))
     score = enhanced.get("composite_score")
 
     if verdict is None:
         if row.get("analyzed"):
-            verdict, verdict_label, _ = verdict_for_score(
+            verdict, _, _ = verdict_for_score(
                 row.get("composite_score", 0), enhanced=False
             )
         else:
-            verdict, verdict_label = "Pending", "pending"
+            verdict = "Pending"
     if score is None:
         score = row.get("composite_score", 0)
 
@@ -965,7 +837,6 @@ def render_screener_table(
         # Buffett IV / Moat cell — populated after full analysis
         biv = r.get("buffett_iv")
         if biv:
-            biv_color = GREEN if (price and price <= biv) else MUTED
             biv_class = "clr-green" if (price and price <= biv) else "clr-muted"
             biv_cell = html.Td(
                 [
@@ -1042,7 +913,6 @@ def render_screener_table(
             )
         )
         # ── Accordion item (mobile) ─────────────────────────────────────
-        acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
         acc_biv_class = "clr-green" if (price and biv and price <= biv) else "clr-muted"
         acc_rows = [
             html.Div(

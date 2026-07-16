@@ -41,13 +41,13 @@ Outputs:
 from __future__ import annotations
 
 import math
+from typing import Any
+
 import numpy as np
 import pandas as pd
-from typing import Any
 
 from codes.core import financial_math as fm
 from codes.core import model_utils as mu
-
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 

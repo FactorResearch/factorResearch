@@ -44,8 +44,8 @@ class AnalysisResource(TypedDict):
     verdict: str
     analysis_version: str
     generated_at: str | None
-    factors: list["FactorResource"]
-    capabilities: list["CapabilityResource"]
+    factors: list[FactorResource]
+    capabilities: list[CapabilityResource]
 
 
 class FactorResource(TypedDict):
@@ -116,7 +116,3 @@ class CollectionResponse(TypedDict):
     data: list[object]
     pagination: Pagination
     meta: ApiMeta
-
-
-class HealthResource(TypedDict):
-    status: str

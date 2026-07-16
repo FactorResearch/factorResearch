@@ -35,7 +35,6 @@ import statistics
 
 from codes.core import model_utils as mu
 
-
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 _safe = mu.safe_float
@@ -173,7 +172,6 @@ class ProfitabilityAnalyzer:
         """
         op_inc  = _first(self._f.get("op_income", []))
         net_inc = _first(self._f.get("net_inc",   []))
-        revenue = _first(self._f.get("revenue",   []))
         equity  = _first(self._f.get("equity",    []))
         lt_debt = _first(self._f.get("lt_debt",   []))
         cash    = _first(self._f.get("cash",       []))

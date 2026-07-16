@@ -1,6 +1,6 @@
 """Central financial formatting and meaning-preserving components."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
 from enum import StrEnum
 
@@ -162,8 +162,8 @@ def data_freshness(updated_at, *, source: str = ""):
         except ValueError:
             return badge("Freshness unavailable", tone="warning")
     if updated_at.tzinfo is None:
-        updated_at = updated_at.replace(tzinfo=timezone.utc)
-    age_hours = max(0, (datetime.now(timezone.utc) - updated_at).total_seconds() / 3600)
+        updated_at = updated_at.replace(tzinfo=UTC)
+    age_hours = max(0, (datetime.now(UTC) - updated_at).total_seconds() / 3600)
     state, tone = ("Current", "positive") if age_hours <= 24 else ("Stale", "warning")
     source_text = f" · {source}" if source else ""
     return badge(f"{state} · {age_hours:.0f}h old{source_text}", tone=tone)
@@ -269,6 +269,6 @@ def _format_trust_date(value) -> str:
             return value[:32]
     if isinstance(value, datetime):
         if value.tzinfo is None:
-            value = value.replace(tzinfo=timezone.utc)
-        return value.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+            value = value.replace(tzinfo=UTC)
+        return value.astimezone(UTC).strftime("%Y-%m-%d %H:%M UTC")
     return str(value)[:32]

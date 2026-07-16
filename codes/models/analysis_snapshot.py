@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum
 from typing import Any
-import re
 
 from codes.engine.scorer import ENHANCED_VERDICTS
 
@@ -132,7 +132,7 @@ class AnalysisSnapshot:
         *,
         analysis_date: date | None = None,
         algorithm_version: str = "standard-v1",
-    ) -> "AnalysisSnapshot":
+    ) -> AnalysisSnapshot:
         ticker = str(result.get("symbol") or "").upper()
         enhanced = result.get("enhanced") or {}
         graham = result.get("graham") or {}

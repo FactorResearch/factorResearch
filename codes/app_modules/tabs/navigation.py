@@ -5,7 +5,6 @@ import re
 import dash
 from dash import Input, Output, callback, clientside_callback
 
-
 _ANALYZE_PATH_RE = re.compile(
     r"^(?:/analyze/[A-Za-z]{1,6}(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?"
     r"|/[A-Za-z]{1,6}/analyze/(?:\d{8}|\d{4}-\d{2}-\d{2}))/?$"

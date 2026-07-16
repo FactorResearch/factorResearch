@@ -7,8 +7,8 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-from codes.core.redis_client import get_redis
 from codes.core.config import is_production
+from codes.core.redis_client import get_redis
 from codes.domain.responses import JobResponse
 
 _QUEUE = "jobs:analysis"
@@ -33,9 +33,9 @@ def enqueue(job: dict) -> None:
         try:
             redis.rpush(_QUEUE, json.dumps(job, default=str))
             return
-        except Exception:
+        except Exception as exc:
             if is_production():
-                raise RuntimeError("Durable analysis queue unavailable")
+                raise RuntimeError("Durable analysis queue unavailable") from exc
     elif is_production():
         raise RuntimeError("Durable analysis queue unavailable")
     _local_executor.submit(_dispatch, job)

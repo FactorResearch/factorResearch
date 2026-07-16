@@ -21,9 +21,9 @@ factor_backtest.run_factor_backtest() with cache read-through/write-through.
 
 from __future__ import annotations
 
+import datetime
 import hashlib
 import json
-import datetime
 
 from ..data import db
 from . import factor_backtest, user_strategy

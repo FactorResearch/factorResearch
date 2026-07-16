@@ -7,7 +7,6 @@ from typing import Any
 
 from codes.api.schemas import (
     AccountResource,
-    AnalysisResource,
     ApiMeta,
     BillingResource,
     CollectionResponse,
@@ -16,9 +15,6 @@ from codes.api.schemas import (
     Pagination,
     PortfolioSummary,
     ScreenerResource,
-)
-from codes.domain.responses import (
-    AnalysisResponse as DomainAnalysisResponse,
 )
 from codes.domain.responses import (
     ErrorResponse as DomainErrorResponse,
@@ -74,10 +70,6 @@ def collection_response(
     }
 
 
-def analysis_resource(raw: dict[str, Any], symbol: str) -> AnalysisResource:
-    return DomainAnalysisResponse.from_mapping(raw, symbol).to_dict()  # type: ignore[return-value]
-
-
 def screener_resource(raw: dict[str, Any]) -> ScreenerResource:
     return DomainScreenerResponse.from_mapping(raw).to_dict()  # type: ignore[return-value]
 
@@ -92,17 +84,3 @@ def account_resource(raw: dict[str, Any]) -> AccountResource:
 
 def billing_resource(raw: dict[str, Any]) -> BillingResource:
     return SubscriptionResponse.from_mapping(raw).to_dict()  # type: ignore[return-value]
-
-
-def _number_or_none(value: object) -> float | int | None:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        return None
-    return value if math.isfinite(value) else None
-
-
-def _number_or_zero(value: object) -> float | int:
-    return _number_or_none(value) or 0
-
-
-def _string_or_none(value: object) -> str | None:
-    return str(value) if value is not None else None

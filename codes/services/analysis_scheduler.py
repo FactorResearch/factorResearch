@@ -3,7 +3,6 @@
 import os
 import signal
 import threading
-import time
 
 from codes.core.config import is_production
 

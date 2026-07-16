@@ -33,7 +33,6 @@ import math
 from codes.core import financial_math as fm
 from codes.core import model_utils as mu
 
-
 # ── Constants ─────────────────────────────────────────────────────────────────
 
 DISCOUNT_RATE = 0.12    # Buffett's minimum hurdle; conservative

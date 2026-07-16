@@ -215,21 +215,6 @@ def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> boo
         return False
 
 
-def list_cached_stocks() -> list[str]:
-    return sorted(
-        p.stem.replace("quote-", "").upper()
-        for p in CACHE_DIR.glob("quote-*.json")
-    )
-
-
-def list_cached_kind(kind: str) -> list[str]:
-    prefix = f"{kind}-"
-    return sorted(
-        p.stem[len(prefix):].upper()
-        for p in CACHE_DIR.glob(f"{prefix}*.json")
-    )
-
-
 def clear(kind: str, key: str) -> None:
     p = _path(kind, key)
     if p.exists():

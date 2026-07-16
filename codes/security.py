@@ -9,7 +9,7 @@ import hmac
 import logging
 import json
 import re
-from typing import Optional, Any
+from typing import Any
 from functools import wraps
 from datetime import timedelta
 import markupsafe
@@ -249,7 +249,7 @@ def get_csrf_token() -> str:
     return session.get("_csrf_token", "")
 
 
-def verify_csrf_token(token: Optional[str] = None) -> bool:
+def verify_csrf_token(token: str | None = None) -> bool:
     """Verify CSRF token from request."""
     if not is_production():
         if os.environ.get("DISABLE_CSRF_DEV") == "1":

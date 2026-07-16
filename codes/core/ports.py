@@ -6,8 +6,9 @@ cache, and framework adapters belong in infrastructure-facing modules.
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from datetime import datetime
-from typing import Mapping, Protocol, Sequence
+from typing import Protocol
 
 
 class Clock(Protocol):

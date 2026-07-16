@@ -14,7 +14,6 @@ from . import (
 )
 from .canada import CanadaProviderAdapter, normalize_canada_symbol
 
-
 PUBLIC_CONFIDENCE = {
     "regulatory_verified",
     "issuer_verified",

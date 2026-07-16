@@ -5,8 +5,8 @@ from __future__ import annotations
 import os
 import queue
 import threading
-from contextlib import contextmanager
 from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 
 
 class ConnectionPool:

@@ -23,13 +23,16 @@ Table: sec_facts
   updated_at      TEXT
 """
 
-import os
 import datetime
+import json
+import os
 import threading
 from contextlib import contextmanager
-import json
+
 from dotenv import load_dotenv
+
 from codes.core.db_pool import ConnectionPool
+
 load_dotenv()
 try:
     import psycopg

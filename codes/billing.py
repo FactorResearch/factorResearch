@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
 from urllib.parse import urlencode
 
 import flask
@@ -14,7 +13,7 @@ from codes.services import permissions
 from codes.services import product_analytics
 
 
-def init_billing(server: Optional[flask.Flask] = None):
+def init_billing(server: flask.Flask | None = None):
     if server is None:
         return
 

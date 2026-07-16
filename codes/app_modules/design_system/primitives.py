@@ -199,25 +199,6 @@ def radio_group(
     )
 
 
-def switch(
-    label: str,
-    *,
-    control_id=None,
-    value=False,
-    state: InteractionState | str = InteractionState.DEFAULT,
-    **props,
-):
-    control_id = props.pop("id", control_id)
-    state = InteractionState(state)
-    return dcc.Checklist(
-        id=control_id,
-        options=[{"label": label, "value": "on"}],
-        value=["on"] if value else [],
-        className=_classes("ds-switch", f"is-{state.value}", props.pop("className", "")),
-        **props,
-    )
-
-
 def slider(
     *,
     control_id=None,
@@ -346,10 +327,6 @@ def empty_state(
     )
 
 
-def divider():
-    return html.Hr(className="ds-divider")
-
-
 def tabs(children: Any, *, label: str = "Sections"):
     return html.Div(children, className="ds-tabs", role="tablist", **{"aria-label": label})
 
@@ -372,10 +349,6 @@ def tab(label: Any, *, tab_id, selected: bool = False, panel_id: str | None = No
     )
 
 
-def segmented_control(children: Any, *, label: str):
-    return html.Div(children, className="ds-segmented", role="group", **{"aria-label": label})
-
-
 def tooltip(text: str, target: Any, *, tooltip_id: str):
     return html.Span(
         [
@@ -389,17 +362,6 @@ def tooltip(text: str, target: Any, *, tooltip_id: str):
         ],
         className="ds-tooltip",
     )
-
-
-def popover(trigger: Any, content: Any, *, open: bool = False):
-    return html.Div(
-        [trigger, html.Div(content, className="ds-popover__content", hidden=not open)],
-        className="ds-popover",
-    )
-
-
-def menu(items: Any, *, label: str):
-    return html.Div(items, className="ds-menu", role="menu", **{"aria-label": label})
 
 
 def pagination(current: int, total: int, *, previous_id, next_id):
@@ -512,21 +474,6 @@ def modal(
         className=_classes("ds-modal", "is-open" if open else None),
         hidden=not open,
         **{"data-ds-overlay": "modal"},
-    )
-
-
-def drawer(title: str, children: Any, *, drawer_id: str, open: bool = False):
-    return html.Aside(
-        [html.H2(title, id=f"{drawer_id}-title"), children],
-        id=drawer_id,
-        className=_classes("ds-drawer", "is-open" if open else None),
-        hidden=not open,
-        role="dialog",
-        **{
-            "aria-modal": "true",
-            "aria-labelledby": f"{drawer_id}-title",
-            "data-ds-overlay": "drawer",
-        },
     )
 
 

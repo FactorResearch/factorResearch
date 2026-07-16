@@ -7,15 +7,15 @@ import plotly.graph_objects as go
 from dash import dcc, html
 
 from codes.app_modules.company_identity import company_logo
-from codes.app_modules.design_system.layouts import analysis_grid, container
 from codes.app_modules.design_system.financial import data_trust_panel, methodology_disclosure
-from codes.app_modules.design_system.schemas import SectionDefinition
+from codes.app_modules.design_system.layouts import analysis_grid, container
 from codes.app_modules.design_system.primitives import link, loading_container
+from codes.app_modules.design_system.schemas import SectionDefinition
 from codes.app_modules.design_system.states import chart_skeleton
-from codes.services import chart_service
 from codes.domain.responses import AnalysisResponse
+from codes.services import chart_service
 
-from .config import _MOAT_TOOLTIPS, AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE
+from .config import AMBER, BLUE, BORDER, GREEN, MUTED, RED, TEXT, WHITE
 from .css_classes import tone_class
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
@@ -121,7 +121,7 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
     values = [_clamp_pct(value) for _, value in factors]
     profile_points = " ".join(
         f"{center + radius * value / 100 * math.cos(angle):.1f},{center + radius * value / 100 * math.sin(angle):.1f}"
-        for value, angle in zip(values, angles)
+        for value, angle in zip(values, angles, strict=False)
     )
 
     grid = "".join(
@@ -134,11 +134,11 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
     )
     vertices = "".join(
         f'<circle cx="{center + radius * value / 100 * math.cos(angle):.1f}" cy="{center + radius * value / 100 * math.sin(angle):.1f}" r="3.8" fill="{color}" stroke="#dcecff" stroke-width="1.3" />'
-        for value, angle in zip(values, angles)
+        for value, angle in zip(values, angles, strict=False)
     )
     labels = "".join(
         f'<text x="{center + 138 * math.cos(angle):.1f}" y="{center + 138 * math.sin(angle):.1f}" fill="#f5f9ff" stroke="#07182e" stroke-width="2.2" paint-order="stroke" font-family="Inter,Arial,sans-serif" font-size="12" font-weight="700" text-anchor="middle">{label}<tspan x="{center + 138 * math.cos(angle):.1f}" dy="16" fill="{color}" font-size="14" font-weight="800">{value:.0f}</tspan></text>'
-        for (label, _), value, angle in zip(factors, values, angles)
+        for (label, _), value, angle in zip(factors, values, angles, strict=False)
     )
     svg = (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 350" role="img">'
@@ -148,7 +148,7 @@ def _factor_hexagon(factors: list[tuple[str, float]], color: str) -> html.Figure
         f'<polygon points="{profile_points}" fill="url(#hex-fill)" stroke="{color}" stroke-width="2.6" filter="url(#hex-glow)" />{vertices}{labels}</g>'
         "</svg>"
     )
-    description = ", ".join(f"{label} {value:.0f}" for (label, _), value in zip(factors, values))
+    description = ", ".join(f"{label} {value:.0f}" for (label, _), value in zip(factors, values, strict=False))
     return html.Figure(
         className="factor-hexagon",
         children=[
@@ -823,9 +823,6 @@ def _altman_card(data: dict) -> html.Div:
     n_avail = a.get("n_available", 0)
     comps = a.get("components") or {}
     zc = {"safe": GREEN, "grey": AMBER, "distress": RED, "unknown": MUTED}.get(zone, MUTED)
-    zbg = {"safe": "#001a0a", "grey": "#2a2000", "distress": "#2a0000", "unknown": CARD}.get(
-        zone, CARD
-    )
     comp_labels = [
         ("x1_working_capital", "X1 — Working Capital / Assets"),
         ("x2_retained_earnings", "X2 — Retained Earnings / Assets"),
@@ -1666,7 +1663,7 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
     greenblatt_card = _greenblatt_card(data)
     profitability_card = _profitability_card(data)
     benchmark_bias_card = _benchmark_bias_card(data)
-    graham_details = _graham_details_card(g, b_data)
+    graham_details = _graham_details_card(g)
     buffett_details = _buffett_details_card(data)
 
     accounting_children = [
@@ -2035,12 +2032,6 @@ def build_analysis_charts(data: dict) -> list:
         ),
         _div_chart(graham.get("div_history", []), symbol, data),
     ]
-
-
-def _grade_color(grade: str) -> str:
-    return {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(grade, MUTED)
-
-
 def format_currency(val) -> str:
     if val is None:
         return "N/A"
@@ -2240,28 +2231,10 @@ def _div_chart(div_history: list, symbol: str, data: dict | None = None) -> html
     )
 
 
-def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
+def _graham_details_card(g_data: dict) -> html.Div:
     gn = g_data.get("graham_number")
     price = g_data.get("price")
     mos = g_data.get("margin_of_safety")
-    b_data = b_data or {}
-    biv = b_data.get("intrinsic_value")
-    b_mos = b_data.get("margin_of_safety")
-    b_grade = b_data.get("grade")
-    b_glabel = b_data.get("grade_label", "")
-    # Grade calculation for intrinsic score (0-105 scale)
-    intrinsic_score = min(105, max(0, int((gn or 0) / (price or 1) * 50))) if gn and price else 0
-    grade = (
-        "A"
-        if intrinsic_score >= 80
-        else "B"
-        if intrinsic_score >= 65
-        else "C"
-        if intrinsic_score >= 50
-        else "D"
-        if intrinsic_score >= 35
-        else "F"
-    )
     rows = [
         ("Fair Value", f"${gn:.2f}" if gn else "N/A"),
         ("Margin of Safety", f"{mos:.1f}%" if mos else "N/A"),
@@ -2272,16 +2245,9 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
         ("EPS Years", str(g_data.get("eps_years", 0))),
     ]
     gn_color = GREEN if mos and mos > 0 else RED
-    biv_color = GREEN if b_mos and b_mos > 0 else RED
-    grade_color = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED}.get(b_grade or "", MUTED)
-
     def _row_color(label):
         if label == "Margin of Safety":
             return gn_color
-        if label == "Margin of Safety":
-            return biv_color
-        if label == "Economic Moat Rating":
-            return grade_color
         return TEXT
 
     detail_rows = [
@@ -2294,16 +2260,6 @@ def _graham_details_card(g_data: dict, b_data: dict | None = None) -> html.Div:
         )
         for label, value in rows
     ]
-    grade_rgba_map = {
-        "A": "0,230,118",
-        "B": "22,119,255",
-        "C": "255,171,0",
-        "D": "255,23,68",
-        "F": "255,23,68",
-    }
-    grade_color_map = {"A": GREEN, "B": BLUE, "C": AMBER, "D": RED, "F": RED}
-    g_rgba = grade_rgba_map.get(grade, "158,158,158")
-    g_col = grade_color_map.get(grade, MUTED)
     return html.Div(
         className="scorecard",
         children=[
@@ -2322,10 +2278,8 @@ def _buffett_details_card(data: dict) -> html.Div:
     b = data.get("buffett") or {}
     iv = b.get("intrinsic_value")
     mos = b.get("margin_of_safety")
-    price = b.get("price")
     grade = b.get("grade", "N/A")
     glabel = b.get("grade_label", "")
-    moat_desc = _MOAT_TOOLTIPS.get(grade, "")
     rows = [
         ("Grade", f"{grade} — {glabel}" if glabel else str(grade)),
         ("Intrinsic Value", f"${iv:.2f} ({b.get('iv_base', '')})" if iv else "N/A"),

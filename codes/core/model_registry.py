@@ -3,7 +3,6 @@
 from dataclasses import dataclass
 from typing import Literal
 
-
 Disclosure = Literal["glance", "understand", "investigate"]
 Cost = Literal["low", "medium", "high"]
 

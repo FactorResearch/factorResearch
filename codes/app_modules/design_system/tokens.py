@@ -1,8 +1,8 @@
 """Typed, framework-neutral source of truth for visual design tokens."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Mapping
 
 
 @dataclass(frozen=True)

@@ -16,11 +16,3 @@ def tone_class(color: str | None) -> str:
         "#ff6d00": "tone-orange",
         "#f97316": "tone-orange",
     }.get(color, "tone-muted")
-
-
-def percent_class(value: float | int | None) -> str:
-    try:
-        percent = max(0, min(100, round(float(value or 0))))
-    except (TypeError, ValueError):
-        percent = 0
-    return f"progress-width-{percent}"

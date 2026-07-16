@@ -7,7 +7,6 @@ import random
 
 from locust import HttpUser, between, task
 
-
 TICKERS = tuple(filter(None, os.environ.get("LOAD_TICKERS", "AAPL,MSFT,NVDA,META,GOOGL").split(",")))
 SAME_TICKER = os.environ.get("LOAD_SAME_TICKER", "AAPL")
 

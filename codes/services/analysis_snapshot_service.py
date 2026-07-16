@@ -1,23 +1,22 @@
 from __future__ import annotations
 
-import os
 import json
+import os
+import threading
+import uuid
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import date, datetime
-from typing import Any, Iterator
-import uuid
-import threading
+from typing import Any
 
 from codes.core.db_pool import ConnectionPool
-
 from codes.models.analysis_snapshot import (
+    PUBLIC_ANALYSIS_TYPES,
     AnalysisSnapshot,
     AnalysisType,
     CustomAnalysisSnapshot,
-    PUBLIC_ANALYSIS_TYPES,
     company_slug,
 )
-
 
 SNAPSHOT_DDL = """
 CREATE TABLE IF NOT EXISTS analysis_snapshots (

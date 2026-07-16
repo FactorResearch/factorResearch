@@ -35,7 +35,7 @@ def normalize_weights(raw: dict[str, float]) -> dict[str, float]:
     total = sum(cleaned.values())
     if total <= 0:
         n = len(FACTOR_SOURCES)
-        return {k: 1.0 / n for k in FACTOR_SOURCES}
+        return dict.fromkeys(FACTOR_SOURCES, 1.0 / n)
     return {k: cleaned.get(k, 0.0) / total for k in FACTOR_SOURCES}
 
 

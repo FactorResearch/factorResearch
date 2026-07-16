@@ -7,7 +7,6 @@ from typing import Any
 
 from codes.data import db
 
-
 STRIPE_ACTIVE_STATUSES = {"active", "trialing", "past_due"}
 STRIPE_CANCELLED_STATUSES = {"canceled", "unpaid", "incomplete_expired"}
 
@@ -15,7 +14,7 @@ STRIPE_CANCELLED_STATUSES = {"canceled", "unpaid", "incomplete_expired"}
 def _from_unix(ts: int | None):
     if not ts:
         return None
-    return _dt.datetime.fromtimestamp(int(ts), tz=_dt.timezone.utc)
+    return _dt.datetime.fromtimestamp(int(ts), tz=_dt.UTC)
 
 
 def plan_from_price_id(price_id: str | None) -> str:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from codes import auth
 from codes.data import analytics_db, db
-from codes.services import billing_service, permissions, portfolio_service, user_settings
 from codes.domain.responses import PortfolioResponse, SubscriptionResponse, UserResponse
+from codes.services import billing_service, permissions, portfolio_service, user_settings
 
 
 def display_name(user_id: str) -> str:

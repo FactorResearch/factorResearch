@@ -63,19 +63,20 @@ BACKWARDS-COMPATIBLE SHIMS
   RateLimiter instances directly when convenient.
 """
 
+import collections
 import fcntl
 import os
 import time
-import collections
-import requests
-import finnhub
-import pandas as pd
 from pathlib import Path
 
-from .cache import read, read_entry, write
-from . import temporal
+import finnhub
+import pandas as pd
+import requests
+
 from codes.core.config import cache_root
 
+from . import temporal
+from .cache import read, read_entry, write
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Rate-limit infrastructure
@@ -124,10 +125,6 @@ class RateLimitError(RuntimeError):
 
     def __str__(self) -> str:
         return self.raw_message
-
-    def debug_message(self) -> str:
-        return self.raw_message
-
 
 class _Window:
     """
@@ -741,7 +738,7 @@ def get_price(symbol: str) -> float | None:
             price = _fh_get_price(symbol)
             if price:
                 return price
-            print(f"  [Finnhub] no price returned, trying Tiingo...")
+            print("  [Finnhub] no price returned, trying Tiingo...")
         except RateLimitError:
             raise
 
@@ -750,7 +747,7 @@ def get_price(symbol: str) -> float | None:
             price = _tiingo_get_price(symbol)
             if price:
                 return price
-            print(f"  [Tiingo] no price returned, trying Alpha Vantage...")
+            print("  [Tiingo] no price returned, trying Alpha Vantage...")
         except RateLimitError:
             raise
 
@@ -794,7 +791,7 @@ def get_price_history(symbol: str, years: int = 10) -> pd.DataFrame:
             except RateLimitError:
                 raise
             if df.empty:
-                print(f"  [Tiingo] no history returned, falling back to Alpha Vantage...")
+                print("  [Tiingo] no history returned, falling back to Alpha Vantage...")
 
         if df.empty:
             print(f"  [AlphaVantage] fetching {years}yr history for {symbol}...")

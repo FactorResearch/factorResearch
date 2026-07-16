@@ -1,49 +1,63 @@
 """Application service for the stock-analysis pipeline and its shared caches."""
 
+import datetime as _datetime
 import os
 import threading
 import time as _time
-import datetime as _datetime
 from concurrent.futures import ThreadPoolExecutor
 
 from codes import security
+from codes.app_modules.config import validate_ticker
 from codes.core import singleflight
 from codes.core.model_registry import MODELS
-from codes.data import api_fetcher, sec_data, db, market_data
+from codes.data import api_fetcher, db, market_data, sec_data
 from codes.data.api_fetcher import RateLimitError
 from codes.data.providers.registry import require_symbol_market_enabled, scoring_facts_for_symbol
-from codes.engine import factor_engine, scorer, screener, market_fear
+from codes.domain.responses import AnalysisResponse
+from codes.engine import factor_engine, market_fear, scorer, screener
 from codes.models import (
-    graham,
-    quality,
-    momentum,
-    piotroski,
+    alternative_data as alternative_data_model,
+)
+from codes.models import (
     altman,
-    risk_metrics,
-    greenblatt,
+    bias_engine,
     buffett,
     earnings_revision,
-    profitability as profitability_model,
-    fcf_quality as fcf_quality_model,
-    capital_allocation as capital_allocation_model,
-    growth_quality as growth_quality_model,
-    regime as regime_model,
-    insider_activity as insider_activity_model,
-    factor_momentum as factor_momentum_model,
-    alternative_data as alternative_data_model,
+    graham,
+    greenblatt,
+    momentum,
+    piotroski,
+    quality,
+    risk_metrics,
     spy_benchmark_model,
-    bias_engine,
+)
+from codes.models import (
+    capital_allocation as capital_allocation_model,
+)
+from codes.models import (
     comomentum as comomentum_model,
 )
+from codes.models import (
+    factor_momentum as factor_momentum_model,
+)
+from codes.models import (
+    fcf_quality as fcf_quality_model,
+)
+from codes.models import (
+    growth_quality as growth_quality_model,
+)
+from codes.models import (
+    insider_activity as insider_activity_model,
+)
+from codes.models import (
+    profitability as profitability_model,
+)
+from codes.models import (
+    regime as regime_model,
+)
 from codes.models.analysis_snapshot import AnalysisType
+from codes.services import analysis_jobs, component_cache, performance_metrics, provider_gateway
 from codes.services.analysis_snapshot_service import save_standard_snapshot
-from codes.services import performance_metrics
-from codes.services import provider_gateway
-from codes.services import component_cache
-from codes.services import analysis_jobs
-from codes.domain.responses import AnalysisResponse
-
-from codes.app_modules.config import validate_ticker
 
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None
@@ -305,7 +319,7 @@ def _analysis_provenance(symbol: str, sec_facts: dict, *, price, defer_secondary
     if defer_secondary:
         effects.append("Optional signals are pending and are not presented as fully supported.")
     return {
-        "analysis_date": _datetime.datetime.now(_datetime.timezone.utc).isoformat(),
+        "analysis_date": _datetime.datetime.now(_datetime.UTC).isoformat(),
         "price_timestamp": (
             "Retrieved during this analysis; provider quote time unavailable"
             if price is not None
@@ -658,7 +672,7 @@ def _analyze_stock(
                 market_cap = price * shares_val / 1e6
         except (KeyError, TypeError, ValueError, IndexError):
             pass
-    generated_at = _datetime.datetime.now(_datetime.timezone.utc).isoformat()
+    generated_at = _datetime.datetime.now(_datetime.UTC).isoformat()
     result = {
         "analysis_version": ANALYSIS_VERSION,
         "model_versions": _MODEL_VERSIONS,

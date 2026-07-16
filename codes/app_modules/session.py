@@ -4,10 +4,10 @@ import threading
 
 import flask
 
-from codes import auth
 import codes.portfolio as portfolio_engine
-from codes.core.redis_client import get_redis, json_get, json_set
+from codes import auth
 from codes.core.config import is_production
+from codes.core.redis_client import get_redis, json_get, json_set
 
 # ── Screener ──────────────────────────────────────────────────────────────────
 # Per-session portfolio cache (ISSUE-006) — scoped by Flask session id so one

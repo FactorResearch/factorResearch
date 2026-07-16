@@ -1,13 +1,12 @@
 """Screener state populated from the universe and persisted analyses."""
 
-import time
 import threading
+import time
+from datetime import UTC, datetime
+
 from ..core.redis_client import get_redis, json_get, json_set
-from ..data import sec_data
-from ..data import db
+from ..data import company_metadata, db, sec_data
 from . import universe
-from datetime import datetime, timezone
-from ..data import company_metadata
 
 _PROGRESS_REDIS_KEY = "screener:progress"
 
@@ -193,7 +192,7 @@ def update_stock_after_analysis(symbol: str, analysis_result: dict) -> None:
         "market_cap":      mkt_cap,
         "price":           analysis_result.get("price"),
         "analyzed":        True,
-        "updated_at":      datetime.now(timezone.utc).isoformat(),
+        "updated_at":      datetime.now(UTC).isoformat(),
         "return_12m": (analysis_result.get("momentum") or {}).get("return_12m"),
     }
 

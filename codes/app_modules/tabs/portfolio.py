@@ -685,7 +685,7 @@ def update_shares(n_clicks_list, values, ids, refresh):
         return dash.no_update, dash.no_update
     triggered_index = triggered["index"]
     new_shares = None
-    for id_dict, val in zip(ids, values):
+    for id_dict, val in zip(ids, values, strict=False):
         if id_dict["index"] == triggered_index:
             new_shares = val
             break
@@ -845,7 +845,7 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
             html.Div("Holdings Performance (10yr backtest period)", className="scorecard-header"),
             table(
                 className="screener-table",
-                caption=f"{port_name} holdings backtest performance",
+                caption="Holdings backtest performance",
                 children=[
                     html.Thead(
                         html.Tr(

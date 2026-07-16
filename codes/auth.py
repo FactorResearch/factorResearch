@@ -22,7 +22,6 @@ import os
 import secrets
 import requests
 from functools import wraps
-from typing import Optional, Tuple
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
@@ -58,7 +57,7 @@ SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
 SUPABASE_JWT_AUDIENCE = os.environ.get("SUPABASE_JWT_AUDIENCE", "authenticated")
 
 # Cache for verified tokens (to reduce external API calls)
-_token_cache: dict[str, Tuple[str, datetime]] = {}
+_token_cache: dict[str, tuple[str, datetime]] = {}
 TOKEN_CACHE_TTL = 3600  # 1 hour
 
 # Cache for remote JWKS documents
@@ -105,7 +104,7 @@ def _auth_error_response(status_code: int = 400):
 # Token Verification (Provider-Agnostic)
 # ──────────────────────────────────────────────────────────────────────────────
 
-def _get_cached_user_id(token: str) -> Optional[str]:
+def _get_cached_user_id(token: str) -> str | None:
     """Check if token is in cache and still valid."""
     if token in _token_cache:
         user_id, expiry = _token_cache[token]
@@ -121,7 +120,7 @@ def _cache_user_id(token: str, user_id: str) -> None:
     _token_cache[token] = (user_id, datetime.utcnow() + timedelta(seconds=TOKEN_CACHE_TTL))
 
 
-def _fetch_jwks(jwks_url: str) -> Optional[dict]:
+def _fetch_jwks(jwks_url: str) -> dict | None:
     cached = _jwks_cache.get(jwks_url)
     if cached:
         jwks, expiry = cached
@@ -139,7 +138,7 @@ def _fetch_jwks(jwks_url: str) -> Optional[dict]:
         return None
 
 
-def _decode_jwt(token: str, jwks_url: str, audience: Optional[str] = None, issuer: Optional[str] = None) -> Optional[dict]:
+def _decode_jwt(token: str, jwks_url: str, audience: str | None = None, issuer: str | None = None) -> dict | None:
     try:
         unverified_header = jwt.get_unverified_header(token)
         jwks = _fetch_jwks(jwks_url)
@@ -162,7 +161,7 @@ def _decode_jwt(token: str, jwks_url: str, audience: Optional[str] = None, issue
         return None
 
 
-def verify_token(token: str) -> Optional[str]:
+def verify_token(token: str) -> str | None:
     """
     Verify JWT token and return authenticated user_id.
     
@@ -192,7 +191,7 @@ def verify_token(token: str) -> Optional[str]:
     return user_id
 
 
-def _verify_auth0_token(token: str) -> Optional[str]:
+def _verify_auth0_token(token: str) -> str | None:
     """Verify Auth0 JWT token."""
     if not AUTH0_DOMAIN or not AUTH0_CLIENT_ID or not AUTH0_CLIENT_SECRET:
         print("[AUTH] Auth0 credentials not configured")
@@ -221,7 +220,7 @@ def _verify_auth0_token(token: str) -> Optional[str]:
     return None
 
 
-def _verify_clerk_token(token: str) -> Optional[str]:
+def _verify_clerk_token(token: str) -> str | None:
     """Verify Clerk JWT token."""
     if not CLERK_PUBLIC_KEY or not CLERK_ISSUER or not CLERK_AUDIENCE:
         print("[AUTH] Clerk token verification is not fully configured")
@@ -242,7 +241,7 @@ def _verify_clerk_token(token: str) -> Optional[str]:
     return None
 
 
-def _verify_supabase_token(token: str) -> Optional[str]:
+def _verify_supabase_token(token: str) -> str | None:
     """Verify Supabase JWT token."""
     if not SUPABASE_URL:
         print("[AUTH] Supabase URL not configured")
@@ -288,7 +287,7 @@ def _is_dev_mode() -> bool:
     return not is_production()
 
 
-def get_dev_persona() -> Optional[dict]:
+def get_dev_persona() -> dict | None:
     if not _is_dev_mode():
         return None
     if not flask.has_request_context():
@@ -317,7 +316,7 @@ def clear_dev_persona() -> None:
     session.pop(DEV_PERSONA_SESSION_KEY, None)
 
 
-def get_dev_subscription_override() -> Optional[dict]:
+def get_dev_subscription_override() -> dict | None:
     persona = get_dev_persona()
     if not persona:
         return None
@@ -332,7 +331,7 @@ def get_dev_subscription_override() -> Optional[dict]:
 # Session Management
 # ──────────────────────────────────────────────────────────────────────────────
 
-def get_authenticated_user_id() -> Optional[str]:
+def get_authenticated_user_id() -> str | None:
     """
     Get authenticated user_id from Flask session.
     
@@ -488,7 +487,6 @@ def setup_auth0_routes(app_server):
             "client_id": AUTH0_CLIENT_ID,
             "returnTo": "http://localhost:8050/",
         }
-        query_string = "&".join(f"{k}={v}" for k, v in params.items())
         return redirect(f"{auth0_logout_url}?{urlencode(params)}")
     
     print(f"[AUTH] Auth0 routes registered (domain={AUTH0_DOMAIN})")

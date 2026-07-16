@@ -36,13 +36,16 @@ walk-forward returns.
 
 from __future__ import annotations
 
-from typing import Any, Callable
-from . import factor_snapshot
+from collections.abc import Callable
+from typing import Any
+
 import numpy as np
 import pandas as pd
 
 from codes.core import financial_math as fm
+
 from ..data import api_fetcher, db
+from . import factor_snapshot
 
 MIN_STOCKS     = 3
 MAX_TOP_N      = 30
@@ -438,7 +441,7 @@ def _rebalanced_dynamic_qualify_backtest(
 # Strategy 4 — Walk-Forward Rolling Windows
 # ══════════════════════════════════════════════════════════════════════════════
 
-def walk_forward(strategy_fn: Callable[..., dict], windows: list[int] = [3, 5, 10],
+def walk_forward(strategy_fn: Callable[..., dict], windows: tuple[int, ...] = (3, 5, 10),
                   **strategy_kwargs) -> dict[str, Any]:
     """
     Re-run `strategy_fn` (one of momentum_rotation / score_filtered /

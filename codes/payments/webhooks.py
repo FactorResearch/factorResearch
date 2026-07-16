@@ -5,7 +5,6 @@ from __future__ import annotations
 from codes.payments import subscriptions
 from codes.services import product_analytics
 
-
 HANDLED_EVENTS = {
     "checkout.session.completed",
     "customer.subscription.created",

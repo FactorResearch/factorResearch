@@ -8,8 +8,8 @@ import ast
 import json
 import subprocess
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 CODES = ROOT / "codes"

@@ -18,7 +18,6 @@ from typing import Any
 
 from codes.core import model_utils as mu
 
-
 # ── Enums ─────────────────────────────────────────────────────────────────────
 
 class RiskLevel(str, Enum):

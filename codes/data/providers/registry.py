@@ -5,8 +5,9 @@ Keeps market activation explicit so country releases can ship independently.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 from codes.core import app_flags
 from codes.data import db

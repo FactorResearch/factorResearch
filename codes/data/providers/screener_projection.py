@@ -5,7 +5,6 @@ from __future__ import annotations
 from codes.engine import scorer
 from codes.models import graham, quality
 
-
 FUNDAMENTAL_PROJECTION_VERSION = "fundamental-v1"
 
 

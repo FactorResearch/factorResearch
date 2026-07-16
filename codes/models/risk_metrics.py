@@ -24,6 +24,7 @@ All DataFrames: columns 'Date' (str or datetime) and 'Close' (float).
 """
 
 import math
+
 import numpy as np
 import pandas as pd
 

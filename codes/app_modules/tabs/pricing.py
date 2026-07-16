@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import time
 
-from dash import Input, Output, callback, dcc, html
+from dash import Input, Output, callback, html
 
 from codes.app_modules.design_system.primitives import link
-
 from codes.app_modules.session import get_user_id
 from codes.services import billing_service, product_analytics
-
 
 PLAN_CARDS = [
     {

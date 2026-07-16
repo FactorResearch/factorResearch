@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Standalone local workshop for browser accessibility and visual checks."""
 
-from dash import Dash
 from pathlib import Path
+
+from dash import Dash
 
 from codes.app_modules.design_system.catalogue import build_catalogue
 

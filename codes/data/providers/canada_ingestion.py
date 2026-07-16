@@ -8,9 +8,9 @@ converts them to canonical provider objects before DB persistence.
 from __future__ import annotations
 
 import csv
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 from . import (
     CanonicalCompany,
@@ -23,7 +23,6 @@ from . import (
 from .canada import normalize_canada_symbol
 from .canada_db import ingest_verified_canada_financials
 from .canada_normalization import CanadaNormalizationResult
-
 
 STATEMENT_TYPES = {"income", "balance", "cash_flow"}
 PACKAGE_CONFIDENCE = {

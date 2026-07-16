@@ -37,11 +37,9 @@ Integration:
 
 from __future__ import annotations
 
-
 import pandas as pd
 
 from codes.core import model_utils as mu
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -128,7 +126,7 @@ class FactorMomentumAnalyzer:
         "roic_trend":        0.15,
     }
 
-    def __init__(self, ticker: str, price_hist: "pd.DataFrame | None" = None,
+    def __init__(self, ticker: str, price_hist: pd.DataFrame | None = None,
                  financials: dict | None = None) -> None:
         self.ticker = ticker.upper().strip()
         self._f = financials or {}

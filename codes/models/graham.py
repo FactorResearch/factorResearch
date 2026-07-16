@@ -15,8 +15,10 @@ Scoring breakdown (100 points total):
 """
 
 import math
-from .piotroski import DILUTION_TOLERANCE
+
 from codes.core import model_utils as mu
+
+from .piotroski import DILUTION_TOLERANCE
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 

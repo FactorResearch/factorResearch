@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
-from datetime import datetime, timezone
 import re
+from copy import deepcopy
+from datetime import UTC, datetime
 
 from codes.data import db
-
 
 DEFAULT_USER_SETTINGS = {
     "appearance": {
@@ -42,7 +41,7 @@ def _normalize_theme(value: str | None) -> str:
 
 
 def _normalize_notifications(value: dict | None) -> dict[str, bool]:
-    current = dict((value or {}))
+    current = dict(value or {})
     defaults = DEFAULT_USER_SETTINGS["notifications"]
     return {
         key: bool(current[key]) if key in current else bool(defaults[key])
@@ -58,7 +57,7 @@ def _normalize_saved_screener(item: dict) -> dict | None:
     market = str(item.get("market") or "US").strip().upper()[:8]
     sector = str(item.get("sector") or "").strip()[:80]
     indexes = sorted({str(index).strip()[:40] for index in (item.get("indexes") or []) if str(index).strip()})[:20]
-    saved_at = str(item.get("saved_at") or datetime.now(timezone.utc).isoformat())
+    saved_at = str(item.get("saved_at") or datetime.now(UTC).isoformat())
     return {
         "id": screener_id,
         "name": name,

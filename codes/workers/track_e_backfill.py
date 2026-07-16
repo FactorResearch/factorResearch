@@ -7,7 +7,12 @@ import json
 
 from codes.data import temporal
 from codes.data.providers.fmp import FMPClient
-from codes.services.track_e_ingestion import ingest_fx, ingest_reference_data, ingest_symbol, ingest_universe
+from codes.services.track_e_ingestion import (
+    ingest_fx,
+    ingest_reference_data,
+    ingest_symbol,
+    ingest_universe,
+)
 
 
 def main() -> None:
