@@ -168,8 +168,8 @@ def test_portfolio_reference_uses_financial_layout_and_table_primitives(monkeypa
         },
     )
     monkeypatch.setattr(
-        portfolio.db,
-        "get_analysis_entries",
+        portfolio.portfolio_engine,
+        "analysis_entries",
         lambda *_: {"ABC": {"data": {"composite_score": 72, "risk": {"sharpe": 1.1}}}},
     )
     rendered = str(portfolio.render_portfolio_holdings("Core", 0))

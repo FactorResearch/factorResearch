@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import flask
 
-from codes.data import db
-from codes.services import chart_service
+from codes.services import chart_service, stock_analysis
 
 chart_pages = flask.Blueprint("chart_pages", __name__)
 _PUBLIC_ANALYSIS_CHARTS = {"eps_history", "price_history", "dividend_history"}
@@ -13,7 +12,7 @@ _PUBLIC_ANALYSIS_CHARTS = {"eps_history", "price_history", "dividend_history"}
 def analysis_chart_dataset(ticker: str, chart_type: str):
     if chart_type not in _PUBLIC_ANALYSIS_CHARTS:
         flask.abort(404)
-    data = db.get_analysis(ticker.upper())
+    data = stock_analysis.get_cached_analysis(ticker.upper())
     if not data:
         flask.abort(404)
     dataset = chart_service.get_analysis_chart_dataset(

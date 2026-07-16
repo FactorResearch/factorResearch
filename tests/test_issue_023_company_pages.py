@@ -74,7 +74,7 @@ def test_dash_analysis_parser_accepts_bare_and_dated_ticker_urls():
 def test_ticker_page_bootstraps_first_snapshot_from_cached_official_analysis():
     cached = {"symbol": "AAPL", "name": "Apple Inc."}
     with patch("codes.routes.analyze.list_ticker_snapshots", side_effect=[[], [_official()]]) as history, \
-         patch("codes.routes.analyze.db.get_analysis", return_value=cached), \
+         patch("codes.routes.analyze.stock_analysis.get_cached_analysis", return_value=cached), \
          patch("codes.routes.analyze.save_standard_snapshot") as save, \
          patch("codes.routes.analyze.auth.get_authenticated_user_id", return_value=None):
         response = _client().get("/AAPL/")

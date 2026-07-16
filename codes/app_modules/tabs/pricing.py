@@ -8,9 +8,8 @@ from dash import Input, Output, callback, dcc, html
 
 from codes.app_modules.design_system.primitives import link
 
-from codes import billing
 from codes.app_modules.session import get_user_id
-from codes.services import product_analytics
+from codes.services import billing_service, product_analytics
 
 
 PLAN_CARDS = [
@@ -34,7 +33,7 @@ PLAN_CARDS = [
             "Portfolio analytics and simulations",
             "Strategy validation workflow",
         ],
-        "cta": billing.get_billing_entry_url(plan="premium", source="pricing_tab", feature="subscription"),
+        "cta": billing_service.get_entry_url(plan="premium", source="pricing_tab", feature="subscription"),
     },
 ]
 
@@ -55,7 +54,7 @@ def build_upgrade_prompt(*, title: str, body: str, source: str, feature: str) ->
                             link("Compare plans", href="/pricing", className="analyze-btn"),
                             html.A(
                                 "Start Premium",
-                                href=billing.get_billing_entry_url(
+                                href=billing_service.get_entry_url(
                                     plan="premium",
                                     source=source,
                                     feature=feature,

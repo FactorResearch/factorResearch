@@ -23,11 +23,13 @@ from codes.app_modules.screener_markets import (
     row_matches_market,
 )
 from codes.app_modules.session import get_portfolio_symbols, get_user_id
-from codes.data import db
-from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
-from codes.engine import screener
-from codes.engine.scorer import verdict_for_score
 from codes.services import performance_metrics, product_analytics
+from codes.services import screener_service as screener
+from codes.services.screener_service import (
+    US_INDEX_DEFINITIONS,
+    row_matches_any_index,
+    verdict_for_score,
+)
 
 last_progress_state = None
 last_progress_bar_state = None
@@ -200,7 +202,7 @@ def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
 
 def _build_quick_peek(symbol: str) -> html.Div:
     row = _quick_peek_row(symbol) or {"symbol": symbol, "name": symbol, "sector": "Unknown", "composite_score": 0}
-    analysis = db.get_analysis(symbol)
+    analysis = screener.get_analysis(symbol)
     enhanced = (analysis or {}).get("enhanced") or {}
     buffett = (analysis or {}).get("buffett") or {}
     price = (analysis or {}).get("price") or row.get("price")

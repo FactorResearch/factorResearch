@@ -8,7 +8,6 @@ import plotly.graph_objects as go
 from dash import Input, Output, State, callback, dcc, html
 from flask import has_request_context
 
-import codes.portfolio as portfolio_engine
 from codes import security
 from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.company_identity import company_logo
@@ -41,8 +40,8 @@ from codes.app_modules.design_system.states import background_job_status, sectio
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
-from codes.data import db
 from codes.services import performance_metrics, permissions, product_analytics
+from codes.services import portfolio_service as portfolio_engine
 from codes.services.adaptive_loading import AsyncStatus, jobs
 
 
@@ -338,7 +337,7 @@ def render_portfolio_holdings(active, refresh):
             h["shares"] * (h.get("current_price") or h["price_at_add"]) for h in holdings.values()
         )
         # ── Summary cards ──
-        analysis_entries = db.get_analysis_entries(holdings)
+        analysis_entries = portfolio_engine.analysis_entries(holdings)
         analyses = {symbol: (analysis_entries.get(symbol) or {}).get("data") for symbol in holdings}
         currencies = {
             ((analysis or {}).get("provenance") or {}).get("currency")

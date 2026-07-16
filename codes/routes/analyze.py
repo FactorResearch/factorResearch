@@ -9,9 +9,8 @@ from urllib.parse import urlencode
 import flask
 
 from codes import auth
-from codes.data import db
 from codes.models.analysis_snapshot import company_slug
-from codes.services import permissions
+from codes.services import permissions, stock_analysis
 from codes.services.analysis_snapshot_service import (
     get_company_snapshots_by_slug,
     get_custom_snapshot_for_owner,
@@ -154,7 +153,7 @@ def company_analysis_page(slug: str):
         if ticker:
             all_history = list_ticker_snapshots(ticker, limit=min(page * 12, 120))
             if not all_history and page == 1:
-                cached = db.get_analysis(ticker)
+                cached = stock_analysis.get_cached_analysis(ticker)
                 if cached and not cached.get("error"):
                     save_standard_snapshot(cached)
                     all_history = list_ticker_snapshots(ticker, limit=12)

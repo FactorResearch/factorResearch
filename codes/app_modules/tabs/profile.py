@@ -5,27 +5,14 @@ from __future__ import annotations
 import dash
 from dash import Input, Output, State, callback, html
 
-import codes.portfolio as portfolio_engine
-from codes import auth, billing
 from codes.app_modules.design_system.primitives import button
 from codes.app_modules.screener_markets import market_from_path
 from codes.app_modules.session import get_user_id
-from codes.services import permissions, user_settings
+from codes.services import account_service
 
 
 def _display_name() -> str:
-    persona = auth.get_dev_persona()
-    if persona:
-        label = str(persona.get("label") or "there").strip()
-        return label.split("/")[0].strip()
-    raw = str(get_user_id() or "").strip()
-    if not raw:
-        return "there"
-    raw = raw.split("@", 1)[0]
-    parts = [part for chunk in raw.split("_") for part in chunk.split("-") if part]
-    if not parts:
-        return "there"
-    return " ".join(parts[:2]).title()
+    return account_service.display_name(get_user_id())
 
 
 def _selected_notifications(settings: dict) -> list[str]:
@@ -37,15 +24,15 @@ def _selected_notifications(settings: dict) -> list[str]:
 
 
 def _portfolio_rows(user_id: str):
-    names = portfolio_engine.list_portfolios(user_id) or []
-    if not names:
+    portfolios = account_service.portfolio_summaries(user_id)
+    if not portfolios:
         return html.Div("No saved portfolios yet.", className="text-muted")
     return html.Ul(
         [
             html.Li(
-                f"{name} · {len((portfolio_engine.load_portfolio(user_id, name) or {}).get('holdings', {}))} holdings"
+                f"{item['name']} · {item['holdings']} holdings"
             )
-            for name in names
+            for item in portfolios
         ],
         className="mb-0",
     )
@@ -69,18 +56,18 @@ def _saved_screener_rows(settings: dict):
 
 
 def _subscription_summary(user_id: str):
-    subscription = permissions.get_or_create_subscription(user_id)
-    plan = str(subscription.get("plan") or "free").capitalize()
-    status = str(subscription.get("status") or "trialing").replace("_", " ").capitalize()
-    usage = permissions.get_trial_analysis_usage(user_id)
+    subscription = account_service.subscription_summary(user_id)
+    plan = subscription["plan"].capitalize()
+    status = subscription["status"].replace("_", " ").capitalize()
+    usage = subscription["trial_usage"]
     return html.Div(
         [
             html.P(f"Plan: {plan}", className="mb-6"),
             html.P(f"Status: {status}", className="mb-6"),
             html.P(f"Trial analyses used: {usage}", className="mb-12"),
             html.A(
-                "Manage subscription" if billing.user_has_paid(user_id) else "Upgrade to Premium",
-                href="/billing/portal" if billing.user_has_paid(user_id) else billing.get_billing_entry_url(source="profile", feature="subscription"),
+                "Manage subscription" if subscription["paid"] else "Upgrade to Premium",
+                href=subscription["billing_url"],
                 className="analyze-btn",
             ),
         ]
@@ -88,8 +75,7 @@ def _subscription_summary(user_id: str):
 
 
 def _quick_section_content(section_key: str, settings: dict, user_id: str):
-    persona = auth.get_dev_persona()
-    provider = auth.AUTH_PROVIDER or ("developer session" if persona else "session")
+    provider = account_service.auth_provider()
     sections = {
         "account": (
             "Account identity and provider context.",
@@ -150,7 +136,7 @@ def _quick_section_content(section_key: str, settings: dict, user_id: str):
     prevent_initial_call=False,
 )
 def load_user_settings(_pathname):
-    return user_settings.get_user_settings(get_user_id())
+    return account_service.get_settings(get_user_id())
 
 
 @callback(
@@ -193,7 +179,7 @@ def toggle_profile_quick_panel(n_clicks, pathname, current_class):
     prevent_initial_call=False,
 )
 def render_profile_quick_panel(settings_data, _portfolio_refresh, section_key):
-    settings = user_settings.normalize_user_settings(settings_data)
+    settings = account_service.normalize_settings(settings_data)
     summary, detail = _quick_section_content(section_key or "appearance", settings, get_user_id())
     return settings["appearance"]["theme"], summary, detail
 
@@ -208,7 +194,7 @@ def render_profile_quick_panel(settings_data, _portfolio_refresh, section_key):
 def save_profile_quick_settings(n_clicks, theme):
     if not n_clicks:
         return dash.no_update, dash.no_update
-    settings = user_settings.update_user_settings(
+    settings = account_service.update_settings(
         get_user_id(),
         {"appearance": {"theme": theme}},
     )
@@ -230,10 +216,9 @@ def save_profile_quick_settings(n_clicks, theme):
     prevent_initial_call=False,
 )
 def render_profile(settings_data, _portfolio_refresh, active_section):
-    settings = user_settings.normalize_user_settings(settings_data)
+    settings = account_service.normalize_settings(settings_data)
     user_id = get_user_id()
-    persona = auth.get_dev_persona()
-    provider = auth.AUTH_PROVIDER or ("developer session" if persona else "session")
+    provider = account_service.auth_provider()
     account = html.Div(
         [
             html.P(f"User ID: {user_id}", className="mb-6"),
@@ -318,10 +303,8 @@ def render_profile(settings_data, _portfolio_refresh, active_section):
 def save_profile_settings(n_clicks, theme, notifications):
     if not n_clicks:
         return dash.no_update, dash.no_update
-    settings = user_settings.set_notifications(get_user_id(), notifications)
-    settings = user_settings.update_user_settings(
-        get_user_id(),
-        {"appearance": {"theme": theme}},
+    settings = account_service.save_preferences(
+        get_user_id(), theme=theme, notifications=notifications,
     )
     return settings, "Profile settings saved."
 
@@ -340,7 +323,7 @@ def save_current_screener(n_clicks, name, screener_context):
         return dash.no_update, dash.no_update, dash.no_update
     screener_context = screener_context or {}
     try:
-        settings = user_settings.add_saved_screener(
+        settings = account_service.add_saved_screener(
             get_user_id(),
             name=name,
             market=str(screener_context.get("market") or "US"),
@@ -364,7 +347,7 @@ def delete_saved_screener(n_clicks, screener_id):
         return dash.no_update, dash.no_update
     if not screener_id:
         return dash.no_update, "Select a saved screener to remove."
-    return user_settings.delete_saved_screener(get_user_id(), screener_id), "Saved screener removed."
+    return account_service.delete_saved_screener(get_user_id(), screener_id), "Saved screener removed."
 
 
 @callback(

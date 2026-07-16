@@ -81,7 +81,7 @@ def test_profile_path_shows_profile_page_and_sets_active_state():
 
 def test_render_profile_menu_label_uses_display_name(monkeypatch):
     monkeypatch.setattr(profile, "get_user_id", lambda: "amin_user")
-    monkeypatch.setattr(profile.auth, "get_dev_persona", lambda: None)
+    monkeypatch.setattr(profile.account_service, "display_name", lambda _user_id: "Amin User")
 
     assert profile.render_profile_menu_label("/") == "Hi Amin User"
 
@@ -108,7 +108,7 @@ def test_user_settings_normalization_fills_profile_defaults():
 def test_save_current_screener_persists_market_and_filters(monkeypatch):
     monkeypatch.setattr(profile, "get_user_id", lambda: "user-1")
     monkeypatch.setattr(
-        profile.user_settings,
+        profile.account_service,
         "add_saved_screener",
         lambda user_id, **kwargs: {"saved_screeners": [{"id": "value", **kwargs}]},
     )

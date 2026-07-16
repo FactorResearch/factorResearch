@@ -40,7 +40,9 @@ def test_chart_callback_loads_history_from_server_cache(monkeypatch):
     cached = {"symbol": "AAPL", "price_history": {"Close": {"0": 1}}}
     load = Mock(return_value=cached)
     render = Mock(return_value=["chart"])
-    monkeypatch.setattr("codes.app_modules.tabs.analyze.db.get_analysis", load)
+    monkeypatch.setattr(
+        "codes.app_modules.tabs.analyze.stock_analysis.get_cached_analysis", load
+    )
     monkeypatch.setattr("codes.app_modules.tabs.analyze.build_analysis_charts", render)
 
     assert render_analysis_charts_on_demand(1, {"symbol": "AAPL"}) == ["chart"]
@@ -114,7 +116,10 @@ def test_pending_secondary_cards_reserve_layout_space():
 
 def test_secondary_poll_rebuilds_content_when_enrichment_completes(monkeypatch):
     enriched = {"symbol": "AAPL", "secondary_status": "complete"}
-    monkeypatch.setattr("codes.app_modules.tabs.analyze.db.get_analysis", lambda _symbol: enriched)
+    monkeypatch.setattr(
+        "codes.app_modules.tabs.analyze.stock_analysis.get_cached_analysis",
+        lambda _symbol: enriched,
+    )
     monkeypatch.setattr("codes.app_modules.tabs.analyze._build_analysis_content", lambda result: [result["secondary_status"]])
     monkeypatch.setattr("codes.app_modules.tabs.analyze.permissions.can_access_feature", lambda *_args: None)
     monkeypatch.setattr("codes.app_modules.tabs.analyze.get_user_id", lambda: "test-user")

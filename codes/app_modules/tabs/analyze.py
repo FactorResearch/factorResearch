@@ -17,9 +17,9 @@ from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
 from codes.core.config import is_production
-from codes.data import db
-from codes.engine import screener
 from codes.services import analysis_demand, performance_metrics, permissions, product_analytics
+from codes.services import screener_service as screener
+from codes.services import stock_analysis
 from codes.services.stock_analysis import _is_rate_limit_error
 from codes.services.stock_analysis import analyze_stock_primary as analyze_stock
 
@@ -419,7 +419,7 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None)
     started_at = _time.perf_counter()
     chart_analysis = analysis
     if not analysis.get("price_history"):
-        chart_analysis = db.get_analysis(analysis.get("symbol", "")) or analysis
+        chart_analysis = stock_analysis.get_cached_analysis(analysis.get("symbol", "")) or analysis
     if not chart_analysis.get("price_history") and not (chart_analysis.get("graham") or {}).get(
         "eps_history"
     ):
@@ -473,7 +473,7 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None)
 def refresh_secondary_analysis(_n_intervals, analysis):
     if not analysis or analysis.get("secondary_status") != "pending":
         raise PreventUpdate
-    enriched = db.get_analysis(analysis.get("symbol", ""))
+    enriched = stock_analysis.get_cached_analysis(analysis.get("symbol", ""))
     if not enriched or enriched.get("secondary_status") not in {"complete", "failed"}:
         raise PreventUpdate
 

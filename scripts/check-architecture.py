@@ -38,6 +38,21 @@ PRESENTATION_ALLOWED_DOMAIN_IMPORTS = {
     ("codes/routes/analyze.py", "codes.models.analysis_snapshot"),  # identity mapping only
 }
 PROTECTED_CYCLE_PREFIXES = ("codes.core", "codes.models")
+SERVICE_BOUNDARY_ADAPTERS = {
+    "codes/app_modules/tabs/analyze.py",
+    "codes/app_modules/tabs/portfolio.py",
+    "codes/app_modules/tabs/pricing.py",
+    "codes/app_modules/tabs/profile.py",
+    "codes/app_modules/tabs/screener.py",
+    "codes/routes/analyze.py",
+    "codes/routes/charts.py",
+}
+FORBIDDEN_ADAPTER_BUSINESS_IMPORTS = (
+    "codes.billing",
+    "codes.data",
+    "codes.engine",
+    "codes.portfolio",
+)
 
 
 def module_name(path: Path) -> str:
@@ -81,9 +96,19 @@ def find_cycle(graph: dict[str, set[str]]) -> list[str] | None:
     return None
 
 
+def adapter_boundary_errors(relative: str, imports: set[str]) -> list[str]:
+    if relative not in SERVICE_BOUNDARY_ADAPTERS:
+        return []
+    return [
+        f"{relative}: delivery adapter bypasses application service via {imported}"
+        for imported in imports
+        if imported.startswith(FORBIDDEN_ADAPTER_BUSINESS_IMPORTS)
+    ]
+
+
 def dependency_errors(path: Path, imports: set[str]) -> list[str]:
     relative = path.relative_to(ROOT).as_posix()
-    errors: list[str] = []
+    errors: list[str] = adapter_boundary_errors(relative, imports)
     if path in DOMAIN_FILES:
         for imported in imports:
             root = imported.split(".", 1)[0]

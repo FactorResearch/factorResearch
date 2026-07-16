@@ -29,7 +29,7 @@ from codes.composition import compose_runtime
 from codes.core.config import is_production
 from flask import render_template
 from codes.data import sec_data
-from codes.engine import screener, universe
+from codes.engine import universe
 from codes.routes.analyze import analyze_pages
 from codes.routes.charts import chart_pages
 from codes.error_pages import register_error_pages
@@ -38,11 +38,10 @@ from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
 from codes.services import performance_metrics, provider_gateway
-from codes.services import analysis_jobs, component_cache
+from codes.services import account_service, analysis_jobs, component_cache, screener_service
 from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
-import codes.portfolio as portfolio_engine
 from codes.app_modules.composition import compose_dash_ui
 from codes.app_modules.rate_limit import clear_rate_limits_for_user
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
@@ -205,13 +204,7 @@ def cached_company_logo():
 def delete_account():
     user_id = get_user_id()
 
-    from codes.data import analytics_db, db
-    from codes.services.analysis_snapshot_service import delete_user_snapshots
-
-    summary = portfolio_engine.delete_all_user_data(user_id)
-    summary["database_records"] = db.delete_user_records(user_id)
-    summary["analytics_events"] = analytics_db.delete_identity_events(user_id)
-    summary["custom_snapshots"] = delete_user_snapshots(user_id)
+    summary = account_service.delete_account_data(user_id)
     security.audit_log_access("DELETE_ACCOUNT", "user_data", user_id)
 
     # Purge in-memory/session-scoped state tied to this user
@@ -376,7 +369,7 @@ def startup():
         ensure_schema_if_configured()
     sec_data.get_ticker_map()
     universe.get_universe()
-    results = screener.load_cached_only()
+    results = screener_service.load_cached_only()
     from codes.services.analysis_scheduler import start_background_maintenance
     start_background_maintenance()
     print(f"✅ {len(results)} cached stocks ready\n")

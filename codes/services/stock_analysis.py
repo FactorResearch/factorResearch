@@ -50,6 +50,11 @@ ANALYSIS_MAX_AGE_SECONDS = int(os.environ.get("ANALYSIS_MAX_AGE_SECONDS", 30 * 8
 _MODEL_VERSIONS = {key: model.version for key, model in MODELS.items()}
 
 
+def get_cached_analysis(symbol: str) -> dict | None:
+    """Read a persisted analysis through the Analyze application boundary."""
+    return db.get_analysis(str(symbol or "").upper())
+
+
 def _timed(timings: dict[str, float], name: str, callback):
     started = _time.perf_counter()
     try:
