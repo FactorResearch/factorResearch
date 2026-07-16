@@ -67,7 +67,7 @@ def _subscription_summary(user_id: str):
             html.P(f"Trial analyses used: {usage}", className="mb-12"),
             html.A(
                 "Manage subscription" if subscription["paid"] else "Upgrade to Premium",
-                href=subscription["billing_url"],
+                href=account_service.billing_entry_url(user_id),
                 className="analyze-btn",
             ),
         ]

@@ -166,6 +166,7 @@ def test_authenticated_contracts_and_safe_error_envelope(client, contract, monke
     assert payload["error"] == {
         "code": "unauthorized",
         "message": "Authentication is required.",
+        "retryable": False,
     }
 
 
@@ -216,6 +217,8 @@ def test_authenticated_success_responses_match_contract(client, contract, monkey
 def test_typed_transport_schemas_track_openapi_fields(contract: dict) -> None:
     pairs = (
         (typed_schemas.AnalysisResource, "Analysis"),
+        (typed_schemas.FactorResource, "Factor"),
+        (typed_schemas.CapabilityResource, "Capability"),
         (typed_schemas.ScreenerResource, "ScreenerItem"),
         (typed_schemas.PortfolioSummary, "PortfolioSummary"),
         (typed_schemas.AppearanceSettings, "AppearanceSettings"),

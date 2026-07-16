@@ -24,7 +24,12 @@ Public client operations must use the versioned contract described in
 callback, telemetry, and internal operations endpoints are not public client
 contracts.
 
-These modules intentionally provide stable use-case operations while legacy engines
-and repositories are incrementally decomposed. API contracts and transport-neutral
-domain response models are handled by ISSUE_061; this boundary avoids pre-empting
-that separation.
+`codes/domain/responses.py` is the response boundary shared by API and web
+delivery adapters. Its immutable models cover analyses, factors, portfolios,
+jobs, users, subscriptions, errors, and capabilities. Application services map
+legacy engine and repository results into these models before delivery; adapters
+then choose their own HTTP envelope, formatting, components, colors, and layout.
+
+The domain serialization removes presentation keys recursively. The Dash adapter
+maps semantic verdict and regime codes to visual treatment locally, while the API
+serializes the same response models into the versioned OpenAPI contract.

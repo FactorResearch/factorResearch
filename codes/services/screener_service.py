@@ -6,15 +6,21 @@ from codes.data import db as _db
 from codes.data.us_indices import US_INDEX_DEFINITIONS, row_matches_any_index
 from codes.engine import screener as _screener
 from codes.engine.scorer import verdict_for_score
+from codes.domain.responses import ScreenerResponse
 
 
 def get_screener_results() -> list[dict]:
-    return _screener.get_screener_results()
+    return [item.presentation_data() for item in get_result_responses()]
 
 
 def get_results() -> list[dict]:
     """Concise alias for API adapters."""
     return get_screener_results()
+
+
+def get_result_responses() -> list[ScreenerResponse]:
+    """Return the canonical response models used by every delivery adapter."""
+    return [ScreenerResponse.from_mapping(row) for row in _screener.get_screener_results()]
 
 
 def get_progress() -> dict:

@@ -9,6 +9,12 @@ The source of truth is `openapi.yaml`, also served at
 authentication, pagination, and the stable error envelope. The document is JSON
 encoded YAML 1.2 so build tooling can validate it without a YAML dependency.
 
+Public responses serialize the immutable domain response models in
+`codes/domain/responses.py`. Analysis responses include semantic factor and
+capability collections; they never include CSS classes, colors, component names,
+icons, or layout choices. The web renderer consumes the same domain model and
+owns those presentation decisions locally.
+
 Public responses are allow-listed projections of application-service results.
 Adapters must not return raw database rows, provider payloads, exception text,
 credentials, or uncontracted fields. New public endpoints must be added below an
@@ -21,6 +27,6 @@ parameters; `page_size` is capped at 100. Errors always contain a stable machine
 code, a safe user-facing message, the API version, and request ID.
 
 `codes/api/schemas.py` provides checked Python transport types corresponding to
-the OpenAPI component schemas. These types are intentionally transport-only;
-domain response modeling and further separation from presentation are owned by
-ISSUE_061.
+the OpenAPI component schemas. These types remain transport-only; the reusable
+domain response models are independent of Flask, Dash, database, and provider
+dependencies.

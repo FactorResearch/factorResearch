@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CODES = ROOT / "codes"
 DOMAIN_FILES = {
+    *list((CODES / "domain").glob("*.py")),
     *list((CODES / "models").glob("*.py")),
     CODES / "core" / "engine_contracts.py",
     CODES / "core" / "financial_math.py",
@@ -37,7 +38,7 @@ FORBIDDEN_INTERNAL_PREFIXES = (
 PRESENTATION_ALLOWED_DOMAIN_IMPORTS = {
     ("codes/routes/analyze.py", "codes.models.analysis_snapshot"),  # identity mapping only
 }
-PROTECTED_CYCLE_PREFIXES = ("codes.core", "codes.models")
+PROTECTED_CYCLE_PREFIXES = ("codes.core", "codes.domain", "codes.models")
 SERVICE_BOUNDARY_ADAPTERS = {
     "codes/api/v1.py",
     "codes/app_modules/tabs/analyze.py",

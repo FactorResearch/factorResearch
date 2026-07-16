@@ -25,6 +25,7 @@ class Pagination(TypedDict):
 class ErrorDetail(TypedDict):
     code: str
     message: str
+    retryable: bool
 
 
 class ErrorResponse(TypedDict):
@@ -43,6 +44,21 @@ class AnalysisResource(TypedDict):
     verdict: str
     analysis_version: str
     generated_at: str | None
+    factors: list["FactorResource"]
+    capabilities: list["CapabilityResource"]
+
+
+class FactorResource(TypedDict):
+    key: str
+    score: float | int | None
+    status: str
+    metrics: dict[str, object]
+
+
+class CapabilityResource(TypedDict):
+    key: str
+    available: bool
+    reason_code: str | None
 
 
 class ScreenerResource(TypedDict):

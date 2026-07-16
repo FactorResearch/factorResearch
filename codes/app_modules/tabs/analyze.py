@@ -34,8 +34,10 @@ def _telemetry_user_id() -> str:
     return get_user_id() if has_request_context() else "anonymous"
 
 
-def _client_analysis_payload(result: dict) -> dict:
+def _client_analysis_payload(result) -> dict:
     """Keep large chart histories server-side until the user opens Charts."""
+    if hasattr(result, "presentation_data"):
+        result = result.presentation_data()
     return {
         key: value for key, value in result.items() if key not in {"price_history", "spy_history"}
     }
@@ -377,7 +379,8 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
     product_analytics.track_event(user_id, "stock_viewed", {"symbol": symbol, "source": "analysis"})
     analysis_demand.record(symbol)
     viewed_updated = list(set((viewed_list or []) + [symbol]))
-    content = _build_analysis_content(result)
+    response = stock_analysis.analysis_response(result, symbol)
+    content = _build_analysis_content(response)
     # Update screener row with full analysis data (Graham Number, live price, enhanced score)
     screener.update_stock_after_analysis(symbol, result)
     usage_msg = ""
@@ -385,7 +388,7 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         consumed = permissions.consume_analysis_if_allowed(user_id, ticker=symbol)
         usage_msg = f" · {consumed.remaining} free analyses remaining"
         content = [UpgradeBanner(remaining=consumed.remaining), *content]
-    client_result = _client_analysis_payload(result)
+    client_result = _client_analysis_payload(response)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return (
         dash.no_update
@@ -477,11 +480,12 @@ def refresh_secondary_analysis(_n_intervals, analysis):
     if not enriched or enriched.get("secondary_status") not in {"complete", "failed"}:
         raise PreventUpdate
 
-    content = _build_analysis_content(enriched)
+    response = stock_analysis.analysis_response(enriched, analysis.get("symbol", ""))
+    content = _build_analysis_content(response)
     access = permissions.can_access_feature(get_user_id(), permissions.Feature.ANALYSIS)
     if access and access.remaining is not None:
         content = [UpgradeBanner(remaining=access.remaining), *content]
-    client_result = _client_analysis_payload(enriched)
+    client_result = _client_analysis_payload(response)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return content, client_result
 

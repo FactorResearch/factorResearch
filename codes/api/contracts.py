@@ -17,6 +17,22 @@ from codes.api.schemas import (
     PortfolioSummary,
     ScreenerResource,
 )
+from codes.domain.responses import (
+    AnalysisResponse as DomainAnalysisResponse,
+)
+from codes.domain.responses import (
+    ErrorResponse as DomainErrorResponse,
+)
+from codes.domain.responses import (
+    PortfolioResponse as DomainPortfolioResponse,
+)
+from codes.domain.responses import (
+    ScreenerResponse as DomainScreenerResponse,
+)
+from codes.domain.responses import (
+    SubscriptionResponse,
+    UserResponse,
+)
 
 API_VERSION = "v1"
 DEFAULT_PAGE_SIZE = 25
@@ -32,8 +48,9 @@ def data_response(data: object, request_id: str) -> DataResponse:
 
 
 def error_response(code: str, message: str, request_id: str) -> ErrorResponse:
+    error = DomainErrorResponse(code, message)
     return {
-        "error": {"code": code, "message": message},
+        "error": error.to_dict(),
         "meta": meta(request_id),
     }
 
@@ -58,68 +75,23 @@ def collection_response(
 
 
 def analysis_resource(raw: dict[str, Any], symbol: str) -> AnalysisResource:
-    composite = raw.get("enhanced") or raw.get("composite") or {}
-    return {
-        "symbol": str(raw.get("symbol") or raw.get("ticker") or symbol).upper(),
-        "company_name": str(raw.get("company_name") or raw.get("name") or symbol),
-        "sector": str(raw.get("sector") or ""),
-        "market_code": str(raw.get("market_code") or "US").upper(),
-        "price": _number_or_none(raw.get("price")),
-        "market_cap": _number_or_none(raw.get("market_cap")),
-        "composite_score": _number_or_none(composite.get("composite_score")),
-        "verdict": str(composite.get("verdict") or "PENDING"),
-        "analysis_version": str(raw.get("analysis_version") or ""),
-        "generated_at": _string_or_none(raw.get("generated_at")),
-    }
+    return DomainAnalysisResponse.from_mapping(raw, symbol).to_dict()  # type: ignore[return-value]
 
 
 def screener_resource(raw: dict[str, Any]) -> ScreenerResource:
-    return {
-        "symbol": str(raw.get("symbol") or "").upper(),
-        "name": str(raw.get("name") or raw.get("symbol") or ""),
-        "sector": str(raw.get("sector") or ""),
-        "market_code": str(raw.get("market_code") or "US").upper(),
-        "composite_score": _number_or_zero(raw.get("composite_score")),
-        "verdict": str(raw.get("verdict") or "NOT_ANALYZED"),
-        "price": _number_or_none(raw.get("price")),
-        "market_cap": _number_or_none(raw.get("market_cap")),
-        "analyzed": bool(raw.get("analyzed")),
-        "updated_at": _string_or_none(raw.get("updated_at")),
-    }
+    return DomainScreenerResponse.from_mapping(raw).to_dict()  # type: ignore[return-value]
 
 
 def portfolio_summary(raw: dict[str, Any]) -> PortfolioSummary:
-    return {
-        "name": str(raw.get("name") or ""),
-        "holdings": max(0, int(raw.get("holdings") or 0)),
-    }
+    return DomainPortfolioResponse.from_mapping(raw).to_dict()  # type: ignore[return-value]
 
 
 def account_resource(raw: dict[str, Any]) -> AccountResource:
-    settings = dict(raw.get("settings") or {})
-    appearance = dict(settings.get("appearance") or {})
-    notifications = dict(settings.get("notifications") or {})
-    return {
-        "display_name": str(raw.get("display_name") or ""),
-        "auth_provider": str(raw.get("auth_provider") or "session"),
-        "settings": {
-            "appearance": {"theme": str(appearance.get("theme") or "system")},
-            "notifications": {
-                "product_updates": bool(notifications.get("product_updates")),
-                "research_digest": bool(notifications.get("research_digest")),
-                "security_alerts": bool(notifications.get("security_alerts")),
-            },
-        },
-    }
+    return UserResponse.from_mapping(raw).to_dict()  # type: ignore[return-value]
 
 
 def billing_resource(raw: dict[str, Any]) -> BillingResource:
-    return {
-        "plan": str(raw.get("plan") or "free"),
-        "status": str(raw.get("status") or "trialing"),
-        "trial_usage": max(0, int(raw.get("trial_usage") or 0)),
-        "paid": bool(raw.get("paid")),
-    }
+    return SubscriptionResponse.from_mapping(raw).to_dict()  # type: ignore[return-value]
 
 
 def _number_or_none(value: object) -> float | int | None:

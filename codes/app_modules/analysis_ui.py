@@ -13,11 +13,25 @@ from codes.app_modules.design_system.schemas import SectionDefinition
 from codes.app_modules.design_system.primitives import link, loading_container
 from codes.app_modules.design_system.states import chart_skeleton
 from codes.services import chart_service
+from codes.domain.responses import AnalysisResponse
 
 from .config import _MOAT_TOOLTIPS, AMBER, BLUE, BORDER, CARD, GREEN, MUTED, RED, TEXT, WHITE
 from .css_classes import tone_class
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
+
+
+def _verdict_presentation_label(verdict: object) -> str:
+    """Map a semantic verdict code to a CSS-neutral presentation category."""
+    normalized = str(verdict or "pending").lower().replace("_", "-").replace(" ", "-")
+    aliases = {
+        "strong-buy": "high-conviction",
+        "attractive": "favorable",
+        "buy": "favorable",
+        "hold": "cautious",
+        "avoid": "unfavorable",
+    }
+    return aliases.get(normalized, normalized)
 
 
 def _clamp_pct(value) -> float:
@@ -48,9 +62,7 @@ def analysis_score_drivers(data: dict) -> tuple[list[tuple[str, float]], list[tu
     """Rank the strongest and weakest research factors for first-view disclosure."""
     enhanced = data.get("enhanced") or {}
     candidates = {
-        "Valuation": _normalized_score(
-            enhanced, "graham_pct", "valuation_score"
-        )
+        "Valuation": _normalized_score(enhanced, "graham_pct", "valuation_score")
         or _normalized_score(data.get("graham") or {}, "total_score", "score"),
         "Quality": _normalized_score(enhanced, "quality_pct")
         or _normalized_score(data.get("quality") or {}, "total_score", "score"),
@@ -280,7 +292,7 @@ def _composite_banner(data: dict) -> html.Div:
     has_enh = bool(enhanced.get("composite_score") is not None)
     src = enhanced if has_enh else comp
     verdict = src.get("verdict", "N/A")
-    verdict_label = src.get("verdict_label", "pending")
+    verdict_label = _verdict_presentation_label(src.get("verdict"))
     verdict_desc = src.get("verdict_desc", "")
     score = src.get("composite_score", 0) or 0
     price = data.get("price")
@@ -1259,7 +1271,14 @@ def _market_fear_card(data: dict) -> html.Div:
         "orange": "#f97316",
         "red": RED,
     }
-    accent = color_map.get(fear.get("color"), MUTED)
+    regime_color = {
+        "VERY_LOW_FEAR": "green",
+        "NORMAL": "blue",
+        "ELEVATED": "amber",
+        "HIGH": "orange",
+        "EXTREME": "red",
+    }
+    accent = color_map.get(regime_color.get(fear.get("regime")), MUTED)
 
     def _fmt(v, suffix="", decimals=1):
         return f"{v:.{decimals}f}{suffix}" if v is not None else "N/A"
@@ -1315,8 +1334,10 @@ def _market_fear_card(data: dict) -> html.Div:
     )
 
 
-def _build_analysis_content(data: dict) -> list:
+def _build_analysis_content(data: dict | AnalysisResponse) -> list:
     """Render analysis data into a compact, summary-first analysis layout."""
+    if isinstance(data, AnalysisResponse):
+        data = data.presentation_data()
     if not data or "error" in data:
         return []
 
@@ -1335,8 +1356,8 @@ def _build_analysis_content(data: dict) -> list:
         .replace("_", " ")
         .title()
     )
-    verdict_label = (
-        enhanced.get("verdict_label") or data.get("composite", {}).get("verdict_label") or "pending"
+    verdict_label = _verdict_presentation_label(
+        enhanced.get("verdict") or data.get("composite", {}).get("verdict")
     )
     price = data.get("price")
     er = data.get("earnings_revision") or {}
@@ -1487,7 +1508,11 @@ def _build_analysis_content(data: dict) -> list:
     strongest = positive_drivers[0] if positive_drivers else ("Not enough data", 0)
     weakest = weak_drivers[0] if weak_drivers else ("Not enough data", 0)
     warnings = critical_analysis_warnings(data)
-    risk_copy = warnings[0] if warnings else "No critical model warning is active; review the Risk section for fragility."
+    risk_copy = (
+        warnings[0]
+        if warnings
+        else "No critical model warning is active; review the Risk section for fragility."
+    )
 
     overview = html.Div(
         className="analysis-overview-shell",

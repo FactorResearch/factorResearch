@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from codes.core.redis_client import get_redis
 from codes.core.config import is_production
+from codes.domain.responses import JobResponse
 
 _QUEUE = "jobs:analysis"
 _PROCESSING_QUEUE = f"{_QUEUE}:processing"
@@ -18,9 +19,11 @@ _local_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="analysis
 def _dispatch(job: dict) -> None:
     if job.get("type") == "secondary-analysis":
         from codes.services.stock_analysis import _complete_secondary_analysis
+
         _complete_secondary_analysis(job["symbol"], job.get("shares_out"))
     elif job.get("type") == "refresh-analysis":
         from codes.services.stock_analysis import analyze_stock
+
         analyze_stock(job["symbol"], force_refresh=True, defer_secondary=True)
 
 
@@ -42,6 +45,7 @@ def enqueue_existing_stock_backfill(symbols: list[str] | None = None) -> int:
     """Queue an idempotent refresh for every previously analyzed stock."""
     if symbols is None:
         from codes.data import db
+
         symbols = db.list_analysis_tickers()
     normalized = sorted({str(symbol).strip().upper() for symbol in symbols if str(symbol).strip()})
     for symbol in normalized:
@@ -103,7 +107,12 @@ def work_forever(stop_event: threading.Event | None = None) -> None:
 def health() -> dict:
     redis = get_redis()
     if redis is None:
-        return {"backend": "local" if not is_production() else "unavailable", "queued": 0, "processing": 0, "dead_letter": 0}
+        return {
+            "backend": "local" if not is_production() else "unavailable",
+            "queued": 0,
+            "processing": 0,
+            "dead_letter": 0,
+        }
     try:
         return {
             "backend": "redis",
@@ -113,3 +122,16 @@ def health() -> dict:
         }
     except Exception:
         return {"backend": "unavailable", "queued": None, "dead_letter": None}
+
+
+def health_response() -> JobResponse:
+    """Expose queue state without leaking the backing technology to clients."""
+    state = health()
+    backend = str(state.get("backend") or "unavailable")
+    status = "AVAILABLE" if backend in {"local", "redis"} else "UNAVAILABLE"
+    return JobResponse(
+        status=status,
+        queued=state.get("queued"),
+        processing=state.get("processing"),
+        failed=state.get("dead_letter"),
+    )

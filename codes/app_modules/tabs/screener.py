@@ -35,8 +35,15 @@ last_progress_state = None
 last_progress_bar_state = None
 
 SCREENER_DEFAULT_COLUMNS = [
-    "ticker", "company", "sector", "market_cap", "composite_score",
-    "graham_number", "buffett_iv", "updated_at", "verdict",
+    "ticker",
+    "company",
+    "sector",
+    "market_cap",
+    "composite_score",
+    "graham_number",
+    "buffett_iv",
+    "updated_at",
+    "verdict",
     "data_support",
 ]
 
@@ -59,7 +66,16 @@ def _screener_state_from_search(search: str | None) -> dict:
     except (TypeError, ValueError):
         page = 1
     sort_col = params.get("sort", ["composite_score"])[0]
-    valid_sorts = {"symbol", "name", "sector", "market_cap", "composite_score", "graham_number", "buffett_iv", "updated_at"}
+    valid_sorts = {
+        "symbol",
+        "name",
+        "sector",
+        "market_cap",
+        "composite_score",
+        "graham_number",
+        "buffett_iv",
+        "updated_at",
+    }
     if sort_col not in valid_sorts:
         sort_col = "composite_score"
     return {
@@ -91,6 +107,17 @@ def _quick_peek_row(symbol: str) -> dict | None:
     return None
 
 
+def _verdict_presentation_label(verdict: object) -> str:
+    normalized = str(verdict or "pending").lower().replace("_", "-").replace(" ", "-")
+    return {
+        "strong-buy": "high-conviction",
+        "attractive": "favorable",
+        "buy": "favorable",
+        "hold": "cautious",
+        "avoid": "unfavorable",
+    }.get(normalized, normalized)
+
+
 def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
     if not analysis:
         return [
@@ -98,28 +125,40 @@ def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
                 className="quick-peek-section",
                 children=[
                     html.Div("Valuation", className="quick-peek-section-title"),
-                    html.Div("Quick view only. Full valuation detail appears after a full analysis run.", className="quick-peek-section-copy"),
+                    html.Div(
+                        "Quick view only. Full valuation detail appears after a full analysis run.",
+                        className="quick-peek-section-copy",
+                    ),
                 ],
             ),
             html.Div(
                 className="quick-peek-section",
                 children=[
                     html.Div("Accounting", className="quick-peek-section-title"),
-                    html.Div("Accounting diagnostics are not available yet for this cached screener row.", className="quick-peek-section-copy"),
+                    html.Div(
+                        "Accounting diagnostics are not available yet for this cached screener row.",
+                        className="quick-peek-section-copy",
+                    ),
                 ],
             ),
             html.Div(
                 className="quick-peek-section",
                 children=[
                     html.Div("Risk", className="quick-peek-section-title"),
-                    html.Div("Use the screener score as a first filter, then open the full report for drawdown and safety detail.", className="quick-peek-section-copy"),
+                    html.Div(
+                        "Use the screener score as a first filter, then open the full report for drawdown and safety detail.",
+                        className="quick-peek-section-copy",
+                    ),
                 ],
             ),
             html.Div(
                 className="quick-peek-section",
                 children=[
                     html.Div("Growth", className="quick-peek-section-title"),
-                    html.Div("Growth quality and capital allocation become available after full analysis.", className="quick-peek-section-copy"),
+                    html.Div(
+                        "Growth quality and capital allocation become available after full analysis.",
+                        className="quick-peek-section-copy",
+                    ),
                 ],
             ),
         ]
@@ -148,7 +187,9 @@ def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
         accounting_bits.append(f"FCF quality {fcf_quality['fcf_quality_score']:.0f}/100")
     if altman.get("zone_label"):
         accounting_bits.append(altman["zone_label"])
-    accounting_copy = " · ".join(accounting_bits) or "Accounting diagnostics are limited for this report."
+    accounting_copy = (
+        " · ".join(accounting_bits) or "Accounting diagnostics are limited for this report."
+    )
 
     risk_bits = []
     if risk.get("beta") is not None:
@@ -163,7 +204,9 @@ def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
     if growth_quality.get("growth_quality_score") is not None:
         growth_bits.append(f"Growth quality {growth_quality['growth_quality_score']:.0f}/100")
     if capital_allocation.get("capital_allocation_score") is not None:
-        growth_bits.append(f"Capital allocation {capital_allocation['capital_allocation_score']:.0f}/100")
+        growth_bits.append(
+            f"Capital allocation {capital_allocation['capital_allocation_score']:.0f}/100"
+        )
     if earnings_revision.get("total_score") is not None:
         growth_bits.append(f"Revisions {earnings_revision['total_score']:.0f}/100")
     growth_copy = " · ".join(growth_bits) or "Growth signals not available yet."
@@ -201,19 +244,26 @@ def _quick_peek_sections(row: dict, analysis: dict | None) -> list[html.Div]:
 
 
 def _build_quick_peek(symbol: str) -> html.Div:
-    row = _quick_peek_row(symbol) or {"symbol": symbol, "name": symbol, "sector": "Unknown", "composite_score": 0}
+    row = _quick_peek_row(symbol) or {
+        "symbol": symbol,
+        "name": symbol,
+        "sector": "Unknown",
+        "composite_score": 0,
+    }
     analysis = screener.get_analysis(symbol)
     enhanced = (analysis or {}).get("enhanced") or {}
     buffett = (analysis or {}).get("buffett") or {}
     price = (analysis or {}).get("price") or row.get("price")
     moat_value = buffett.get("intrinsic_value") or row.get("buffett_iv")
     verdict = enhanced.get("verdict")
-    verdict_label = enhanced.get("verdict_label")
+    verdict_label = _verdict_presentation_label(enhanced.get("verdict"))
     score = enhanced.get("composite_score")
 
     if verdict is None:
         if row.get("analyzed"):
-            verdict, verdict_label, _ = verdict_for_score(row.get("composite_score", 0), enhanced=False)
+            verdict, verdict_label, _ = verdict_for_score(
+                row.get("composite_score", 0), enhanced=False
+            )
         else:
             verdict, verdict_label = "Pending", "pending"
     if score is None:
@@ -223,7 +273,10 @@ def _build_quick_peek(symbol: str) -> html.Div:
         ("Composite", f"{score:.0f}/100"),
         ("Verdict", verdict.replace("_", " ").title()),
         ("Price", f"{price:,.2f}" if price else "—"),
-        ("Market Cap", _fmt_market_cap((analysis or {}).get("market_cap") or row.get("market_cap"))),
+        (
+            "Market Cap",
+            _fmt_market_cap((analysis or {}).get("market_cap") or row.get("market_cap")),
+        ),
         ("Moat Value", f"{moat_value:,.2f}" if moat_value else "—"),
     ]
 
@@ -233,15 +286,20 @@ def _build_quick_peek(symbol: str) -> html.Div:
             html.Div(
                 className="quick-peek-identity",
                 children=[
-                    company_logo(symbol, row.get("name") or symbol, "company-logo company-logo--quick-peek"),
-                    html.Div(className="quick-peek-identity-copy", children=[
-                        html.Div(symbol, className="quick-peek-symbol"),
-                        html.H4(row.get("name") or symbol, className="quick-peek-company"),
-                        html.Div(
-                            f"Updated {_fmt_updated((analysis or {}).get('updated_at') or row.get('updated_at'))}",
-                            className="quick-peek-updated",
-                        ),
-                    ]),
+                    company_logo(
+                        symbol, row.get("name") or symbol, "company-logo company-logo--quick-peek"
+                    ),
+                    html.Div(
+                        className="quick-peek-identity-copy",
+                        children=[
+                            html.Div(symbol, className="quick-peek-symbol"),
+                            html.H4(row.get("name") or symbol, className="quick-peek-company"),
+                            html.Div(
+                                f"Updated {_fmt_updated((analysis or {}).get('updated_at') or row.get('updated_at'))}",
+                                className="quick-peek-updated",
+                            ),
+                        ],
+                    ),
                 ],
             ),
             html.Div(
@@ -282,7 +340,7 @@ def _build_quick_peek(symbol: str) -> html.Div:
     ),
     Input("quick-peek-close-btn", "n_clicks"),
     Input("quick-peek-backdrop", "n_clicks"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def manage_quick_peek(n_clicks_list, close_clicks, backdrop_clicks):
     triggered = dash.ctx.triggered_id
@@ -298,7 +356,9 @@ def manage_quick_peek(n_clicks_list, close_clicks, backdrop_clicks):
         return dash.no_update
     symbol = triggered["index"]
     try:
-        product_analytics.track_event(get_user_id(), "stock_viewed", {"symbol": symbol, "source": "screener"})
+        product_analytics.track_event(
+            get_user_id(), "stock_viewed", {"symbol": symbol, "source": "screener"}
+        )
     except Exception:
         pass
     return symbol
@@ -336,7 +396,7 @@ def open_full_analysis_from_peek(n_clicks, symbol):
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
     Input("url", "pathname"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def reset_filters_for_market(pathname):
     market = market_from_path(pathname)
@@ -413,7 +473,7 @@ clientside_callback(
     Output("index-filter", "data", allow_duplicate=True),
     Input({"type": "index-filter-pill", "index": dash.ALL}, "n_clicks"),
     State("index-filter", "data"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_index_filter(n_clicks_list, selected_indices):
     triggered = dash.ctx.triggered_id
@@ -431,7 +491,7 @@ def update_index_filter(n_clicks_list, selected_indices):
 @callback(
     Output("index-filter-pill-container", "children"),
     Input("index-filter", "data"),
-    prevent_initial_call=False
+    prevent_initial_call=False,
 )
 def render_index_filter_pills(selected_indices):
     return _index_pill_buttons(selected_indices)
@@ -480,7 +540,7 @@ def style_screener_market_links(pathname, link_ids):
     Output("screener-ready-store", "data"),
     Input("screener-progress-interval", "n_intervals"),
     State("screener-ready-store", "data"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_progress(n, ready_val):
     global last_progress_state
@@ -501,31 +561,59 @@ def update_progress(n, ready_val):
     else:
         new_ready = dash.no_update
     if not prog["running"] and prog["total"] == 0:
-        return html.Div([
-            html.Span("🟢 Ready", className="text-muted"),
-        ], className="flex align-items-center gap-md"), True, new_ready
+        return (
+            html.Div(
+                [
+                    html.Span("🟢 Ready", className="text-muted"),
+                ],
+                className="flex align-items-center gap-md",
+            ),
+            True,
+            new_ready,
+        )
     if prog["running"]:
         pct = int(prog["done"] / prog["total"] * 100) if prog["total"] else 0
         phase_label = {
             "cached": "⚡ Scoring cached stocks",
         }.get(prog.get("phase", ""), "🔄 Processing")
-        return html.Div([
-            html.Span(f"{phase_label}: {prog['current']}", className="font-semibold text-info"),
-            html.Span(f"({prog['done']}/{prog['total']} — {pct}%)", className="text-xs text-muted"),
-        ], className="flex align-items-center gap-md"), False, dash.no_update
+        return (
+            html.Div(
+                [
+                    html.Span(
+                        f"{phase_label}: {prog['current']}", className="font-semibold text-info"
+                    ),
+                    html.Span(
+                        f"({prog['done']}/{prog['total']} — {pct}%)", className="text-xs text-muted"
+                    ),
+                ],
+                className="flex align-items-center gap-md",
+            ),
+            False,
+            dash.no_update,
+        )
     else:
         if prog["done"] > 0:
-            return html.Div([
-                html.Span("✅ Analysis complete", className="font-semibold text-success"),
-                html.Span(f"{prog['done']} stocks analyzed", className="text-xs text-muted"),
-            ], className="flex align-items-center gap-md"), True, new_ready
+            return (
+                html.Div(
+                    [
+                        html.Span("✅ Analysis complete", className="font-semibold text-success"),
+                        html.Span(
+                            f"{prog['done']} stocks analyzed", className="text-xs text-muted"
+                        ),
+                    ],
+                    className="flex align-items-center gap-md",
+                ),
+                True,
+                new_ready,
+            )
         else:
             return "", True, new_ready
+
 
 @callback(
     Output("screener-progress", "children"),
     Input("screener-progress-interval", "n_intervals"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_progress_bar(n):
     global last_progress_bar_state
@@ -542,8 +630,10 @@ def update_progress_bar(n):
     remaining_stocks = prog["total"] - prog["done"]
     eta_seconds = int(remaining_stocks * 0.35)
     minutes, seconds = divmod(eta_seconds, 60)
-    eta_text = f"~{minutes}m {seconds:02d}s remaining" if prog["running"] and eta_seconds > 0 else (
-        "Complete" if not prog["running"] else "Almost done..."
+    eta_text = (
+        f"~{minutes}m {seconds:02d}s remaining"
+        if prog["running"] and eta_seconds > 0
+        else ("Complete" if not prog["running"] else "Almost done...")
     )
     return html.Div(
         [
@@ -556,36 +646,48 @@ def update_progress_bar(n):
         className="progress-container mb-3xl",
     )
 
+
 @callback(
     Output("screener-table-container", "children"),
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
-    Input("screener-ready-store",  "data"),
-    Input("url",                       "pathname"),
-    Input("page-load-interval",    "n_intervals"),
-    Input("index-filter",          "data"),
-    Input("sector-filter",         "value"),
-    Input("screener-sort-store",   "data"),
-    Input("screener-page-store",   "data"),
+    Input("screener-ready-store", "data"),
+    Input("url", "pathname"),
+    Input("page-load-interval", "n_intervals"),
+    Input("index-filter", "data"),
+    Input("sector-filter", "value"),
+    Input("screener-sort-store", "data"),
+    Input("screener-page-store", "data"),
     Input("screener-visible-columns", "value"),
     Input("screener-table-density", "value"),
     State("screener-viewed-store", "data"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
-def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, visible_columns, density, viewed_data):
+def render_screener_table(
+    ready,
+    pathname,
+    n_load,
+    selected_indices,
+    sector_filter,
+    sort_state,
+    page_num,
+    visible_columns,
+    density,
+    viewed_data,
+):
     started_at = _time.perf_counter()
     triggered_id = dash.ctx.triggered_id
     active_market = market_from_path(pathname)
     results = _filter_results_by_market(screener.get_screener_results(), active_market.code)
-   
-    prog       = screener.get_progress()
+
+    prog = screener.get_progress()
     viewed_set = frozenset(viewed_data or [])
-    sort_col   = (sort_state or {}).get("col", "composite_score")
-    sort_asc   = (sort_state or {}).get("asc", False)
+    sort_col = (sort_state or {}).get("col", "composite_score")
+    sort_asc = (sort_state or {}).get("asc", False)
     page = page_num or 1
     # Reset to page 1 when filters/sorts change
     page_reset = dash.no_update
-    
+
     if dash.ctx.triggered_id in ["index-filter", "sector-filter", "screener-sort-store", "url"]:
         page = 1
         page_reset = 1
@@ -597,12 +699,19 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
     if not results:
         if active_market.code != "US":
             return (
-                html.Div([
-                    html.Div(f"No {active_market.label} screener data loaded yet.",
-                             className="clr-muted fw-600 mb-8"),
-                    html.Div(f"Load verified {active_market.label} data into the market database, then refresh this view.",
-                             className="clr-muted fs-13"),
-                ], className="tac p-40"),
+                html.Div(
+                    [
+                        html.Div(
+                            f"No {active_market.label} screener data loaded yet.",
+                            className="clr-muted fw-600 mb-8",
+                        ),
+                        html.Div(
+                            f"Load verified {active_market.label} data into the market database, then refresh this view.",
+                            className="clr-muted fs-13",
+                        ),
+                    ],
+                    className="tac p-40",
+                ),
                 sector_options,
                 page_reset,
             )
@@ -626,8 +735,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         )
     portfolio_symbols = get_portfolio_symbols()
     filtered = [
-        r for r in index_filtered_results
-        if not sector_filter or r.get("sector") == sector_filter
+        r for r in index_filtered_results if not sector_filter or r.get("sector") == sector_filter
     ]
     if not filtered:
         performance_metrics.record_ui_operation(
@@ -649,13 +757,22 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             sector_options,
             page_reset,
         )
-    
+
     text_cols = {"symbol", "name", "sector", "updated_at"}
     if sort_col in text_cols:
-        filtered = sorted(filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc)
+        filtered = sorted(
+            filtered, key=lambda r: (r.get(sort_col) or "").lower(), reverse=not sort_asc
+        )
     else:
         filtered = sorted(filtered, key=lambda r: r.get(sort_col) or 0, reverse=not sort_asc)
-    if triggered_id in {"screener-ready-store", "page-load-interval", "index-filter", "sector-filter", "screener-sort-store", "url"}:
+    if triggered_id in {
+        "screener-ready-store",
+        "page-load-interval",
+        "index-filter",
+        "sector-filter",
+        "screener-sort-store",
+        "url",
+    }:
         try:
             product_analytics.track_event(
                 get_user_id(),
@@ -674,17 +791,47 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
     visible = set(visible_columns or SCREENER_DEFAULT_COLUMNS)
     visible.add("ticker")
     SORT_COLS = [
-        ("#",           None,               None, "rank"),
-        ("Ticker",      "symbol",           "Stock ticker symbol. Click to run full analysis.", "ticker"),
-        ("Company",     "name",             "Company name.", "company"),
-        ("Sector",      "sector",           "Industry sector from SEC filings.", "sector"),
-        ("Market Cap ↕","market_cap",       "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock.", "market_cap"),
-        ("Composite ↕", "composite_score",  "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals.", "composite_score"),
-        ("Fair Value ↕",  "graham_number",    "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock.", "graham_number"),
-        ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock.", "buffett_iv"),
-        ("Updated",     "updated_at",       "Date this stock was last fully analyzed.", "updated_at"),
-        ("Verdict",     None,               "Investment verdict based on composite score: HIGH CONVICTION ≥75 · FAVORABLE ≥60 · BALANCED ≥45 · CAUTION ≥30 · UNFAVORABLE <30. * = fundamentals only (momentum not yet loaded).", "verdict"),
-        ("Data Support", None, "Source support for the normalized screener row. Partial or unavailable inputs are not presented as fully supported.", "data_support"),
+        ("#", None, None, "rank"),
+        ("Ticker", "symbol", "Stock ticker symbol. Click to run full analysis.", "ticker"),
+        ("Company", "name", "Company name.", "company"),
+        ("Sector", "sector", "Industry sector from SEC filings.", "sector"),
+        (
+            "Market Cap ↕",
+            "market_cap",
+            "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock.",
+            "market_cap",
+        ),
+        (
+            "Composite ↕",
+            "composite_score",
+            "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals.",
+            "composite_score",
+        ),
+        (
+            "Fair Value ↕",
+            "graham_number",
+            "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock.",
+            "graham_number",
+        ),
+        (
+            "Economic Moat Rating ↕",
+            "buffett_iv",
+            "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock.",
+            "buffett_iv",
+        ),
+        ("Updated", "updated_at", "Date this stock was last fully analyzed.", "updated_at"),
+        (
+            "Verdict",
+            None,
+            "Investment verdict based on composite score: HIGH CONVICTION ≥75 · FAVORABLE ≥60 · BALANCED ≥45 · CAUTION ≥30 · UNFAVORABLE <30. * = fundamentals only (momentum not yet loaded).",
+            "verdict",
+        ),
+        (
+            "Data Support",
+            None,
+            "Source support for the normalized screener row. Partial or unavailable inputs are not presented as fully supported.",
+            "data_support",
+        ),
     ]
     header_cells = []
     for label, sort_key, tooltip, key in SORT_COLS:
@@ -694,20 +841,30 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         th_class = f"{th_class} table-tooltip" if tooltip else th_class
         if sort_key:
             sort_state = (
-                "ascending" if sort_asc else "descending"
-            ) if sort_col == sort_key else "none"
-            header_cells.append(html.Th(
-                button(
-                    label,
-                    id={"type": "screener-sort-btn", "index": sort_key},
-                    className="sort-header-btn", n_clicks=0,
+                ("ascending" if sort_asc else "descending") if sort_col == sort_key else "none"
+            )
+            header_cells.append(
+                html.Th(
+                    button(
+                        label,
+                        id={"type": "screener-sort-btn", "index": sort_key},
+                        className="sort-header-btn",
+                        n_clicks=0,
+                        title=tooltip or "",
+                        **{
+                            "aria-label": f"Sort by {label.replace(' ↕', '')}; currently {sort_state}"
+                        },
+                    ),
                     title=tooltip or "",
-                    **{"aria-label": f"Sort by {label.replace(' ↕', '')}; currently {sort_state}"},
-                ),
-                title=tooltip or "", className=th_class, scope="col", **{"aria-sort": sort_state},
-            ))
+                    className=th_class,
+                    scope="col",
+                    **{"aria-sort": sort_state},
+                )
+            )
         else:
-            header_cells.append(html.Th(label, title=tooltip or "", className=th_class, scope="col"))
+            header_cells.append(
+                html.Th(label, title=tooltip or "", className=th_class, scope="col")
+            )
     rows = []
     accordion_items = []
     # Pagination — show PAGE_SIZE rows for the current page
@@ -715,16 +872,16 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
     total_pages = max(1, math.ceil(total_rows / PAGE_SIZE))
     page = min(max(1, page), total_pages)
     start_idx = (page - 1) * PAGE_SIZE
-    page_filtered = filtered[start_idx:start_idx + PAGE_SIZE]
+    page_filtered = filtered[start_idx : start_idx + PAGE_SIZE]
 
     for i, r in enumerate(page_filtered, start_idx + 1):
-        sym     = r["symbol"]
-        viewed  = sym in viewed_set
+        sym = r["symbol"]
+        viewed = sym in viewed_set
         in_port = bool(portfolio_symbols.get(sym))
-        verdict       = r["verdict"]
-        verdict_label = r["verdict_label"]
-        verdict       = r["verdict"]
-       
+        verdict = r["verdict"]
+        verdict_label = _verdict_presentation_label(r.get("verdict"))
+        verdict = r["verdict"]
+
         if not r.get("analyzed"):
             verdict, verdict_label = "—", "pending"
         elif verdict == "PENDING":
@@ -734,17 +891,25 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         badges = []
         port_list = portfolio_symbols.get(sym, [])
         for pname in port_list:
-            badges.append(html.Span(f"💼 {pname}", className="portfolio-name-badge fs-10 clr-amber"))
+            badges.append(
+                html.Span(f"💼 {pname}", className="portfolio-name-badge fs-10 clr-amber")
+            )
         # n_clicks on <td> not <button> — iOS Safari drops touch on <button> inside <table>
         ticker_cell = html.Td(
-            html.Div([
-                company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
-                html.Div([
-                    html.Span(sym, className="ticker-link-btn"),
-                    html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
-                    if badges else html.Div(),
-                ]),
-            ], className="ticker-identity"),
+            html.Div(
+                [
+                    company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
+                    html.Div(
+                        [
+                            html.Span(sym, className="ticker-link-btn"),
+                            html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
+                            if badges
+                            else html.Div(),
+                        ]
+                    ),
+                ],
+                className="ticker-identity",
+            ),
             id={"type": "screener-ticker-btn", "index": sym, "source": "table"},
             n_clicks=0,
             className="ticker-cell ticker-cell-touch cp",
@@ -753,19 +918,38 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             **{"aria-label": f"Analyze {sym}, {r.get('name') or sym}"},
         )
         # Graham Number cell — populated after full analysis
-        gn    = r.get("graham_number")
+        gn = r.get("graham_number")
         price = r.get("price")
         currency = r.get("currency") or "USD"
         grade = None
         intrinsic_score = None
         if gn and price:
             intrinsic_score = min(105, max(0, int(gn / price * 50)))
-            grade = "A" if intrinsic_score >= 80 else "B" if intrinsic_score >= 65 else "C" if intrinsic_score >= 50 else "D" if intrinsic_score >= 35 else "F"
-            grade_class = {"A": "clr-green", "B": "clr-blue", "C": "clr-amber", "D": "clr-red", "F": "clr-red"}.get(grade, "clr-muted")
-            gn_cell = html.Td([
-                html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
-                html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
-            ], title=f"Intrinsic Value Estimate · #{intrinsic_score}/105")
+            grade = (
+                "A"
+                if intrinsic_score >= 80
+                else "B"
+                if intrinsic_score >= 65
+                else "C"
+                if intrinsic_score >= 50
+                else "D"
+                if intrinsic_score >= 35
+                else "F"
+            )
+            grade_class = {
+                "A": "clr-green",
+                "B": "clr-blue",
+                "C": "clr-amber",
+                "D": "clr-red",
+                "F": "clr-red",
+            }.get(grade, "clr-muted")
+            gn_cell = html.Td(
+                [
+                    html.Span(grade, className=f"fw-700 mr-4 {grade_class}"),
+                    html.Span(f"{intrinsic_score}/{105}", className="clr-muted fs-11"),
+                ],
+                title=f"Intrinsic Value Estimate · #{intrinsic_score}/105",
+            )
         elif gn:
             gn_cell = html.Td(
                 f"{currency} {gn:,.2f}",
@@ -773,147 +957,282 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                 title="Fundamental fair value; live price not loaded",
             )
         else:
-            gn_cell = html.Td("—", className="text-xs text-muted",
-                              title="Run full analysis to calculate Intrinsic Value")
+            gn_cell = html.Td(
+                "—",
+                className="text-xs text-muted",
+                title="Run full analysis to calculate Intrinsic Value",
+            )
         # Buffett IV / Moat cell — populated after full analysis
         biv = r.get("buffett_iv")
         if biv:
             biv_color = GREEN if (price and price <= biv) else MUTED
             biv_class = "clr-green" if (price and price <= biv) else "clr-muted"
-            biv_cell = html.Td([
-                html.Div(className="moat-tip moat-tip-anchor ch d-inline-block", children=[
-                    html.Span([html.Span(f"${biv:.0f}", className=f"fw-600 {biv_class}"), html.Span(" · Moat", className="ml-4 fs-11 clr-muted")]),
-                    html.Span("Price below intrinsic value ✓" if (price and price <= biv) else "Price above intrinsic value",
-                              className="moat-tip-popup d-none fs-11 wsnw py-6 px-10"),
-                ]),
-            ], title=f"Economic Moat: ${biv:.2f}")
+            biv_cell = html.Td(
+                [
+                    html.Div(
+                        className="moat-tip moat-tip-anchor ch d-inline-block",
+                        children=[
+                            html.Span(
+                                [
+                                    html.Span(f"${biv:.0f}", className=f"fw-600 {biv_class}"),
+                                    html.Span(" · Moat", className="ml-4 fs-11 clr-muted"),
+                                ]
+                            ),
+                            html.Span(
+                                "Price below intrinsic value ✓"
+                                if (price and price <= biv)
+                                else "Price above intrinsic value",
+                                className="moat-tip-popup d-none fs-11 wsnw py-6 px-10",
+                            ),
+                        ],
+                    ),
+                ],
+                title=f"Economic Moat: ${biv:.2f}",
+            )
         else:
-            biv_cell = html.Td("—", className="text-xs text-muted",
-                               title="Run full analysis to calculate Intrinsic Value")
-        row_class = "screener-row--portfolio" if in_port else "screener-row--viewed" if viewed else ""
-        
+            biv_cell = html.Td(
+                "—",
+                className="text-xs text-muted",
+                title="Run full analysis to calculate Intrinsic Value",
+            )
+        row_class = (
+            "screener-row--portfolio" if in_port else "screener-row--viewed" if viewed else ""
+        )
+
         row_cells = {
             "rank": html.Td(str(i), className="rank-num"),
             "ticker": ticker_cell,
             "company": html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
-            "sector": html.Td(r["sector"][:18], className="text-xs text-muted",title=r["sector"]),
+            "sector": html.Td(r["sector"][:18], className="text-xs text-muted", title=r["sector"]),
             "market_cap": html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
             "composite_score": html.Td(
-                html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")
+                html.Span(
+                    f"{r['composite_score']:.0f}",
+                    className=f"score-pill {get_score_class(r['composite_score'])}",
+                )
                 if r.get("analyzed")
                 else html.Span("—", className="score-pill")
             ),
             "graham_number": gn_cell,
             "buffett_iv": biv_cell,
-            "updated_at": html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
-            "verdict": html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
+            "updated_at": html.Td(
+                _fmt_updated(r.get("updated_at")), className="text-xs text-muted"
+            ),
+            "verdict": html.Td(
+                html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")
+            ),
             "data_support": html.Td(
-                str(r.get("data_confidence") or ("Full analysis" if r.get("analyzed") else "Fundamentals only")).replace("_", " ").title(),
+                str(
+                    r.get("data_confidence")
+                    or ("Full analysis" if r.get("analyzed") else "Fundamentals only")
+                )
+                .replace("_", " ")
+                .title(),
                 className="text-xs text-muted",
             ),
         }
-        rows.append(html.Tr(className=row_class, children=[
-            row_cells[key] for key in ["rank", *SCREENER_DEFAULT_COLUMNS]
-            if key == "rank" or key in visible
-        ]))
+        rows.append(
+            html.Tr(
+                className=row_class,
+                children=[
+                    row_cells[key]
+                    for key in ["rank", *SCREENER_DEFAULT_COLUMNS]
+                    if key == "rank" or key in visible
+                ],
+            )
+        )
         # ── Accordion item (mobile) ─────────────────────────────────────
         acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
         acc_biv_class = "clr-green" if (price and biv and price <= biv) else "clr-muted"
         acc_rows = [
-            html.Div([html.Span("Company",   className="accordion-label"),
-                      html.Span(r["name"],   className="accordion-value")], className="accordion-row"),
-            html.Div([html.Span("Sector",    className="accordion-label"),
-                      html.Span(r.get("sector","")[:28], className="accordion-value")], className="accordion-row"),
-            html.Div([html.Span("Mkt Cap",   className="accordion-label"),
-                      html.Span(_fmt_market_cap(r.get("market_cap")), className="accordion-value")], className="accordion-row"),
-            html.Div([html.Span("Composite", className="accordion-label"),
-                      html.Span(f"{r['composite_score']:.0f}",
-                                className=f"score-pill {get_score_class(r['composite_score'])}")],
-                     className="accordion-row"),
-            html.Div([html.Span("Intrinsic",  className="accordion-label"),
-                      html.Span(
-                          f"{grade} {intrinsic_score}/105"
-                          if gn and price
-                          else f"{currency} {gn:,.2f}" if gn else "—",
-                                className="accordion-value")],  className="accordion-row"),
-            html.Div([html.Span("Moat", className="accordion-label"),
-                      html.Span(f"${biv:.0f}" if biv else "—",
-                                className="accordion-value " + acc_biv_class)], className="accordion-row"),
-            html.Div([html.Span("Updated",   className="accordion-label"),
-                      html.Span(_fmt_updated(r.get("updated_at")), className="accordion-value")], className="accordion-row"),
-            html.Div([html.Span("Data support", className="accordion-label"),
-                      html.Span(str(r.get("data_confidence") or ("Full analysis" if r.get("analyzed") else "Fundamentals only")).replace("_", " ").title(), className="accordion-value")], className="accordion-row"),
+            html.Div(
+                [
+                    html.Span("Company", className="accordion-label"),
+                    html.Span(r["name"], className="accordion-value"),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Sector", className="accordion-label"),
+                    html.Span(r.get("sector", "")[:28], className="accordion-value"),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Mkt Cap", className="accordion-label"),
+                    html.Span(_fmt_market_cap(r.get("market_cap")), className="accordion-value"),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Composite", className="accordion-label"),
+                    html.Span(
+                        f"{r['composite_score']:.0f}",
+                        className=f"score-pill {get_score_class(r['composite_score'])}",
+                    ),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Intrinsic", className="accordion-label"),
+                    html.Span(
+                        f"{grade} {intrinsic_score}/105"
+                        if gn and price
+                        else f"{currency} {gn:,.2f}"
+                        if gn
+                        else "—",
+                        className="accordion-value",
+                    ),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Moat", className="accordion-label"),
+                    html.Span(
+                        f"${biv:.0f}" if biv else "—", className="accordion-value " + acc_biv_class
+                    ),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Updated", className="accordion-label"),
+                    html.Span(_fmt_updated(r.get("updated_at")), className="accordion-value"),
+                ],
+                className="accordion-row",
+            ),
+            html.Div(
+                [
+                    html.Span("Data support", className="accordion-label"),
+                    html.Span(
+                        str(
+                            r.get("data_confidence")
+                            or ("Full analysis" if r.get("analyzed") else "Fundamentals only")
+                        )
+                        .replace("_", " ")
+                        .title(),
+                        className="accordion-value",
+                    ),
+                ],
+                className="accordion-row",
+            ),
         ]
         if badges:
             acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))
         acc_rows.append(
-            html.Div("→ Analyze", id={"type": "screener-ticker-btn", "index": sym, "source": "mobile"},
-                     n_clicks=0, className="accordion-analyze-btn", role="button", tabIndex=0,
-                     **{"aria-label": f"Analyze {sym}, {r.get('name') or sym}"})
+            html.Div(
+                "→ Analyze",
+                id={"type": "screener-ticker-btn", "index": sym, "source": "mobile"},
+                n_clicks=0,
+                className="accordion-analyze-btn",
+                role="button",
+                tabIndex=0,
+                **{"aria-label": f"Analyze {sym}, {r.get('name') or sym}"},
+            )
         )
-        accordion_items.append(html.Details(
-            className="accordion-item" + (" in-portfolio" if in_port else "") + (" viewed" if viewed else ""),
-            children=[
-                html.Summary(className="accordion-summary", children=[
-                    html.Span(f"#{i}", className="accordion-rank"),
-                    company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
-                    html.Span(sym, className="ticker-link-btn"),
-                    html.Div([html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")],
-                             className="accordion-summary-right"),
-                ]),
-                html.Div(acc_rows, className="accordion-content"),
-            ]
-        ))
-    n_analyzed  = sum(1 for r in filtered if r.get("analyzed"))
+        accordion_items.append(
+            html.Details(
+                className="accordion-item"
+                + (" in-portfolio" if in_port else "")
+                + (" viewed" if viewed else ""),
+                children=[
+                    html.Summary(
+                        className="accordion-summary",
+                        children=[
+                            html.Span(f"#{i}", className="accordion-rank"),
+                            company_logo(
+                                sym, r.get("name") or sym, "company-logo company-logo--table"
+                            ),
+                            html.Span(sym, className="ticker-link-btn"),
+                            html.Div(
+                                [
+                                    html.Span(
+                                        verdict,
+                                        className=f"verdict-pill {get_verdict_class(verdict_label)}",
+                                    )
+                                ],
+                                className="accordion-summary-right",
+                            ),
+                        ],
+                    ),
+                    html.Div(acc_rows, className="accordion-content"),
+                ],
+            )
+        )
+    n_analyzed = sum(1 for r in filtered if r.get("analyzed"))
     n_portfolio = sum(1 for r in filtered if portfolio_symbols.get(r["symbol"]))
-    note = html.Div([
-        html.Span(f"{len(filtered):,} stocks", className="font-semibold"),
-        html.Span(
-            f"{len(selected_indices or []) + bool(sector_filter)} active filters",
-            className="text-xs text-muted",
-        ),
-        html.Span(f" · {n_analyzed} analyzed · {n_portfolio} in portfolio"
-                  " · * Verdict = fundamentals only — analyze individually to add Momentum",
-                  className="text-muted"),
-    ], className="fs-11 px-4 py-8 fsi")
+    note = html.Div(
+        [
+            html.Span(f"{len(filtered):,} stocks", className="font-semibold"),
+            html.Span(
+                f"{len(selected_indices or []) + bool(sector_filter)} active filters",
+                className="text-xs text-muted",
+            ),
+            html.Span(
+                f" · {n_analyzed} analyzed · {n_portfolio} in portfolio"
+                " · * Verdict = fundamentals only — analyze individually to add Momentum",
+                className="text-muted",
+            ),
+        ],
+        className="fs-11 px-4 py-8 fsi",
+    )
     table_density = density if density in {"comfortable", "compact"} else "comfortable"
-    table_component = table(className=f"screener-table density-{table_density}", caption="Stock screener results", children=[
-        html.Thead(html.Tr(children=header_cells)),
-        html.Tbody(rows),
-    ])
+    table_component = table(
+        className=f"screener-table density-{table_density}",
+        caption="Stock screener results",
+        children=[
+            html.Thead(html.Tr(children=header_cells)),
+            html.Tbody(rows),
+        ],
+    )
     # Pagination controls
-    pagination = html.Div(className="pagination-controls", children=[
-        button(
-            "◀ Prev",
-            id={"type": "screener-page-btn", "index": "prev"},
-            className="pagination-btn pagination-btn--prev",
-            n_clicks=0,
-            disabled=(page <= 1),
-        ),
-        html.Span(
-            f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
-            className="pagination-info",
-        ),
-        button(
-            "Next ▶",
-            id={"type": "screener-page-btn", "index": "next"},
-            className="pagination-btn pagination-btn--next",
-            n_clicks=0,
-            disabled=(page >= total_pages),
-        ),
-    ])
+    pagination = html.Div(
+        className="pagination-controls",
+        children=[
+            button(
+                "◀ Prev",
+                id={"type": "screener-page-btn", "index": "prev"},
+                className="pagination-btn pagination-btn--prev",
+                n_clicks=0,
+                disabled=(page <= 1),
+            ),
+            html.Span(
+                f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
+                className="pagination-info",
+            ),
+            button(
+                "Next ▶",
+                id={"type": "screener-page-btn", "index": "next"},
+                className="pagination-btn pagination-btn--next",
+                n_clicks=0,
+                disabled=(page >= total_pages),
+            ),
+        ],
+    )
     performance_metrics.record_ui_operation(
         "screener-refresh",
         (_time.perf_counter() - started_at) * 1000,
         section="screener-table",
         first_useful_ms=(_time.perf_counter() - started_at) * 1000,
     )
-    return html.Div([
-        table_component,
-        html.Div(accordion_items, className="screener-accordion"),
-        note,
-        pagination,
-    ]), sector_options, page_reset
+    return (
+        html.Div(
+            [
+                table_component,
+                html.Div(accordion_items, className="screener-accordion"),
+                note,
+                pagination,
+            ]
+        ),
+        sector_options,
+        page_reset,
+    )
+
 
 # ── Screener page navigation ──────────────────────────────────────────────────
 @callback(
@@ -924,16 +1243,19 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
     State("index-filter", "data"),
     State("sector-filter", "value"),
     State("url", "pathname"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
-def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname):
+def navigate_screener_page(
+    n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname
+):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
         return dash.no_update
     market = market_from_path(pathname)
     results = _filter_results_by_market(screener.get_screener_results(), market.code)
     filtered = [
-        r for r in results
+        r
+        for r in results
         if row_matches_any_index(r, selected_indices)
         and (not sector_filter or r.get("sector") == sector_filter)
     ]
@@ -944,12 +1266,13 @@ def navigate_screener_page(n_clicks_list, current_page, sort_state, selected_ind
         return max(1, cp - 1)
     return min(total_pages, cp + 1)
 
+
 # ── Screener column sort ──────────────────────────────────────────────────────
 @callback(
     Output("screener-sort-store", "data"),
     Input({"type": "screener-sort-btn", "index": dash.ALL}, "n_clicks"),
     State("screener-sort-store", "data"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def update_sort(n_clicks_list, sort_state):
     triggered = dash.ctx.triggered_id
@@ -963,18 +1286,18 @@ def update_sort(n_clicks_list, sort_state):
     text_cols = {"symbol", "name", "sector", "updated_at"}
     return {"col": col, "asc": col in text_cols}
 
+
 @callback(
     Output("loading-trigger", "children"),
     Output("screener-progress-interval", "disabled"),
     Input("page-load-interval", "n_intervals"),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
 def sync_screener_interval_state(n_load):
     prog = screener.get_progress()
     if prog["running"] or prog["done"] > 0:
         return dash.no_update, False
     return dash.no_update, True
-
 
 
 def register_clientside_callbacks(app):

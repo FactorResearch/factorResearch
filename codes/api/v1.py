@@ -58,11 +58,10 @@ def analysis(symbol: str):
     normalized = str(symbol or "").upper()
     if not _SYMBOL.fullmatch(normalized):
         return _error("invalid_request", "A valid market symbol is required.", 400)
-    result = stock_analysis.get_cached_analysis(normalized)
-    if not result or result.get("error"):
+    response = stock_analysis.get_cached_analysis_response(normalized)
+    if response is None:
         return _error("not_found", "Analysis was not found.", 404)
-    resource = contracts.analysis_resource(result, normalized)
-    return _json(contracts.data_response(resource, _request_id()))
+    return _json(contracts.data_response(response.to_dict(), _request_id()))
 
 
 @api_v1.get("/screener")
