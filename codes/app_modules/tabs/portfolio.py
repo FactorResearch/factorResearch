@@ -6,6 +6,7 @@ import time as _time
 import dash
 import plotly.graph_objects as go
 from dash import Input, Output, State, callback, dcc, html
+from flask import has_request_context
 
 import codes.portfolio as portfolio_engine
 from codes import security
@@ -21,7 +22,12 @@ from codes.app_modules.config import (
     validate_portfolio_name,
 )
 from codes.app_modules.css_classes import tone_class
-from codes.app_modules.design_system.financial import FinancialFormat, delta, metric_value
+from codes.app_modules.design_system.financial import (
+    FinancialFormat,
+    data_trust_panel,
+    delta,
+    metric_value,
+)
 from codes.app_modules.design_system.layouts import container, dashboard_grid, mobile_action_bar
 from codes.app_modules.design_system.primitives import (
     button,
@@ -38,6 +44,12 @@ from codes.app_modules.tabs.pricing import open_upgrade_funnel
 from codes.data import db
 from codes.services import performance_metrics, permissions, product_analytics
 from codes.services.adaptive_loading import AsyncStatus, jobs
+
+
+def _telemetry_user_id() -> str:
+    """Avoid making optional telemetry a request-context dependency."""
+    return get_user_id() if has_request_context() else "anonymous"
+
 
 PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
@@ -96,9 +108,13 @@ def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
             f"{largest['symbol']} is {largest['weight']:.1f}% of current value, creating concentration risk."
         )
     if coverage < 100:
-        risks.append(f"Research coverage is {coverage:.0f}%; refresh unscored holdings before relying on the aggregate.")
+        risks.append(
+            f"Research coverage is {coverage:.0f}%; refresh unscored holdings before relying on the aggregate."
+        )
     if len(positions) < 10:
-        risks.append(f"Only {len(positions)} holdings are present, so diversification may be limited.")
+        risks.append(
+            f"Only {len(positions)} holdings are present, so diversification may be limited."
+        )
     if weak_link:
         risks.append(
             f"{weak_link['symbol']} is the weakest researched holding at {weak_link['score']:.0f}/100."
@@ -279,6 +295,7 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     prevent_initial_call=False,
 )
 def render_portfolio_holdings(active, refresh):
+    started_at = _time.perf_counter()
     if not active:
         return empty_state(
             "No portfolio selected",
@@ -287,6 +304,12 @@ def render_portfolio_holdings(active, refresh):
         )
     p = portfolio_engine.load_portfolio(get_user_id(), active)
     if p is None:
+        performance_metrics.record_ui_operation(
+            "portfolio-load",
+            (_time.perf_counter() - started_at) * 1000,
+            outcome="error",
+            section="portfolio-holdings",
+        )
         return html.Div("Portfolio not found.", className="text-danger")
     holdings = p.get("holdings", {})
     count = len(holdings)
@@ -317,6 +340,54 @@ def render_portfolio_holdings(active, refresh):
         # ── Summary cards ──
         analysis_entries = db.get_analysis_entries(holdings)
         analyses = {symbol: (analysis_entries.get(symbol) or {}).get("data") for symbol in holdings}
+        currencies = {
+            ((analysis or {}).get("provenance") or {}).get("currency")
+            or (analysis or {}).get("currency")
+            for analysis in analyses.values()
+            if analysis
+        }
+        currencies.discard(None)
+        mixed_currency = len(currencies) > 1
+        portfolio_trust = data_trust_panel(
+            {
+                "generated_at": max(
+                    (
+                        str(
+                            (analysis or {}).get("generated_at")
+                            or (analysis or {}).get("updated_at")
+                        )
+                        for analysis in analyses.values()
+                        if analysis
+                        and (
+                            (analysis or {}).get("generated_at")
+                            or (analysis or {}).get("updated_at")
+                        )
+                    ),
+                    default=None,
+                ),
+                "provenance": {
+                    "source_category": "Cached company analyses and user-entered holdings",
+                    "filing_period": "Varies by holding; inspect each company analysis",
+                    "currency": ", ".join(sorted(currencies)) if currencies else "USD presentation",
+                    "price_timestamp": (
+                        "Exchange-rate timestamp unavailable; mixed-currency totals are indicative"
+                        if mixed_currency
+                        else "Latest cached holding prices; timestamps vary"
+                    ),
+                    "normalization_status": "Holding values normalized to the displayed portfolio totals",
+                    "calculation_status": "Portfolio aggregate",
+                    "model_scope": "Factor Research default models",
+                    "missing_effects": (
+                        [
+                            "Mixed-currency conversion lacks a stored exchange-rate timestamp; treat aggregate values as indicative."
+                        ]
+                        if mixed_currency
+                        else []
+                    ),
+                },
+            },
+            compact=True,
+        )
         health = portfolio_health_snapshot(holdings, analysis_entries)
         scores = [
             analysis["composite_score"]
@@ -351,7 +422,9 @@ def render_portfolio_holdings(active, refresh):
                 html.Div(
                     className="portfolio-health-lead",
                     children=[
-                        html.Div("Portfolio research snapshot", className="portfolio-health-kicker"),
+                        html.Div(
+                            "Portfolio research snapshot", className="portfolio-health-kicker"
+                        ),
                         html.H3(health["health"], id="portfolio-health-title"),
                         html.P(
                             f"{health['coverage']:.0f}% research coverage across {count} holdings; "
@@ -364,11 +437,17 @@ def render_portfolio_holdings(active, refresh):
                     className="portfolio-health-metrics",
                     children=[
                         html.Div(
-                            [html.Strong(f"{health['average_score']:.0f}"), html.Span("Health score")],
+                            [
+                                html.Strong(f"{health['average_score']:.0f}"),
+                                html.Span("Health score"),
+                            ],
                             className="portfolio-health-metric",
                         ),
                         html.Div(
-                            [html.Strong(f"{largest['weight']:.1f}%" if largest else "—"), html.Span("Largest weight")],
+                            [
+                                html.Strong(f"{largest['weight']:.1f}%" if largest else "—"),
+                                html.Span("Largest weight"),
+                            ],
                             className="portfolio-health-metric",
                         ),
                         html.Div(
@@ -552,7 +631,23 @@ def render_portfolio_holdings(active, refresh):
             ]
         )
         actions.className = "ds-mobile-actions portfolio-actions mt-16 d-flex gap-8"
-        body = html.Div([portfolio_health, summary_cards, actions, table], className="portfolio-body")
+        body = html.Div(
+            [portfolio_trust, portfolio_health, summary_cards, actions, table],
+            className="portfolio-body",
+        )
+    duration_ms = (_time.perf_counter() - started_at) * 1000
+    performance_metrics.record_ui_operation(
+        "portfolio-load",
+        duration_ms,
+        outcome="empty" if not holdings else "success",
+        section="portfolio-holdings",
+        first_useful_ms=duration_ms,
+    )
+    product_analytics.track_event(
+        _telemetry_user_id(),
+        "portfolio_first_useful",
+        {"holding_count": count, "outcome": "empty" if not holdings else "success"},
+    )
     return container([header, body], size="wide", className="portfolio-reference-layout")
 
 
@@ -1079,7 +1174,11 @@ def run_simulation(n, active, compare, *, _uid=None, _skip_guards=False):
             product_analytics.track_event(
                 uid,
                 "upgrade_viewed",
-                {"feature": "portfolio_analytics", "source": "portfolio_sim_lock", "plan": "premium"},
+                {
+                    "feature": "portfolio_analytics",
+                    "source": "portfolio_sim_lock",
+                    "plan": "premium",
+                },
             )
             return FeatureLockedModal(
                 feature="portfolio_analytics",
@@ -1272,7 +1371,11 @@ def run_simulation(n, active, compare, *, _uid=None, _skip_guards=False):
     performance_metrics.record_ui_operation(
         "portfolio-simulation",
         (_time.perf_counter() - started_at) * 1000,
-        outcome=("partial" if any(getattr(component, "className", None) == "text-danger" for component in result) else "success"),
+        outcome=(
+            "partial"
+            if any(getattr(component, "className", None) == "text-danger" for component in result)
+            else "success"
+        ),
         section="portfolio-simulation",
         first_useful_ms=(_time.perf_counter() - started_at) * 1000,
     )
@@ -1305,9 +1408,11 @@ def start_simulation_job(n, active, compare):
         )
     except RateLimited as exc:
         wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
-        return html.Div(
-            f"Portfolio simulation rate limit reached.{wait}", className="text-danger"
-        ), dash.no_update, None
+        return (
+            html.Div(f"Portfolio simulation rate limit reached.{wait}", className="text-danger"),
+            dash.no_update,
+            None,
+        )
 
     dedupe_key = json.dumps({"active": active, "compare": compare or ""}, sort_keys=True)
 
@@ -1357,7 +1462,20 @@ def poll_simulation_job(_tick, cancel_clicks, stored):
         if result is not None:
             return result[0], public, result[1]
     if snapshot.status == AsyncStatus.ERROR:
-        return section_error("The simulation failed. You can safely run it again.", technical_id=snapshot.error_code), public, None
+        return (
+            section_error(
+                "The simulation failed. You can retry without changing the portfolio.",
+                technical_id=snapshot.error_code,
+            ),
+            public,
+            None,
+        )
     if snapshot.status == AsyncStatus.CANCELLED:
-        return empty_state("Simulation cancelled", "Your portfolios and previous saved data were not changed."), public, None
+        return (
+            empty_state(
+                "Simulation cancelled", "Your portfolios and previous saved data were not changed."
+            ),
+            public,
+            None,
+        )
     return background_job_status(public, cancel_id="portfolio-job-cancel"), public, None

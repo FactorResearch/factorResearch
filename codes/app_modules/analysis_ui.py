@@ -8,6 +8,7 @@ from dash import dcc, html
 
 from codes.app_modules.company_identity import company_logo
 from codes.app_modules.design_system.layouts import analysis_grid, container
+from codes.app_modules.design_system.financial import data_trust_panel, methodology_disclosure
 from codes.app_modules.design_system.schemas import SectionDefinition
 from codes.app_modules.design_system.primitives import link, loading_container
 from codes.app_modules.design_system.states import chart_skeleton
@@ -1453,6 +1454,14 @@ def _build_analysis_content(data: dict) -> list:
                             ],
                         ),
                         html.Div(className="analysis-disclosure-body", children=children),
+                        methodology_disclosure(
+                            title,
+                            summary=summary,
+                            limitations=(
+                                "Outputs depend on available reporting periods and model inputs; "
+                                "missing observations may cause a model to be partial, skipped, or excluded."
+                            ),
+                        ),
                     ],
                 )
             ],
@@ -1483,6 +1492,7 @@ def _build_analysis_content(data: dict) -> list:
     overview = html.Div(
         className="analysis-overview-shell",
         children=[
+            data_trust_panel(data),
             html.Div(
                 className="analysis-hero",
                 children=[
@@ -2080,6 +2090,17 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
         children=[
             html.Div(title, className="scorecard-header"),
             html.Div(rows),
+            methodology_disclosure(
+                title,
+                summary=(
+                    "The displayed score is the sum of the documented criteria shown above; "
+                    "criteria use the latest available normalized inputs."
+                ),
+                limitations=(
+                    f"{card_type.replace('_', ' ').title()} results are estimates, can be partial when inputs are missing, "
+                    "and should be interpreted with the reporting period and provenance panel."
+                ),
+            ),
         ],
     )
 

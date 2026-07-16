@@ -15,7 +15,9 @@ node --check assets/iiq.js
 node --check assets/legal_pages.js
 node --check assets/adaptive_loading.js
 node --check assets/design_system.js
+node --check assets/ux_telemetry.js
 node --check scripts/audit-accessibility.mjs
+PYTHONPATH=. python scripts/check-ux-performance-budgets.py
 mkdir -p /tmp/factorresearch-css
 npx --no-install sass assets/style.scss /tmp/factorresearch-css/style.css
 npx --no-install sass assets/company_analysis.scss /tmp/factorresearch-css/company_analysis.css

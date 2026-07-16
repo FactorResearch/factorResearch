@@ -1,0 +1,7 @@
+finding_id,severity,evidence,affected_journey,linked_issue,status
+UX-001,critical,"Keyboard and nonvisual chart access required",Analyze and Portfolio,ISSUE_071,resolved
+UX-002,high,"Desktop tables failed narrow viewport decision tasks",Screener and Portfolio,ISSUE_072,resolved
+UX-003,high,"Scores lacked consolidated provenance and missing-input effects",Analyze,ISSUE_073,resolved
+UX-004,high,"UI quality lacked Web Vitals and asset budget enforcement",Cross-product,ISSUE_074,resolved
+UX-005,medium,"Physical-device and assistive-technology participant validation remains a human release sign-off",Cross-product,ISSUE_071,open-signoff
+

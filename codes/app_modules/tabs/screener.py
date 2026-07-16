@@ -35,6 +35,7 @@ last_progress_bar_state = None
 SCREENER_DEFAULT_COLUMNS = [
     "ticker", "company", "sector", "market_cap", "composite_score",
     "graham_number", "buffett_iv", "updated_at", "verdict",
+    "data_support",
 ]
 
 
@@ -681,6 +682,7 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
         ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock.", "buffett_iv"),
         ("Updated",     "updated_at",       "Date this stock was last fully analyzed.", "updated_at"),
         ("Verdict",     None,               "Investment verdict based on composite score: HIGH CONVICTION ≥75 · FAVORABLE ≥60 · BALANCED ≥45 · CAUTION ≥30 · UNFAVORABLE <30. * = fundamentals only (momentum not yet loaded).", "verdict"),
+        ("Data Support", None, "Source support for the normalized screener row. Partial or unavailable inputs are not presented as fully supported.", "data_support"),
     ]
     header_cells = []
     for label, sort_key, tooltip, key in SORT_COLS:
@@ -803,6 +805,10 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             "buffett_iv": biv_cell,
             "updated_at": html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
             "verdict": html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
+            "data_support": html.Td(
+                str(r.get("data_confidence") or ("Full analysis" if r.get("analyzed") else "Fundamentals only")).replace("_", " ").title(),
+                className="text-xs text-muted",
+            ),
         }
         rows.append(html.Tr(className=row_class, children=[
             row_cells[key] for key in ["rank", *SCREENER_DEFAULT_COLUMNS]
@@ -833,6 +839,8 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                                 className="accordion-value " + acc_biv_class)], className="accordion-row"),
             html.Div([html.Span("Updated",   className="accordion-label"),
                       html.Span(_fmt_updated(r.get("updated_at")), className="accordion-value")], className="accordion-row"),
+            html.Div([html.Span("Data support", className="accordion-label"),
+                      html.Span(str(r.get("data_confidence") or ("Full analysis" if r.get("analyzed") else "Fundamentals only")).replace("_", " ").title(), className="accordion-value")], className="accordion-row"),
         ]
         if badges:
             acc_rows.append(html.Div(badges, className="accordion-portfolio-badges"))

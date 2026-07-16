@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
 
@@ -9,6 +10,26 @@ from codes.core.ports import AnalyticsContext
 from codes.data import analytics_db, db
 
 _EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="product-analytics")
+_EVENT_NAME = re.compile(r"^[a-z][a-z0-9_]{1,79}$")
+_SENSITIVE_METADATA_KEYS = {
+    "symbol",
+    "ticker",
+    "portfolio_name",
+    "compare",
+    "query",
+    "search_term",
+    "email",
+    "name",
+    "shares",
+    "price",
+    "value",
+    "formula",
+    "weights",
+    "account",
+    "token",
+    "key",
+    "secret",
+}
 
 
 class NullAnalyticsContext:
@@ -57,7 +78,37 @@ def _anonymous_id() -> str | None:
 
 
 def _page_path() -> str | None:
-    return _context.page_path()
+    path = _context.page_path()
+    return normalize_page_path(path)
+
+
+def normalize_page_path(path: str | None) -> str | None:
+    if not path:
+        return None
+    clean_path = str(path).split("?", 1)[0]
+    if re.fullmatch(r"/[A-Za-z]{1,6}/analyze/\d{8}", clean_path):
+        return "/company/analyze/date"
+    if re.fullmatch(r"/analyze/[A-Za-z]{1,6}(?:/.*)?", clean_path):
+        return "/analyze/company"
+    return clean_path[:160]
+
+
+def sanitize_metadata(metadata: Mapping[str, object] | None) -> dict[str, object]:
+    """Drop financial/account identifiers and bound privacy-safe dimensions."""
+    sanitized: dict[str, object] = {}
+    for key, value in (metadata or {}).items():
+        normalized_key = str(key).strip().lower()[:64]
+        if not normalized_key or normalized_key in _SENSITIVE_METADATA_KEYS:
+            continue
+        if isinstance(value, bool):
+            sanitized[normalized_key] = value
+        elif isinstance(value, (int, float)) and not isinstance(value, bool):
+            sanitized[normalized_key] = round(float(value), 2)
+        elif isinstance(value, str):
+            sanitized[normalized_key] = value[:80]
+        elif isinstance(value, (list, tuple, set)):
+            sanitized[f"{normalized_key}_count"] = len(value)
+    return sanitized
 
 
 def _tracking_enabled() -> bool:
@@ -96,7 +147,7 @@ def _record_event_sync(
         anonymous_id=_anonymous_id(),
         event_name=event_name,
         page_path=_page_path(),
-        metadata=dict(metadata or {}),
+        metadata=sanitize_metadata(metadata),
     )
 
 
@@ -105,13 +156,14 @@ def track_event(
     event_name: str,
     metadata: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
-    if not event_name or not _tracking_enabled():
+    if not event_name or not _EVENT_NAME.fullmatch(event_name) or not _tracking_enabled():
         return {"usage_count": 0, "feature_usage": {}}
+    safe_metadata = sanitize_metadata(metadata)
     try:
         usage_value = db.increment_usage(
             user_id or _anonymous_id() or "anonymous",
             f"event:{event_name}",
-            usage_key=_usage_key(metadata),
+            usage_key=_usage_key(safe_metadata),
         )
         usage = (
             usage_value
@@ -124,7 +176,7 @@ def track_event(
     except Exception:
         usage = {"usage_count": 0, "feature_usage": {}}
     try:
-        _EXECUTOR.submit(_record_event_sync, user_id, event_name, metadata)
+        _EXECUTOR.submit(_record_event_sync, user_id, event_name, safe_metadata)
     except Exception:
         pass
     return usage

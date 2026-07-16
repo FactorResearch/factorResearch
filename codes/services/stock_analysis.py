@@ -188,6 +188,10 @@ def _set_cache_metadata(result: dict, cache_hit: bool, cache_source: str) -> dic
         result["cache_hit"] = cache_hit
         result["cache_source"] = cache_source
         result["cache_stale"] = not _cache_is_current(result) if cache_hit else False
+        provenance = result.setdefault("provenance", {})
+        provenance["calculation_status"] = "cached" if cache_hit else "newly calculated"
+        provenance["cache_source"] = cache_source
+        provenance["historical"] = bool(result.get("cache_stale"))
     return result
 
 
@@ -202,6 +206,62 @@ def _cache_is_current(result: dict) -> bool:
     except (TypeError, ValueError):
         return False
     return age < ANALYSIS_MAX_AGE_SECONDS
+
+
+def _reporting_period(sec_facts: dict) -> str | None:
+    periods = []
+    for records in sec_facts.values():
+        if not isinstance(records, list):
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            period = record.get("end") or record.get("period_end") or record.get("year")
+            if period is not None:
+                periods.append(str(period))
+    return max(periods, default=None)
+
+
+def _analysis_provenance(symbol: str, sec_facts: dict, *, price, defer_secondary: bool) -> dict:
+    try:
+        filing_meta = db.get_sec_facts_meta(symbol) or {}
+    except Exception:
+        filing_meta = {}
+    market = sec_facts.get("source_market", "US")
+    missing = [
+        key for key in ("eps", "equity", "shares", "revenue", "op_cf", "capex")
+        if not sec_facts.get(key)
+    ]
+    effects = []
+    if price is None:
+        effects.append("Live-price-dependent valuation and momentum outputs were skipped.")
+    if missing:
+        effects.append(
+            "Missing fundamentals are excluded or partially calculated: "
+            + ", ".join(item.replace("_", " ") for item in missing)
+            + "."
+        )
+    if defer_secondary:
+        effects.append("Optional signals are pending and are not presented as fully supported.")
+    return {
+        "analysis_date": _datetime.datetime.now(_datetime.timezone.utc).isoformat(),
+        "price_timestamp": (
+            "Retrieved during this analysis; provider quote time unavailable"
+            if price is not None else "Unavailable"
+        ),
+        "filing_period": filing_meta.get("latest_filing") or _reporting_period(sec_facts),
+        "source_category": (
+            "SEC EDGAR public filings" if market == "US" else "Verified normalized market records"
+        ),
+        "currency": sec_facts.get("currency") or ("USD" if market == "US" else "Not available"),
+        "normalization_status": sec_facts.get("normalization_method") or "Canonical financial facts",
+        "calculation_status": "newly calculated",
+        "model_scope": "Factor Research default models",
+        "missing_inputs": missing,
+        "missing_effects": effects,
+        "historical": False,
+        "custom_model": False,
+    }
 
 
 def _persist_analysis_result(
@@ -487,10 +547,12 @@ def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary:
                 market_cap = price * shares_val / 1e6
         except (KeyError, TypeError, ValueError, IndexError):
             pass
+    generated_at = _datetime.datetime.now(_datetime.timezone.utc).isoformat()
     result = {
         "analysis_version": ANALYSIS_VERSION,
         "model_versions": _MODEL_VERSIONS,
-        "generated_at": _datetime.datetime.now(_datetime.timezone.utc).isoformat(),
+        "generated_at": generated_at,
+        "updated_at": generated_at,
         "symbol":    symbol,
         "market_code": sec_facts.get("source_market", "US"),
         "name":      security.sanitize_string(sec_facts["name"], max_length=200),
@@ -516,6 +578,9 @@ def _analyze_stock(symbol: str, *, force_refresh: bool = False, defer_secondary:
         "factor_momentum": factor_momentum_result,
         "alternative_data": alternative_data_result,
         "secondary_status": "pending" if defer_secondary else "complete",
+        "provenance": _analysis_provenance(
+            symbol, sec_facts, price=price, defer_secondary=defer_secondary
+        ),
         "market_fear":       _get_market_fear_result(),
         "regime":             regime_result,
         "regime_overlay":     regime_overlay,

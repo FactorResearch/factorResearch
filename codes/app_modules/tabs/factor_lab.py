@@ -11,6 +11,7 @@ from codes.app_modules.analysis_ui import _chart_layout
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.config import AMBER, BLUE, GREEN, MUTED, RED, TEXT
 from codes.app_modules.css_classes import tone_class
+from codes.app_modules.design_system.financial import data_trust_panel
 from codes.app_modules.design_system.primitives import empty_state, table
 from codes.app_modules.design_system.states import background_job_status, section_error
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
@@ -261,7 +262,7 @@ def poll_factor_backtest_job(_tick, cancel_clicks, stored):
         if result is not None:
             return result[0], result[1], public, result[2]
     if snapshot.status == AsyncStatus.ERROR:
-        return section_error("The backtest failed. You can safely run it again.", technical_id=snapshot.error_code), "Failed", public, None
+        return section_error("The backtest failed. Retrying does not change your saved weights.", technical_id=snapshot.error_code), "Failed", public, None
     if snapshot.status == AsyncStatus.CANCELLED:
         return empty_state("Backtest cancelled", "Your factor weights remain saved."), "Cancelled", public, None
     return background_job_status(public, cancel_id="factor-job-cancel"), snapshot.stage, public, None
@@ -417,4 +418,21 @@ def _render_fb_results(r: dict) -> list:
             warns.append(html.Div(f"⚠️ {label}: {bt['error']}",
                                    className="factor-lab-warning clr-amber fs-12"))
 
-    return [summary, chart, weight_table, stocks_table] + warns
+    trust = data_trust_panel({
+        "provenance": {
+            "analysis_date": r.get("generated_at"),
+            "price_timestamp": "Historical period-end prices used by the backtest",
+            "filing_period": f"Historical {r.get('years', 'selected')}-year test window",
+            "source_category": "Cached company analyses and historical market observations",
+            "currency": "USD indexed comparison",
+            "normalization_status": "Series indexed to 100 at the test start",
+            "calculation_status": "Historical backtest",
+            "model_scope": "User-customized factor weights",
+            "historical": True,
+            "custom_model": True,
+            "missing_effects": [
+                "Backtests use the available historical universe and do not predict future performance."
+            ],
+        },
+    }, compact=True)
+    return [trust, summary, chart, weight_table, stocks_table] + warns

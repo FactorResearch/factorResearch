@@ -65,7 +65,7 @@ def test_dash_registers_global_callbacks_on_first_request():
                             "value": [
                                 "ticker", "company", "sector", "market_cap",
                                 "composite_score", "graham_number", "buffett_iv",
-                                "updated_at", "verdict",
+                                "updated_at", "verdict", "data_support",
                             ],
                         },
                         {"id": "screener-table-density", "property": "value", "value": "comfortable"},

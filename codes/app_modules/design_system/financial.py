@@ -174,3 +174,101 @@ def missing_data(reason: str = "Data is not available"):
         [html.Span("—", **{"aria-hidden": "true"}), html.Span(reason, className="sr-only")],
         className="ds-missing",
     )
+
+
+def methodology_disclosure(
+    model_name: str,
+    *,
+    summary: str,
+    limitations: str,
+):
+    """Keep methodology and limitations reachable at the point of use."""
+    return html.Details(
+        className="ds-methodology",
+        children=[
+            html.Summary(f"{model_name} methodology and limitations"),
+            html.P(summary),
+            html.P([html.Strong("Limitations: "), limitations]),
+        ],
+    )
+
+
+def data_trust_panel(data: dict | None, *, compact: bool = False):
+    """Render explicit provenance without implying undocumented confidence."""
+    analysis = data or {}
+    provenance = analysis.get("provenance") or {}
+    generated = provenance.get("analysis_date") or analysis.get("generated_at") or analysis.get("updated_at")
+    reporting_period = provenance.get("filing_period") or "Not available"
+    source = provenance.get("source_category") or "Source category unavailable"
+    currency = provenance.get("currency") or analysis.get("currency") or "Not available"
+    normalization = provenance.get("normalization_status") or "Normalization status unavailable"
+    calculation = provenance.get("calculation_status") or (
+        "cached" if analysis.get("cache_hit") else "newly calculated"
+    )
+    price_time = provenance.get("price_timestamp") or "Quote timestamp unavailable"
+    model_scope = provenance.get("model_scope") or "Factor Research default models"
+    effects = list(provenance.get("missing_effects") or [])
+    if analysis.get("secondary_status") == "failed":
+        effects.append("Optional sources failed; their signals are excluded from the displayed support.")
+    historical = bool(provenance.get("historical") or analysis.get("cache_stale"))
+    custom = bool(provenance.get("custom_model"))
+
+    rows = [
+        ("Analysis date", _format_trust_date(generated)),
+        ("Market price", price_time),
+        ("Reporting period", str(reporting_period)),
+        ("Source", str(source)),
+        ("Currency", str(currency)),
+        ("Normalization", str(normalization)),
+        ("Calculation", str(calculation)),
+        ("Model", str(model_scope)),
+    ]
+    state_labels = []
+    if historical:
+        state_labels.append(badge("Historical snapshot", tone="warning"))
+    if custom:
+        state_labels.append(badge("User-customized model", tone="neutral"))
+    if effects:
+        state_labels.append(badge("Partial inputs", tone="warning"))
+
+    return html.Section(
+        className="ds-trust-panel" + (" ds-trust-panel--compact" if compact else ""),
+        **{"aria-label": "Data trust and provenance", "data-trust-state": "partial" if effects else "supported"},
+        children=[
+            html.Div([
+                html.H3("Data trust", className="ds-trust-panel__title"),
+                html.Div(state_labels, className="ds-trust-panel__states"),
+            ], className="ds-trust-panel__header"),
+            html.Dl([
+                html.Div([html.Dt(label), html.Dd(value)], className="ds-trust-panel__item")
+                for label, value in rows
+            ], className="ds-trust-panel__grid"),
+            html.Div(
+                [html.Strong("Missing-data effects: "), html.Ul([html.Li(effect) for effect in effects])],
+                className="ds-trust-panel__effects",
+                role="alert",
+            ) if effects else html.P(
+                "No known missing input changes the displayed calculation scope.",
+                className="ds-trust-panel__effects",
+            ),
+            html.P(
+                "Scores are research estimates based on available inputs, not guarantees or personalized financial advice.",
+                className="ds-trust-panel__disclaimer",
+            ),
+        ],
+    )
+
+
+def _format_trust_date(value) -> str:
+    if not value:
+        return "Not available"
+    if isinstance(value, str):
+        try:
+            value = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return value[:32]
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    return str(value)[:32]

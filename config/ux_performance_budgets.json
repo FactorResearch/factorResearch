@@ -1,0 +1,23 @@
+{
+  "core_web_vitals_p75": {
+    "LCP_ms": 2500,
+    "INP_ms": 200,
+    "CLS": 0.1
+  },
+  "first_party_assets": {
+    "style.css": 120000,
+    "total_javascript_bytes": 45000,
+    "largest_javascript_bytes": 20000
+  },
+  "task_completion_ms": {
+    "cached_analysis_first_useful": 2500,
+    "fresh_analysis_first_useful": 30000,
+    "portfolio_first_useful": 2500,
+    "portfolio_simulation": 30000,
+    "factor_backtest": 30000,
+    "chart_render": 1500,
+    "screener_filter": 500,
+    "route_transition": 500
+  },
+  "material_regression_percent": 10
+}

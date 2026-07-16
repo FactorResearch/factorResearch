@@ -7,6 +7,7 @@ import time as _time
 import dash
 from dash import Input, Output, State, callback, clientside_callback
 from dash.exceptions import PreventUpdate
+from flask import has_request_context
 
 from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
@@ -28,9 +29,16 @@ _ANALYZE_PATH_RE = re.compile(
 )
 
 
+def _telemetry_user_id() -> str:
+    """Avoid making optional telemetry a request-context dependency."""
+    return get_user_id() if has_request_context() else "anonymous"
+
+
 def _client_analysis_payload(result: dict) -> dict:
     """Keep large chart histories server-side until the user opens Charts."""
-    return {key: value for key, value in result.items() if key not in {"price_history", "spy_history"}}
+    return {
+        key: value for key, value in result.items() if key not in {"price_history", "spy_history"}
+    }
 
 
 clientside_callback(
@@ -135,22 +143,22 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
 # ── New quant UI helpers ──────────────────────────────────────────────────────
 @callback(
     Output("url", "pathname"),
-    Output("analysis-content",        "children"),
-    Output("analysis-store",          "data"),
-    Output("status-msg",              "children"),
-    Output("analyze-btn",             "disabled"),
-    Output("ticker-input",            "disabled"),
-    Output("ticker-input",            "value"),
-    Output("add-to-portfolio-panel",  "style"),
-    Output("active-analysis-symbol",  "data"),
-    Output("screener-viewed-store",   "data"),
-    Output("upgrade-funnel-store",    "data"),
-    Input("analyze-btn",          "n_clicks"),
-    Input("screener-open-analysis-symbol","data"),
-    Input("url",                  "pathname"),
-    State("ticker-input",         "value"),
-    State("screener-viewed-store","data"),
-    prevent_initial_call=False
+    Output("analysis-content", "children"),
+    Output("analysis-store", "data"),
+    Output("status-msg", "children"),
+    Output("analyze-btn", "disabled"),
+    Output("ticker-input", "disabled"),
+    Output("ticker-input", "value"),
+    Output("add-to-portfolio-panel", "style"),
+    Output("active-analysis-symbol", "data"),
+    Output("screener-viewed-store", "data"),
+    Output("upgrade-funnel-store", "data"),
+    Input("analyze-btn", "n_clicks"),
+    Input("screener-open-analysis-symbol", "data"),
+    Input("url", "pathname"),
+    State("ticker-input", "value"),
+    State("screener-viewed-store", "data"),
+    prevent_initial_call=False,
 )
 def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, viewed_list):
     """
@@ -169,16 +177,52 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
     if triggered in ("url", None) and not route_ticker:
         raise PreventUpdate
     if not ticker or not ticker.strip():
-        return dash.no_update, [], None, "❌ Please enter a ticker symbol.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
+        return (
+            dash.no_update,
+            [],
+            None,
+            "❌ Please enter a ticker symbol.",
+            False,
+            False,
+            dash.no_update,
+            {"display": "none"},
+            None,
+            dash.no_update,
+            dash.no_update,
+        )
     symbol = ticker.strip().upper()
     # Input validation: ticker must be 1-6 uppercase letters
     if not re.fullmatch(r"^[A-Z]{1,6}$", symbol):
-        return dash.no_update, [], None, "❌ Invalid ticker format. Use 1–6 uppercase letters (A–Z).", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
+        return (
+            dash.no_update,
+            [],
+            None,
+            "❌ Invalid ticker format. Use 1–6 uppercase letters (A–Z).",
+            False,
+            False,
+            dash.no_update,
+            {"display": "none"},
+            None,
+            dash.no_update,
+            dash.no_update,
+        )
     # Rate limit (per-user) — max 10 analyze calls per minute
     try:
         check_rate_limit("analyze", calls=10, period_seconds=60)
     except RateLimited as rl:
-        return dash.no_update, [], None, f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
+        return (
+            dash.no_update,
+            [],
+            None,
+            f"⏳ Rate limit exceeded — try again in {rl.retry_after}s.",
+            False,
+            False,
+            dash.no_update,
+            {"display": "none"},
+            None,
+            dash.no_update,
+            dash.no_update,
+        )
     user_id = get_user_id()
     try:
         access = permissions.can_access_feature(user_id, permissions.Feature.ANALYSIS)
@@ -208,9 +252,23 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
             )
     except Exception:
         if is_production():
-            return dash.no_update, [], None, "🔒 Billing unavailable — please try later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
+            return (
+                dash.no_update,
+                [],
+                None,
+                "🔒 Billing unavailable — please try later.",
+                False,
+                False,
+                dash.no_update,
+                {"display": "none"},
+                None,
+                dash.no_update,
+                dash.no_update,
+            )
         access = None
-    product_analytics.track_event(user_id, "analysis_started", {"symbol": symbol, "source": triggered or "direct"})
+    product_analytics.track_event(
+        user_id, "analysis_started", {"symbol": symbol, "source": triggered or "direct"}
+    )
     started_at = _time.perf_counter()
     try:
         result = analyze_stock(symbol)
@@ -231,7 +289,19 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
                     "duration_ms": duration_ms,
                 },
             )
-            return dash.no_update, [], None, f"❌ {message}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
+            return (
+                dash.no_update,
+                [],
+                None,
+                f"❌ {message}",
+                False,
+                False,
+                symbol,
+                {"display": "none"},
+                None,
+                dash.no_update,
+                dash.no_update,
+            )
         print(f"run_analysis unexpected error: {type(e).__name__}: {e}")
         product_analytics.track_event(
             user_id,
@@ -243,7 +313,19 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
                 "duration_ms": duration_ms,
             },
         )
-        return dash.no_update, [], None, "❌ Internal server error — please try again later.", False, False, dash.no_update, {"display": "none"}, None, dash.no_update, dash.no_update
+        return (
+            dash.no_update,
+            [],
+            None,
+            "❌ Internal server error — please try again later.",
+            False,
+            False,
+            dash.no_update,
+            {"display": "none"},
+            None,
+            dash.no_update,
+            dash.no_update,
+        )
     if "error" in result:
         duration_ms = int((_time.perf_counter() - started_at) * 1000)
         performance_metrics.record_ui_operation(
@@ -259,7 +341,19 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
                 "duration_ms": duration_ms,
             },
         )
-        return dash.no_update, [], None, f"❌ {result['error']}", False, False, symbol, {"display": "none"}, None, dash.no_update, dash.no_update
+        return (
+            dash.no_update,
+            [],
+            None,
+            f"❌ {result['error']}",
+            False,
+            False,
+            symbol,
+            {"display": "none"},
+            None,
+            dash.no_update,
+            dash.no_update,
+        )
     duration_ms = int((_time.perf_counter() - started_at) * 1000)
     operation = "cached-analysis" if result.get("cache_hit") else "fresh-analysis"
     performance_metrics.record_ui_operation(
@@ -294,11 +388,15 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
     client_result = _client_analysis_payload(result)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return (
-        dash.no_update if triggered in ("url", None) else f"/{symbol}/analyze/{_time.strftime('%Y%m%d')}",
+        dash.no_update
+        if triggered in ("url", None)
+        else f"/{symbol}/analyze/{_time.strftime('%Y%m%d')}",
         content,
         client_result,
         f"✅ {result['name']} ({symbol}) — Analysis complete{usage_msg}",
-        False, False, symbol,
+        False,
+        False,
+        symbol,
         {"display": "block"},
         symbol,
         viewed_updated,
@@ -322,8 +420,17 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None)
     chart_analysis = analysis
     if not analysis.get("price_history"):
         chart_analysis = db.get_analysis(analysis.get("symbol", "")) or analysis
-    if not chart_analysis.get("price_history") and not (chart_analysis.get("graham") or {}).get("eps_history"):
-        performance_metrics.record_ui_operation("chart-render", 0, outcome="empty", section="analysis-charts")
+    if not chart_analysis.get("price_history") and not (chart_analysis.get("graham") or {}).get(
+        "eps_history"
+    ):
+        performance_metrics.record_ui_operation(
+            "chart-render", 0, outcome="empty", section="analysis-charts"
+        )
+        product_analytics.track_event(
+            _telemetry_user_id(),
+            "analysis_section_failed",
+            {"section": "charts", "failure_class": "no_data"},
+        )
         return section_error("Historical observations are not available for this company.")
     try:
         rendered = build_analysis_charts(chart_analysis)
@@ -335,6 +442,11 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None)
             outcome="error",
             section="analysis-charts",
         )
+        product_analytics.track_event(
+            _telemetry_user_id(),
+            "analysis_section_failed",
+            {"section": "charts", "failure_class": type(error).__name__},
+        )
         return section_error(
             "The historical charts failed independently. The analysis above remains usable.",
             retry_id="analysis-charts-retry",
@@ -344,6 +456,9 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None)
         "chart-render",
         (_time.perf_counter() - started_at) * 1000,
         section="analysis-charts",
+    )
+    product_analytics.track_event(
+        _telemetry_user_id(), "analysis_section_completed", {"section": "charts"}
     )
     return rendered
 

@@ -22,14 +22,19 @@ def build_head_snippets() -> str:
             "return'posthog'!==a&&(e+='.'+a),t||(e+=' (stub)'),e},u.people.toString=function(){return u.toString(1)+'.people (stub)'},"
             "o='capture identify alias people.set people.set_once register register_once unregister reset opt_in_capturing opt_out_capturing'.split(' '),n=0;n<o.length;n++)g(u,o[n]);"
             "e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);"
-            f"posthog.init('{posthog_key}',{{api_host:'{posthog_host}'}});"
+            f"posthog.init('{posthog_key}',{{api_host:'{posthog_host}',autocapture:false,capture_pageview:false,disable_session_recording:true,mask_all_text:true,mask_all_element_attributes:true}});"
             "</script>"
         )
 
-    clarity_id = os.environ.get("MICROSOFT_CLARITY_ID")
+    clarity_id = (
+        os.environ.get("MICROSOFT_CLARITY_ID")
+        if os.environ.get("ENABLE_MASKED_SESSION_REPLAY", "").lower() in {"1", "true", "yes"}
+        else None
+    )
     if clarity_id:
         snippets.append(
             "<script>"
+            "document.documentElement.setAttribute('data-clarity-mask','true');"
             "(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};"
             "t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;"
             "y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);"

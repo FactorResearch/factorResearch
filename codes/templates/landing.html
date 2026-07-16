@@ -69,7 +69,7 @@
     <section class="post-hero">
       <div class="hero-copy">
         <span class="eyebrow">Data-driven. Value-focused. Built for investors.</span>
-        <h1>{% if style == 'post-b' %}Know if a stock is<br>worth buying.{% else %}Make better investment<br>decisions with confidence.{% endif %}</h1>
+        <h1>{% if style == 'post-b' %}Know if a stock is<br>worth buying.{% else %}Make better investment<br>decisions with clearer evidence.{% endif %}</h1>
         <p>{% if style == 'post-b' %}Advanced fundamental analysis powered by Benjamin Graham, Warren Buffett principles, and quantitative models.{% else %}Research Factor analyzes companies using Graham, Buffett, and quantitative models to reveal what's undervalued — and why.{% endif %}</p>
         <form class="stock-search" action="/" method="get"><input name="ticker" placeholder="Search any stock (e.g. AAPL, MSFT, AMZN)" aria-label="Stock ticker"><button>Analyze{% if style == 'post-b' %} Now →{% endif %}</button></form>
         {% if style == 'post-b' %}<p class="trust">★★★<b>★★</b> &nbsp; 4.9/5 &nbsp; Trusted by thousands of investors</p>{% else %}<p class="micro-proof">◉ Graham + Buffett + Quant &nbsp;&nbsp; ◉ Explainable Scores &nbsp;&nbsp; ◉ Backtest Your Strategy</p>{% endif %}
@@ -78,7 +78,7 @@
     </section>
     <section id="tools" class="tool-strip"><article>▥<div><b>20+ Proven Models</b><span>Value, quality, momentum and more.</span></div></article><article>⌁<div><b>Backtest Your Strategy</b><span>Run your custom strategy against history.</span></div></article><article>◔<div><b>Portfolio Tools</b><span>Track performance, risk and allocation.</span></div></article><article>✓<div><b>Clear Explanations</b><span>Understand the why behind the score.</span></div></article></section>
     {% if style == 'post-a' %}<section class="tool-cards"><h2>Powerful tools for serious investors</h2><article>⌕<b>Stock Analysis</b><span>In-depth analysis using 19+ valuation and quality models.</span></article><article>☷<b>Custom Strategies</b><span>Adjust factor weights and build your strategy.</span></article><article>⌁<b>Backtesting</b><span>Test your strategy against 10+ years of historical data.</span></article><article>◴<b>Portfolio Tools</b><span>Build, analyze, and optimize your investment portfolio.</span></article></section>{% endif %}
-    <section class="cta"><h2>Validate your strategy.<br>Invest with confidence.</h2><p>Backtest your ideas and see how they perform before you invest.</p><a class="button button-light" href="/">Start Your Free Analysis</a></section>
+    <section class="cta"><h2>Validate your strategy.<br>Understand the evidence.</h2><p>Backtests describe historical scenarios and do not predict future performance.</p><a class="button button-light" href="/">Start Your Free Analysis</a></section>
   </main>
   {% endif %}
   <footer><a class="brand" href="/"><span class="brand-mark">FR</span><span>RESEARCH<br>FACTOR</span></a><span>Data, Models, Insight. Confidence.</span><span>© 2024 Research Factor. All rights reserved.</span><span><a href="/privacy">Privacy Policy</a> &nbsp; <a href="/terms">Terms of Service</a></span></footer>

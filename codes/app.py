@@ -245,6 +245,47 @@ def update_analytics_preference():
         product_analytics.set_tracking_opt_out(opt_out)
     return flask.jsonify(product_analytics.get_tracking_context())
 
+
+@server.route("/analytics/vitals", methods=["POST"])
+def collect_web_vitals():
+    if product_analytics.is_tracking_opted_out():
+        return ("", 204)
+    payload = flask.request.get_json(silent=True) or {}
+    if not security.validate_json_payload(payload, max_size=4096):
+        return flask.jsonify({"error": "invalid telemetry payload"}), 400
+    route = product_analytics.normalize_page_path(payload.get("route")) or "/unknown"
+    accepted = performance_metrics.record_web_vital(
+        payload.get("name", ""),
+        payload.get("value"),
+        route=route,
+        device=str(payload.get("device") or "unknown"),
+        navigation_type=str(payload.get("navigation_type") or "navigate"),
+    )
+    return ("", 204) if accepted else (flask.jsonify({"error": "unsupported metric"}), 400)
+
+
+@server.route("/analytics/ux-events", methods=["POST"])
+def collect_ux_event():
+    if product_analytics.is_tracking_opted_out():
+        return ("", 204)
+    payload = flask.request.get_json(silent=True) or {}
+    if not security.validate_json_payload(payload, max_size=2048):
+        return flask.jsonify({"error": "invalid telemetry payload"}), 400
+    allowed = {
+        "model_detail_expanded",
+        "methodology_opened",
+        "weak_link_inspected",
+        "form_validation_failure",
+        "recovery_retry_started",
+    }
+    event_name = str(payload.get("event") or "")
+    if event_name not in allowed:
+        return flask.jsonify({"error": "unsupported event"}), 400
+    product_analytics.track_event(
+        get_user_id(), event_name, product_analytics.sanitize_metadata(payload.get("metadata") or {})
+    )
+    return ("", 204)
+
 @server.route("/sitemap-analysis.xml")
 def analysis_sitemap():
     base_url = (os.environ.get("PUBLIC_BASE_URL") or flask.request.url_root).rstrip("/")
