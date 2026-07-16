@@ -11,31 +11,41 @@ _ANALYZE_PATH_RE = re.compile(
     r"|/[A-Za-z]{1,6}/analyze/(?:\d{8}|\d{4}-\d{2}-\d{2}))/?$"
 )
 
+
 # ── Tab Navigation ───────────────────────────────────────────────────────────
 @callback(
-    Output("tab-screener",     "style"),
-    Output("tab-analyze",      "style"),
-    Output("tab-portfolio",    "style"),
-    Output("tab-factorlab",    "style"),
-    Output("tab-pricing",      "style"),
-    Output("profile-page",     "style"),
+    Output("tab-screener", "style"),
+    Output("tab-analyze", "style"),
+    Output("tab-portfolio", "style"),
+    Output("tab-factorlab", "style"),
+    Output("tab-pricing", "style"),
+    Output("profile-page", "style"),
     Output("tab-screener-btn", "className"),
-    Output("tab-analyze-btn",  "className"),
-    Output("tab-portfolio-btn","className"),
+    Output("tab-analyze-btn", "className"),
+    Output("tab-portfolio-btn", "className"),
     Output("tab-factorlab-btn", "className"),
     Output("tab-pricing-btn", "className"),
     Output("profile-menu-btn", "className"),
-    Input("tab-screener-btn",     "n_clicks"),
-    Input("tab-analyze-btn",      "n_clicks"),
-    Input("tab-portfolio-btn",    "n_clicks"),
-    Input("tab-factorlab-btn",    "n_clicks"),
-    Input("tab-pricing-btn",      "n_clicks"),
-    Input("screener-open-analysis-symbol","data"),
+    Input("tab-screener-btn", "n_clicks"),
+    Input("tab-analyze-btn", "n_clicks"),
+    Input("tab-portfolio-btn", "n_clicks"),
+    Input("tab-factorlab-btn", "n_clicks"),
+    Input("tab-pricing-btn", "n_clicks"),
+    Input("screener-open-analysis-symbol", "data"),
     Input("upgrade-funnel-store", "data"),
-    Input("url",                  "pathname"),
-    prevent_initial_call=False
+    Input("url", "pathname"),
+    prevent_initial_call=False,
 )
-def switch_tabs(n_screener, n_analyze, n_portfolio, n_factorlab, n_pricing, open_analysis_symbol, upgrade_context, pathname):
+def switch_tabs(
+    n_screener,
+    n_analyze,
+    n_portfolio,
+    n_factorlab,
+    n_pricing,
+    open_analysis_symbol,
+    upgrade_context,
+    pathname,
+):
     triggered = dash.ctx.triggered_id
     SHOW, HIDE = {"display": "block"}, {"display": "none"}
     ACTIVE, IDLE = "topbar-nav-btn tab-btn active", "topbar-nav-btn tab-btn"
@@ -72,6 +82,17 @@ clientside_callback(
             (theme === "system" && window.matchMedia("(prefers-color-scheme: light)").matches);
         document.documentElement.classList.toggle("light", light);
         document.body.classList.toggle("light", light);
+        document.documentElement.dataset.theme = light ? "light" : "dark";
+        document.documentElement.dataset.themePreference = theme;
+        if (!window.__frThemeListener) {
+            window.__frThemeListener = function(event) {
+                if ((localStorage.getItem("fr-theme") || "system") !== "system") return;
+                document.documentElement.classList.toggle("light", event.matches);
+                document.body.classList.toggle("light", event.matches);
+                document.documentElement.dataset.theme = event.matches ? "light" : "dark";
+            };
+            window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", window.__frThemeListener);
+        }
         return "";
     }
     """,

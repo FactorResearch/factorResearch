@@ -17,10 +17,10 @@ _local_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="analysis
 
 def _dispatch(job: dict) -> None:
     if job.get("type") == "secondary-analysis":
-        from codes.app_modules.analysis import _complete_secondary_analysis
+        from codes.services.stock_analysis import _complete_secondary_analysis
         _complete_secondary_analysis(job["symbol"], job.get("shares_out"))
     elif job.get("type") == "refresh-analysis":
-        from codes.app_modules.analysis import analyze_stock
+        from codes.services.stock_analysis import analyze_stock
         analyze_stock(job["symbol"], force_refresh=True, defer_secondary=True)
 
 

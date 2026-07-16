@@ -6,7 +6,6 @@ HTTP_ADAPTERS = {
     ROOT / "codes/auth.py",
     ROOT / "codes/data/api_fetcher.py",
     ROOT / "codes/data/sec_data.py",
-    ROOT / "codes/engine/universe.py",
 }
 
 

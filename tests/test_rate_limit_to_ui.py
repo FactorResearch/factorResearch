@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "codes"))
 
 from codes.data.api_fetcher import RateLimitError
 
-from codes.app_modules import analysis as app
+from codes.services import stock_analysis as app
 
 
 def _make_sec_facts(symbol="AAPL"):

@@ -19,4 +19,6 @@ def test_signals_section_keeps_visible_cards_without_options_card():
     assert "insider_card" in layout_source
     assert "alternative_data_card" in layout_source
     assert "_options_signal_card(data)" not in layout_source
-    assert "options_signal_model" not in (ROOT / "codes/app_modules/analysis.py").read_text()
+    assert "options_signal_model" not in (
+        ROOT / "codes/services/stock_analysis.py"
+    ).read_text()

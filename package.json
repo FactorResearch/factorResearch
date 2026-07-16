@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "audit:a11y": "node scripts/audit-accessibility.mjs"
+    "audit:a11y": "node scripts/audit-accessibility.mjs",
+    "audit:design-system": "node scripts/audit-design-system.mjs",
+    "lint:frontend": "node --check assets/iiq.js && node --check assets/legal_pages.js && node --check scripts/audit-accessibility.mjs",
+    "check:styles": "mkdir -p /tmp/factorresearch-css && sass assets/style.scss /tmp/factorresearch-css/style.css && sass assets/company_analysis.scss /tmp/factorresearch-css/company_analysis.css && sass assets/error_pages.scss /tmp/factorresearch-css/error_pages.css && diff -u assets/style.css /tmp/factorresearch-css/style.css && diff -u assets/company_analysis.css /tmp/factorresearch-css/company_analysis.css && diff -u assets/error_pages.css /tmp/factorresearch-css/error_pages.css",
+    "check:design-system": "PYTHONPATH=. python scripts/generate-design-tokens.py && PYTHONPATH=. python scripts/check-design-system.py",
+    "quality:frontend": "npm run lint:frontend && npm run check:styles"
   },
   "devDependencies": {
     "@axe-core/cli": "^4.12.1",

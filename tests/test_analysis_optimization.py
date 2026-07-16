@@ -1,7 +1,7 @@
 from unittest.mock import Mock, call
 import json
 
-from codes.app_modules import analysis
+from codes.services import stock_analysis as analysis
 from codes.app_modules.tabs.analyze import (
     _client_analysis_payload,
     refresh_secondary_analysis,

@@ -6,6 +6,7 @@ def test_pr_workflow_runs_locked_release_gate():
     gate = Path("scripts/release-gate.sh").read_text()
     assert "./scripts/release-gate.sh" in workflow
     assert "pytest -q" in gate
+    assert "coverage run --source=codes" in gate
     assert "python -m compileall" in gate
     assert "python -m pip_audit -r requirements.txt --strict" in gate
     assert "-r requirements-proof.txt" in workflow

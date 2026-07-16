@@ -8,6 +8,9 @@ venv-*/
 yes
 yes.pub
 .cache
+.coverage
+coverage.json
+htmlcov/
 assets/*.min.css
 assets/*.css.map
 assets/*.css
@@ -24,6 +27,9 @@ mockup/
 roadMap.md
 AI_CONTEXT.md
 *.png
+!artifacts/design-system/
+!artifacts/design-system/visuals/
+!artifacts/design-system/visuals/*.png
 roadMap.md
 logo.md
 axe-results.json

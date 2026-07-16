@@ -1,4 +1,4 @@
-"""Stock analysis pipeline and analysis-level caches."""
+"""Application service for the stock-analysis pipeline and its shared caches."""
 
 import os
 import threading
@@ -29,7 +29,7 @@ from codes.services import provider_gateway
 from codes.services import component_cache
 from codes.services import analysis_jobs
 
-from .config import validate_ticker
+from codes.app_modules.config import validate_ticker
 
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None

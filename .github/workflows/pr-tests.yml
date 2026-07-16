@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt -r requirements-proof.txt pytest
+          python -m pip install -r requirements.txt -r requirements-proof.txt -r requirements-dev.txt pytest
 
       - uses: actions/setup-node@v4
         with:
@@ -38,3 +38,33 @@ jobs:
 
       - name: Run release integrity gate
         run: ./scripts/release-gate.sh
+
+      - name: Run design-system accessibility and visual regression
+        env:
+          WEBDRIVER_URL: http://127.0.0.1:4444
+          DESIGN_SYSTEM_URL: http://127.0.0.1:8056/
+        run: |
+          PYTHONPATH=. python scripts/design-system-workshop.py >/tmp/design-system-workshop.log 2>&1 &
+          geckodriver --port 4444 >/tmp/design-system-geckodriver.log 2>&1 &
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8056/ >/dev/null && curl --fail --silent http://127.0.0.1:4444/status >/dev/null && break
+            sleep 1
+          done
+          npm run audit:design-system
+
+      - name: Upload architecture quality reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-quality-reports
+          path: |
+            /tmp/architecture-report.json
+            /tmp/coverage.json
+
+      - name: Upload design-system visual candidates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-system-visual-candidates
+          path: /tmp/factorresearch-design-system-visuals
+          if-no-files-found: ignore

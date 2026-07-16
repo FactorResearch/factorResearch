@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from codes.app_modules import analysis
+from codes.services import stock_analysis as analysis
 
 
 def test_market_fear_failure_is_negative_cached(monkeypatch):

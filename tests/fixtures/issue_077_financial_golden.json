@@ -1,0 +1,32 @@
+{
+  "enhanced_composite": {
+    "inputs": {
+      "graham_result": {"total_score": 72, "total_max": 100},
+      "quality_result": {"total_score": 81, "total_max": 100, "roe": 18},
+      "momentum_result": {"total_score": 64, "total_max": 100},
+      "piotroski_result": {"f_score": 7, "f_score_max": 9},
+      "risk_result": {"risk_score": 68, "risk_score_max": 100, "risk_criteria": []},
+      "altman_result": {"risk_score": 85, "zone": "safe"},
+      "buffett_result": {"total_score": 74, "total_max": 100}
+    },
+    "expected": {
+      "composite_score": 61.7,
+      "verdict": "FAVORABLE",
+      "graham_pct": 72.0,
+      "quality_pct": 81.0,
+      "momentum_pct": 64.0,
+      "piotroski_pct": 77.8,
+      "risk_pct": 68.0,
+      "altman_pct": 85,
+      "buffett_pct": 74.0,
+      "altman_cap_applied": false,
+      "compounder_flag": true,
+      "value_trap_warning": false
+    }
+  },
+  "financial_math": {
+    "prices": [100, 105, 103, 112, 120],
+    "expected_cagr": 0.1,
+    "expected_max_drawdown": -0.01904761904761905
+  }
+}

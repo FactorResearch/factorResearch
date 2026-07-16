@@ -4,15 +4,40 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
-import os
 
-import flask
-
-from codes.data import analytics_db
-from codes.data import db
+from codes.core.ports import AnalyticsContext
+from codes.data import analytics_db, db
 
 _EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="product-analytics")
-_SESSION_OPT_OUT_KEY = "analytics_opt_out"
+
+
+class NullAnalyticsContext:
+    """Context used by workers and tests that run outside a web request."""
+
+    def anonymous_id(self) -> str | None:
+        return None
+
+    def authenticated_user_id(self) -> str | None:
+        return None
+
+    def page_path(self) -> str | None:
+        return None
+
+    def is_opted_out(self) -> bool:
+        return False
+
+    def set_opt_out(self, opt_out: bool) -> None:
+        del opt_out
+
+
+_context: AnalyticsContext = NullAnalyticsContext()
+
+
+def configure_context(context: AnalyticsContext) -> None:
+    """Inject the request-context adapter at the presentation composition root."""
+
+    global _context
+    _context = context
 
 
 def _usage_key(metadata: Mapping[str, object] | None) -> str:
@@ -28,46 +53,28 @@ def _usage_key(metadata: Mapping[str, object] | None) -> str:
 
 
 def _anonymous_id() -> str | None:
-    if not flask.has_request_context():
-        return None
-    return flask.session.get("_uid") or flask.session.get("_authenticated_user_id")
+    return _context.anonymous_id()
 
 
 def _page_path() -> str | None:
-    if not flask.has_request_context():
-        return None
-    try:
-        return flask.request.path
-    except Exception:
-        return None
+    return _context.page_path()
 
 
 def _tracking_enabled() -> bool:
-    if os.environ.get("ANALYTICS_OPT_OUT", "").lower() in {"1", "true", "yes"}:
-        return False
-    if flask.has_request_context() and flask.session.get(_SESSION_OPT_OUT_KEY):
-        return False
-    return True
+    return not _context.is_opted_out()
 
 
 def set_tracking_opt_out(opt_out: bool) -> None:
-    if not flask.has_request_context():
-        return
-    flask.session[_SESSION_OPT_OUT_KEY] = bool(opt_out)
+    _context.set_opt_out(opt_out)
 
 
 def is_tracking_opted_out() -> bool:
-    if not flask.has_request_context():
-        return False
-    return bool(flask.session.get(_SESSION_OPT_OUT_KEY))
+    return _context.is_opted_out()
 
 
 def get_tracking_context() -> dict[str, object]:
-    authenticated_user_id = None
-    anonymous_id = None
-    if flask.has_request_context():
-        authenticated_user_id = flask.session.get("_authenticated_user_id")
-        anonymous_id = flask.session.get("_uid")
+    authenticated_user_id = _context.authenticated_user_id()
+    anonymous_id = _context.anonymous_id()
     return {
         "tracking_enabled": _tracking_enabled(),
         "analytics_opt_out": is_tracking_opted_out(),
@@ -77,7 +84,11 @@ def get_tracking_context() -> dict[str, object]:
     }
 
 
-def _record_event_sync(user_id: str | None, event_name: str, metadata: Mapping[str, object] | None = None) -> None:
+def _record_event_sync(
+    user_id: str | None,
+    event_name: str,
+    metadata: Mapping[str, object] | None = None,
+) -> None:
     if not _tracking_enabled() or not event_name:
         return
     analytics_db.insert_event(
@@ -89,14 +100,26 @@ def _record_event_sync(user_id: str | None, event_name: str, metadata: Mapping[s
     )
 
 
-def track_event(user_id: str, event_name: str, metadata: Mapping[str, object] | None = None) -> dict:
+def track_event(
+    user_id: str,
+    event_name: str,
+    metadata: Mapping[str, object] | None = None,
+) -> dict[str, object]:
     if not event_name or not _tracking_enabled():
         return {"usage_count": 0, "feature_usage": {}}
     try:
-        usage = db.increment_usage(
+        usage_value = db.increment_usage(
             user_id or _anonymous_id() or "anonymous",
             f"event:{event_name}",
             usage_key=_usage_key(metadata),
+        )
+        usage = (
+            usage_value
+            if isinstance(usage_value, dict)
+            else {
+                "usage_count": 0,
+                "feature_usage": {},
+            }
         )
     except Exception:
         usage = {"usage_count": 0, "feature_usage": {}}

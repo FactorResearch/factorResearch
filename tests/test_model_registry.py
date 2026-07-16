@@ -1,5 +1,5 @@
 from codes.core.model_registry import MODELS
-from codes.app_modules import analysis
+from codes.services import stock_analysis as analysis
 
 
 PRODUCTION_ANALYSIS_MODELS = {

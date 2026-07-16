@@ -6,15 +6,24 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 import flask
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from codes.app_modules import analysis as stock_analysis
+from codes.services import stock_analysis
+from codes.app_modules.analytics_context import FlaskAnalyticsContext
 from codes.app_modules.tabs import analyze, factor_lab, pricing, screener
 from codes.data import analytics_db
 from codes.payments import webhooks
 from codes.services import analytics_bootstrap, product_analytics
 from codes.services.permissions import Feature, PermissionResult
+
+
+@pytest.fixture(autouse=True)
+def flask_analytics_context():
+    product_analytics.configure_context(FlaskAnalyticsContext())
+    yield
+    product_analytics.configure_context(product_analytics.NullAnalyticsContext())
 
 
 def test_track_event_updates_usage_and_persists_event(monkeypatch):

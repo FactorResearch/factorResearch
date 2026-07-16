@@ -32,7 +32,7 @@ def _popular_symbols() -> list[str]:
 
 
 def run_maintenance_once() -> None:
-    from codes.app_modules.analysis import (
+    from codes.services.stock_analysis import (
         _get_comomentum_result,
         _get_market_fear_result,
         _get_spy_history_lazy,

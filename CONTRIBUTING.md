@@ -21,6 +21,21 @@ deployable, and keep unreleased markets disabled in `feature_flags.json`.
    git switch -c <branch-name>
    ```
 
+## Architecture and Legacy Code
+
+All new and modified code follows [the architecture rules](docs/architecture.md).
+When work touches a legacy area, use the
+[migration playbook](docs/legacy-migration-playbook.md), consult the
+[risk-ranked debt register](docs/technical-debt-register.md), and either improve
+the affected boundary or record a complete temporary exception. Run
+`./scripts/release-gate.sh` before opening a pull request; it produces the
+architecture and coverage reports used by CI.
+
+Frontend work must also use the [design engine](docs/design-system.md) and keep
+the [migration inventory](docs/design-system-migration-inventory.md) current.
+New page-specific tokens, primitives, financial formatters, or breakpoint
+systems are not accepted.
+
 ## Branch Types
 
 - `main`: shared infrastructure and completed integrations. It must remain

@@ -1,6 +1,8 @@
 import time
-import requests
 import datetime as dt
+
+from codes.core.ports import TickerUniverseReader
+from codes.data.providers.sec_universe import SecTickerUniverseAdapter
 
 from ..data import cache
 from ..data import sec_data
@@ -13,15 +15,6 @@ _SEC_MIN_GAP = 0.34
 # =========================
 # SEC company_tickers.json
 # =========================
-
-SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36"
-    )
-}
 
 # Used only if the SEC endpoint is unavailable.
 FALLBACK_TICKERS = [
@@ -43,7 +36,7 @@ FALLBACK_TICKERS = [
 ]
 
 
-def _fetch_sec_tickers() -> list[str]:
+def _fetch_sec_tickers(reader: TickerUniverseReader | None = None) -> list[str]:
     """
     Load the complete SEC company ticker universe.
 
@@ -58,27 +51,7 @@ def _fetch_sec_tickers() -> list[str]:
     print("📋 Fetching SEC company universe...")
 
     try:
-        response = requests.get(
-            SEC_TICKERS_URL,
-            headers=HEADERS,
-            timeout=20,
-        )
-        response.raise_for_status()
-
-        data = response.json()
-
-        tickers = []
-
-        for company in data.values():
-            ticker = company.get("ticker", "").strip().upper()
-
-            if not ticker:
-                continue
-
-            tickers.append(ticker)
-
-        # Remove duplicates while preserving order
-        tickers = list(dict.fromkeys(tickers))
+        tickers = list((reader or SecTickerUniverseAdapter()).read_tickers())
 
         print(f"✅ Loaded {len(tickers):,} SEC tickers")
 
@@ -90,7 +63,7 @@ def _fetch_sec_tickers() -> list[str]:
         return FALLBACK_TICKERS
 
 
-def get_universe() -> list[str]:
+def get_universe(reader: TickerUniverseReader | None = None) -> list[str]:
     """
     Return the full SEC company universe.
     """
@@ -99,7 +72,7 @@ def get_universe() -> list[str]:
     if cached:
         return cached
 
-    universe = _fetch_sec_tickers()
+    universe = _fetch_sec_tickers(reader)
 
     if universe:
         cache.write("universe", "sec_all", universe)

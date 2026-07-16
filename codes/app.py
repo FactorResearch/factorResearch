@@ -15,8 +15,6 @@ import functools
 import flask
 import hmac
 import re
-import time
-import uuid
 from markupsafe import escape
 try:
     from flask_limiter import Limiter
@@ -27,6 +25,7 @@ except Exception:
 from codes import auth
 from codes import billing
 from codes import security
+from codes.composition import compose_runtime
 from codes.core.config import is_production
 from flask import render_template
 from codes.data import sec_data
@@ -44,10 +43,11 @@ from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
 import codes.portfolio as portfolio_engine
-from codes.app_modules.layout import build_layout
+from codes.app_modules.composition import compose_dash_ui
 from codes.app_modules.rate_limit import clear_rate_limits_for_user
 from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
 # ── App Init ──────────────────────────────────────────────────────────────────
+runtime = compose_runtime()
 app = dash.Dash(
     __name__,
     title="FactorResearch",
@@ -155,16 +155,23 @@ _REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")
 @server.before_request
 def start_request_metrics():
     supplied = flask.request.headers.get("X-Request-ID", "")
-    flask.g.request_id = supplied if _REQUEST_ID.fullmatch(supplied) else uuid.uuid4().hex
-    flask.g.request_started = time.perf_counter()
+    flask.g.request_id = supplied if _REQUEST_ID.fullmatch(supplied) else runtime.ids.new_id()
+    flask.g.request_started = runtime.clock.monotonic()
 
 
 @server.after_request
 def finish_request_metrics(response):
-    started = getattr(flask.g, "request_started", time.perf_counter())
+    started = getattr(flask.g, "request_started", runtime.clock.monotonic())
     route = flask.request.url_rule.rule if flask.request.url_rule else "unmatched"
-    performance_metrics.record_request(route, flask.request.method, response.status_code, (time.perf_counter() - started) * 1000)
-    response.headers["X-Request-ID"] = getattr(flask.g, "request_id", uuid.uuid4().hex)
+    performance_metrics.record_request(
+        route,
+        flask.request.method,
+        response.status_code,
+        (runtime.clock.monotonic() - started) * 1000,
+    )
+    response.headers["X-Request-ID"] = getattr(
+        flask.g, "request_id", runtime.ids.new_id()
+    )
     return response
 
 
@@ -317,24 +324,7 @@ def _logging_callback(self, *args, **kwargs):
     return wrap
 dash.Dash.callback = _logging_callback
 
-# Importing tab modules registers their Dash callbacks.
-from codes.app_modules.tabs import analyze, factor_lab, navigation, portfolio, pricing, profile, screener as screener_tab  # noqa: F401
-
-app.index_string = app.index_string.replace('<html>', '<html lang="en">')
-app.index_string = app.index_string.replace(
-    '</head>',
-    '<link rel="manifest" href="/manifest.webmanifest">'
-    '<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));}</script>'
-    '</head>'
-)
-
-app.index_string = app.index_string.replace(
-    '</head>',
-    build_head_snippets() + '</head>'
-)
-
-app.layout = build_layout()
-screener_tab.register_clientside_callbacks(app)
+compose_dash_ui(app, head_snippets=build_head_snippets())
 
 # ── Startup ───────────────────────────────────────────────────────────────────
 def startup():
