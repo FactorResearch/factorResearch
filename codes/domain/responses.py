@@ -307,15 +307,23 @@ class ScreenerResponse:
 
 @dataclass(frozen=True)
 class PortfolioResponse:
+    id: str
     name: str
     holdings: int
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> PortfolioResponse:
-        return cls(name=str(raw.get("name") or ""), holdings=max(0, int(raw.get("holdings") or 0)))
+        return cls(
+            id=str(raw.get("id") or ""),
+            name=str(raw.get("name") or ""),
+            holdings=max(0, int(raw.get("holdings") or 0)),
+        )
 
     def to_dict(self) -> dict[str, JsonValue]:
-        return {"name": self.name, "holdings": self.holdings}
+        result: dict[str, JsonValue] = {"name": self.name, "holdings": self.holdings}
+        if self.id:
+            result["id"] = self.id
+        return result
 
 
 @dataclass(frozen=True)

@@ -186,6 +186,34 @@ def resolve_security(namespace: str, identifier: str, as_of: dt.date | None = No
     return dict(row) if row else None
 
 
+def get_security_identity(security_id: str, as_of: dt.date | None = None) -> dict | None:
+    """Return the current listing alias for a permanent security ID."""
+    ensure_schema()
+    date = as_of or dt.date.today()
+    with db._conn() as con:
+        con.row_factory = dict_row
+        row = con.execute(
+            """SELECT s.security_id::text, e.legal_name, i.identifier AS symbol,
+                      l.market_code, l.exchange_code, l.currency, l.status
+               FROM securities s JOIN security_entities e USING (entity_id)
+               LEFT JOIN LATERAL (
+                   SELECT * FROM security_listings
+                   WHERE security_id=s.security_id AND valid_from <= %(as_of)s
+                     AND (valid_to IS NULL OR valid_to >= %(as_of)s)
+                   ORDER BY valid_from DESC LIMIT 1
+               ) l ON TRUE
+               LEFT JOIN LATERAL (
+                   SELECT identifier FROM security_identifiers
+                   WHERE security_id=s.security_id AND namespace='TICKER'
+                     AND valid_from <= %(as_of)s AND (valid_to IS NULL OR valid_to >= %(as_of)s)
+                   ORDER BY valid_from DESC LIMIT 1
+               ) i ON TRUE
+               WHERE s.security_id=%(security_id)s""",
+            {"security_id": security_id, "as_of": date},
+        ).fetchone()
+    return dict(row) if row else None
+
+
 def record_symbol_change(security_id: str, old_symbol: str, new_symbol: str, effective_date: dt.date, *, market_code: str, source: str) -> None:
     """Close the old ticker interval and open the replacement on one security."""
     ensure_schema()

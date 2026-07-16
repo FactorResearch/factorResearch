@@ -52,7 +52,9 @@ def test_existing_safe_legacy_portfolio_keys_remain_readable(isolated_cache):
     assert cache.write("portfolio", "user1_p_growth", payload) is True
 
     assert portfolio.list_portfolios(user_id) == [name]
-    assert portfolio.load_portfolio(user_id, name) == payload
+    migrated = portfolio.load_portfolio(user_id, name)
+    assert {key: migrated[key] for key in payload} == payload
+    assert len(migrated["id"]) == 32
 
 
 def test_portfolio_write_failures_are_not_silent(monkeypatch):

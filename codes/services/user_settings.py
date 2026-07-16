@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import uuid
 from copy import deepcopy
 from datetime import UTC, datetime
 
@@ -117,6 +118,7 @@ def add_saved_screener(user_id: str, *, name: str, market: str, sector: str, ind
     current = get_user_settings(user_id)
     new_item = _normalize_saved_screener(
         {
+            "id": uuid.uuid4().hex,
             "name": name,
             "market": market,
             "sector": sector,

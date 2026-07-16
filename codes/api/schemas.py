@@ -7,7 +7,7 @@ stable, allow-listed fields.
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 
 class ApiMeta(TypedDict):
@@ -75,6 +75,7 @@ class ScreenerResource(TypedDict):
 
 
 class PortfolioSummary(TypedDict):
+    id: NotRequired[str]
     name: str
     holdings: int
 

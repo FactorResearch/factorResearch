@@ -28,17 +28,19 @@ def portfolio_summaries(user_id: str) -> list[dict]:
 
 
 def portfolio_responses(user_id: str) -> list[PortfolioResponse]:
-    return [
-        PortfolioResponse.from_mapping(
-            {
-                "name": name,
-                "holdings": len(
-                    (portfolio_service.load_portfolio(user_id, name) or {}).get("holdings", {})
-                ),
-            }
+    responses = []
+    for name in portfolio_service.list_portfolios(user_id) or []:
+        portfolio = portfolio_service.load_portfolio(user_id, name) or {}
+        responses.append(
+            PortfolioResponse.from_mapping(
+                {
+                    "id": portfolio.get("id", ""),
+                    "name": name,
+                    "holdings": len(portfolio.get("holdings", {})),
+                }
+            )
         )
-        for name in (portfolio_service.list_portfolios(user_id) or [])
-    ]
+    return responses
 
 
 def subscription_summary(user_id: str) -> dict:

@@ -25,14 +25,17 @@ Simulation output:
   montecarlo — 2-year forward projection: 1,000 paths → p10/p50/p90 bands
 """
 
-import time
 import datetime
 import hashlib
+import time
+import uuid
+
 import numpy as np
 import pandas as pd
+
 from codes.core import financial_math as fm
-from .data import cache
-from .data import api_fetcher, temporal
+
+from .data import api_fetcher, cache, temporal
 
 MAX_HOLDINGS  = 10
 MIN_SHARES    = 5
@@ -118,7 +121,11 @@ def _portfolio_index_key(user_id: str) -> str:
     return f"u_{_cache_token(user_id)}_index"
 
 
-def _portfolio_key(user_id: str, name: str) -> str:
+def _portfolio_key(user_id: str, portfolio_id: str) -> str:
+    return f"u_{_cache_token(user_id)}_p_{portfolio_id}"
+
+
+def _encoded_name_portfolio_key(user_id: str, name: str) -> str:
     return f"u_{_cache_token(user_id)}_p_{_cache_token(name)}"
 
 
@@ -157,46 +164,77 @@ def _read_cache_if_safe(kind: str, key: str):
         return None
 
 
-def _load_index(user_id: str) -> list[str]:
+def _load_index(user_id: str) -> list[dict[str, str]]:
     encoded = cache.read("portfolio", _portfolio_index_key(user_id))
-    if encoded is not None:
-        return encoded
-    return _read_cache_if_safe("portfolio", _legacy_index_key(user_id)) or []
+    raw = encoded if encoded is not None else _read_cache_if_safe("portfolio", _legacy_index_key(user_id))
+    return [
+        item if isinstance(item, dict) else {"id": "", "name": str(item)}
+        for item in (raw or [])
+    ]
 
 
-def _save_index(user_id: str, names: list[str]) -> None:
-    _write_cache_or_raise("portfolio", _portfolio_index_key(user_id), names)
+def _save_index(user_id: str, entries: list[dict[str, str]]) -> None:
+    _write_cache_or_raise("portfolio", _portfolio_index_key(user_id), entries)
 
 
 def list_portfolios(user_id: str) -> list[str]:
-    return _load_index(user_id)
+    return [entry["name"] for entry in _load_index(user_id)]
 
 
 def load_portfolio(user_id: str, name: str) -> dict | None:
-    encoded = cache.read("portfolio", _portfolio_key(user_id, name))
-    if encoded is not None:
-        return encoded
-    return _read_cache_if_safe("portfolio", _legacy_portfolio_key(user_id, name))
+    entry = next((item for item in _load_index(user_id) if item["name"] == name), None)
+    if entry and entry["id"]:
+        stored = cache.read("portfolio", _portfolio_key(user_id, entry["id"]))
+        if stored is not None:
+            return _refresh_holding_symbols(stored)
+    legacy = cache.read("portfolio", _encoded_name_portfolio_key(user_id, name))
+    if legacy is None:
+        legacy = _read_cache_if_safe("portfolio", _legacy_portfolio_key(user_id, name))
+    if legacy is not None and not legacy.get("id"):
+        legacy["id"] = uuid.uuid4().hex
+        save_portfolio(user_id, legacy)
+    return _refresh_holding_symbols(legacy) if legacy is not None else None
+
+
+def _refresh_holding_symbols(portfolio: dict) -> dict:
+    holdings = portfolio.get("holdings", {})
+    refreshed = {}
+    for saved_symbol, holding in holdings.items():
+        current_symbol = saved_symbol
+        if security_id := holding.get("security_id"):
+            try:
+                identity = temporal.get_security_identity(security_id)
+                current_symbol = str((identity or {}).get("symbol") or saved_symbol)
+            except Exception:
+                pass
+        refreshed[current_symbol] = holding
+    if refreshed != holdings:
+        portfolio["holdings"] = refreshed
+    return portfolio
 
 
 def save_portfolio(user_id: str, portfolio: dict) -> None:
     name = portfolio["name"]
-    _write_cache_or_raise("portfolio", _portfolio_key(user_id, name), portfolio)
-    idx = _load_index(user_id)
-    if name not in idx:
-        idx.append(name)
-        _save_index(user_id, idx)
+    portfolio_id = portfolio.setdefault("id", uuid.uuid4().hex)
+    _write_cache_or_raise("portfolio", _portfolio_key(user_id, portfolio_id), portfolio)
+    entries = [item for item in _load_index(user_id) if item["id"] != portfolio_id and item["name"] != name]
+    entries.append({"id": portfolio_id, "name": name})
+    _save_index(user_id, entries)
 
 
 def delete_portfolio(user_id: str, name: str) -> None:
-    _clear_cache_if_safe("portfolio", _portfolio_key(user_id, name))
+    entries = _load_index(user_id)
+    entry = next((item for item in entries if item["name"] == name), None)
+    if entry and entry["id"]:
+        _clear_cache_if_safe("portfolio", _portfolio_key(user_id, entry["id"]))
+    _clear_cache_if_safe("portfolio", _encoded_name_portfolio_key(user_id, name))
     _clear_cache_if_safe("portfolio", _legacy_portfolio_key(user_id, name))
-    idx = [n for n in _load_index(user_id) if n != name]
-    _save_index(user_id, idx)
+    _save_index(user_id, [item for item in entries if item["name"] != name])
 
 
 def create_portfolio(user_id: str, name: str) -> dict:
     p = {
+        "id":       uuid.uuid4().hex,
         "name":     name,
         "created":  datetime.datetime.now().isoformat(),
         "holdings": {},
@@ -226,6 +264,7 @@ def add_holding(user_id: str, name: str, symbol: str, shares: int,
         return p, f"Minimum {MIN_SHARES} shares per stock (got {shares})"
 
     p["holdings"][symbol] = {
+        "security_id": _security_id(symbol, company_name),
         "shares":       shares,
         "price_at_add": current_price,
         "name":         company_name,
@@ -233,6 +272,28 @@ def add_holding(user_id: str, name: str, symbol: str, shares: int,
     }
     save_portfolio(user_id, p)
     return p, ""
+
+
+def _security_id(symbol: str, company_name: str) -> str | None:
+    market = "CA" if symbol.endswith(".TO") else "US"
+    try:
+        identity = temporal.resolve_security("TICKER", symbol, market_code=market)
+        if identity:
+            return identity["security_id"]
+        security_id = str(uuid.uuid4())
+        temporal.register_security(
+            temporal.SecurityIdentity(
+                security_id,
+                str(uuid.uuid5(uuid.NAMESPACE_URL, f"factorresearch:entity:{security_id}")),
+                company_name or symbol,
+                symbol,
+                market,
+            ),
+            source="portfolio",
+        )
+        return security_id
+    except Exception:
+        return None
 
 
 def remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:

@@ -11,12 +11,32 @@ from codes.data import temporal
 from codes.data.providers.fmp import FMPClient
 
 
-def _security_uuid(symbol: str, market: str) -> str:
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, f"factorresearch:security:{market}:{symbol.upper()}"))
+def _security_uuid(profile: dict) -> str:
+    for namespace, key in (("ISIN", "isin"), ("CUSIP", "cusip"), ("SEDOL", "sedol")):
+        if value := str(profile.get(key) or "").strip().upper():
+            return str(uuid.uuid5(uuid.NAMESPACE_URL, f"factorresearch:security:{namespace}:{value}"))
+    return str(uuid.uuid4())
 
 
-def _entity_uuid(profile: dict, symbol: str) -> str:
-    stable = profile.get("cik") or profile.get("isin") or profile.get("cusip") or symbol.upper()
+def _existing_security_id(profile: dict, symbol: str, market: str) -> str | None:
+    identifiers = [
+        (namespace, value, None)
+        for namespace, key in (("ISIN", "isin"), ("CUSIP", "cusip"), ("SEDOL", "sedol"))
+        if (value := profile.get(key))
+    ]
+    identifiers.append(("TICKER", symbol, market))
+    for namespace, identifier, scope in identifiers:
+        try:
+            found = temporal.resolve_security(namespace, str(identifier), market_code=scope)
+        except Exception:
+            return None
+        if found:
+            return str(found["security_id"])
+    return None
+
+
+def _entity_uuid(profile: dict, security_id: str) -> str:
+    stable = profile.get("cik") or profile.get("isin") or profile.get("cusip") or security_id
     return str(uuid.uuid5(uuid.NAMESPACE_URL, f"factorresearch:entity:{stable}"))
 
 
@@ -33,10 +53,10 @@ def _market_code(profile: dict, symbol: str) -> str:
 def ingest_identity(symbol: str, client: FMPClient) -> dict:
     profile = client.profile(symbol)
     market = _market_code(profile, symbol)
-    security_id = _security_uuid(symbol, market)
+    security_id = _existing_security_id(profile, symbol, market) or _security_uuid(profile)
     identity = temporal.SecurityIdentity(
         security_id=security_id,
-        entity_id=_entity_uuid(profile, symbol),
+        entity_id=_entity_uuid(profile, security_id),
         legal_name=profile.get("companyName") or profile.get("companyNameLong") or symbol.upper(),
         symbol=symbol.upper(),
         market_code=market,
