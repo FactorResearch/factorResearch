@@ -57,6 +57,17 @@ def update_weight_sum(*values):
                  "color": color, "fontStyle": "italic"}
 
 
+@callback(
+    *[Output(f"fb-w-{key}", "value") for key in _FB_WEIGHT_KEYS],
+    Input("fb-reset-weights-btn", "n_clicks"),
+    prevent_initial_call=True,
+)
+def reset_factor_weights(n_clicks):
+    if not n_clicks:
+        return tuple(dash.no_update for _ in _FB_WEIGHT_KEYS)
+    return tuple(round(scorer.ENHANCED_WEIGHTS.get(key, 0) * 100) for key in _FB_WEIGHT_KEYS)
+
+
 def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _skip_guards=False):
     """Execute a backtest; the UI submits this helper as a resumable job."""
     if not n_clicks:
@@ -329,7 +340,11 @@ def _render_fb_results(r: dict) -> list:
             many_traces=True,
         ))
         fig.update_yaxes(title_text="Indexed Value (100 = start)")
-        chart = dcc.Graph(figure=fig, config={"displayModeBar": False})
+        chart = dcc.Graph(
+            figure=fig,
+            config={"displayModeBar": False, "responsive": True, "scrollZoom": False},
+            className="responsive-financial-chart",
+        )
 
     wc_rows = []
     for wc in r.get("weight_changes", []):

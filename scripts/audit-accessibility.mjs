@@ -38,9 +38,11 @@ async function executeAsync(script, args = []) {
 }
 
 const viewports = [
-  {name: 'desktop', width: 1440, height: 1000},
+  {name: 'iphone-sized', width: 320, height: 568},
+  {name: 'android-sized', width: 412, height: 915},
   {name: 'tablet', width: 820, height: 1180},
-  {name: 'mobile', width: 390, height: 844},
+  {name: 'laptop', width: 1366, height: 768},
+  {name: 'wide-desktop', width: 1920, height: 1080},
 ];
 const tabs = [
   {name: 'screener', selector: '#tab-screener-btn'},
@@ -87,7 +89,7 @@ try {
     }
   }
 
-  for (const viewport of viewports.filter((item) => item.name !== 'tablet')) {
+  for (const viewport of viewports.filter((item) => ['iphone-sized', 'laptop'].includes(item.name))) {
     await request('POST', `${base}/window/rect`, viewport);
     for (const page of standalonePages) {
       await request('POST', `${base}/url`, {url: new URL(page.path, appUrl).href});

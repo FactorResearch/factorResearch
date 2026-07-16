@@ -57,9 +57,19 @@ def test_dash_registers_global_callbacks_on_first_request():
                         "id": "screener-sort-store",
                         "property": "data",
                         "value": {"col": "composite_score", "asc": False},
-                    },
-                    {"id": "screener-page-store", "property": "data", "value": 1},
-                ],
+                        },
+                        {"id": "screener-page-store", "property": "data", "value": 1},
+                        {
+                            "id": "screener-visible-columns",
+                            "property": "value",
+                            "value": [
+                                "ticker", "company", "sector", "market_cap",
+                                "composite_score", "graham_number", "buffett_iv",
+                                "updated_at", "verdict",
+                            ],
+                        },
+                        {"id": "screener-table-density", "property": "value", "value": "comfortable"},
+                    ],
                 "state": [
                     {"id": "screener-viewed-store", "property": "data", "value": []},
                 ],

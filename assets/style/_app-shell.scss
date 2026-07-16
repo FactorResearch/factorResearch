@@ -188,6 +188,16 @@ body.light {
 }
 
 @include media.phones {
+  body {
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .app-footer {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
   .topbar,
   .analyze-header,
   .screener-toolbar {

@@ -111,7 +111,12 @@
 .ds-spinner { display: none; width: 1em; height: 1em; border: var(--fr-border-strong) solid currentColor; border-right-color: transparent; border-radius: var(--fr-radius-pill); animation: ds-spin var(--fr-motion-slow) linear infinite; }
 .is-loading .ds-spinner { display: inline-block; }
 
-.ds-table-wrap { max-width: 100%; overflow-x: auto; border: var(--fr-border-thin) solid var(--fr-color-border-default); border-radius: var(--fr-radius-md); }
+.ds-table-wrap { position: relative; max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; border: var(--fr-border-thin) solid var(--fr-color-border-default); border-radius: var(--fr-radius-md); }
+.ds-table-scroll-cue { position: sticky; left: 0; width: max-content; max-width: 100%; margin: 0; padding: 8px 12px; color: var(--fr-color-text-muted); font-size: 12px; }
+.ds-table-wrap.has-sticky-identifier :is(th, td):first-child { position: sticky; left: 0; z-index: var(--fr-layer-sticky); background: var(--fr-color-surface-raised); }
+.ds-table-wrap .density-compact :is(th, td) { padding-block: calc(var(--fr-space-2) * var(--fr-density-compact)); }
+.js-plotly-plot { max-width: 100%; touch-action: pan-y pinch-zoom; }
+.js-plotly-plot .modebar-btn { min-width: 44px; min-height: 44px; }
 .ds-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .ds-table :is(th, td) { min-height: var(--fr-table-row-default); padding: var(--fr-space-2) var(--fr-space-3); border-bottom: var(--fr-border-thin) solid var(--fr-color-border-default); text-align: left; white-space: nowrap; }
 .ds-modal { display: none; position: fixed; inset: 0; z-index: var(--fr-layer-overlay); place-items: center; padding: var(--fr-space-4); background: color-mix(in srgb, var(--fr-color-surface-canvas) 72%, transparent); }

@@ -9,6 +9,7 @@ from codes.app_modules.design_system.primitives import (
     input_control,
     link,
     loading_container,
+    radio_group,
     select_control,
     slider,
 )
@@ -189,10 +190,12 @@ def build_layout():
         # ── Tab: Screener ────────────────────────────────────────────────────────
         html.Div(id="tab-screener", className="screener-content block", role="tabpanel", tabIndex=-1, **{"aria-labelledby": "tab-screener-btn"}, children=[
             html.Div(className="screener-toolbar", children=[
-                # html.Div(className="screener-controls", children=[
-                #     html.Div(id="screener-progress-info", className="screener-info"),
-                # ]),
-                html.Div(className="screener-controls flex gap-lg align-items-center", children=[
+                html.Details(className="screener-filter-drawer", children=[
+                    html.Summary(
+                        html.Span("Filters (0 active)", id="screener-filter-summary"),
+                        className="screener-filter-summary",
+                    ),
+                    html.Div(className="screener-controls flex gap-lg align-items-center", children=[
                     html.Div(className="screener-index-filter", children=[
                         html.Label("Filter by index:", className="text-sm text-muted"),
                         html.Div(
@@ -211,6 +214,47 @@ def build_layout():
                         clearable=False,
                         className="bg-card br-10 clr-text",
                     ),
+                    ]),
+                    button("Clear all", id="screener-clear-all-btn", variant="secondary", className="screener-clear-all", n_clicks=0),
+                    ]),
+                ]),
+                html.Details(className="screener-view-controls", children=[
+                    html.Summary("Table view", className="screener-view-summary"),
+                    html.Div(className="screener-view-panel", children=[
+                        html.Fieldset(className="screener-column-chooser", children=[
+                            html.Legend("Visible columns"),
+                            checkbox_group(
+                                id="screener-visible-columns",
+                                options=[
+                                    {"label": "Ticker", "value": "ticker", "disabled": True},
+                                    {"label": "Company", "value": "company"},
+                                    {"label": "Sector", "value": "sector"},
+                                    {"label": "Market cap", "value": "market_cap"},
+                                    {"label": "Composite", "value": "composite_score"},
+                                    {"label": "Fair value", "value": "graham_number"},
+                                    {"label": "Economic moat", "value": "buffett_iv"},
+                                    {"label": "Updated", "value": "updated_at"},
+                                    {"label": "Verdict", "value": "verdict"},
+                                ],
+                                value=["ticker", "company", "sector", "market_cap", "composite_score", "graham_number", "buffett_iv", "updated_at", "verdict"],
+                                persistence=True,
+                                persistence_type="local",
+                            ),
+                        ]),
+                        html.Fieldset(className="screener-density-control", children=[
+                            html.Legend("Row density"),
+                            radio_group(
+                                id="screener-table-density",
+                                options=[
+                                    {"label": "Comfortable", "value": "comfortable"},
+                                    {"label": "Compact", "value": "compact"},
+                                ],
+                                value="comfortable",
+                                persistence=True,
+                                persistence_type="local",
+                                inline=True,
+                            ),
+                        ]),
                     ]),
                 ]),
             ]),
@@ -480,6 +524,7 @@ def build_layout():
                 html.Div(id="fb-weight-sum-display",
                          className="factor-weight-summary fs-12 clr-muted fsi",
                          children="Weight sum: 100% ✓"),
+                button("Reset default weights", id="fb-reset-weights-btn", variant="secondary", className="factor-reset-weights", n_clicks=0),
             ]),
 
             loading_container(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
@@ -605,6 +650,7 @@ def build_layout():
         dcc.Store(id="screener-viewed-store", data=[]),   # symbols the user has analyzed
         dcc.Store(id="screener-scroll-pos", data=0, storage_type="session"),  # remembered scroll position for screener tab
         html.Div(id="screener-scroll-restore-sink", className="is-hidden"),
+        html.Div(id="screener-url-state-sink", className="is-hidden"),
         # interval disabled=True once loading finishes to stop constant re-renders
         dcc.Interval(id="screener-progress-interval", interval=2000, disabled=True),
         # fires once 600ms after page load to render already-cached screener data

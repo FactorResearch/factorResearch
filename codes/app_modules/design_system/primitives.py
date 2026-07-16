@@ -414,13 +414,39 @@ def pagination(current: int, total: int, *, previous_id, next_id):
     )
 
 
-def responsive_table(children: Any, *, label: str):
+def responsive_table(
+    children: Any,
+    *,
+    label: str,
+    density: str = "comfortable",
+    sticky_identifier: bool = False,
+    className: str = "",
+):
+    if density not in {"comfortable", "compact"}:
+        raise ValueError("density must be comfortable or compact")
     return html.Div(
-        table(children, caption=label),
-        className="ds-table-wrap",
+        [
+            html.P(
+                "Scroll horizontally for additional financial columns.",
+                className="ds-table-scroll-cue",
+            ),
+            table(
+                children,
+                caption=label,
+                className=_classes(className, f"density-{density}"),
+            ),
+        ],
+        className=_classes(
+            "ds-table-wrap",
+            "has-sticky-identifier" if sticky_identifier else None,
+        ),
         role="region",
         tabIndex=0,
-        **{"aria-label": label},
+        **{
+            "aria-label": label,
+            "data-responsive-table": "true",
+            "data-table-density": density,
+        },
     )
 
 

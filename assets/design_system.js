@@ -51,6 +51,7 @@
     const restoreTarget = previousFocus.get(overlay);
     previousFocus.delete(overlay);
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    if (restoreTarget && restoreTarget.isConnected) restoreTarget.focus();
     window.requestAnimationFrame(function () {
       syncOverlay();
       if (restoreTarget && restoreTarget.isConnected) restoreTarget.focus();
@@ -254,8 +255,28 @@
       const traces = chart.data || [];
       const title = textOnly(chart.layout?.title?.text) || 'Financial chart';
       chart.dataset.a11yEnhanced = 'true';
+      chart.dataset.responsiveChart = 'true';
       chart.setAttribute('role', 'img');
       chart.setAttribute('aria-label', `${title}. ${traces.length} data ${traces.length === 1 ? 'series' : 'series'}. A text data table follows.`);
+      if (chart._context) {
+        chart._context.responsive = true;
+        chart._context.scrollZoom = false;
+      }
+
+      const touchStatus = document.createElement('div');
+      touchStatus.className = 'sr-only ds-chart-touch-status';
+      touchStatus.setAttribute('role', 'status');
+      touchStatus.setAttribute('aria-live', 'polite');
+      const announcePoint = function (event) {
+        const point = event?.points?.[0];
+        if (!point) return;
+        const series = point.data?.name || `Series ${point.curveNumber + 1}`;
+        touchStatus.textContent = `${series}, ${point.x ?? 'period unavailable'}, ${point.y ?? 'value unavailable'}`;
+      };
+      if (typeof chart.on === 'function') {
+        chart.on('plotly_click', announcePoint);
+        chart.on('plotly_hover', announcePoint);
+      }
 
       const details = document.createElement('details');
       details.className = 'ds-chart-data';
@@ -281,8 +302,12 @@
         });
       });
       table.append(caption, head, body);
-      details.append(summary, table);
+      details.append(summary, table, touchStatus);
       chart.insertAdjacentElement('afterend', details);
+      chart.querySelectorAll('.modebar-btn').forEach(function (control) {
+        const label = control.getAttribute('data-title') || control.getAttribute('title') || 'Chart action';
+        control.setAttribute('aria-label', label);
+      });
     });
   }
 

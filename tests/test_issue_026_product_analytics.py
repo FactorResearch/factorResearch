@@ -338,7 +338,11 @@ def test_screener_tracks_screener_run(monkeypatch):
     tracked = Mock()
     monkeypatch.setattr(screener.product_analytics, "track_event", tracked)
 
-    screener.render_screener_table(-1, "US", 1, "", "Technology", {"col": "composite_score", "asc": False}, 1, [])
+    screener.render_screener_table(
+        -1, "US", 1, "", "Technology",
+        {"col": "composite_score", "asc": False}, 1,
+        screener.SCREENER_DEFAULT_COLUMNS, "comfortable", [],
+    )
 
     tracked.assert_called_once_with(
         "u1",

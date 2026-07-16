@@ -32,6 +32,11 @@ from codes.services import performance_metrics, product_analytics
 last_progress_state = None
 last_progress_bar_state = None
 
+SCREENER_DEFAULT_COLUMNS = [
+    "ticker", "company", "sector", "market_cap", "composite_score",
+    "graham_number", "buffett_iv", "updated_at", "verdict",
+]
+
 
 def _filter_results_by_market(results, market_code):
     return [r for r in results if row_matches_market(r, market_code)]
@@ -40,6 +45,26 @@ def _filter_results_by_market(results, market_code):
 def _sector_from_search(search: str | None) -> str:
     sector = parse_qs((search or "").lstrip("?")).get("sector", [""])[0].strip()
     return sector[:100]
+
+
+def _screener_state_from_search(search: str | None) -> dict:
+    params = parse_qs((search or "").lstrip("?"))
+    valid_indexes = {item["value"] for item in US_INDEX_DEFINITIONS}
+    indexes = [value for value in params.get("index", []) if value in valid_indexes][:2]
+    try:
+        page = max(1, int(params.get("page", ["1"])[0]))
+    except (TypeError, ValueError):
+        page = 1
+    sort_col = params.get("sort", ["composite_score"])[0]
+    valid_sorts = {"symbol", "name", "sector", "market_cap", "composite_score", "graham_number", "buffett_iv", "updated_at"}
+    if sort_col not in valid_sorts:
+        sort_col = "composite_score"
+    return {
+        "indexes": indexes,
+        "sector": _sector_from_search(search),
+        "page": page,
+        "sort": {"col": sort_col, "asc": params.get("dir", ["desc"])[0] == "asc"},
+    }
 
 
 def _index_pill_buttons(selected_indices=None):
@@ -326,13 +351,16 @@ def reset_filters_for_market(pathname):
 @callback(
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
+    Output("screener-page-store", "data", allow_duplicate=True),
+    Output("screener-sort-store", "data", allow_duplicate=True),
     Input("url", "pathname"),
     Input("url", "search"),
     prevent_initial_call=True,
 )
 def apply_url_filters_compatibly(_pathname, search):
     """Keep pre-reload Dash pages valid while applying query filters."""
-    return [], _sector_from_search(search)
+    state = _screener_state_from_search(search)
+    return state["indexes"], state["sector"], state["page"], state["sort"]
 
 
 clientside_callback(
@@ -345,6 +373,36 @@ clientside_callback(
     Output("sector-filter", "value"),
     Input("url", "search"),
     prevent_initial_call=False,
+)
+
+
+clientside_callback(
+    """
+    function(indexes, sector, page, sortState) {
+        var url = new URL(window.location.href);
+        url.searchParams.delete('index');
+        (indexes || []).slice(0, 2).forEach(function(value) {
+            url.searchParams.append('index', value);
+        });
+        if (sector) url.searchParams.set('sector', sector);
+        else url.searchParams.delete('sector');
+        if ((page || 1) > 1) url.searchParams.set('page', String(page));
+        else url.searchParams.delete('page');
+        var state = sortState || {};
+        if (state.col && state.col !== 'composite_score') url.searchParams.set('sort', state.col);
+        else url.searchParams.delete('sort');
+        if (state.asc) url.searchParams.set('dir', 'asc');
+        else url.searchParams.delete('dir');
+        history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+        return url.search;
+    }
+    """,
+    Output("screener-url-state-sink", "children"),
+    Input("index-filter", "data"),
+    Input("sector-filter", "value"),
+    Input("screener-page-store", "data"),
+    Input("screener-sort-store", "data"),
+    prevent_initial_call=True,
 )
 
 
@@ -380,12 +438,23 @@ def render_index_filter_pills(selected_indices):
     Output("index-filter", "data", allow_duplicate=True),
     Output("sector-filter", "value", allow_duplicate=True),
     Input("screener-reset-filters", "n_clicks"),
+    Input("screener-clear-all-btn", "n_clicks"),
     prevent_initial_call=True,
 )
-def clear_screener_filters(n_clicks):
-    if not n_clicks:
+def clear_screener_filters(empty_state_clicks, toolbar_clicks):
+    if not empty_state_clicks and not toolbar_clicks:
         return dash.no_update, dash.no_update
     return [], ""
+
+
+@callback(
+    Output("screener-filter-summary", "children"),
+    Input("index-filter", "data"),
+    Input("sector-filter", "value"),
+)
+def summarize_screener_filters(selected_indices, sector):
+    count = len(selected_indices or []) + bool(sector)
+    return f"Filters ({count} active)"
 
 
 @callback(
@@ -495,10 +564,12 @@ def update_progress_bar(n):
     Input("sector-filter",         "value"),
     Input("screener-sort-store",   "data"),
     Input("screener-page-store",   "data"),
+    Input("screener-visible-columns", "value"),
+    Input("screener-table-density", "value"),
     State("screener-viewed-store", "data"),
     prevent_initial_call=True
 )
-def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, viewed_data):
+def render_screener_table(ready, pathname, n_load, selected_indices, sector_filter, sort_state, page_num, visible_columns, density, viewed_data):
     started_at = _time.perf_counter()
     triggered_id = dash.ctx.triggered_id
     active_market = market_from_path(pathname)
@@ -597,20 +668,24 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
             )
         except Exception:
             pass
+    visible = set(visible_columns or SCREENER_DEFAULT_COLUMNS)
+    visible.add("ticker")
     SORT_COLS = [
-        ("#",           None,               None),
-        ("Ticker",      "symbol",           "Stock ticker symbol. Click to run full analysis."),
-        ("Company",     "name",             "Company name."),
-        ("Sector",      "sector",           "Industry sector from SEC filings."),
-        ("Market Cap ↕","market_cap",       "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock."),
-        ("Composite ↕", "composite_score",  "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals."),
-        ("Fair Value ↕",  "graham_number",    "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock."),
-        ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock."),
-        ("Updated",     "updated_at",       "Date this stock was last fully analyzed."),
-        ("Verdict",     None,               "Investment verdict based on composite score: HIGH CONVICTION ≥75 · FAVORABLE ≥60 · BALANCED ≥45 · CAUTION ≥30 · UNFAVORABLE <30. * = fundamentals only (momentum not yet loaded)."),
+        ("#",           None,               None, "rank"),
+        ("Ticker",      "symbol",           "Stock ticker symbol. Click to run full analysis.", "ticker"),
+        ("Company",     "name",             "Company name.", "company"),
+        ("Sector",      "sector",           "Industry sector from SEC filings.", "sector"),
+        ("Market Cap ↕","market_cap",       "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock.", "market_cap"),
+        ("Composite ↕", "composite_score",  "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals.", "composite_score"),
+        ("Fair Value ↕",  "graham_number",    "Fair Value — intrinsic value estimate: √(22.5 × EPS × BVPS). Green = current price is below this number (margin of safety exists). Populated after running full analysis on a stock.", "graham_number"),
+        ("Economic Moat Rating ↕","buffett_iv",       "Economic Moat Rating — two-stage DCF on owner earnings (FCF/share or EPS) at 12% discount rate, 3% terminal growth. Green = current price is below IV. Populated after running full analysis on a stock.", "buffett_iv"),
+        ("Updated",     "updated_at",       "Date this stock was last fully analyzed.", "updated_at"),
+        ("Verdict",     None,               "Investment verdict based on composite score: HIGH CONVICTION ≥75 · FAVORABLE ≥60 · BALANCED ≥45 · CAUTION ≥30 · UNFAVORABLE <30. * = fundamentals only (momentum not yet loaded).", "verdict"),
     ]
     header_cells = []
-    for label, sort_key, tooltip in SORT_COLS:
+    for label, sort_key, tooltip, key in SORT_COLS:
+        if key != "rank" and key not in visible:
+            continue
         th_class = "ch" if tooltip else ""
         th_class = f"{th_class} table-tooltip" if tooltip else th_class
         if sort_key:
@@ -713,21 +788,25 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                                title="Run full analysis to calculate Intrinsic Value")
         row_class = "screener-row--portfolio" if in_port else "screener-row--viewed" if viewed else ""
         
-        rows.append(html.Tr(className=row_class, children=[
-            html.Td(str(i), className="rank-num"),
-            ticker_cell,
-            html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
-            html.Td(r["sector"][:18], className="text-xs text-muted",title=r["sector"]),
-            html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
-            html.Td(
+        row_cells = {
+            "rank": html.Td(str(i), className="rank-num"),
+            "ticker": ticker_cell,
+            "company": html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
+            "sector": html.Td(r["sector"][:18], className="text-xs text-muted",title=r["sector"]),
+            "market_cap": html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
+            "composite_score": html.Td(
                 html.Span(f"{r['composite_score']:.0f}", className=f"score-pill {get_score_class(r['composite_score'])}")
                 if r.get("analyzed")
                 else html.Span("—", className="score-pill")
             ),
-            gn_cell,
-            biv_cell,
-            html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
-            html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
+            "graham_number": gn_cell,
+            "buffett_iv": biv_cell,
+            "updated_at": html.Td(_fmt_updated(r.get("updated_at")), className="text-xs text-muted"),
+            "verdict": html.Td(html.Span(verdict, className=f"verdict-pill {get_verdict_class(verdict_label)}")),
+        }
+        rows.append(html.Tr(className=row_class, children=[
+            row_cells[key] for key in ["rank", *SCREENER_DEFAULT_COLUMNS]
+            if key == "rank" or key in visible
         ]))
         # ── Accordion item (mobile) ─────────────────────────────────────
         acc_biv_color = (GREEN if (price and biv and price <= biv) else MUTED) if biv else MUTED
@@ -787,7 +866,8 @@ def render_screener_table(ready, pathname, n_load, selected_indices, sector_filt
                   " · * Verdict = fundamentals only — analyze individually to add Momentum",
                   className="text-muted"),
     ], className="fs-11 px-4 py-8 fsi")
-    table_component = table(className="screener-table", caption="Stock screener results", children=[
+    table_density = density if density in {"comfortable", "compact"} else "comfortable"
+    table_component = table(className=f"screener-table density-{table_density}", caption="Stock screener results", children=[
         html.Thead(html.Tr(children=header_cells)),
         html.Tbody(rows),
     ])

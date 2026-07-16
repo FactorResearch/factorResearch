@@ -1,69 +1,139 @@
 [
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "light",
     "tab": "screener",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "light",
     "tab": "analyze",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "light",
     "tab": "portfolio",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "light",
     "tab": "factor-lab",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "light",
     "tab": "pricing",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "dark",
     "tab": "screener",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "dark",
     "tab": "analyze",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "dark",
     "tab": "portfolio",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "dark",
     "tab": "factor-lab",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
+    "theme": "dark",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "light",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "light",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "light",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "light",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "light",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "dark",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "dark",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "dark",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
+    "theme": "dark",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "android-sized",
     "theme": "dark",
     "tab": "pricing",
     "overflow": 0,
@@ -140,126 +210,196 @@
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "light",
     "tab": "screener",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "light",
     "tab": "analyze",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "light",
     "tab": "portfolio",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "light",
     "tab": "factor-lab",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "light",
     "tab": "pricing",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "dark",
     "tab": "screener",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "dark",
     "tab": "analyze",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "dark",
     "tab": "portfolio",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "dark",
     "tab": "factor-lab",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "dark",
     "tab": "pricing",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "wide-desktop",
+    "theme": "light",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "light",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "light",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "light",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "light",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "dark",
+    "tab": "screener",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "dark",
+    "tab": "analyze",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "dark",
+    "tab": "portfolio",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "dark",
+    "tab": "factor-lab",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "wide-desktop",
+    "theme": "dark",
+    "tab": "pricing",
+    "overflow": 0,
+    "violations": []
+  },
+  {
+    "viewport": "iphone-sized",
     "theme": "system",
     "tab": "landing",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "system",
     "tab": "terms",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "system",
     "tab": "privacy",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "desktop",
+    "viewport": "iphone-sized",
     "theme": "system",
     "tab": "error-state",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "system",
     "tab": "landing",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "system",
     "tab": "terms",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "system",
     "tab": "privacy",
     "overflow": 0,
     "violations": []
   },
   {
-    "viewport": "mobile",
+    "viewport": "laptop",
     "theme": "system",
     "tab": "error-state",
     "overflow": 0,

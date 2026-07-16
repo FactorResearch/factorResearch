@@ -5,11 +5,12 @@
 
 ## Automated Contract
 
-- Firefox audits Screener, Analyze, Portfolio, Factor Lab, Pricing, landing, legal, and error-state surfaces at desktop, tablet, and mobile widths.
+- Firefox audits Screener, Analyze, Portfolio, Factor Lab, Pricing, landing, legal, and error-state surfaces using iPhone-sized (320px), Android-sized, tablet, laptop, and wide-desktop profiles.
 - Every route/width is tested in light and dark themes against WCAG 2.0, 2.1, and 2.2 A/AA axe rules.
 - Horizontal document overflow fails the audit, including a 200% mobile scenario.
 - The audit verifies a reduced-motion media rule exists.
 - Shared runtime checks require skip navigation, scoped table headers, named buttons, and text equivalents for every rendered Plotly chart.
+- Responsive workflow contracts cover sticky financial identifiers, configurable table columns and density, mobile filter disclosure, URL-backed Screener state, safe-area insets, touch chart values, and Factor Lab numeric/reset controls.
 - Authentication failures use the same structured, focusable error-page contract and never reflect provider details.
 - Machine-readable output is retained as `accessibility-audit-results.json`; a nonzero exit blocks certification.
 

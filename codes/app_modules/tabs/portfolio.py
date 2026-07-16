@@ -534,9 +534,10 @@ def render_portfolio_holdings(active, refresh):
                 html.Tbody(rows),
             ],
             label=f"{active} portfolio holdings",
+            sticky_identifier=True,
+            className="portfolio-table",
         )
-        table.className = "ds-table-wrap portfolio-table-wrap"
-        table.children.className = "ds-table portfolio-table"
+        table.className = "ds-table-wrap has-sticky-identifier portfolio-table-wrap"
         # ── Action buttons ──
         ready = count >= 10
         actions = mobile_action_bar(

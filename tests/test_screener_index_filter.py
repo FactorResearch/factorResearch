@@ -88,6 +88,8 @@ def test_render_screener_table_filters_by_index(monkeypatch):
         "",
         {"col": "composite_score", "asc": False},
         1,
+        screener_tab.SCREENER_DEFAULT_COLUMNS,
+        "comfortable",
         [],
     )
 
@@ -131,6 +133,8 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
         "",
         {"col": "composite_score", "asc": False},
         1,
+        screener_tab.SCREENER_DEFAULT_COLUMNS,
+        "comfortable",
         [],
     )
 
@@ -155,10 +159,12 @@ def test_canada_route_rerenders_on_repeated_requests(monkeypatch):
     monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
 
     first, _sector_options, _page_reset = screener_tab.render_screener_table(
-        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1,
+        screener_tab.SCREENER_DEFAULT_COLUMNS, "comfortable", []
     )
     second, _sector_options, _page_reset = screener_tab.render_screener_table(
-        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1,
+        screener_tab.SCREENER_DEFAULT_COLUMNS, "comfortable", []
     )
 
     assert "AAPL" in str(first)
