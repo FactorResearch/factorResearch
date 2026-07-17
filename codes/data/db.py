@@ -1436,6 +1436,8 @@ VALUES (%(user_id)s, %(settings_json)s::jsonb, NOW())
 ON CONFLICT (user_id) DO UPDATE SET
     settings_json = excluded.settings_json,
     updated_at = NOW()
+WHERE COALESCE((user_settings.settings_json #>> '{_sync,version}')::integer, 0)
+    = %(expected_version)s
 RETURNING settings_json
 """
 _SELECT_USAGE = """
@@ -1593,9 +1595,14 @@ def upsert_user_settings(user_id: str, settings: dict) -> dict:
             {
                 "user_id": user_id,
                 "settings_json": json.dumps(settings, default=str),
+                "expected_version": max(
+                    0, int((settings.get("_sync") or {}).get("version") or 1) - 1
+                ),
             },
         ).fetchone()
-    return dict(row.get("settings_json") or {}) if row else {}
+    if not row:
+        raise RuntimeError("User settings version conflict; reload before retrying.")
+    return dict(row.get("settings_json") or {})
 
 
 def get_usage(user_id: str, feature_name: str) -> dict:

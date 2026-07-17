@@ -66,6 +66,10 @@ def _normalize_saved_screener(item: dict) -> dict | None:
         "sector": sector,
         "indexes": indexes,
         "saved_at": saved_at,
+        "created_at": str(item.get("created_at") or saved_at),
+        "updated_at": str(item.get("updated_at") or saved_at),
+        "version": max(1, int(item.get("version") or 1)),
+        "deleted_at": item.get("deleted_at"),
     }
 
 
@@ -86,14 +90,38 @@ def normalize_user_settings(settings: dict | None) -> dict:
     return raw
 
 
-def get_user_settings(user_id: str) -> dict:
+def get_user_settings(
+    user_id: str, *, include_deleted: bool = False, changed_since: str | None = None
+) -> dict:
+    settings = normalize_user_settings(db.get_user_settings(user_id))
+    settings["saved_screeners"] = [
+        item
+        for item in settings["saved_screeners"]
+        if (
+            (include_deleted or not item.get("deleted_at"))
+            and (not changed_since or item["updated_at"] > changed_since)
+        )
+    ]
+    return settings
+
+
+def _stored_user_settings(user_id: str) -> dict:
     return normalize_user_settings(db.get_user_settings(user_id))
 
 
 def update_user_settings(user_id: str, patch: dict) -> dict:
-    merged = normalize_user_settings(_deep_merge(get_user_settings(user_id), patch or {}))
+    current = _stored_user_settings(user_id)
+    merged = normalize_user_settings(_deep_merge(current, patch or {}))
+    now = datetime.now(UTC).isoformat()
+    sync = dict(current.get("_sync") or {})
+    merged["_sync"] = {
+        "created_at": sync.get("created_at") or now,
+        "updated_at": now,
+        "version": int(sync.get("version") or 0) + 1,
+        "deleted_at": sync.get("deleted_at"),
+    }
     db.upsert_user_settings(user_id, merged)
-    return merged
+    return get_user_settings(user_id)
 
 
 def set_theme(user_id: str, theme: str | None) -> dict:
@@ -115,7 +143,7 @@ def set_notifications(user_id: str, selected: list[str] | None) -> dict:
 
 
 def add_saved_screener(user_id: str, *, name: str, market: str, sector: str, indexes: list[str] | None) -> dict:
-    current = get_user_settings(user_id)
+    current = _stored_user_settings(user_id)
     new_item = _normalize_saved_screener(
         {
             "id": uuid.uuid4().hex,
@@ -134,6 +162,11 @@ def add_saved_screener(user_id: str, *, name: str, market: str, sector: str, ind
 
 def delete_saved_screener(user_id: str, screener_id: str | None) -> dict:
     target = str(screener_id or "").strip()
-    current = get_user_settings(user_id)
-    remaining = [item for item in current["saved_screeners"] if item["id"] != target]
-    return update_user_settings(user_id, {"saved_screeners": remaining})
+    current = _stored_user_settings(user_id)
+    now = datetime.now(UTC).isoformat()
+    screeners = []
+    for item in current["saved_screeners"]:
+        if item["id"] == target and not item.get("deleted_at"):
+            item = {**item, "deleted_at": now, "updated_at": now, "version": item["version"] + 1}
+        screeners.append(item)
+    return update_user_settings(user_id, {"saved_screeners": screeners})

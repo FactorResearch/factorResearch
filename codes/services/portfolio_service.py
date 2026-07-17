@@ -26,12 +26,20 @@ def load_portfolio(user_id: str, name: str) -> dict | None:
     return _portfolio.load_portfolio(user_id, name)
 
 
-def save_portfolio(user_id: str, portfolio: dict) -> None:
-    _portfolio.save_portfolio(user_id, portfolio)
+def save_portfolio(user_id: str, portfolio: dict, *, expected_version: int | None = None) -> None:
+    _portfolio.save_portfolio(user_id, portfolio, expected_version=expected_version)
 
 
 def delete_portfolio(user_id: str, name: str) -> None:
     _portfolio.delete_portfolio(user_id, name)
+
+
+def list_portfolio_changes(user_id: str, since: str | None = None) -> list[dict]:
+    return _portfolio.list_portfolio_changes(user_id, since)
+
+
+def restore_portfolio(user_id: str, portfolio_id: str, *, expected_version: int) -> dict:
+    return _portfolio.restore_portfolio(user_id, portfolio_id, expected_version=expected_version)
 
 
 def add_holding(
@@ -42,9 +50,7 @@ def add_holding(
     price: float,
     company: str = "",
 ) -> tuple[dict, str | None]:
-    return _portfolio.add_holding(
-        user_id, portfolio_name, symbol, shares, price, company
-    )
+    return _portfolio.add_holding(user_id, portfolio_name, symbol, shares, price, company)
 
 
 def remove_holding(user_id: str, portfolio_name: str, symbol: str):

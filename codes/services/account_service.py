@@ -23,20 +23,41 @@ def auth_provider() -> str:
     return auth.AUTH_PROVIDER or ("developer session" if persona else "session")
 
 
-def portfolio_summaries(user_id: str) -> list[dict]:
-    return [response.to_dict() for response in portfolio_responses(user_id)]
+def portfolio_summaries(
+    user_id: str, *, include_deleted: bool = False, changed_since: str | None = None
+) -> list[dict]:
+    return [
+        response.to_dict()
+        for response in portfolio_responses(
+            user_id, include_deleted=include_deleted, changed_since=changed_since
+        )
+    ]
 
 
-def portfolio_responses(user_id: str) -> list[PortfolioResponse]:
+def portfolio_responses(
+    user_id: str, *, include_deleted: bool = False, changed_since: str | None = None
+) -> list[PortfolioResponse]:
     responses = []
-    for name in portfolio_service.list_portfolios(user_id) or []:
-        portfolio = portfolio_service.load_portfolio(user_id, name) or {}
+    if include_deleted or changed_since:
+        portfolios = portfolio_service.list_portfolio_changes(user_id, changed_since)
+    else:
+        portfolios = [
+            {**(portfolio_service.load_portfolio(user_id, name) or {}), "name": name}
+            for name in portfolio_service.list_portfolios(user_id) or []
+        ]
+    for portfolio in portfolios:
+        if portfolio.get("deleted_at") and not include_deleted:
+            continue
         responses.append(
             PortfolioResponse.from_mapping(
                 {
                     "id": portfolio.get("id", ""),
-                    "name": name,
+                    "name": portfolio.get("name", ""),
                     "holdings": len(portfolio.get("holdings", {})),
+                    "created_at": portfolio.get("created_at"),
+                    "updated_at": portfolio.get("updated_at"),
+                    "version": portfolio.get("version"),
+                    "deleted_at": portfolio.get("deleted_at"),
                 }
             )
         )

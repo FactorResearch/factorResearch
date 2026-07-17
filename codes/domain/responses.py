@@ -310,6 +310,10 @@ class PortfolioResponse:
     id: str
     name: str
     holdings: int
+    created_at: str | None = None
+    updated_at: str | None = None
+    version: int = 0
+    deleted_at: str | None = None
 
     @classmethod
     def from_mapping(cls, raw: Mapping[str, Any]) -> PortfolioResponse:
@@ -317,12 +321,25 @@ class PortfolioResponse:
             id=str(raw.get("id") or ""),
             name=str(raw.get("name") or ""),
             holdings=max(0, int(raw.get("holdings") or 0)),
+            created_at=_string_or_none(raw.get("created_at")),
+            updated_at=_string_or_none(raw.get("updated_at")),
+            version=max(0, int(raw.get("version") or 0)),
+            deleted_at=_string_or_none(raw.get("deleted_at")),
         )
 
     def to_dict(self) -> dict[str, JsonValue]:
         result: dict[str, JsonValue] = {"name": self.name, "holdings": self.holdings}
         if self.id:
             result["id"] = self.id
+        if self.created_at:
+            result.update(
+                {
+                    "created_at": self.created_at,
+                    "updated_at": self.updated_at,
+                    "version": self.version,
+                    "deleted_at": self.deleted_at,
+                }
+            )
         return result
 
 
@@ -351,6 +368,8 @@ class UserResponse:
                 "security_alerts": bool(notifications.get("security_alerts")),
             },
         }
+        if isinstance(settings.get("_sync"), Mapping):
+            safe_settings["_sync"] = _semantic_copy(settings["_sync"])
         return cls(
             display_name=str(raw.get("display_name") or ""),
             auth_provider=str(raw.get("auth_provider") or "session"),

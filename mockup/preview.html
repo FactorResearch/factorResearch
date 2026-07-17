@@ -1,0 +1,1546 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cenvarn responsive financial research product UI reference for Screener, Analyze, Portfolio, and Factor Lab.">
+  <meta name="theme-color" content="#0e1829">
+  <title>Cenvarn Research UI Prototype</title>
+  <style>
+:root {
+  --cenvarn-midnight: #0e1829;
+  --cenvarn-gold: #b18a54;
+  --cenvarn-charcoal: #343435;
+  --cenvarn-silver: #d9d8d6;
+  --cenvarn-warm-white: #f3f2f1;
+  --utility-white: #ffffff;
+
+  --canvas: var(--cenvarn-warm-white);
+  --surface: var(--utility-white);
+  --surface-2: #eceae7;
+  --surface-3: #e4e1dd;
+  --text: var(--cenvarn-midnight);
+  --muted: #66696e;
+  --line: var(--cenvarn-silver);
+  --line-strong: #b9b7b4;
+  --brand: var(--cenvarn-midnight);
+  --brand-strong: #08111f;
+  --accent: var(--cenvarn-gold);
+  --accent-soft: #eee5d8;
+  --success: #1f7451;
+  --success-soft: #e3f0e9;
+  --warning: #9a6513;
+  --warning-soft: #f7ead0;
+  --danger: #b83f48;
+  --danger-soft: #f6e4e6;
+  --info: #315d91;
+  --info-soft: #e2eaf3;
+  --shadow-card: 0 1px 0 rgba(14,24,41,.04), 0 8px 24px rgba(14,24,41,.045);
+  --shadow-float: 0 18px 42px rgba(14,24,41,.14);
+  --radius: 4px;
+  --radius-sm: 2px;
+  --rail: 244px;
+  --topbar: 64px;
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html[data-theme="dark"] {
+  --canvas: var(--cenvarn-midnight);
+  --surface: #151f2f;
+  --surface-2: #1a2535;
+  --surface-3: #222d3d;
+  --text: var(--cenvarn-warm-white);
+  --muted: #b9bab9;
+  --line: #334052;
+  --line-strong: #4b5869;
+  --brand: var(--cenvarn-warm-white);
+  --brand-strong: #ffffff;
+  --accent-soft: #342d25;
+  --success: #71c99e;
+  --success-soft: #17352b;
+  --warning: #e1b765;
+  --warning-soft: #3a2e1b;
+  --danger: #ef838a;
+  --danger-soft: #3d2027;
+  --info: #83aee0;
+  --info-soft: #1b3047;
+  --shadow-card: 0 1px 0 rgba(255,255,255,.025), 0 10px 28px rgba(0,0,0,.18);
+  --shadow-float: 0 18px 42px rgba(0,0,0,.34);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--canvas); }
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--canvas) 95%, var(--accent) 5%), var(--canvas) 320px);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+button, input, select { font: inherit; }
+button { color: inherit; }
+button, a, input, select { -webkit-tap-highlight-color: transparent; }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.rail {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 18px;
+  background: var(--cenvarn-midnight);
+  color: var(--cenvarn-warm-white);
+  border-right: 1px solid rgba(255,255,255,.08);
+}
+
+.brand,
+.mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.brand {
+  padding: 0 8px 25px;
+}
+
+.brand-wordmark {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.brand-wordmark strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .22em;
+  line-height: 1;
+}
+
+.brand-wordmark small {
+  color: var(--cenvarn-gold);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.brand-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.brand-mark .compass-accent {
+  fill: var(--cenvarn-gold);
+  stroke: var(--cenvarn-gold);
+}
+
+.sidebar-analyze {
+  margin: 0 2px 20px;
+  padding: 13px;
+  display: grid;
+  gap: 8px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: var(--radius);
+}
+
+.sidebar-analyze > label {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.sidebar-analyze > small {
+  color: rgba(243,242,241,.58);
+  font-size: 10px;
+}
+
+.sidebar-analyze-control {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding-left: 10px;
+  color: rgba(243,242,241,.55);
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--radius-sm);
+}
+
+.sidebar-analyze-control:focus-within {
+  border-color: var(--cenvarn-gold);
+  box-shadow: 0 0 0 2px rgba(177,138,84,.24);
+}
+
+.sidebar-analyze-control input {
+  min-width: 0;
+  width: 100%;
+  height: 38px;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-analyze-control input::placeholder { color: rgba(243,242,241,.45); }
+
+.sidebar-analyze-control button,
+.mobile-analyze button {
+  align-self: stretch;
+  padding: 0 11px;
+  border: 0;
+  border-left: 1px solid currentColor;
+  background: transparent;
+  color: var(--cenvarn-gold);
+  cursor: pointer;
+}
+
+.rail-nav {
+  display: grid;
+  gap: 4px;
+}
+
+.nav-item,
+.profile,
+.bottom-nav button {
+  border: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.nav-item {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 11px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(243,242,241,.66);
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.nav-item > span:first-child {
+  width: 20px;
+  color: rgba(243,242,241,.52);
+  text-align: center;
+}
+
+.nav-item:hover {
+  color: #fff;
+  background: rgba(255,255,255,.045);
+}
+
+.nav-item.active {
+  color: #fff;
+  background: linear-gradient(90deg, rgba(177,138,84,.18), rgba(177,138,84,.045));
+  border-left-color: var(--cenvarn-gold);
+}
+
+.nav-item.active > span:first-child { color: var(--cenvarn-gold); }
+
+.rail-footer {
+  margin-top: auto;
+  display: grid;
+  gap: 8px;
+}
+
+.profile {
+  width: 100%;
+  padding: 13px 9px 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  text-align: left;
+}
+
+.profile span:last-child { display: grid; }
+.profile small { color: rgba(243,242,241,.55); }
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--cenvarn-midnight);
+  background: var(--cenvarn-gold);
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.workspace { min-width: 0; }
+
+.topbar {
+  height: var(--topbar);
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 28px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+}
+
+.mobile-brand,
+.mobile-analyze { display: none; }
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.market-stamp {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+main {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 30px;
+}
+
+.page { display: none; }
+.page.active { display: block; animation: page-in 250ms ease both; }
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-heading {
+  margin-bottom: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.page-heading h1 {
+  margin: 2px 0 6px;
+  color: var(--text);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.035em;
+}
+
+.page-heading p { margin: 0; color: var(--muted); }
+
+.eyebrow {
+  color: var(--accent) !important;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.primary-btn,
+.secondary-btn,
+.outline-primary {
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.primary-btn {
+  color: var(--cenvarn-warm-white);
+  background: var(--cenvarn-midnight);
+  border: 1px solid var(--cenvarn-midnight);
+}
+
+html[data-theme="dark"] .primary-btn {
+  color: var(--cenvarn-midnight);
+  background: var(--cenvarn-warm-white);
+  border-color: var(--cenvarn-warm-white);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.outline-primary:hover { transform: translateY(-1px); }
+
+.secondary-btn {
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+}
+
+.outline-primary {
+  color: var(--brand);
+  background: transparent;
+  border: 1px solid var(--brand);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.card:hover { border-color: color-mix(in srgb, var(--line) 65%, var(--accent) 35%); }
+
+.card-header {
+  padding: 17px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.card-header h2,
+.section-title h2,
+.data-card h2,
+.sentiment-card h2,
+.factor-breakdown h2,
+.chart-card h2,
+.comparison-card h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.card-header p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.table-card { overflow: hidden; }
+.responsive-table { overflow: auto; }
+
+table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  color: var(--muted);
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+
+tbody tr {
+  transition: background-color 150ms ease;
+}
+
+tbody tr:hover { background: color-mix(in srgb, var(--surface) 92%, var(--accent) 8%); }
+tbody tr:last-child td { border-bottom: 0; }
+
+.selected-row {
+  background: color-mix(in srgb, var(--surface) 88%, var(--accent) 12%);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.company {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo,
+.hero-logo {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+.logo { width: 30px; height: 30px; }
+.hero-logo { width: 50px; height: 50px; font-size: 20px; }
+
+.score-number,
+.overview-score > strong,
+.score-side > strong,
+.hero-score strong {
+  color: var(--brand);
+}
+
+.score-number {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.positive { color: var(--success) !important; }
+.negative { color: var(--danger) !important; }
+.warning-text { color: var(--warning) !important; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge.neutral { color: var(--muted); background: var(--surface-3); }
+.positive-bg { color: var(--success); background: var(--success-soft); }
+.danger-bg { color: var(--danger); background: var(--danger-soft); }
+
+.spark {
+  display: block;
+  width: 55px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.spark.up {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 20'%3E%3Cpath d='M1 17L12 13l9 2 10-8 10 3 18-9' fill='none' stroke='%231f7451' stroke-width='2'/%3E%3C/svg%3E");
+}
+.spark.flat {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 20'%3E%3Cpath d='M1 12L12 11l9 2 10-2 10 1 18-2' fill='none' stroke='%239a6513' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+.table-footer {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination button,
+.score-title button {
+  min-height: 34px;
+  padding: 0 10px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.pagination button.active {
+  color: var(--cenvarn-midnight);
+  background: var(--cenvarn-gold);
+  border-color: var(--cenvarn-gold);
+}
+
+.screener-reference { padding-top: 8px; }
+.screener-table-card table { min-width: 980px; }
+.screener-table-card th,
+.screener-table-card td { padding: 16px 18px; }
+
+.screener-detail-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1.28fr;
+  gap: 16px;
+}
+
+.section-title {
+  min-height: 54px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-index {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  color: var(--cenvarn-midnight);
+  background: var(--cenvarn-gold);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.quick-overview-body {
+  display: grid;
+  grid-template-columns: 1.1fr .65fr 1.35fr;
+  padding: 20px;
+}
+
+.quick-overview-body > div {
+  padding: 0 14px;
+  border-right: 1px solid var(--line);
+}
+
+.quick-overview-body > div:last-child { border-right: 0; }
+
+.overview-score,
+.overview-verdict {
+  display: grid;
+  align-content: start;
+  gap: 15px;
+}
+
+.overview-score > span,
+.overview-verdict > span,
+.overview-signals > span,
+.score-side > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.overview-score > strong,
+.score-side > strong {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.overview-score small,
+.score-side small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.overview-verdict strong { font-size: 20px; }
+.mini-divider { height: 1px; background: var(--line); }
+
+.overview-values {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.overview-values div { display: grid; gap: 6px; }
+.overview-values small { color: var(--muted); font-size: 10px; }
+
+.overview-signals {
+  display: grid;
+  gap: 11px;
+}
+
+.overview-signals ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.overview-signals li { font-size: 12px; }
+.overview-signals p { margin: 4px 0; font-size: 12px; }
+
+.score-title button {
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.score-development-body {
+  display: grid;
+  grid-template-columns: 130px 1fr 210px;
+  gap: 18px;
+  padding: 20px;
+}
+
+.score-side {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding-right: 15px;
+  border-right: 1px solid var(--line);
+}
+
+.delta-box {
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+  background: var(--surface-2);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.delta-box strong { font-size: 19px; }
+.delta-box small { color: var(--muted); }
+
+.score-line-chart { width: 100%; height: 245px; }
+.gridline { stroke: var(--line); stroke-width: 1; }
+.axis { fill: none; stroke: var(--line-strong); }
+.line { fill: none; stroke: var(--brand); stroke-width: 2.5; }
+.line.blue { stroke: var(--brand); }
+.line.green { stroke: var(--success); }
+.line.purple { stroke: #7f689d; }
+.line.yellow { stroke: var(--accent); }
+.chart-dot { fill: var(--accent); stroke: var(--surface); stroke-width: 3; }
+.fan, .area { fill: var(--accent-soft); }
+
+.score-explainer {
+  display: grid;
+  align-content: start;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.score-explainer a,
+.text-btn {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.analysis-toolbar {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.breadcrumbs {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.breadcrumbs span { padding: 0 8px; color: var(--accent); }
+
+.company-hero-card {
+  margin-bottom: 14px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 1.4fr .65fr .8fr;
+  align-items: center;
+  border-top: 2px solid var(--accent);
+}
+
+.company-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.company-hero-card h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+}
+
+.company-hero-card h1 span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .03em;
+}
+
+.company-title p { margin: 0; color: var(--muted); }
+
+.hero-price {
+  display: grid;
+  justify-items: end;
+  padding-right: 24px;
+}
+
+.hero-price strong { font-size: 28px; }
+.hero-price small { margin-top: 8px; color: var(--muted); }
+
+.hero-score {
+  padding-left: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  border-left: 1px solid var(--line);
+}
+
+.hero-score > span:first-child {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.hero-score strong { font-size: 28px; }
+.hero-score strong small { color: var(--muted); font-size: 11px; }
+.hero-score .spark { grid-row: 2 / 4; grid-column: 2; }
+
+.analysis-metric-strip {
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.metric {
+  min-height: 98px;
+  padding: 16px;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+}
+
+.metric > span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.metric strong {
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+
+.metric strong small { font-size: 11px; color: var(--muted); }
+.metric > small { color: var(--muted); }
+
+.analysis-metric-strip .metric { text-align: center; }
+.analysis-metric-strip .metric strong { font-size: 20px; }
+
+.highlights-bar {
+  margin-bottom: 12px;
+  padding: 13px 18px;
+  display: grid;
+  grid-template-columns: 1.2fr repeat(6, 1fr);
+  align-items: center;
+  font-size: 10px;
+  border-left: 3px solid var(--accent);
+}
+
+.highlights-bar span {
+  padding: 0 12px;
+  text-align: center;
+  border-left: 1px solid var(--line);
+}
+
+.analysis-data-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.data-card { padding: 15px; }
+.data-card h2,
+.sentiment-card h2,
+.factor-breakdown h2,
+.chart-card h2,
+.comparison-card h2 { font-size: 15px; }
+
+.data-card h3 {
+  margin: 14px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.data-card dl,
+.sentiment-card dl { margin: 0; }
+
+.data-card dl div,
+.sentiment-card dl div {
+  padding: 7px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.data-card dt,
+.sentiment-card dt { color: var(--muted); }
+
+.data-card dd,
+.sentiment-card dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.analysis-middle-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 12px;
+}
+
+.sentiment-card { padding: 0 14px 14px; }
+.sentiment-card .card-header { padding: 13px 0; }
+
+.sentiment-meter {
+  height: 8px;
+  margin: 14px 0 8px;
+  background: linear-gradient(90deg, var(--success) 0 62%, var(--line-strong) 62% 82%, var(--danger) 82%);
+  border-radius: 999px;
+}
+
+.sentiment-labels {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+}
+
+.factor-breakdown { padding: 14px; }
+
+.model-cards {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.model-cards > div {
+  min-width: 0;
+  padding: 11px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.model-cards small { color: var(--muted); }
+.model-cards strong { font-size: 18px; }
+.model-cards span { font-size: 10px; }
+
+.model-cards ul {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 5px;
+  font-size: 9px;
+  list-style: none;
+}
+
+.model-cards li::before {
+  content: "•";
+  margin-right: 5px;
+  color: var(--accent);
+}
+
+.model-cards footer {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  font-size: 8px;
+}
+
+.analysis-chart-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.chart-card,
+.comparison-card { padding: 14px; }
+
+.chart {
+  display: block;
+  width: 100%;
+  height: 220px;
+  padding: 8px;
+}
+
+.chart.tall { height: 300px; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.bar-row {
+  margin: 18px 0;
+  display: grid;
+  grid-template-columns: 70px 1fr 75px;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+}
+
+.bar-row > div { height: 10px; background: var(--surface-3); }
+.bar-row i { display: block; height: 100%; background: var(--accent); }
+.bar-row b { font-weight: 500; }
+
+.apple-logo { color: var(--text); background: var(--surface); }
+.microsoft-logo {
+  color: transparent;
+  background:
+    linear-gradient(90deg,#f35325 0 48%,transparent 48% 52%,#81bc06 52%),
+    linear-gradient(90deg,#05a6f0 0 48%,transparent 48% 52%,#ffba08 52%);
+}
+.nvidia-logo { color: #111; background: #76b900; }
+.berkshire-logo { color: #315d91; font-family: Georgia, serif; font-size: 23px; }
+.jpm-logo { font-size: 8px; }
+
+.metric-strip {
+  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+}
+
+.span-2 { grid-column: span 2; }
+
+.donut {
+  padding: 22px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.donut-ring {
+  width: 110px;
+  aspect-ratio: 1;
+  position: relative;
+  background: conic-gradient(var(--brand) 0 42%, var(--accent) 42% 63%, var(--info) 63% 81%, var(--surface-3) 81%);
+  border-radius: 50%;
+}
+
+.donut-ring::after {
+  content: "";
+  position: absolute;
+  inset: 23px;
+  background: var(--surface);
+  border-radius: 50%;
+}
+
+.donut ul {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  list-style: none;
+}
+
+.donut li span {
+  width: 8px;
+  height: 8px;
+  margin-right: 7px;
+  display: inline-block;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.weak-link {
+  padding: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.weak-link p { color: var(--muted); }
+.text-btn { padding: 0; background: transparent; border: 0; cursor: pointer; }
+
+.lab-toolbar {
+  margin-bottom: 18px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(140px,1fr)) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.lab-toolbar label { display: grid; gap: 6px; }
+.lab-toolbar label span { color: var(--muted); font-size: 11px; font-weight: 500; }
+
+.lab-toolbar select {
+  height: 40px;
+  padding: 0 10px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.total-weight {
+  align-self: center;
+  display: grid;
+  text-align: right;
+}
+
+.total-weight span { color: var(--muted); font-size: 11px; }
+.total-weight strong { color: var(--accent); font-size: 20px; }
+
+.factor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 14px;
+}
+
+.factor-card {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  border-top: 2px solid transparent;
+}
+
+.factor-card:hover { border-top-color: var(--accent); }
+.factor-card div { display: grid; }
+.factor-card small { color: var(--muted); }
+.factor-card output { color: var(--accent); font-weight: 700; }
+
+.factor-card input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--cenvarn-gold);
+}
+
+.bottom-nav { display: none; }
+
+@media (max-width: 1180px) {
+  :root { --rail: 86px; }
+  .brand-wordmark,
+  .nav-item span:last-child,
+  .profile span:last-child,
+  .sidebar-analyze > label,
+  .sidebar-analyze > small { display: none; }
+  .brand { justify-content: center; padding-inline: 0; }
+  .sidebar-analyze { padding: 7px; }
+  .sidebar-analyze-control {
+    grid-template-columns: 1fr;
+    padding: 0;
+    justify-items: center;
+  }
+  .sidebar-analyze-control > span,
+  .sidebar-analyze-control input { display: none; }
+  .sidebar-analyze-control button {
+    width: 100%;
+    min-height: 38px;
+    border: 0;
+  }
+  .nav-item { justify-content: center; border-left: 0; border-bottom: 2px solid transparent; border-radius: var(--radius); }
+  .nav-item.active { border-left-color: transparent; border-bottom-color: var(--cenvarn-gold); }
+  .profile { justify-content: center; }
+  .market-stamp { display: none; }
+  .screener-detail-grid,
+  .analysis-chart-grid { grid-template-columns: 1fr; }
+  .analysis-metric-strip { grid-template-columns: repeat(4,1fr); }
+  .analysis-data-grid { grid-template-columns: repeat(2,1fr); }
+  .analysis-middle-grid { grid-template-columns: 1fr; }
+  .model-cards { grid-template-columns: repeat(3,1fr); }
+  .metric-strip { grid-template-columns: repeat(2,1fr); }
+  .factor-grid { grid-template-columns: repeat(2,1fr); }
+  .content-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+
+@media (max-width: 760px) {
+  :root { --topbar: auto; }
+  body { font-size: 14px; }
+  .app-shell { display: block; }
+  .rail { display: none; }
+  .topbar {
+    min-height: 60px;
+    padding: 10px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+  .mobile-brand { display: flex; }
+  .mobile-brand .brand-wordmark small { display: none; }
+  .mobile-brand .brand-wordmark strong { color: var(--text); }
+  .mobile-brand .brand-mark { width: 30px; height: 30px; flex-basis: 30px; color: var(--text); }
+  .top-actions { justify-self: end; }
+  .mobile-analyze {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 42px;
+    padding-left: 10px;
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr) auto;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .mobile-analyze input {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+    outline: 0;
+    text-transform: uppercase;
+  }
+  main { padding: 18px 14px 88px; }
+  .page-heading,
+  .analysis-toolbar,
+  .company-hero-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 14px;
+  }
+  .page-heading h1 { font-size: 28px; }
+  .button-row { width: 100%; }
+  .button-row button { flex: 1; }
+  .company-hero-card h1 { font-size: 24px; }
+  .hero-price { justify-items: start; padding: 0; }
+  .hero-score {
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+  .quick-overview-body,
+  .score-development-body { grid-template-columns: 1fr; }
+  .quick-overview-body > div,
+  .score-side {
+    padding: 14px 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .overview-values { grid-template-columns: repeat(3,1fr); }
+  .analysis-metric-strip { grid-template-columns: repeat(2,1fr); }
+  .highlights-bar { grid-template-columns: 1fr 1fr; }
+  .highlights-bar strong { grid-column: 1 / -1; padding-bottom: 8px; }
+  .highlights-bar span { padding: 8px; }
+  .analysis-data-grid,
+  .analysis-chart-grid,
+  .factor-grid,
+  .content-grid { grid-template-columns: 1fr; }
+  .model-cards { grid-template-columns: 1fr 1fr; }
+  .span-2,
+  .content-grid > .card:not(.span-2) { grid-column: span 1; }
+  .metric-strip { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .metric { padding: 14px; }
+  .metric strong { font-size: 20px; }
+  .lab-toolbar { grid-template-columns: 1fr 1fr; }
+  .total-weight { grid-column: span 2; }
+  .table-footer { align-items: flex-start; flex-direction: column; }
+  .pagination { width: 100%; overflow-x: auto; }
+  .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    height: 70px;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    background: color-mix(in srgb, var(--cenvarn-midnight) 96%, transparent);
+    border-top: 1px solid rgba(255,255,255,.12);
+    backdrop-filter: blur(16px);
+  }
+  .bottom-nav button {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 2px;
+    color: rgba(243,242,241,.58);
+  }
+  .bottom-nav button.active { color: var(--cenvarn-gold); }
+  .bottom-nav small { font-size: 10px; }
+}
+
+@media (max-width: 420px) {
+  .metric-strip,
+  .analysis-metric-strip,
+  .model-cards,
+  .highlights-bar,
+  .lab-toolbar { grid-template-columns: 1fr; }
+  .total-weight { grid-column: auto; text-align: left; }
+  .overview-values { grid-template-columns: 1fr; }
+  .mobile-brand .brand-wordmark strong { font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">
+  <svg viewBox="0 0 64 64" role="img">
+    <path d="M48.5 12.7A24 24 0 1 0 48.5 51.3" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="square"/>
+    <path d="M22 43 39.5 25.5 46 19l-6.5 6.5L22 43Z" fill="currentColor"/>
+    <path class="compass-accent" d="m39.5 25.5 8.8-8.8-2.3 10.5-6.5-1.7Z"/>
+  </svg>
+</span><span class="brand-wordmark"><strong>CENVARN</strong><small>Research intelligence</small></span></div>
+      <form class="sidebar-analyze" id="sidebarAnalyzeForm" role="search">
+        <label for="sidebarTicker">Analyze ticker</label>
+        <div class="sidebar-analyze-control">
+          <span aria-hidden="true">⌕</span>
+          <input id="sidebarTicker" name="ticker" autocomplete="off" spellcheck="false" placeholder="AAPL, MSFT..." aria-label="Analyze ticker from any page">
+          <button type="submit" aria-label="Open ticker analysis">↗</button>
+        </div>
+        <small>Search from any page</small>
+      </form>
+      <nav class="rail-nav">
+        <button data-page="screener" class="nav-item active"><span>⌕</span><span>Screener</span></button>
+        <button data-page="analyze" class="nav-item"><span>◫</span><span>Analyze</span></button>
+        <button data-page="portfolio" class="nav-item"><span>◈</span><span>Portfolio</span></button>
+        <button data-page="factorlab" class="nav-item"><span>⚙</span><span>Factor Lab</span></button>
+      </nav>
+      <div class="rail-footer">
+        <button class="nav-item"><span>?</span><span>Support</span></button>
+        <button class="profile"><span class="avatar">AM</span><span><strong>Amin</strong><small>Pro plan</small></span></button>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark" aria-hidden="true">
+  <svg viewBox="0 0 64 64" role="img">
+    <path d="M48.5 12.7A24 24 0 1 0 48.5 51.3" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="square"/>
+    <path d="M22 43 39.5 25.5 46 19l-6.5 6.5L22 43Z" fill="currentColor"/>
+    <path class="compass-accent" d="m39.5 25.5 8.8-8.8-2.3 10.5-6.5-1.7Z"/>
+  </svg>
+</span><span class="brand-wordmark"><strong>CENVARN</strong><small>Research intelligence</small></span></div>
+        <form class="mobile-analyze" id="mobileAnalyzeForm" role="search">
+          <span aria-hidden="true">⌕</span><input name="ticker" aria-label="Analyze ticker" placeholder="Analyze ticker..."><button type="submit" aria-label="Open ticker analysis">↗</button>
+        </form>
+        <div class="top-actions">
+          <span class="market-stamp">Market data as of May 16, 2025 9:30 AM ET</span>
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">◐</button>
+          <button class="icon-btn" aria-label="Notifications">◔</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="page-screener" class="page active reference-page screener-reference">
+          <section class="card table-card screener-table-card">
+            <div class="responsive-table">
+              <table>
+                <thead><tr><th>Company</th><th>Score ⓘ</th><th>Price</th><th>Valuation ⓘ</th><th>Quality ⓘ</th><th>Trend</th><th>Updated</th></tr></thead>
+                <tbody>
+                  <tr><td><div class="company"><span class="logo apple-logo">●</span><span><strong>Apple Inc. (AAPL)</strong></span></div></td><td><span class="score-number">82</span></td><td>$191.21</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                  <tr class="selected-row"><td><div class="company"><span class="logo microsoft-logo">▦</span><span><strong>Microsoft Corp. (MSFT)</strong></span></div></td><td><span class="score-number">78</span></td><td>$413.45</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                  <tr><td><div class="company"><span class="logo nvidia-logo">◉</span><span><strong>NVIDIA Corp. (NVDA)</strong></span></div></td><td><span class="score-number">75</span></td><td>$929.54</td><td><strong class="negative">Rich</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                  <tr><td><div class="company"><span class="logo berkshire-logo">B</span><span><strong>Berkshire Hathaway (BRK.B)</strong></span></div></td><td><span class="score-number">73</span></td><td>$507.80</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">Very High</span></td><td><span class="spark flat"></span></td><td>May 16, 2025</td></tr>
+                  <tr><td><div class="company"><span class="logo jpm-logo">JPM</span><span><strong>JPMorgan Chase (JPM)</strong></span></div></td><td><span class="score-number">70</span></td><td>$196.58</td><td><strong class="warning-text">Fair</strong></td><td><span class="positive">High</span></td><td><span class="spark up"></span></td><td>May 16, 2025</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer"><span>Showing 1 to 5 of 50 companies</span><div class="pagination"><button>20 per page⌄</button><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div>
+          </section>
+
+          <div class="screener-detail-grid">
+            <section class="card quick-overview-card">
+              <div class="section-title"><span class="section-index">A</span><h2>Quick Overview – Microsoft Corp. (MSFT)</h2></div>
+              <div class="quick-overview-body">
+                <div class="overview-score"><span>Factor Score</span><strong>78<small>/100</small></strong><div class="mini-divider"></div><div class="overview-values"><div><small>Industry Value</small><b>$470.00</b></div><div><small>vs. Current Price</small><b>$413.45</b></div><div><small>Upside</small><b class="positive">+13.7%</b></div></div><button class="outline-primary">Open full analysis →</button></div>
+                <div class="overview-verdict"><span>Verdict</span><strong class="positive">Attractive</strong></div>
+                <div class="overview-signals"><span>Top Strengths</span><ul><li>✓ Strong balance sheet & cash generation</li><li>✓ High returns on capital</li><li>✓ Durable competitive moat</li></ul><span>Main Concern</span><p class="warning-text">ⓘ Valuation is above 5-year average</p></div>
+              </div>
+            </section>
+
+            <section class="card score-development-card">
+              <div class="section-title score-title"><span class="section-index">B</span><h2>Score Development – Microsoft Corp. (MSFT)</h2><button>1Y⌄</button></div>
+              <div class="score-development-body">
+                <div class="score-side"><span>Current Score</span><strong>78<small>/100</small></strong><span>Trend</span><b class="positive">Improving</b><div class="delta-box"><strong>+6 pts</strong><small>vs. 1 year ago</small></div></div>
+                <svg class="score-line-chart" viewBox="0 0 520 250" aria-label="Score development chart"><path class="gridline" d="M20 20H500M20 80H500M20 140H500M20 200H500"/><path class="axis" d="M20 20V220H500"/><path class="line blue" d="M20 88 L60 76 L100 70 L140 78 L180 80 L220 66 L260 74 L300 112 L340 124 L380 96 L420 90 L460 66 L500 54"/><circle cx="500" cy="54" r="8" class="chart-dot"/></svg>
+                <div class="score-explainer"><a>What drove the change?</a><p>Score improved due to stronger earnings quality, better capital efficiency, and reduced leverage. Partially offset by higher valuation.</p><a>View score breakdown →</a></div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section id="page-analyze" class="page reference-page analysis-reference">
+          <div class="analysis-toolbar"><div class="breadcrumbs">Analyze <span>›</span> AAPL <span>›</span> Apple Inc.</div><div class="button-row"><button class="secondary-btn">☆ Watchlist</button><button class="secondary-btn">⇩ Download</button><button class="secondary-btn">•••</button></div></div>
+          <section class="card company-hero-card">
+            <div class="company-title"><span class="hero-logo apple-logo">●</span><div><h1>Apple Inc. <span>AAPL　•　NASDAQ</span></h1><p>Technology　•　Consumer Electronics</p></div></div>
+            <div class="hero-price"><strong>$198.53</strong><span class="positive">+2.41 (+1.23%)</span><small>May 16, 2025 · 4:00 PM ET</small></div>
+            <div class="hero-score"><span>Overall Score　ⓘ</span><strong>78<small>/100</small></strong><b class="positive">Attractive</b><span class="spark up"></span></div>
+          </section>
+
+          <section class="analysis-metric-strip">
+            <article class="metric card"><span>Intrinsic Value</span><strong>$232.00</strong><small>Fair Value</small></article><article class="metric card"><span>Upside / Downside</span><strong class="positive">+16.9%</strong><small class="positive">Upside</small></article><article class="metric card"><span>Quality Score</span><strong>83 <small>/100</small></strong><small class="positive">High Quality</small></article><article class="metric card"><span>Piotroski F-Score</span><strong>8 <small>/9</small></strong><small class="positive">Strong</small></article><article class="metric card"><span>Dividend Yield</span><strong>0.52%</strong><small>Low</small></article><article class="metric card"><span>P/E (TTM)</span><strong>29.1x</strong><small class="negative">Premium</small></article><article class="metric card"><span>EV / EBIT (TTM)</span><strong>22.4x</strong><small class="negative">Premium</small></article>
+          </section>
+
+          <section class="card highlights-bar"><strong>Investment Highlights</strong><span>Brand & ecosystem moat</span><span>High returns on capital</span><span>Strong balance sheet</span><span>Consistent cash generation</span><span>AI integration across products</span><span>Global scale & pricing power</span></section>
+
+          <section class="analysis-data-grid">
+            <article class="card data-card"><h2>Valuation Summary</h2><dl><div><dt>Fair Value (Intrinsic)</dt><dd>$232.00</dd></div><div><dt>Current Price</dt><dd>$198.53</dd></div><div><dt>Margin of Safety</dt><dd class="positive">16.9%</dd></div><div><dt>Value Score</dt><dd class="positive">78 /100</dd></div></dl><h3>Multiples (TTM)</h3><dl><div><dt>P/E</dt><dd>29.1x</dd></div><div><dt>EV / EBITDA</dt><dd>20.3x</dd></div><div><dt>EV / EBIT</dt><dd>22.4x</dd></div><div><dt>Price / FCF</dt><dd>28.7x</dd></div></dl></article>
+            <article class="card data-card"><h2>Financial Health</h2><dl><div><dt>Overall Health</dt><dd><span class="badge positive-bg">Strong</span></dd></div><div><dt>Net Debt / EBITDA</dt><dd>-0.32x</dd></div><div><dt>Interest Coverage</dt><dd>34.2x</dd></div><div><dt>Current Ratio</dt><dd>1.34x</dd></div><div><dt>Quick Ratio</dt><dd>0.98x</dd></div><div><dt>Debt / Equity</dt><dd>1.17x</dd></div><div><dt>Altman Z-Score</dt><dd>6.41</dd></div></dl><small>Low bankruptcy risk</small></article>
+            <article class="card data-card"><h2>Profitability / Quality</h2><dl><div><dt>ROIC (TTM)</dt><dd>33.6%</dd></div><div><dt>ROE (TTM)</dt><dd>14.72%</dd></div><div><dt>ROA (TTM)</dt><dd>29.1%</dd></div><div><dt>Gross Margin</dt><dd>46.4%</dd></div><div><dt>Operating Margin</dt><dd>30.1%</dd></div><div><dt>Net Margin</dt><dd>25.3%</dd></div><div><dt>Revenue Quality</dt><dd><span class="badge positive-bg">High</span></dd></div></dl></article>
+            <article class="card data-card"><h2>Risk & Volatility</h2><dl><div><dt>Beta (5Y)</dt><dd>1.16</dd></div><div><dt>S&P Dev (5Y)</dt><dd>25.9%</dd></div><div><dt>Downside Deviation</dt><dd>18.2%</dd></div><div><dt>Max Drawdown (5Y)</dt><dd class="negative">-27.3%</dd></div><div><dt>Sharpe Ratio (5Y)</dt><dd>0.76</dd></div><div><dt>Price Volatility (5Y)</dt><dd>24.1%</dd></div><div><dt>Value at Risk (95%)</dt><dd class="negative">-4.8%</dd></div></dl></article>
+          </section>
+
+          <section class="analysis-middle-grid">
+            <article class="card sentiment-card"><div class="card-header"><h2>Market Sentiment</h2><strong class="positive">Bullish</strong></div><div class="sentiment-meter"><span></span></div><div class="sentiment-labels"><small>Bullish 46%</small><small>Neutral 22%</small><small>Bearish 10%</small></div><dl><div><dt>Put / Call Ratio (5D)</dt><dd>0.65</dd></div><div><dt>Short Interest</dt><dd>0.72%</dd></div><div><dt>Market Cap</dt><dd>$3.02T</dd></div><div><dt>Avg. Daily Volume (3M)</dt><dd>57.4M</dd></div></dl></article>
+            <article class="card factor-breakdown"><h2>Factor Model Breakdown</h2><div class="model-cards"><div><small>Z-Score Model</small><strong class="positive">Z = 6.41</strong><span>Very Safe</span><ul><li>Low bankruptcy risk</li><li>Strong liquidity & solvency</li><li>Excellent cash generation</li></ul><footer>Score 85/100　Weight 20%</footer></div><div><small>Piotroski F-Score</small><strong class="positive">8 /9</strong><span>Strong</span><ul><li>Profitable & efficient</li><li>Strong balance sheet</li><li>Positive operating trend</li></ul><footer>Score 82/100　Weight 15%</footer></div><div><small>ROIC Quality Model</small><strong class="positive">33.6%</strong><span>Excellent</span><ul><li>High returns on capital</li><li>Sustainable advantage</li><li>Above cost of capital</li></ul><footer>Score 88/100　Weight 20%</footer></div><div><small>Value Model (EV/EBIT)</small><strong>22.4x</strong><span class="warning-text">Fair</span><ul><li>Slightly above median</li><li>Growth justifies multiple</li><li>Fair valuation</li></ul><footer>Score 65/100　Weight 15%</footer></div><div><small>Momentum Model</small><strong class="positive">+18.2%</strong><span>Positive</span><ul><li>Uptrend over 12 months</li><li>Strong relative performance</li><li>Above 50/200-day MA</li></ul><footer>Score 71/100　Weight 10%</footer></div><div><small>Sentiment Model</small><strong class="positive">Bullish</strong><span>Positive</span><ul><li>Analysts bullish</li><li>Low short interest</li><li>Positive news flow</li></ul><footer>Score 72/100　Weight 10%</footer></div></div></article>
+          </section>
+
+          <section class="analysis-chart-grid">
+            <article class="card chart-card"><h2>Price vs. Intrinsic Value</h2><div class="legend"><span>— Price</span><span>--- Intrinsic Value</span><span>--- Fair Value</span></div><svg class="chart" viewBox="0 0 520 220"><path class="gridline" d="M30 20H500M30 70H500M30 120H500M30 170H500"/><path class="line blue" d="M30 180L65 150L95 165L130 120L165 140L200 110L235 115L270 80L305 102L340 65L375 78L410 48L445 70L500 58"/><path class="line green" d="M30 140L65 132L95 120L130 126L165 105L200 100L235 87L270 52L305 72L340 40L375 52L410 35L445 50L500 45"/></svg></article>
+            <article class="card chart-card"><h2>Factor Score History</h2><div class="legend"><span>Quality</span><span>Value</span><span>Momentum</span><span>Overall Score</span></div><svg class="chart" viewBox="0 0 520 220"><path class="gridline" d="M30 20H500M30 70H500M30 120H500M30 170H500"/><path class="line green" d="M30 125L90 115L150 122L210 105L270 120L330 112L390 130L450 110L500 96"/><path class="line purple" d="M30 70L90 63L150 72L210 58L270 70L330 66L390 78L450 62L500 58"/><path class="line yellow" d="M30 165L90 150L150 160L210 145L270 155L330 142L390 151L450 137L500 124"/><path class="line blue" d="M30 118L90 110L150 116L210 100L270 110L330 104L390 115L450 98L500 88"/></svg></article>
+            <article class="card comparison-card"><h2>Factor Comparison (vs. Sector Median)</h2><div class="bar-row"><span>Quality</span><div><i style="width:83%"></i></div><b>83　–　62</b></div><div class="bar-row"><span>Value</span><div><i style="width:62%"></i></div><b>50</b></div><div class="bar-row"><span>Momentum</span><div><i style="width:71%"></i></div><b>71　–　48</b></div><div class="bar-row"><span>Sentiment</span><div><i style="width:72%"></i></div><b>72　–　55</b></div></article>
+          </section>
+        </section>
+
+        <section id="page-portfolio" class="page">
+          <div class="page-heading"><div><p class="eyebrow">Portfolio intelligence</p><h1>Core Portfolio</h1><p>Risk, return, concentration, and scenario analysis.</p></div><div class="button-row"><button class="secondary-btn">Edit holdings</button><button class="primary-btn">Run analysis</button></div></div>
+          <section class="metric-strip">
+            <article class="metric card"><span>Total value</span><strong>$118,458</strong><small class="positive">+$2,104 today</small></article>
+            <article class="metric card"><span>Portfolio score</span><strong>76</strong><small>Above benchmark</small></article>
+            <article class="metric card"><span>Expected return</span><strong>8.4%</strong><small>10-year annualized</small></article>
+            <article class="metric card"><span>Risk</span><strong>Medium</strong><small>14.8% volatility</small></article>
+          </section>
+          <div class="content-grid">
+            <section class="card span-2"><div class="card-header"><div><h2>Projected portfolio range</h2><p>1,000 Monte Carlo paths · 24 months</p></div><span class="badge neutral">Base case</span></div><svg class="chart tall" viewBox="0 0 700 260"><path class="gridline" d="M0 40H700M0 95H700M0 150H700M0 205H700"/><path class="fan" d="M0 180 C140 170,250 120,360 130 S570 65,700 50 L700 210 C560 190,450 205,340 190 S130 205,0 190Z"/><path class="line" d="M0 185 C120 175,245 155,350 150 S550 110,700 100"/></svg></section>
+            <section class="card"><div class="card-header"><div><h2>Allocation</h2><p>By sector</p></div></div><div class="donut"><div class="donut-ring"></div><ul><li><span></span>Technology 42%</li><li><span></span>Healthcare 21%</li><li><span></span>Financials 18%</li><li><span></span>Other 19%</li></ul></div></section>
+            <section class="card span-2 table-card"><div class="card-header"><div><h2>Holdings</h2><p>6 positions</p></div></div><div class="responsive-table"><table><thead><tr><th>Holding</th><th>Weight</th><th>Value</th><th>Return</th><th>Score</th><th>Risk</th></tr></thead><tbody><tr><td>Apple Inc.</td><td>22.4%</td><td>$26,535</td><td class="positive">+18.2%</td><td>82</td><td>Low</td></tr><tr><td>Microsoft</td><td>19.8%</td><td>$23,454</td><td class="positive">+21.6%</td><td>78</td><td>Low</td></tr><tr><td>Johnson & Johnson</td><td>16.3%</td><td>$19,309</td><td class="negative">−2.4%</td><td>71</td><td>Low</td></tr></tbody></table></div></section>
+            <section class="card"><div class="card-header"><div><h2>Weak link</h2><p>Largest score drag</p></div></div><div class="weak-link"><span class="logo">T</span><div><strong>Tesla Inc.</strong><p>High valuation and volatility reduce portfolio resilience.</p><button class="text-btn">Review position</button></div></div></section>
+          </div>
+        </section>
+
+        <section id="page-factorlab" class="page">
+          <div class="page-heading"><div><p class="eyebrow">Research workspace</p><h1>Factor Weight Lab</h1><p>Build, test, and compare custom factor configurations.</p></div><div class="button-row"><button class="secondary-btn">Reset default</button><button class="primary-btn">Run backtest</button></div></div>
+          <section class="lab-toolbar card"><label><span>Configuration</span><select><option>Balanced quality</option></select></label><label><span>Universe</span><select><option>S&amp;P 500</option></select></label><label><span>Rebalance</span><select><option>Quarterly</option></select></label><div class="total-weight"><span>Total weight</span><strong>100%</strong></div></section>
+          <section class="factor-grid">
+            <article class="factor-card card"><div><strong>Value</strong><small>Price relative to fundamentals</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Quality</strong><small>Profitability and durability</small></div><output>18%</output><input type="range" value="18" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Momentum</strong><small>Price and earnings trend</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Profitability</strong><small>Margins and capital efficiency</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>FCF Quality</strong><small>Cash conversion and stability</small></div><output>10%</output><input type="range" value="10" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Earnings revisions</strong><small>Direction of analyst estimates</small></div><output>12%</output><input type="range" value="12" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Capital allocation</strong><small>Buybacks, debt, and reinvestment</small></div><output>8%</output><input type="range" value="8" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Growth quality</strong><small>Sustainable growth characteristics</small></div><output>7%</output><input type="range" value="7" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Risk</strong><small>Volatility and downside resilience</small></div><output>6%</output><input type="range" value="6" min="0" max="30"></article>
+            <article class="factor-card card"><div><strong>Altman</strong><small>Financial distress protection</small></div><output>3%</output><input type="range" value="3" min="0" max="30"></article>
+          </section>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Mobile navigation">
+        <button data-page="screener" class="active"><span>⌕</span><small>Screener</small></button>
+        <button data-page="analyze"><span>◫</span><small>Analyze</small></button>
+        <button data-page="portfolio"><span>◈</span><small>Portfolio</small></button>
+        <button data-page="factorlab"><span>⚙</span><small>Factor Lab</small></button>
+      </nav>
+    </div>
+  </div>
+<script>
+const root=document.documentElement;
+document.getElementById('themeToggle').addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark'});
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===`page-${name}`));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));}
+document.querySelectorAll('[data-page]').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)));
+function openTickerAnalysis(form){
+  const input=form.querySelector('input[name="ticker"]');
+  const ticker=input.value.trim().toUpperCase();
+  if(!ticker){input.focus();return;}
+  document.querySelector('.breadcrumbs').innerHTML=`Analyze <span>›</span> ${ticker} <span>›</span> Company analysis`;
+  showPage('analyze');
+  history.replaceState(null,'',`#analyze/${encodeURIComponent(ticker)}`);
+  input.value=ticker;
+  document.querySelector('#page-analyze').scrollIntoView({behavior:'smooth',block:'start'});
+}
+['sidebarAnalyzeForm','mobileAnalyzeForm'].forEach(id=>document.getElementById(id).addEventListener('submit',event=>{event.preventDefault();openTickerAnalysis(event.currentTarget);}));
+document.querySelectorAll('input[type="range"]').forEach(slider=>slider.addEventListener('input',()=>slider.closest('.factor-card').querySelector('output').textContent=`${slider.value}%`));
+</script>
+</body>
+</html>

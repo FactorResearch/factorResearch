@@ -108,7 +108,14 @@ def portfolios():
             400,
         )
     page, page_size = parameters
-    rows = account_service.portfolio_summaries(user_id)
+    include_deleted = flask.request.args.get("include_deleted", "false").lower() == "true"
+    changed_since = flask.request.args.get("changed_since")
+    if include_deleted or changed_since:
+        rows = account_service.portfolio_summaries(
+            user_id, include_deleted=include_deleted, changed_since=changed_since
+        )
+    else:
+        rows = account_service.portfolio_summaries(user_id)
     start = (page - 1) * page_size
     items = [contracts.portfolio_summary(row) for row in rows[start : start + page_size]]
     return _json(contracts.collection_response(items, page, page_size, len(rows), _request_id()))

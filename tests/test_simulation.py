@@ -67,6 +67,9 @@ class TestPortfolio(unittest.TestCase):
 
         mock_cache.read.side_effect = mock_read
         mock_cache.write.side_effect = mock_write
+        mock_cache.write_if_version.side_effect = (
+            lambda category, key, value, _version: mock_write(category, key, value) or True
+        )
         mock_cache.clear.side_effect = mock_clear
 
         # Create portfolio

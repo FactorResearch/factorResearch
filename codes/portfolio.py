@@ -178,11 +178,15 @@ def _save_index(user_id: str, entries: list[dict[str, str]]) -> None:
 
 
 def list_portfolios(user_id: str) -> list[str]:
-    return [entry["name"] for entry in _load_index(user_id)]
+    return [entry["name"] for entry in _load_index(user_id) if not entry.get("deleted_at")]
 
 
 def load_portfolio(user_id: str, name: str) -> dict | None:
-    entry = next((item for item in _load_index(user_id) if item["name"] == name), None)
+    entry = next(
+        (item for item in _load_index(user_id)
+         if item["name"] == name and not item.get("deleted_at")),
+        None,
+    )
     if entry and entry["id"]:
         stored = cache.read("portfolio", _portfolio_key(user_id, entry["id"]))
         if stored is not None:
@@ -213,23 +217,59 @@ def _refresh_holding_symbols(portfolio: dict) -> dict:
     return portfolio
 
 
-def save_portfolio(user_id: str, portfolio: dict) -> None:
+def save_portfolio(user_id: str, portfolio: dict, *, expected_version: int | None = None) -> None:
     name = portfolio["name"]
     portfolio_id = portfolio.setdefault("id", uuid.uuid4().hex)
-    _write_cache_or_raise("portfolio", _portfolio_key(user_id, portfolio_id), portfolio)
+    key = _portfolio_key(user_id, portfolio_id)
+    expected = int(portfolio.get("version") or 0) if expected_version is None else expected_version
+    now = datetime.datetime.now(datetime.UTC).isoformat()
+    portfolio.setdefault("created_at", portfolio.get("created") or now)
+    portfolio["updated_at"] = now
+    portfolio["version"] = expected + 1
+    if cache.write_if_version("portfolio", key, portfolio, expected) is False:
+        raise RuntimeError(f"Failed to write cache entry portfolio:{key}")
     entries = [item for item in _load_index(user_id) if item["id"] != portfolio_id and item["name"] != name]
-    entries.append({"id": portfolio_id, "name": name})
+    entries.append({"id": portfolio_id, "name": name, "deleted_at": portfolio.get("deleted_at")})
     _save_index(user_id, entries)
 
 
-def delete_portfolio(user_id: str, name: str) -> None:
+def delete_portfolio(user_id: str, name: str, *, hard: bool = False) -> None:
     entries = _load_index(user_id)
     entry = next((item for item in entries if item["name"] == name), None)
     if entry and entry["id"]:
-        _clear_cache_if_safe("portfolio", _portfolio_key(user_id, entry["id"]))
+        key = _portfolio_key(user_id, entry["id"])
+        stored = cache.read("portfolio", key)
+        if hard:
+            _clear_cache_if_safe("portfolio", key)
+        elif stored is not None and not stored.get("deleted_at"):
+            stored["deleted_at"] = datetime.datetime.now(datetime.UTC).isoformat()
+            save_portfolio(user_id, stored)
     _clear_cache_if_safe("portfolio", _encoded_name_portfolio_key(user_id, name))
     _clear_cache_if_safe("portfolio", _legacy_portfolio_key(user_id, name))
-    _save_index(user_id, [item for item in entries if item["name"] != name])
+    if hard:
+        _save_index(user_id, [item for item in entries if item["name"] != name])
+
+
+def list_portfolio_changes(user_id: str, since: str | None = None) -> list[dict]:
+    """Return active records and tombstones changed after an ISO timestamp."""
+    records = []
+    for entry in _load_index(user_id):
+        if not entry.get("id"):
+            record = load_portfolio(user_id, entry["name"])
+        else:
+            record = cache.read("portfolio", _portfolio_key(user_id, entry["id"]))
+        if record and (not since or str(record.get("updated_at") or "") > since):
+            records.append(_refresh_holding_symbols(record))
+    return records
+
+
+def restore_portfolio(user_id: str, portfolio_id: str, *, expected_version: int) -> dict:
+    record = cache.read("portfolio", _portfolio_key(user_id, portfolio_id))
+    if not record or not record.get("deleted_at"):
+        raise ValueError("Deleted portfolio not found.")
+    record["deleted_at"] = None
+    save_portfolio(user_id, record, expected_version=expected_version)
+    return record
 
 
 def create_portfolio(user_id: str, name: str) -> dict:
@@ -237,6 +277,7 @@ def create_portfolio(user_id: str, name: str) -> dict:
         "id":       uuid.uuid4().hex,
         "name":     name,
         "created":  datetime.datetime.now().isoformat(),
+        "version":  0,
         "holdings": {},
     }
     save_portfolio(user_id, p)
@@ -886,7 +927,7 @@ def delete_all_user_data(user_id: str) -> dict:
     names = list_portfolios(user_id)
     for name in names:
         invalidate_simulation_cache(user_id, name)
-        delete_portfolio(user_id, name)
+        delete_portfolio(user_id, name, hard=True)
     _clear_cache_if_safe("portfolio", _portfolio_index_key(user_id))
     _clear_cache_if_safe("portfolio", _legacy_index_key(user_id))
     return {"user_id": user_id, "portfolios_deleted": names, "deleted": True}

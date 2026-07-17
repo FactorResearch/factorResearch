@@ -1,3 +1,4 @@
+import fcntl
 import json
 import math
 import re
@@ -213,6 +214,21 @@ def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> boo
     except Exception as e:
         print(f"[CACHE ERROR] {e}")
         return False
+
+
+def write_if_version(kind: str, key: str, data, expected_version: int) -> bool:
+    """Atomically write a versioned record when its stored version still matches."""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    lock_path = _path(kind, key).with_suffix(".lock")
+    with lock_path.open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        current = read(kind, key)
+        current_version = int((current or {}).get("version") or 0)
+        if current is not None and current_version != expected_version:
+            raise RuntimeError(
+                f"Record version conflict: expected {expected_version}, current {current_version}."
+            )
+        return write(kind, key, data)
 
 
 def clear(kind: str, key: str) -> None:

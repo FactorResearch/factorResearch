@@ -23,9 +23,6 @@ agency-agents/*
 .ev.example
 .codex/
 .agents
-mockup/
-roadMap.md
-AI_CONTEXT.md
 
 !artifacts/design-system/
 !artifacts/design-system/visuals/

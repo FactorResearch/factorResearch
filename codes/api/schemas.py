@@ -78,6 +78,17 @@ class PortfolioSummary(TypedDict):
     id: NotRequired[str]
     name: str
     holdings: int
+    created_at: NotRequired[str]
+    updated_at: NotRequired[str | None]
+    version: NotRequired[int]
+    deleted_at: NotRequired[str | None]
+
+
+class SyncMetadata(TypedDict):
+    created_at: str
+    updated_at: str
+    version: int
+    deleted_at: str | None
 
 
 class AppearanceSettings(TypedDict):
@@ -93,6 +104,7 @@ class NotificationSettings(TypedDict):
 class AccountSettings(TypedDict):
     appearance: AppearanceSettings
     notifications: NotificationSettings
+    _sync: NotRequired[SyncMetadata]
 
 
 class AccountResource(TypedDict):
