@@ -18,7 +18,7 @@ def test_data_trust_panel_exposes_provenance_and_missing_effects():
             "currency": "USD",
             "normalization_status": "Canonical financial facts",
             "calculation_status": "cached",
-            "model_scope": "Factor Research default models",
+            "model_scope": "Cenvarn default models",
             "historical": True,
             "missing_effects": ["Momentum was skipped because price history is unavailable."],
         },

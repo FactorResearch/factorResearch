@@ -10,7 +10,7 @@ BASE = {
     "DATABASE_MARKET_URL": "postgresql://market",
     "DATABASE_USERS_URL": "postgresql://users",
     "REDIS_URL": "rediss://redis",
-    "SEC_USER_AGENT": "FactorResearch ops@research.example",
+    "SEC_USER_AGENT": "Cenvarnops@research.example",
     "AUTH_PROVIDER": "auth0",
     "AUTH0_DOMAIN": "auth.research.example",
     "AUTH0_CLIENT_ID": "client",

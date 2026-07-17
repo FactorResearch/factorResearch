@@ -1,8 +1,8 @@
-# FactorResearch Local Security Attack Audit
+# CenvarnLocal Security Attack Audit
 
 **Assessment date:** 2026-07-14  
 **Assessed commit:** `5929bad2` (`optimization`)  
-**Target:** isolated FactorResearch processes on `127.0.0.1:8053` and production-mode `127.0.0.1:8054`  
+**Target:** isolated Cenvarnprocesses on `127.0.0.1:8053` and production-mode `127.0.0.1:8054`  
 **Decision:** **All identified application findings remediated; production infrastructure validation remains required**
 
 ## Scope And Safety

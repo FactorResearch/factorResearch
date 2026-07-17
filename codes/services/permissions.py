@@ -110,7 +110,7 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
             False,
             feature,
             reason=(
-                "You have used your 3 free analyses. Unlock Factor Research Premium "
+                "You have used your 3 free analyses. Unlock Cenvarn Premium "
                 "for unlimited company analysis, custom strategies, historical "
                 "backtesting, portfolio analytics, and strategy tracking."
             ),

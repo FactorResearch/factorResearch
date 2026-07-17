@@ -136,7 +136,7 @@ def _topbar():
 
 def _legal_terms_content():
     return [
-        html.P("FactorResearch provides research tools, scoring models, screeners, portfolio analytics, and educational content for self-directed investors.", className="legal-modal-lead"),
+        html.P("Cenvarnprovides research tools, scoring models, screeners, portfolio analytics, and educational content for self-directed investors.", className="legal-modal-lead"),
         html.H3("No Investment Advice"),
         html.P("The Service is not a registered investment adviser, broker-dealer, tax adviser, or legal adviser. Scores, rankings, forecasts, alerts, and model outputs are informational only and are not personalized recommendations."),
         html.H3("Market Data and Model Risk"),
@@ -144,7 +144,7 @@ def _legal_terms_content():
         html.H3("Accounts, Payments, and Access"),
         html.P("You are responsible for account security and lawful use. Paid features depend on billing status and product access rules. Plan access may change if billing, abuse prevention, or product requirements change."),
         html.H3("Limitation of Liability"),
-        html.P("FactorResearch is provided as is without warranties. We are not liable for investment losses, missed opportunities, data outages, provider errors, or indirect damages arising from use of the Service."),
+        html.P("Cenvarnis provided as is without warranties. We are not liable for investment losses, missed opportunities, data outages, provider errors, or indirect damages arising from use of the Service."),
     ]
 
 
@@ -168,7 +168,7 @@ def _legal_modal(modal_id, title, full_page_href, children):
         html.Div(className="legal-modal-card", role="dialog", **{"aria-modal": "true", "aria-labelledby": f"{modal_id}-title"}, children=[
             html.Div(className="legal-modal-header", children=[
                 html.Div([
-                    html.P("FactorResearch legal", className="legal-modal-kicker"),
+                    html.P("Cenvarnlegal", className="legal-modal-kicker"),
                     html.H2(title, id=f"{modal_id}-title"),
                 ]),
                 html.A("Close", href="#", className="legal-modal-close", **{"data-ds-close": "true"}),
@@ -623,7 +623,7 @@ def build_layout():
 
         # Legal footer
         html.Div(className="app-footer tac p-16 fs-11 clr-muted", children=[
-            html.Span("© Factor Research · "),
+            html.Span("© Cenvarn · "),
             html.A("Terms of Service", href="#legal-terms", className="clr-muted"),
             html.Span(" · "),
             html.A("Privacy Policy", href="#legal-privacy", className="clr-muted"),

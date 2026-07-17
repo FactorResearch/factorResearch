@@ -1,6 +1,6 @@
 """
 Bias Engine — pure classification layer.
-Factor Research never outputs Buy/Sell/Avoid. All verdicts are expressed as
+Cenvarn never outputs Buy/Sell/Avoid. All verdicts are expressed as
 Outperform Bias / Neutral / Underperform Bias. This is the ONLY place in
 the codebase permitted to produce that verdict-like label.
 

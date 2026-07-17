@@ -1,4 +1,4 @@
-# IntrinsicIQ — Scoring Methodology
+# Cenvarn— Scoring Methodology
 
 > **Auditable. Deterministic. No black boxes.**
 >

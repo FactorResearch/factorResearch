@@ -1,6 +1,6 @@
 # Purpose
 
-Define mandatory database engineering standards for Factor Research and all future services, workers, APIs, analytics systems, and AI-generated code.
+Define mandatory database engineering standards for Cenvarn and all future services, workers, APIs, analytics systems, and AI-generated code.
 
 The objective is to make database design predictable, safe, traceable, scalable, and understandable years after implementation. These rules apply to PostgreSQL schemas, migrations, repositories, workers, background jobs, analytics storage, user data, market data, and any future persistent storage system.
 
@@ -33,7 +33,7 @@ Derived values may be stored only when the reason is documented, such as perform
 
 ## Clear database boundaries
 
-Factor Research databases must remain separated by responsibility.
+Cenvarn databases must remain separated by responsibility.
 
 Current target boundaries include:
 

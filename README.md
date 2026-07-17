@@ -1,7 +1,7 @@
-# Graham Score / Factor Research
+# Graham Score / Cenvarn
 
-Graham Score is a PostgreSQL-backed equity research application with screening,
-company analysis, factor research, portfolio analytics, simulations, and market
+Cenvarn is a PostgreSQL-backed equity research application with screening,
+company analysis, portfolio analytics, simulations, and market
 expansion through provider-neutral financial models.
 
 ## Release Status

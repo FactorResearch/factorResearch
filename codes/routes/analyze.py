@@ -95,7 +95,7 @@ def _official_history_cards(history) -> str:
         cards.append(
             '<article class="history-card">'
             '<div class="history-card-head">'
-            f'<div><span class="official-kicker">FactorResearch official</span><time datetime="{item.analysis_date.isoformat()}">{item.analysis_date.isoformat()}</time></div>'
+            f'<div><span class="official-kicker">Cenvarnofficial</span><time datetime="{item.analysis_date.isoformat()}">{item.analysis_date.isoformat()}</time></div>'
             f'<span class="score-chip">{_fmt(item.valuation_score, "/100")}</span></div>'
             f'<h3>{html.escape(item.final_rating)}</h3>'
             f'<p>{html.escape(str(metrics.get("verdict_desc") or ""))}</p>'
@@ -177,7 +177,7 @@ def company_analysis_page(slug: str):
     title = f"{latest.company_name} Stock Analysis, Valuation and Historical Scores | FactorResearch"
     description = (
         f"View {latest.company_name}'s historical valuation, financial strength, risk scores, "
-        "intrinsic value estimates, and FactorResearch analysis history."
+        "intrinsic value estimates, and Cenvarnanalysis history."
     )
     landing_schema = json.dumps({
         "@context": "https://schema.org",
@@ -209,8 +209,8 @@ def company_analysis_page(slug: str):
 <script type="application/ld+json">{landing_schema}</script>
 <script>(function(){{try{{var t=localStorage.getItem("fr-theme")||"system";var light=t==="light"||(t==="system"&&window.matchMedia("(prefers-color-scheme: light)").matches);if(light)document.documentElement.classList.add("light");}}catch(e){{}}}})();</script>
 </head>
-<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}?tab=analyze">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">FactorResearch company dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span class="ticker-symbol">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?{sector_query}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
-<nav class="tabs" aria-label="Analysis sections">FactorResearch History&nbsp;&nbsp;·&nbsp;&nbsp;My Custom Models</nav><div class="columns"><section class="section-shell"><div class="section-title"><div><h2>FactorResearch History</h2><p>Immutable results from the official methodology</p></div></div>{_official_history_cards(history)}{pagination}</section><div>{custom_column}</div></div></main><footer class="footer">© FactorResearch · Independent financial research · Company-inspired visuals use abstract, non-proprietary design elements.</footer></body></html>"""
+<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}?tab=analyze">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">Cenvarncompany dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span class="ticker-symbol">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?{sector_query}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
+<nav class="tabs" aria-label="Analysis sections">CenvarnHistory&nbsp;&nbsp;·&nbsp;&nbsp;My Custom Models</nav><div class="columns"><section class="section-shell"><div class="section-title"><div><h2>CenvarnHistory</h2><p>Immutable results from the official methodology</p></div></div>{_official_history_cards(history)}{pagination}</section><div>{custom_column}</div></div></main><footer class="footer">© Cenvarn· Independent financial research · Company-inspired visuals use abstract, non-proprietary design elements.</footer></body></html>"""
     response = flask.Response(body, mimetype="text/html")
     response.headers["Cache-Control"] = "private, no-store" if user_id else "public, max-age=300"
     return response
@@ -231,7 +231,7 @@ def custom_analysis_page(slug: str, snapshot_id: str):
     backtest = html.escape(json.dumps(snapshot.backtest_summary, sort_keys=True))
     default_comparison = html.escape(json.dumps(snapshot.default_comparison, sort_keys=True))
     benchmark_comparison = html.escape(json.dumps(snapshot.benchmark_comparison, sort_keys=True))
-    body = f"""<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow,noarchive"><title>{html.escape(snapshot.formula_name)} | Private FactorResearch Analysis</title></head><body><main><h1>{html.escape(snapshot.formula_name)}</h1><p>{html.escape(snapshot.company_name)} ({html.escape(snapshot.ticker)}) · {snapshot.analysis_date.isoformat()}</p><p>Formula version: {html.escape(snapshot.formula_version)} · Custom score: {_fmt(snapshot.composite_score)}</p><h2>Selected factors and weights</h2><ul>{factors}</ul><h2>Backtest summary</h2><pre>{backtest}</pre><h2>Against FactorResearch default</h2><pre>{default_comparison}</pre><h2>Against benchmark</h2><pre>{benchmark_comparison}</pre><h2>Saved notes</h2><p>{html.escape(snapshot.notes)}</p></main></body></html>"""
+    body = f"""<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow,noarchive"><title>{html.escape(snapshot.formula_name)} | Private CenvarnAnalysis</title></head><body><main><h1>{html.escape(snapshot.formula_name)}</h1><p>{html.escape(snapshot.company_name)} ({html.escape(snapshot.ticker)}) · {snapshot.analysis_date.isoformat()}</p><p>Formula version: {html.escape(snapshot.formula_version)} · Custom score: {_fmt(snapshot.composite_score)}</p><h2>Selected factors and weights</h2><ul>{factors}</ul><h2>Backtest summary</h2><pre>{backtest}</pre><h2>Against Cenvarndefault</h2><pre>{default_comparison}</pre><h2>Against benchmark</h2><pre>{benchmark_comparison}</pre><h2>Saved notes</h2><p>{html.escape(snapshot.notes)}</p></main></body></html>"""
     response = flask.Response(body, mimetype="text/html")
     response.headers["Cache-Control"] = "private, no-store"
     response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
@@ -669,7 +669,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
 <body class="historical-analysis-page">
 <main>
   <header>
-    <p class="muted">FactorResearch historical analysis</p>
+    <p class="muted">Cenvarnhistorical analysis</p>
     <h1>{company} Stock Analysis</h1>
     <p><time datetime="{snapshot.analysis_date.isoformat()}">{snapshot.analysis_date.isoformat()}</time> · {html.escape(snapshot.ticker)} · Algorithm {html.escape(snapshot.algorithm_version)}</p>
   </header>

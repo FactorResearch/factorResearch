@@ -333,7 +333,7 @@ def _analysis_provenance(symbol: str, sec_facts: dict, *, price, defer_secondary
         "normalization_status": sec_facts.get("normalization_method")
         or "Canonical financial facts",
         "calculation_status": "newly calculated",
-        "model_scope": "Factor Research default models",
+        "model_scope": "Cenvarn default models",
         "missing_inputs": missing,
         "missing_effects": effects,
         "historical": False,

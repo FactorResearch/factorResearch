@@ -1,7 +1,7 @@
 # Production-Grade Proof Plan
 
 **Created:** 2026-07-14  
-**Scope:** FactorResearch web application, workers, databases, Redis, external providers, financial models, authentication, billing, deployment, and operations.  
+**Scope:** Cenvarnweb application, workers, databases, Redis, external providers, financial models, authentication, billing, deployment, and operations.  
 **Purpose:** Produce repeatable evidence that the system is safe, correct, performant, recoverable, and operable under realistic production conditions.
 
 This document is the release-proof authority. `README.md`, `SECURITY_CHECKLIST.md`, `AUTHENTICATION_SETUP.md`, `Publish.md`, `AGENCY_AUDIT.md`, and country release documents remain implementation references.

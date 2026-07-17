@@ -1,6 +1,6 @@
 {
   "openapi": "3.1.0",
-  "info": {"title": "FactorResearch Public API", "version": "1.0.0", "description": "Stable public client contract. All operations are served below /api/v1."},
+  "info": {"title": "CenvarnPublic API", "version": "1.0.0", "description": "Stable public client contract. All operations are served below /api/v1."},
   "servers": [{"url": "/api/v1"}],
   "paths": {
     "/health": {"get": {"operationId": "getHealth", "responses": {"200": {"description": "Service is available", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HealthResponse"}}}}}}},

@@ -196,7 +196,7 @@ When conflicts occur:
 
 Never simplify the application merely to match a static mock.
 
-Factor Research is a financial research platform, not a marketing website.
+Cenvarn is a financial research platform, not a marketing website.
 
 Completeness, trust, and clarity always take priority over minimalism.
 ---

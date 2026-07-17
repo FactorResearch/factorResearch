@@ -82,7 +82,7 @@ def test_pre_b_renders_app_like_preview_and_expect_panel(monkeypatch):
 
     assert response.status_code == 200
     assert "product-preview-analysis" in body
-    assert "FactorResearch Analysis" in body
+    assert "CenvarnAnalysis" in body
     assert "Composite Score" in body
     assert "Intrinsic Value" in body
     assert "<h2>What you can expect</h2>" in body

@@ -58,7 +58,7 @@ def test_uppercase_ticker_route_renders_company_history_without_slug_lookup():
         response = _client_with_dash_shell().get("/AAPL")
 
     assert response.status_code == 200
-    assert "FactorResearch History" in response.get_data(as_text=True)
+    assert "CenvarnHistory" in response.get_data(as_text=True)
     history.assert_called_once_with("AAPL", limit=12)
     snapshots.assert_not_called()
 
@@ -80,7 +80,7 @@ def test_ticker_page_bootstraps_first_snapshot_from_cached_official_analysis():
         response = _client().get("/AAPL/")
 
     assert response.status_code == 200
-    assert "FactorResearch History" in response.get_data(as_text=True)
+    assert "CenvarnHistory" in response.get_data(as_text=True)
     save.assert_called_once_with(cached)
     assert history.call_count == 2
 
@@ -105,12 +105,12 @@ def test_company_slug_page_is_public_crawlable_and_shows_upgrade_without_private
     body = response.get_data(as_text=True)
     assert response.status_code == 200
     assert "Apple Inc." in body and "(AAPL)" in body
-    assert "FactorResearch History" in body
+    assert "CenvarnHistory" in body
     assert "/AAPL/analyze/20260709?tab=analyze" in body
     assert 'href="/analyze/AAPL?tab=analyze">Analyze</a>' in body
     assert "Sign in and upgrade" in body
     assert 'rel="canonical" href="http://localhost/AAPL"' in body
-    assert "FactorResearch company dossier" in body
+    assert "Cenvarncompany dossier" in body
     assert "Company Research" in body
     assert "non-proprietary design elements" in body
     assert 'localStorage.getItem("fr-theme")' in body

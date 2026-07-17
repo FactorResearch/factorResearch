@@ -1,9 +1,9 @@
-# Factor Research Design Bible
+# Cenvarn Design Bible
 
 Version: 1.0
 
 This folder is the single source of truth for every visual and interaction decision
-inside Factor Research.
+inside Cenvarn.
 
 ## Rules
 
@@ -84,7 +84,7 @@ Loading States
 
 ## Development Philosophy
 
-Factor Research is a professional financial research platform.
+Cenvarn is a professional financial research platform.
 
 Every decision should increase:
 

@@ -20,4 +20,4 @@ def header(active: str = "") -> str:
 
 
 def footer() -> str:
-    return """<footer class="app-footer"><span>© Factor Research · </span><a href="/terms">Terms of Service</a><span> · </span><a href="/privacy">Privacy Policy</a><span> · Not financial advice.</span></footer>"""
+    return """<footer class="app-footer"><span>© Cenvarn · </span><a href="/terms">Terms of Service</a><span> · </span><a href="/privacy">Privacy Policy</a><span> · Not financial advice.</span></footer>"""

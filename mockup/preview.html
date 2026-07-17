@@ -8,24 +8,24 @@
   <title>Cenvarn Research UI Prototype</title>
   <style>
 :root {
-  --cenvarn-midnight: #0e1829;
-  --cenvarn-gold: #b18a54;
-  --cenvarn-charcoal: #343435;
-  --cenvarn-silver: #d9d8d6;
-  --cenvarn-warm-white: #f3f2f1;
+  --Cenvarn-midnight: #0e1829;
+  --Cenvarn-gold: #b18a54;
+  --Cenvarn-charcoal: #343435;
+  --Cenvarn-silver: #d9d8d6;
+  --Cenvarn-warm-white: #f3f2f1;
   --utility-white: #ffffff;
 
-  --canvas: var(--cenvarn-warm-white);
+  --canvas: var(--Cenvarn-warm-white);
   --surface: var(--utility-white);
   --surface-2: #eceae7;
   --surface-3: #e4e1dd;
-  --text: var(--cenvarn-midnight);
+  --text: var(--Cenvarn-midnight);
   --muted: #66696e;
-  --line: var(--cenvarn-silver);
+  --line: var(--Cenvarn-silver);
   --line-strong: #b9b7b4;
-  --brand: var(--cenvarn-midnight);
+  --brand: var(--Cenvarn-midnight);
   --brand-strong: #08111f;
-  --accent: var(--cenvarn-gold);
+  --accent: var(--Cenvarn-gold);
   --accent-soft: #eee5d8;
   --success: #1f7451;
   --success-soft: #e3f0e9;
@@ -46,15 +46,15 @@
 }
 
 html[data-theme="dark"] {
-  --canvas: var(--cenvarn-midnight);
+  --canvas: var(--Cenvarn-midnight);
   --surface: #151f2f;
   --surface-2: #1a2535;
   --surface-3: #222d3d;
-  --text: var(--cenvarn-warm-white);
+  --text: var(--Cenvarn-warm-white);
   --muted: #b9bab9;
   --line: #334052;
   --line-strong: #4b5869;
-  --brand: var(--cenvarn-warm-white);
+  --brand: var(--Cenvarn-warm-white);
   --brand-strong: #ffffff;
   --accent-soft: #342d25;
   --success: #71c99e;
@@ -110,8 +110,8 @@ a:focus-visible {
   display: flex;
   flex-direction: column;
   padding: 24px 16px 18px;
-  background: var(--cenvarn-midnight);
-  color: var(--cenvarn-warm-white);
+  background: var(--Cenvarn-midnight);
+  color: var(--Cenvarn-warm-white);
   border-right: 1px solid rgba(255,255,255,.08);
 }
 
@@ -142,7 +142,7 @@ a:focus-visible {
 }
 
 .brand-wordmark small {
-  color: var(--cenvarn-gold);
+  color: var(--Cenvarn-gold);
   font-size: 8px;
   font-weight: 600;
   letter-spacing: .18em;
@@ -165,8 +165,8 @@ a:focus-visible {
 }
 
 .brand-mark .compass-accent {
-  fill: var(--cenvarn-gold);
-  stroke: var(--cenvarn-gold);
+  fill: var(--Cenvarn-gold);
+  stroke: var(--Cenvarn-gold);
 }
 
 .sidebar-analyze {
@@ -205,7 +205,7 @@ a:focus-visible {
 }
 
 .sidebar-analyze-control:focus-within {
-  border-color: var(--cenvarn-gold);
+  border-color: var(--Cenvarn-gold);
   box-shadow: 0 0 0 2px rgba(177,138,84,.24);
 }
 
@@ -229,7 +229,7 @@ a:focus-visible {
   border: 0;
   border-left: 1px solid currentColor;
   background: transparent;
-  color: var(--cenvarn-gold);
+  color: var(--Cenvarn-gold);
   cursor: pointer;
 }
 
@@ -275,10 +275,10 @@ a:focus-visible {
 .nav-item.active {
   color: #fff;
   background: linear-gradient(90deg, rgba(177,138,84,.18), rgba(177,138,84,.045));
-  border-left-color: var(--cenvarn-gold);
+  border-left-color: var(--Cenvarn-gold);
 }
 
-.nav-item.active > span:first-child { color: var(--cenvarn-gold); }
+.nav-item.active > span:first-child { color: var(--Cenvarn-gold); }
 
 .rail-footer {
   margin-top: auto;
@@ -305,8 +305,8 @@ a:focus-visible {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  color: var(--cenvarn-midnight);
-  background: var(--cenvarn-gold);
+  color: var(--Cenvarn-midnight);
+  background: var(--Cenvarn-gold);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;
@@ -420,15 +420,15 @@ main {
 }
 
 .primary-btn {
-  color: var(--cenvarn-warm-white);
-  background: var(--cenvarn-midnight);
-  border: 1px solid var(--cenvarn-midnight);
+  color: var(--Cenvarn-warm-white);
+  background: var(--Cenvarn-midnight);
+  border: 1px solid var(--Cenvarn-midnight);
 }
 
 html[data-theme="dark"] .primary-btn {
-  color: var(--cenvarn-midnight);
-  background: var(--cenvarn-warm-white);
-  border-color: var(--cenvarn-warm-white);
+  color: var(--Cenvarn-midnight);
+  background: var(--Cenvarn-warm-white);
+  border-color: var(--Cenvarn-warm-white);
 }
 
 .primary-btn:hover,
@@ -618,9 +618,9 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 
 .pagination button.active {
-  color: var(--cenvarn-midnight);
-  background: var(--cenvarn-gold);
-  border-color: var(--cenvarn-gold);
+  color: var(--Cenvarn-midnight);
+  background: var(--Cenvarn-gold);
+  border-color: var(--Cenvarn-gold);
 }
 
 .screener-reference { padding-top: 8px; }
@@ -649,8 +649,8 @@ tbody tr:last-child td { border-bottom: 0; }
   height: 25px;
   display: grid;
   place-items: center;
-  color: var(--cenvarn-midnight);
-  background: var(--cenvarn-gold);
+  color: var(--Cenvarn-midnight);
+  background: var(--Cenvarn-gold);
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 700;
@@ -1187,7 +1187,7 @@ tbody tr:last-child td { border-bottom: 0; }
 .factor-card input {
   grid-column: 1 / -1;
   width: 100%;
-  accent-color: var(--cenvarn-gold);
+  accent-color: var(--Cenvarn-gold);
 }
 
 .bottom-nav { display: none; }
@@ -1214,7 +1214,7 @@ tbody tr:last-child td { border-bottom: 0; }
     border: 0;
   }
   .nav-item { justify-content: center; border-left: 0; border-bottom: 2px solid transparent; border-radius: var(--radius); }
-  .nav-item.active { border-left-color: transparent; border-bottom-color: var(--cenvarn-gold); }
+  .nav-item.active { border-left-color: transparent; border-bottom-color: var(--Cenvarn-gold); }
   .profile { justify-content: center; }
   .market-stamp { display: none; }
   .screener-detail-grid,
@@ -1324,7 +1324,7 @@ tbody tr:last-child td { border-bottom: 0; }
     height: 70px;
     display: grid;
     grid-template-columns: repeat(4,1fr);
-    background: color-mix(in srgb, var(--cenvarn-midnight) 96%, transparent);
+    background: color-mix(in srgb, var(--Cenvarn-midnight) 96%, transparent);
     border-top: 1px solid rgba(255,255,255,.12);
     backdrop-filter: blur(16px);
   }
@@ -1335,7 +1335,7 @@ tbody tr:last-child td { border-bottom: 0; }
     gap: 2px;
     color: rgba(243,242,241,.58);
   }
-  .bottom-nav button.active { color: var(--cenvarn-gold); }
+  .bottom-nav button.active { color: var(--Cenvarn-gold); }
   .bottom-nav small { font-size: 10px; }
 }
 

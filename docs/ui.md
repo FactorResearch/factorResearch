@@ -1,6 +1,6 @@
 # Objective
 
-Implement the approved high-fidelity Factor Research redesign without replacing production pages prematurely.
+Implement the approved high-fidelity Cenvarn redesign without replacing production pages prematurely.
 
 # Working rule
 

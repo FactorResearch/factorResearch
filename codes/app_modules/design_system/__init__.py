@@ -1,4 +1,4 @@
-"""Factor Research design engine public API."""
+"""Cenvarn design engine public API."""
 
 from .financial import (
     data_freshness,

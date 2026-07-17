@@ -107,7 +107,7 @@ class AnalysisSnapshot:
         return (
             f"{self.company_name} ({self.ticker}) stock analysis for "
             f"{self.analysis_date.isoformat()} with {metric_text}, intrinsic value, "
-            f"market price, risk metrics, and FactorResearch rating {self.final_rating}."
+            f"market price, risk metrics, and Cenvarnrating {self.final_rating}."
         )
 
     @property

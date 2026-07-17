@@ -1,4 +1,4 @@
-# Factor Research — AI Engineering Instructions
+# Cenvarn — AI Engineering Instructions
 
 ## 1. Authority and scope
 

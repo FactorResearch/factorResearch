@@ -9,7 +9,7 @@ from codes.app_modules.design_system.catalogue import build_catalogue
 
 app = Dash(
     __name__,
-    title="Factor Research design system",
+    title="Cenvarn design system",
     assets_folder=str(Path(__file__).resolve().parents[1] / "assets"),
     assets_ignore=r"^(?!(style\.css|adaptive_loading\.js|design_system\.js)$).*",
 )

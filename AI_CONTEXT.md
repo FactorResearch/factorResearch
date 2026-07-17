@@ -1,4 +1,4 @@
-# FactorResearch AI Context
+# CenvarnAI Context
 
 This is the single authoritative context file for AI work in this repository.
 Load this file before coding. It consolidates project memory, Ponytail simplicity,
@@ -9,7 +9,7 @@ required to understand how to work here.
 
 ## Product And Current Stage
 
-FactorResearch is an early-development fundamental investing, stock analysis,
+Cenvarnis an early-development fundamental investing, stock analysis,
 screener, and portfolio analytics platform. It runs locally on `localhost` unless
 the user explicitly identifies another environment. It is not a registered
 investment adviser and must not present model output as personalized advice.
@@ -288,7 +288,7 @@ background purpose. Remove unused computation or expose the result intentionally
 
 ### Authorized Local Scope
 
-The repository owner authorizes security testing against FactorResearch processes
+The repository owner authorizes security testing against Cenvarnprocesses
 running on `127.0.0.1` or `localhost`. This includes bounded SAST, DAST, dependency
 and secret scanning, malformed-input fuzzing, authentication/authorization tests,
 CSRF/XSS/SQL-injection/SSRF probes, method/header tests, concurrency tests, and

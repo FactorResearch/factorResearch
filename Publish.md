@@ -1,5 +1,5 @@
 # ================================
-# PRE-LAUNCH READINESS — Factor Research (AI-Optimized Spec)
+# PRE-LAUNCH READINESS — Cenvarn (AI-Optimized Spec)
 # ================================
 
 pre_launch_readiness:

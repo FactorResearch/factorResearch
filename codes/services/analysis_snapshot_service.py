@@ -202,7 +202,7 @@ def save_standard_snapshot(
                 VALUES (%s, %s)
                 ON CONFLICT (algorithm_version) DO NOTHING
                 """,
-                (snapshot.algorithm_version, "FactorResearch standard algorithm"),
+                (snapshot.algorithm_version, "Cenvarnstandard algorithm"),
             )
             cur.execute(
                 """

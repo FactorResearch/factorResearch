@@ -206,7 +206,7 @@ def data_trust_panel(data: dict | None, *, compact: bool = False):
         "cached" if analysis.get("cache_hit") else "newly calculated"
     )
     price_time = provenance.get("price_timestamp") or "Quote timestamp unavailable"
-    model_scope = provenance.get("model_scope") or "Factor Research default models"
+    model_scope = provenance.get("model_scope") or "Cenvarn default models"
     effects = list(provenance.get("missing_effects") or [])
     if analysis.get("secondary_status") == "failed":
         effects.append("Optional sources failed; their signals are excluded from the displayed support.")

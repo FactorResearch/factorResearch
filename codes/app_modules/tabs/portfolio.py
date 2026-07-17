@@ -375,7 +375,7 @@ def render_portfolio_holdings(active, refresh):
                     ),
                     "normalization_status": "Holding values normalized to the displayed portfolio totals",
                     "calculation_status": "Portfolio aggregate",
-                    "model_scope": "Factor Research default models",
+                    "model_scope": "Cenvarn default models",
                     "missing_effects": (
                         [
                             "Mixed-currency conversion lacks a stored exchange-rate timestamp; treat aggregate values as indicative."

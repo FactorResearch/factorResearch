@@ -1,6 +1,6 @@
 # Purpose
 
-Make accessibility a required quality attribute across every Factor Research surface.
+Make accessibility a required quality attribute across every Cenvarn surface.
 
 # Target
 
