@@ -75,7 +75,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
         return [], "", None
     if not _skip_guards:
         try:
-            check_rate_limit("backtest", calls=3, period_seconds=60)
+            check_rate_limit("backtest", calls=30, period_seconds=60, cost=10, priority="optional")
         except RateLimited as rl:
             return [section_error(f"Backtest rate limited. Try again in {rl.retry_after}s.")], "⏳ Rate limited", None
 
@@ -202,7 +202,7 @@ def start_factor_backtest_job(n_clicks, top_n, years, *weight_vals):
         result, status, upgrade = run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals)
         return result, status, dash.no_update, upgrade
     try:
-        check_rate_limit("backtest", calls=3, period_seconds=60)
+            check_rate_limit("backtest", calls=30, period_seconds=60, cost=10, priority="optional")
     except RateLimited as rl:
         return section_error(f"Backtest rate limited. Try again in {rl.retry_after}s."), "Rate limited", dash.no_update, None
 

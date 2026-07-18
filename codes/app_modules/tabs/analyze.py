@@ -215,7 +215,7 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         )
     # Rate limit (per-user) — max 10 analyze calls per minute
     try:
-        check_rate_limit("analyze", calls=10, period_seconds=60)
+        check_rate_limit("analyze", calls=40, period_seconds=60, cost=5, priority="essential")
     except RateLimited as rl:
         return (
             dash.no_update,

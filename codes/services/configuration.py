@@ -116,6 +116,10 @@ DEFAULT_DEFINITIONS: Final[tuple[SettingDefinition, ...]] = (
         "DEFAULT_RATE_LIMIT", str, default="600 per minute", restart_required=False,
         hot_reloadable=True, owner="security"
     ),
+    SettingDefinition(
+        "TRAFFIC_OPTIONAL_RESERVE_RATIO", _parse_float, default=0.2,
+        hot_reloadable=True, owner="security"
+    ),
     SettingDefinition("REDIS_RETRY_SECONDS", _parse_float, default=5.0, hot_reloadable=True, owner="cache"),
     SettingDefinition("PROVIDER_TIMEOUT_SECONDS", _parse_float, default=8.0, hot_reloadable=True, owner="providers"),
     SettingDefinition("ANALYSIS_REFRESH_SECONDS", _parse_int, default=3600, hot_reloadable=True, owner="analysis-worker"),

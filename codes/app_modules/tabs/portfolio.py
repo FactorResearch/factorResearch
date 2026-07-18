@@ -1404,11 +1404,11 @@ def start_simulation_job(n, active, compare):
         locked, upgrade = run_simulation(n, active, compare)
         return locked, dash.no_update, upgrade
     try:
-        check_rate_limit(
-            "portfolio_simulation",
-            calls=PORTFOLIO_SIMULATION_CALLS,
-            period_seconds=PORTFOLIO_SIMULATION_PERIOD_SECONDS,
-            key=uid,
+            check_rate_limit(
+                "portfolio_simulation",
+                calls=PORTFOLIO_SIMULATION_CALLS,
+                period_seconds=PORTFOLIO_SIMULATION_PERIOD_SECONDS,
+                key=uid,
         )
     except RateLimited as exc:
         wait = f" Try again in {exc.retry_after} seconds." if exc.retry_after else ""
