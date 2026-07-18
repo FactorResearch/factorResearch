@@ -41,6 +41,7 @@ from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
 from codes.services import performance_metrics, provider_gateway
 from codes.services import account_service, analysis_jobs, component_cache, screener_service
+from codes.services.operational_controller import classify_runtime_health, controller
 from codes.services.company_logo_cache import get_or_fetch_logo
 from codes.sitemap_generator import generate_analysis_sitemap
 
@@ -138,11 +139,20 @@ def internal_performance():
         flask.abort(404)
     from codes.data import analytics_db, db
     from codes.services import analysis_snapshot_service
+    controller.register_probe(
+        "providers",
+        lambda: classify_runtime_health("providers", provider_gateway.health()),
+    )
+    controller.register_probe(
+        "analysis-queue",
+        lambda: classify_runtime_health("analysis-queue", analysis_jobs.health()),
+    )
     return flask.jsonify({
         "performance": performance_metrics.snapshot(),
         "providers": provider_gateway.health(),
         "component_cache": component_cache.stats(),
         "jobs": analysis_jobs.health(),
+        "operational": controller.summary(),
         "database_pools": {
             "application": db.pool_health(),
             "analytics": analytics_db.pool_health(),
