@@ -1,0 +1,5 @@
+{% extends "base.txt" %}
+{% set headline = headline|default("Planned maintenance") %}
+{% block content %}{{ message|default("Cenvarn will be briefly unavailable during planned maintenance.") }}{% if maintenance_window %}
+
+Window: {{ maintenance_window }}{% endif %}{% endblock %}

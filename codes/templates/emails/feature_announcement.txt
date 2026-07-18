@@ -1,0 +1,5 @@
+{% extends "base.txt" %}
+{% set headline = headline|default("A new research capability") %}
+{% block content %}Hi {{ first_name }},
+
+{{ message }}{% endblock %}

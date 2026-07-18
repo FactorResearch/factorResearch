@@ -66,7 +66,7 @@ def _topbar():
     return html.Header(id="topbar", className="topbar", children=[
         html.Div(className="topbar-brand", children=[
             html.Img(src="/assets/logo.svg", alt="Research Factor", className="topbar-logo"),
-            html.Span("FactorResearch", className="topbar-title"),
+            html.Span("Cenvarn", className="topbar-title"),
         ]),
         html.Nav(className="topbar-nav", role="tablist", **{"aria-label": "Primary navigation"}, children=[
             button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", role="tab", **{"data-tab": "screener", "aria-controls": "tab-screener", "aria-selected": "true"}),

@@ -92,7 +92,7 @@ def _auth_error_response(status_code: int = 400):
     """Return a safe, structured authentication error that remains keyboard-readable."""
     body = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Authentication error | FactorResearch</title><link rel="stylesheet" href="/assets/error_pages.css"><link rel="stylesheet" href="/assets/accessibility.css"></head>
+<title>Authentication error | Cenvarn</title><link rel="stylesheet" href="/assets/error_pages.css"><link rel="stylesheet" href="/assets/accessibility.css"></head>
 <body class="error-page"><a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" class="error-shell" tabindex="-1"><section class="error-card" role="alert">
 <h1>Authentication error</h1><p>{GENERIC_AUTH_ERROR}</p><a class="primary-action" href="/login">Try signing in again</a>

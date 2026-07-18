@@ -99,7 +99,7 @@ class AnalysisSnapshot:
     @property
     def title(self) -> str:
         day = self.analysis_date.strftime("%B %-d %Y")
-        return f"{self.company_name} Stock Analysis {day} | FactorResearch"
+        return f"{self.company_name} Stock Analysis {day} | Cenvarn"
 
     @property
     def description(self) -> str:

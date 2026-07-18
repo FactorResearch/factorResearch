@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% set headline = headline|default("You're on the waitlist") %}
+{% block content %}
+<p style="margin:0 0 16px; font-size:16px; line-height:1.6;">Hi {{ first_name }},</p>
+<p style="margin:0 0 16px; font-size:16px; line-height:1.6;">Thanks for joining the {{ brand_name }} waitlist. We'll let you know when access is available.</p>
+{% endblock %}

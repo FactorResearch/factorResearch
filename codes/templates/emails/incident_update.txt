@@ -1,0 +1,5 @@
+{% extends "base.txt" %}
+{% set headline = headline|default("Service update") %}
+{% block content %}{{ message }}{% if status %}
+
+Status: {{ status }}{% endif %}{% endblock %}

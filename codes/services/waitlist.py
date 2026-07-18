@@ -8,6 +8,7 @@ from email.message import EmailMessage
 
 from codes.data import db
 from codes.security import validate_email
+from codes.services.email_templates import render_email
 
 
 class WaitlistEmailError(RuntimeError):
@@ -15,15 +16,24 @@ class WaitlistEmailError(RuntimeError):
 
 
 def _send_confirmation(email: str) -> None:
+    """Send the provider-neutral waitlist confirmation through configured SMTP.
+
+    The renderer owns branded HTML and plain-text alternatives; this function
+    owns only SMTP configuration and transport. Missing configuration raises a
+    domain error so waitlist persistence remains successful without pretending
+    delivery occurred.
+    """
     host = os.environ.get("SMTP_HOST")
     sender = os.environ.get("SMTP_FROM_EMAIL")
     if not host or not sender:
         raise WaitlistEmailError("Waitlist email is not configured.")
     message = EmailMessage()
-    message["Subject"] = "You're on the Cenvarn waitlist"
+    rendered = render_email("waitlist_confirmation", {"first_name": "there"})
+    message["Subject"] = rendered.subject
     message["From"] = sender
     message["To"] = email
-    message.set_content("You're on the Cenvarn waitlist. We'll email you when we launch.\n\nThank you,\nCenvarn")
+    message.set_content(rendered.text)
+    message.add_alternative(rendered.html, subtype="html")
     username = os.environ.get("SMTP_USERNAME")
     with smtplib.SMTP(host, int(os.environ.get("SMTP_PORT", "587")), timeout=10) as smtp:
         if os.environ.get("SMTP_USE_TLS", "true").lower() not in {"0", "false", "no"}:

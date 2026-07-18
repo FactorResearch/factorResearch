@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% set headline = headline|default("An update about your account") %}
+{% block content %}
+<p style="margin:0 0 16px; font-size:16px; line-height:1.6;">Hi {{ first_name }},</p>
+<p style="margin:0 0 16px; font-size:16px; line-height:1.6;">{{ message }}</p>
+{% endblock %}

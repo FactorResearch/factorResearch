@@ -1,0 +1,5 @@
+{% extends "base.txt" %}
+{% set headline = headline|default("You're on the waitlist") %}
+{% block content %}Hi {{ first_name }},
+
+Thanks for joining the {{ brand_name }} waitlist. We'll let you know when access is available.{% endblock %}

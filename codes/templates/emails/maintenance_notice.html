@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% set headline = headline|default("Planned maintenance") %}
+{% block content %}
+<p style="margin:0 0 16px; font-size:16px; line-height:1.6;">{{ message|default("Cenvarn will be briefly unavailable during planned maintenance.") }}</p>
+{% if maintenance_window %}<p style="margin:0 0 16px; font-size:16px; line-height:1.6;"><strong>Window:</strong> {{ maintenance_window }}</p>{% endif %}
+{% endblock %}

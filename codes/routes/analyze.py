@@ -175,7 +175,7 @@ def company_analysis_page(slug: str):
     theme = _theme_for(latest)
     motif = theme["motif"]
     canonical = _absolute_url(latest.company_path)
-    title = f"{latest.company_name} Stock Analysis, Valuation and Historical Scores | FactorResearch"
+    title = f"{latest.company_name} Stock Analysis, Valuation and Historical Scores | Cenvarn"
     description = (
         f"View {latest.company_name}'s historical valuation, financial strength, risk scores, "
         "intrinsic value estimates, and Cenvarnanalysis history."
@@ -210,7 +210,7 @@ def company_analysis_page(slug: str):
 <script type="application/ld+json">{landing_schema}</script>
 <script>(function(){{try{{var t=localStorage.getItem("fr-theme")||"system";var light=t==="light"||(t==="system"&&window.matchMedia("(prefers-color-scheme: light)").matches);if(light)document.documentElement.classList.add("light");}}catch(e){{}}}})();</script>
 </head>
-<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>FactorResearch</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}?tab=analyze">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">Cenvarncompany dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span class="ticker-symbol">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?{sector_query}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
+<body><div class="topbar"><a class="brand" href="/"><span class="brand-mark">FR</span>Cenvarn</a><nav class="topnav" aria-label="Primary"><a href="/">Screener</a><a href="/analyze/{html.escape(latest.ticker)}?tab=analyze">Analyze</a><a href="/?tab=portfolio">Portfolio</a><a class="active" href="{html.escape(latest.company_path)}">Company Research</a></nav></div><main><header class="hero" data-motif="{motif}"><div class="hero-content"><div class="monogram" aria-hidden="true">{html.escape(latest.ticker[:4])}</div><div><span class="eyebrow">Cenvarncompany dossier · {html.escape(motif)}</span><h1>{html.escape(latest.company_name)} <span class="ticker-symbol">({html.escape(latest.ticker)})</span></h1><p>{html.escape(description)}</p><div class="hero-meta"><a href="/?{sector_query}">{html.escape(latest.sector or 'Public company')}</a><span>{len(history)} official snapshot{'s' if len(history) != 1 else ''}</span><span>Updated {latest.analysis_date.isoformat()}</span></div></div></div></header>
 <nav class="tabs" aria-label="Analysis sections">CenvarnHistory&nbsp;&nbsp;·&nbsp;&nbsp;My Custom Models</nav><div class="columns"><section class="section-shell"><div class="section-title"><div><h2>CenvarnHistory</h2><p>Immutable results from the official methodology</p></div></div>{_official_history_cards(history)}{pagination}</section><div>{custom_column}</div></div></main><footer class="footer">© Cenvarn· Independent financial research · Company-inspired visuals use abstract, non-proprietary design elements.</footer></body></html>"""
     response = flask.Response(body, mimetype="text/html")
     response.headers["Cache-Control"] = "private, no-store" if user_id else "public, max-age=300"
@@ -522,7 +522,7 @@ def _structured_data(snapshot, canonical_url: str) -> str:
                 "dateModified": date_published,
                 "isPartOf": {
                     "@type": "WebSite",
-                    "name": "FactorResearch",
+                    "name": "Cenvarn",
                     "url": flask.request.url_root.rstrip("/"),
                 },
                 "about": {"@id": f"{canonical_url}#stock"},
@@ -541,12 +541,12 @@ def _structured_data(snapshot, canonical_url: str) -> str:
                 "keywords": snapshot.keywords,
                 "author": {
                     "@type": "Organization",
-                    "name": "FactorResearch",
+                    "name": "Cenvarn",
                     "url": flask.request.url_root.rstrip("/"),
                 },
                 "publisher": {
                     "@type": "Organization",
-                    "name": "FactorResearch",
+                    "name": "Cenvarn",
                     "url": flask.request.url_root.rstrip("/"),
                 },
                 "about": {
@@ -672,7 +672,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
   <meta name="keywords" content="{keywords}">
   <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
   <meta property="og:type" content="article">
-  <meta property="og:site_name" content="FactorResearch">
+  <meta property="og:site_name" content="Cenvarn">
   <meta property="og:title" content="{title}">
   <meta property="og:description" content="{description}">
   <meta property="og:url" content="{url}">

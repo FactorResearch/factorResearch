@@ -3,7 +3,7 @@
 This is the single authoritative context file for AI work in this repository.
 Load this file before coding. It consolidates project memory, Ponytail simplicity,
 Caveman communication, and the Engineering, Design, Testing, and Security
-standards adapted from `FactorResearch/agency-agents`. Other Markdown files are
+standards adapted from `Cenvarn/agency-agents`. Other Markdown files are
 product documentation, audit evidence, or optional tool references; they are not
 required to understand how to work here.
 

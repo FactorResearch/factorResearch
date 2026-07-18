@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% set headline = headline|default("Service update") %}
+{% block content %}
+<p style="margin:0 0 16px; font-size:16px; line-height:1.6;">{{ message }}</p>
+{% if status %}<p style="margin:0 0 16px; font-size:16px; line-height:1.6;"><strong>Status:</strong> {{ status }}</p>{% endif %}
+{% endblock %}

@@ -172,7 +172,7 @@ def test_historical_page_renders_schema_org_json_ld():
 
     article = schema["@graph"][0]
     assert article["@type"] == "Article"
-    assert article["headline"] == "Apple Inc. Stock Analysis July 8 2026 | FactorResearch"
+    assert article["headline"] == "Apple Inc. Stock Analysis July 8 2026 | Cenvarn"
     assert article["url"] == "http://localhost/AAPL/analyze/20260708"
     assert article["about"]["@type"] == "Corporation"
     assert article["about"]["tickerSymbol"] == "AAPL"

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{{ subject }}</title>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .email-page { background: #0f1724 !important; }
+      .email-card { background: #172235 !important; color: #e8edf5 !important; }
+      .email-muted { color: #b4c0d1 !important; }
+    }
+    @media screen and (max-width: 600px) {
+      .email-card { width: 100% !important; }
+      .email-pad { padding: 24px !important; }
+    }
+  </style>
+</head>
+<body class="email-page" style="margin:0; padding:0; background:#eef3f8; color:#172235; font-family:Arial,Helvetica,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%; background:#eef3f8;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table role="presentation" class="email-card" width="600" cellspacing="0" cellpadding="0" border="0" style="width:600px; max-width:600px; background:#ffffff; border:1px solid #d8e0ea;">
+        <tr><td class="email-pad" style="padding:32px;">
+          <p style="margin:0 0 24px; color:#1769aa; font-size:12px; font-weight:bold; letter-spacing:.12em; text-transform:uppercase;">{{ brand_name }}</p>
+          <h1 style="margin:0 0 24px; color:inherit; font-size:28px; line-height:1.2;">{{ headline }}</h1>
+          {% block content %}{% endblock %}
+          {% if cta_url %}<p style="margin:28px 0;"><a href="{{ cta_url }}" style="display:inline-block; padding:13px 18px; background:#1769aa; color:#ffffff; font-size:16px; font-weight:bold; text-decoration:none;">{{ cta_label|default("Open Cenvarn") }}</a></p>{% endif %}
+          <p class="email-muted" style="margin:28px 0 0; color:#5d6b7d; font-size:13px; line-height:1.5;">Thanks,<br>The {{ brand_name }} team</p>
+        </td></tr>
+        <tr><td style="padding:20px 32px; border-top:1px solid #d8e0ea;">
+          <p class="email-muted" style="margin:0; color:#5d6b7d; font-size:12px; line-height:1.5;">{{ footer_text|default("You are receiving this message from " ~ brand_name ~ ".") }}{% if unsubscribe_url %} <a href="{{ unsubscribe_url }}" style="color:#1769aa;">Unsubscribe</a>{% endif %}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

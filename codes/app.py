@@ -52,7 +52,7 @@ from codes.app_modules.session import get_user_id, invalidate_portfolio_cache
 runtime = compose_runtime()
 app = dash.Dash(
     __name__,
-    title="FactorResearch",
+    title="Cenvarn",
     suppress_callback_exceptions=True,
     assets_folder='../assets',
     # Source SCSS and standalone-route styles stay directly addressable, but
@@ -100,8 +100,8 @@ register_error_pages(server)
 @server.route("/manifest.webmanifest")
 def web_manifest():
     return flask.jsonify({
-        "name": "FactorResearch",
-        "short_name": "FactorResearch",
+        "name": "Cenvarn",
+        "short_name": "Cenvarn",
         "start_url": "/",
         "display": "standalone",
         "background_color": "#0f1b2d",

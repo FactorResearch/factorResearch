@@ -39,7 +39,7 @@ def test_error_pages_use_external_css_and_no_inline_styles():
         assert 'href="/assets/error_pages.css"' in body
         assert "<style" not in body
         assert "style=" not in body
-        assert "FactorResearch" in body
+        assert "Cenvarn" in body
         assert f">{status_code}<" in body
 
 

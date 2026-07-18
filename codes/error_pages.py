@@ -30,7 +30,7 @@ ERROR_PAGE_COPY = {
     404: {
         "eyebrow": "Not found",
         "title": "This research page does not exist.",
-        "message": "The ticker, snapshot, or route could not be found in FactorResearch.",
+        "message": "The ticker, snapshot, or route could not be found in Cenvarn.",
         "action": "Open screener",
     },
     500: {

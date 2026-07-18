@@ -1,0 +1,14 @@
+{{ brand_name }}
+
+{{ headline }}
+
+{% block content %}{% endblock %}
+{% if cta_url %}
+{{ cta_label|default("Open Cenvarn") }}: {{ cta_url }}
+{% endif %}
+
+Thanks,
+The {{ brand_name }} team
+
+{{ footer_text|default("You are receiving this message from " ~ brand_name ~ ".") }}{% if unsubscribe_url %}
+Unsubscribe: {{ unsubscribe_url }}{% endif %}
