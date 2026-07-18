@@ -2,20 +2,23 @@
 Comprehensive Security Module
 """
 
-import os
 import base64
 import hashlib
 import hmac
-import logging
 import json
+import logging
+import os
 import re
-from typing import Any
-from functools import wraps
 from datetime import timedelta
-import markupsafe
+from functools import wraps
+from typing import Any
+
 import flask
-from flask import request, session, abort
+import markupsafe
+from flask import abort, request, session
+
 from codes.core.config import is_production
+from codes.services.audit_journal import audit_journal
 
 try:
     from cryptography.fernet import Fernet
@@ -121,6 +124,13 @@ def log_security_event(event_type: str, details: dict[str, Any] | None = None) -
     """Log a security-relevant event while masking common secret-bearing fields."""
     masked = _mask_sensitive_details(details or {})
     SECURITY_LOGGER.info("SECURITY_EVENT type=%s details=%s", event_type, masked)
+    audit_journal.record(
+        "security",
+        action=event_type,
+        component="security",
+        severity="WARNING",
+        details=masked,
+    )
 
 
 class SensitiveDataEncryptor:
@@ -335,4 +345,13 @@ def audit_log_access(action: str, resource: str, user_id: str, success: bool = T
     """Minimal audit trail: who did what, to which resource, outcome."""
     SECURITY_LOGGER.info(
         f"AUDIT action={action} resource={resource} user={user_id} success={success}"
+    )
+    audit_journal.record(
+        "access",
+        action=action,
+        actor_id=user_id,
+        user_id=user_id,
+        component="security",
+        outcome="success" if success else "failure",
+        details={"resource": resource},
     )

@@ -12,6 +12,7 @@ from threading import RLock
 from typing import Mapping
 
 from codes.core.redis_client import get_redis
+from codes.services.audit_journal import audit_journal
 
 _FEATURE_KEY = "feature-management:definitions"
 _DEFAULT_FILE = Path(__file__).resolve().parents[2] / "feature_management.json"
@@ -228,6 +229,14 @@ class FeatureManager:
         }
         with self._audit_file.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, sort_keys=True) + "\n")
+        audit_journal.record(
+            "feature_policy",
+            action=action,
+            actor_id=actor,
+            component="feature_management",
+            outcome=outcome,
+            details={"feature": feature},
+        )
 
 
 def _normalize_name(name: str) -> str:

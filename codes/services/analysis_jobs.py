@@ -12,6 +12,7 @@ from uuid import uuid4
 from codes.core.config import is_production
 from codes.core.redis_client import get_redis
 from codes.domain.responses import JobResponse
+from codes.services.audit_journal import audit_journal
 
 _QUEUE = "jobs:analysis"
 _MAINTENANCE_QUEUE = f"{_QUEUE}:maintenance"
@@ -51,6 +52,14 @@ def _dispatch(job: dict) -> None:
 
 def enqueue(job: dict) -> None:
     job = _prepare_job(job)
+    audit_journal.record(
+        "job",
+        action="enqueue",
+        job_id=job["job_id"],
+        ticker=str(job.get("symbol", "")),
+        component="analysis_jobs",
+        details={"type": job.get("type"), "priority": job.get("priority")},
+    )
     redis = get_redis()
     if redis is not None:
         try:
@@ -82,6 +91,13 @@ def recover_interrupted_jobs(redis) -> int:
     while True:
         raw = redis.rpoplpush(_PROCESSING_QUEUE, _QUEUE)
         if raw is None:
+            if recovered:
+                audit_journal.record(
+                    "job_recovery",
+                    action="requeue_interrupted",
+                    component="analysis_jobs",
+                    details={"count": recovered},
+                )
             return recovered
         recovered += 1
 
@@ -97,16 +113,43 @@ def consume_one(redis, timeout: int = 5) -> bool:
     try:
         _dispatch(job)
         redis.lrem(_PROCESSING_QUEUE, 1, raw)
+        audit_journal.record(
+            "job",
+            action="complete",
+            job_id=str(job.get("job_id", "")),
+            ticker=str(job.get("symbol", "")),
+            component="analysis_jobs",
+        )
     except Exception as exc:
         redis.lrem(_PROCESSING_QUEUE, 1, raw)
         max_attempts = max(1, int(job.get("max_attempts", 3)))
         if attempts + 1 < max_attempts:
             retry = {**job, "attempts": attempts + 1, "last_error": type(exc).__name__}
             redis.rpush(_queue_name(retry), json.dumps(retry))
+            audit_journal.record(
+                "job",
+                action="retry",
+                job_id=str(job.get("job_id", "")),
+                ticker=str(job.get("symbol", "")),
+                component="analysis_jobs",
+                severity="WARNING",
+                outcome="retrying",
+                details={"attempt": attempts + 1, "error": type(exc).__name__},
+            )
         else:
             redis.rpush(
                 f"{_QUEUE}:dead",
                 json.dumps({**job, "error": type(exc).__name__, "terminal": True}),
+            )
+            audit_journal.record(
+                "job",
+                action="dead_letter",
+                job_id=str(job.get("job_id", "")),
+                ticker=str(job.get("symbol", "")),
+                component="analysis_jobs",
+                severity="ERROR",
+                outcome="terminal_failure",
+                details={"error": type(exc).__name__},
             )
     return True
 

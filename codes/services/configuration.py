@@ -21,6 +21,8 @@ from pathlib import Path
 from threading import RLock
 from typing import Final
 
+from codes.services.audit_journal import audit_journal
+
 Parser = Callable[[str], object]
 
 
@@ -296,6 +298,17 @@ class ConfigurationService:
         self._audit_file.parent.mkdir(parents=True, exist_ok=True)
         with self._audit_file.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, sort_keys=True) + "\n")
+        audit_journal.record(
+            "configuration",
+            action=action,
+            actor_id=actor,
+            component="configuration",
+            outcome=outcome,
+            details={
+                "hot_reloaded": list(hot_reloaded),
+                "restart_required": list(restart_required),
+            },
+        )
 
 
 def build_default_configuration_service() -> ConfigurationService:

@@ -15,6 +15,8 @@ from pathlib import Path
 from threading import RLock
 from typing import Any
 
+from codes.services.audit_journal import audit_journal
+
 LOGGER = logging.getLogger(__name__)
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[2] / "capabilities.json"
 DECISION_CACHE_TTL_SECONDS = 1.0
@@ -106,12 +108,27 @@ class CapabilityService:
                 raise ValueError("capability override actor is required")
             self._overrides[(user_id, normalized)] = CapabilityOverride(bool(enabled), expiry, actor)
             self._invalidate_locked()
+            audit_journal.record(
+                "capability_override",
+                action="set",
+                actor_id=actor,
+                user_id=user_id,
+                component="capabilities",
+                details={"capability": normalized, "enabled": bool(enabled), "expires_at": expiry.isoformat()},
+            )
 
     def clear_override(self, user_id: str, capability: str) -> None:
         """Remove a user-specific override and invalidate cached decisions."""
         with self._lock:
             self._overrides.pop((user_id, str(capability or "").strip().lower()), None)
             self._invalidate_locked()
+            audit_journal.record(
+                "capability_override",
+                action="clear",
+                user_id=user_id,
+                component="capabilities",
+                details={"capability": str(capability or "").strip().lower()},
+            )
 
     def analysis_limit(self, plan: str | None) -> int | None:
         """Return the configured analysis quota for a subscription plan."""
