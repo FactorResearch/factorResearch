@@ -37,15 +37,27 @@ def _authenticated_user() -> str | None:
     return auth.get_authenticated_user_id()
 
 
-def _page_parameters() -> tuple[int, int] | None:
+def _page_parameters() -> tuple[int, int, int, bool] | None:
     try:
-        page = int(flask.request.args.get("page", "1"))
         page_size = int(flask.request.args.get("page_size", str(contracts.DEFAULT_PAGE_SIZE)))
     except ValueError:
         return None
-    if page < 1 or page_size < 1 or page_size > contracts.MAX_PAGE_SIZE:
+    if page_size < 1 or page_size > contracts.MAX_PAGE_SIZE:
         return None
-    return page, page_size
+    cursor = flask.request.args.get("cursor", "")
+    if cursor:
+        try:
+            offset = contracts.decode_cursor(cursor)
+        except ValueError:
+            return None
+        return offset // page_size + 1, page_size, offset, True
+    try:
+        page = int(flask.request.args.get("page", "1"))
+    except ValueError:
+        return None
+    if page < 1:
+        return None
+    return page, page_size, (page - 1) * page_size, False
 
 
 @api_v1.get("/health")
@@ -78,11 +90,23 @@ def screener():
             f"page must be positive and page_size must be between 1 and {contracts.MAX_PAGE_SIZE}.",
             400,
         )
-    page, page_size = parameters
+    page, page_size, start, cursor_mode = parameters
     rows = screener_service.get_results()
-    start = (page - 1) * page_size
     items = [contracts.screener_resource(row) for row in rows[start : start + page_size]]
-    return _json(contracts.collection_response(items, page, page_size, len(rows), _request_id()))
+    end = start + len(items)
+    return _json(
+        contracts.collection_response(
+            items,
+            page,
+            page_size,
+            len(rows),
+            _request_id(),
+            next_cursor=contracts.encode_cursor(end) if cursor_mode and end < len(rows) else None,
+            previous_cursor=contracts.encode_cursor(max(0, start - page_size))
+            if cursor_mode and start > 0
+            else None,
+        )
+    )
 
 
 @api_v1.get("/account")
@@ -112,7 +136,7 @@ def portfolios():
             f"page must be positive and page_size must be between 1 and {contracts.MAX_PAGE_SIZE}.",
             400,
         )
-    page, page_size = parameters
+    page, page_size, start, cursor_mode = parameters
     include_deleted = flask.request.args.get("include_deleted", "false").lower() == "true"
     changed_since = flask.request.args.get("changed_since")
     if include_deleted or changed_since:
@@ -121,9 +145,21 @@ def portfolios():
         )
     else:
         rows = account_service.portfolio_summaries(user_id)
-    start = (page - 1) * page_size
     items = [contracts.portfolio_summary(row) for row in rows[start : start + page_size]]
-    return _json(contracts.collection_response(items, page, page_size, len(rows), _request_id()))
+    end = start + len(items)
+    return _json(
+        contracts.collection_response(
+            items,
+            page,
+            page_size,
+            len(rows),
+            _request_id(),
+            next_cursor=contracts.encode_cursor(end) if cursor_mode and end < len(rows) else None,
+            previous_cursor=contracts.encode_cursor(max(0, start - page_size))
+            if cursor_mode and start > 0
+            else None,
+        )
+    )
 
 
 @api_v1.get("/billing")

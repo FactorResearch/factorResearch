@@ -20,12 +20,15 @@ class Pagination(TypedDict):
     page_size: int
     total_items: int
     total_pages: int
+    next_cursor: NotRequired[str | None]
+    previous_cursor: NotRequired[str | None]
 
 
 class ErrorDetail(TypedDict):
     code: str
     message: str
     retryable: bool
+    details: NotRequired[dict[str, object]]
 
 
 class ErrorResponse(TypedDict):
@@ -123,9 +126,13 @@ class BillingResource(TypedDict):
 class DataResponse(TypedDict):
     data: object
     meta: ApiMeta
+    partial: NotRequired[bool]
+    errors: NotRequired[list[ErrorDetail]]
 
 
 class CollectionResponse(TypedDict):
     data: list[object]
     pagination: Pagination
     meta: ApiMeta
+    partial: NotRequired[bool]
+    errors: NotRequired[list[ErrorDetail]]

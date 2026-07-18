@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import math
+from base64 import urlsafe_b64decode, urlsafe_b64encode
+from binascii import Error as Base64Error
 from typing import Any
 
+from codes.api.errors import from_code
 from codes.api.schemas import (
     AccountResource,
     ApiMeta,
@@ -16,7 +19,6 @@ from codes.api.schemas import (
     PortfolioSummary,
     ScreenerResource,
 )
-from codes.core.errors import error_for_code
 from codes.domain.responses import (
     PortfolioResponse as DomainPortfolioResponse,
 )
@@ -54,35 +56,74 @@ def error_response(
     while the registry remains authoritative for category, severity, retry,
     recovery, and safe default copy.
     """
-    structured = error_for_code(code, details=details)
-    payload = {
-        "code": structured.code,
-        "message": message or structured.definition.message,
-        "retryable": structured.definition.retryable,
-    }
-    return {
-        "error": payload,
-        "meta": meta(request_id),
-    }
+    return from_code(code, request_id, message=message, details=details)
 
 
-def pagination(page: int, page_size: int, total_items: int) -> Pagination:
-    return {
+def pagination(
+    page: int,
+    page_size: int,
+    total_items: int,
+    *,
+    next_cursor: str | None = None,
+    previous_cursor: str | None = None,
+) -> Pagination:
+    result: Pagination = {
         "page": page,
         "page_size": page_size,
         "total_items": total_items,
         "total_pages": math.ceil(total_items / page_size) if total_items else 0,
     }
+    if next_cursor is not None:
+        result["next_cursor"] = next_cursor
+    if previous_cursor is not None:
+        result["previous_cursor"] = previous_cursor
+    return result
+
+
+def encode_cursor(offset: int) -> str:
+    """Encode a non-negative result offset as an opaque URL-safe cursor."""
+    if offset < 0:
+        raise ValueError("cursor offset must be non-negative")
+    return urlsafe_b64encode(str(offset).encode("ascii")).decode("ascii").rstrip("=")
+
+
+def decode_cursor(cursor: str) -> int:
+    """Decode and validate an opaque cursor, rejecting malformed input."""
+    if not cursor or len(cursor) > 32:
+        raise ValueError("cursor is invalid")
+    try:
+        decoded = urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4)).decode("ascii")
+        offset = int(decoded)
+    except (ValueError, UnicodeDecodeError, Base64Error) as error:
+        raise ValueError("cursor is invalid") from error
+    if offset < 0:
+        raise ValueError("cursor is invalid")
+    return offset
 
 
 def collection_response(
-    data: list[object], page: int, page_size: int, total_items: int, request_id: str
+    data: list[object], page: int, page_size: int, total_items: int, request_id: str,
+    *, next_cursor: str | None = None, previous_cursor: str | None = None,
+    errors: list[dict[str, object]] | None = None,
 ) -> CollectionResponse:
-    return {
+    result: CollectionResponse = {
         "data": data,
-        "pagination": pagination(page, page_size, total_items),
+        "pagination": pagination(
+            page, page_size, total_items, next_cursor=next_cursor, previous_cursor=previous_cursor
+        ),
         "meta": meta(request_id),
     }
+    if errors:
+        result["partial"] = True
+        result["errors"] = errors
+    return result
+
+
+def partial_data_response(
+    data: object, request_id: str, errors: list[dict[str, object]]
+) -> DataResponse:
+    """Return successful data plus independently failed optional sections."""
+    return {"data": data, "meta": meta(request_id), "partial": True, "errors": errors}
 
 
 def screener_resource(raw: dict[str, Any]) -> ScreenerResource:

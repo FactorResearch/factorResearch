@@ -64,6 +64,7 @@ class ErrorDefinition:
 
 ERROR_REGISTRY: Mapping[str, ErrorDefinition] = {
     "invalid_request": ErrorDefinition("invalid_request", ErrorCategory.VALIDATION, "The request could not be understood.", ErrorSeverity.WARNING, False, RecoveryAction.FIX_INPUT, 400),
+    "invalid_pagination": ErrorDefinition("invalid_pagination", ErrorCategory.VALIDATION, "The pagination parameters are invalid.", ErrorSeverity.WARNING, False, RecoveryAction.FIX_INPUT, 400),
     "unauthorized": ErrorDefinition("unauthorized", ErrorCategory.AUTHENTICATION, "Authentication is required.", ErrorSeverity.WARNING, False, RecoveryAction.SIGN_IN, 401),
     "forbidden": ErrorDefinition("forbidden", ErrorCategory.AUTHORIZATION, "You do not have access to this resource.", ErrorSeverity.WARNING, False, RecoveryAction.CONTACT_SUPPORT, 403),
     "not_found": ErrorDefinition("not_found", ErrorCategory.NOT_FOUND, "The requested resource was not found.", ErrorSeverity.INFO, False, RecoveryAction.NONE, 404),
@@ -71,6 +72,7 @@ ERROR_REGISTRY: Mapping[str, ErrorDefinition] = {
     "dependency_unavailable": ErrorDefinition("dependency_unavailable", ErrorCategory.DEPENDENCY, "A required service is temporarily unavailable.", ErrorSeverity.ERROR, True, RecoveryAction.RETRY, 503),
     "timeout": ErrorDefinition("timeout", ErrorCategory.TIMEOUT, "The request took too long to complete.", ErrorSeverity.WARNING, True, RecoveryAction.RETRY, 504),
     "cancelled": ErrorDefinition("cancelled", ErrorCategory.CANCELLED, "The operation was cancelled.", ErrorSeverity.INFO, False, RecoveryAction.NONE, 409),
+    "conflict": ErrorDefinition("conflict", ErrorCategory.CONFLICT, "The request conflicts with the current resource state.", ErrorSeverity.WARNING, False, RecoveryAction.REFRESH, 409),
     "partial_response": ErrorDefinition("partial_response", ErrorCategory.PARTIAL, "Some results are unavailable, but the available results are shown.", ErrorSeverity.WARNING, True, RecoveryAction.REFRESH, 206),
     "internal_error": ErrorDefinition("internal_error", ErrorCategory.INTERNAL, "Something went wrong. Please try again.", ErrorSeverity.CRITICAL, False, RecoveryAction.CONTACT_SUPPORT, 500),
 }
