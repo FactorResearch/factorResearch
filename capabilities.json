@@ -1,0 +1,23 @@
+{
+  "version": "1",
+  "plans": {
+    "free": {
+      "capabilities": ["analysis", "custom_weights"],
+      "analysis_limit": 3
+    },
+    "premium": {
+      "capabilities": ["analysis", "custom_weights", "backtest", "portfolio_analytics", "screening", "export"],
+      "analysis_limit": null
+    },
+    "trial": {"inherits": "free"},
+    "professional": {"inherits": "free"}
+  },
+  "capabilities": {
+    "analysis": {"dependencies": [], "denial_message": "Company analysis is unavailable for this account."},
+    "custom_weights": {"dependencies": ["analysis"], "denial_message": "Custom weighting requires access to company analysis."},
+    "screening": {"dependencies": [], "denial_message": "Unlimited screening requires Premium."},
+    "backtest": {"dependencies": ["analysis"], "denial_message": "Historical backtesting requires Premium."},
+    "portfolio_analytics": {"dependencies": ["analysis"], "denial_message": "Portfolio analytics requires Premium."},
+    "export": {"dependencies": ["analysis"], "denial_message": "Research data export requires Premium."}
+  }
+}

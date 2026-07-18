@@ -9,6 +9,7 @@ from typing import Any
 from codes import auth
 from codes.core import app_flags
 from codes.data import db
+from codes.services.capabilities import capability_service
 from codes.services.pricing import FREE, PLANS, PREMIUM, normalize_plan
 
 ACTIVE_SUBSCRIPTION_STATUSES = {"active", "trialing", "past_due"}
@@ -82,6 +83,7 @@ def get_feature_usage_total(user_id: str, feature: Feature | str) -> int:
 
 
 def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult:
+    """Enforce feature access through the centralized capability boundary."""
     feature = normalize_feature(feature)
     if app_flags.billing_checks_disabled():
         return PermissionResult(True, feature, plan=PREMIUM, status="internal")
@@ -89,22 +91,26 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
     plan = normalize_plan(subscription.get("plan"))
     status = str(subscription.get("status") or "trialing").lower()
 
-    if is_paid_subscription(subscription) and feature.value in PLANS[PREMIUM]["features"]:
-        return PermissionResult(True, feature, plan=plan, status=status)
-
-    if feature.value in PLANS[FREE]["features"] and feature != Feature.ANALYSIS:
-        return PermissionResult(True, feature, plan=plan, status=status)
+    entitlement_plan = plan if is_paid_subscription(subscription) else FREE
+    decision = capability_service.evaluate(
+        user_id, feature.value, plan=entitlement_plan, status=status
+    )
 
     if feature == Feature.ANALYSIS:
+        analysis_limit = capability_service.analysis_limit(entitlement_plan)
+        if decision.allowed and analysis_limit is None:
+            return PermissionResult(True, feature, plan=plan, status=status)
         used = get_feature_usage_total(user_id, feature)
-        remaining = max(TRIAL_ANALYSIS_LIMIT - used, 0)
+        limit = analysis_limit if analysis_limit is not None else TRIAL_ANALYSIS_LIMIT
+        remaining = max(limit - used, 0)
         if remaining > 0:
             return PermissionResult(
-                True,
+                decision.allowed,
                 feature,
                 plan=plan,
                 status=status,
                 remaining=remaining,
+                reason=decision.reason,
             )
         return PermissionResult(
             False,
@@ -120,16 +126,12 @@ def can_access_feature(user_id: str, feature: Feature | str) -> PermissionResult
             upgrade_required=True,
         )
 
-    messages = {
-        Feature.BACKTEST: "Historical backtesting requires Premium.",
-        Feature.PORTFOLIO_ANALYTICS: "Portfolio analytics requires Premium.",
-        Feature.SCREENING: "Unlimited screening requires Premium.",
-        Feature.EXPORT: "Research data export requires Premium.",
-    }
+    if decision.allowed:
+        return PermissionResult(True, feature, plan=plan, status=status)
     return PermissionResult(
         False,
         feature,
-        reason=messages.get(feature, "This feature requires Premium."),
+        reason=decision.reason,
         plan=plan,
         status=status,
         upgrade_required=True,
@@ -144,10 +146,11 @@ def record_feature_usage(user_id: str, feature: Feature | str, usage_key: str | 
 def consume_analysis_if_allowed(user_id: str, ticker: str | None = None) -> PermissionResult:
     result = can_access_feature(user_id, Feature.ANALYSIS)
     if result.allowed and result.remaining is not None:
+        limit = capability_service.analysis_limit(result.plan) or TRIAL_ANALYSIS_LIMIT
         usage = db.consume_limited_usage(
             user_id,
             Feature.ANALYSIS.value,
-            TRIAL_ANALYSIS_LIMIT,
+            limit,
             usage_key=ticker or Feature.ANALYSIS.value,
         )
         if usage is None:
