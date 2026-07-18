@@ -16,6 +16,7 @@ from typing import Any
 from codes.data import analytics_db, db
 from codes.services import analysis_jobs, component_cache, performance_metrics, provider_gateway
 from codes.services.audit_journal import audit_journal
+from codes.services.dependency_registry import dependency_registry
 from codes.services.operational_controller import classify_runtime_health, controller
 
 
@@ -70,6 +71,7 @@ def snapshot(*, search: str = "", limit: int = 50) -> dict[str, Any]:
         },
         "events": list(events),
         "event_search": normalized_search,
+        "dependency_graph": dependency_registry.snapshot(),
     }
 
 
