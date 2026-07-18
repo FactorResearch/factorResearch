@@ -1,4 +1,4 @@
-"""Deterministic operational health evaluation and bounded remediation.
+"""Deterministic operational modes, health evaluation, and bounded remediation.
 
 The controller is an application-layer coordinator. It evaluates registered
 health probes and may run only explicitly registered recovery actions; it does
@@ -20,11 +20,21 @@ from codes.services.audit_journal import audit_journal
 class OperationalState(StrEnum):
     """Stable states exposed to dashboards and release checks."""
 
+    NORMAL = "NORMAL"
     WATCH = "WATCH"
     DEGRADED = "DEGRADED"
     CONSTRAINED = "CONSTRAINED"
     RECOVERING = "RECOVERING"
     UNAVAILABLE = "UNAVAILABLE"
+    READ_ONLY = "READ_ONLY"
+    MAINTENANCE = "MAINTENANCE"
+    EMERGENCY = "EMERGENCY"
+
+
+# ``OperationalMode`` is the platform vocabulary used by ISSUE_056. Keeping
+# the health-state name above preserves the ISSUE_043 probe contract while
+# making the one-active-mode invariant explicit to callers.
+OperationalMode = OperationalState
 
 
 class WorkloadPriority(StrEnum):
@@ -32,6 +42,25 @@ class WorkloadPriority(StrEnum):
 
     ESSENTIAL = "essential"
     OPTIONAL = "optional"
+
+
+@dataclass(frozen=True)
+class ModeTransition:
+    """Auditable change from one platform mode to another."""
+
+    previous: OperationalMode
+    current: OperationalMode
+    reason: str
+    changed_at: float
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return the transition in the operational telemetry format."""
+        return {
+            "previous": self.previous.value,
+            "current": self.current.value,
+            "reason": self.reason,
+            "changed_at": self.changed_at,
+        }
 
 
 @dataclass(frozen=True)
@@ -85,6 +114,10 @@ class OperationalController:
         self._attempts: dict[str, int] = {}
         self._last_action: dict[str, float] = {}
         self._lock = threading.RLock()
+        self._mode = OperationalMode.NORMAL
+        self._mode_changed_at = self._clock()
+        self._last_transition: ModeTransition | None = None
+        self._recovery_confirmations = 0
 
     def register_probe(
         self,
@@ -193,18 +226,173 @@ class OperationalController:
             if candidate in states:
                 aggregate = candidate
                 break
+        self.reconcile(current)
         return {
             "state": aggregate.value,
+            "mode": self.active_mode.value,
+            "message": self.mode_message,
             "components": {name: report.as_dict() for name, report in current.items()},
             "observation_only": self.observation_only,
+            "last_transition": (
+                self._last_transition.as_dict() if self._last_transition else None
+            ),
         }
+
+    def reconcile(self, reports: Mapping[str, HealthReport]) -> bool:
+        """Derive a platform mode from component health without oscillation."""
+        states = [report.state for report in reports.values()]
+        desired = OperationalMode.NORMAL
+        for candidate in (
+            OperationalMode.EMERGENCY,
+            OperationalMode.UNAVAILABLE,
+            OperationalMode.RECOVERING,
+            OperationalMode.CONSTRAINED,
+            OperationalMode.DEGRADED,
+            OperationalMode.WATCH,
+        ):
+            if candidate in states:
+                desired = candidate
+                break
+        current = self.active_mode
+        # Explicit operator modes remain authoritative until explicitly changed.
+        if current in {
+            OperationalMode.READ_ONLY,
+            OperationalMode.MAINTENANCE,
+            OperationalMode.EMERGENCY,
+        }:
+            return False
+        current_rank = MODE_SEVERITY[current]
+        desired_rank = MODE_SEVERITY[desired]
+        return self.transition(
+            desired,
+            reason=f"health reconciliation: {desired.value.lower()}",
+            minimum_dwell_seconds=30.0 if desired_rank <= current_rank else 0.0,
+            recovery_confirmations=2,
+        )
+
+    @property
+    def active_mode(self) -> OperationalMode:
+        """Return the single current platform mode."""
+        with self._lock:
+            return self._mode
+
+    @property
+    def mode_message(self) -> str:
+        """Return concise copy suitable for a banner or operational response."""
+        return MODE_MESSAGES[self.active_mode]
+
+    def transition(
+        self,
+        mode: OperationalMode,
+        *,
+        reason: str,
+        minimum_dwell_seconds: float = 30.0,
+        recovery_confirmations: int = 2,
+        actor: str = "system",
+    ) -> bool:
+        """Move to a requested mode when anti-oscillation rules permit it.
+
+        Manual safety modes (READ_ONLY, MAINTENANCE, and EMERGENCY) take
+        effect immediately. Automatic transitions out of a safety mode require
+        the configured number of consecutive recovery confirmations, while
+        ordinary automatic transitions respect a minimum dwell time. Every
+        accepted transition is written to the redacted operational journal.
+        """
+        if minimum_dwell_seconds < 0 or recovery_confirmations < 1:
+            raise ValueError("transition bounds must be non-negative and confirmations positive")
+        target = OperationalMode(mode)
+        now = self._clock()
+        with self._lock:
+            current = self._mode
+            if target == current:
+                self._recovery_confirmations = 0
+                return False
+            safety_mode = current in {
+                OperationalMode.READ_ONLY,
+                OperationalMode.MAINTENANCE,
+                OperationalMode.EMERGENCY,
+            }
+            if safety_mode and target not in {
+                OperationalMode.READ_ONLY,
+                OperationalMode.MAINTENANCE,
+                OperationalMode.EMERGENCY,
+            }:
+                self._recovery_confirmations += 1
+                if self._recovery_confirmations < recovery_confirmations:
+                    return False
+            elif now - self._mode_changed_at < minimum_dwell_seconds:
+                return False
+            previous = current
+            self._mode = target
+            self._mode_changed_at = now
+            self._recovery_confirmations = 0
+            self._last_transition = ModeTransition(previous, target, str(reason)[:256], now)
+        audit_journal.record(
+            "operational_mode_transition",
+            action="transition",
+            actor_id=actor,
+            component="operational_controller",
+            details=self._last_transition.as_dict(),
+        )
+        return True
+
+    def set_mode(self, mode: OperationalMode, *, reason: str, actor: str) -> bool:
+        """Apply an operator-requested mode without bypassing audit logging."""
+        return self.transition(
+            mode,
+            reason=reason,
+            minimum_dwell_seconds=0.0,
+            recovery_confirmations=1,
+            actor=actor,
+        )
 
     @staticmethod
     def allow_work(priority: WorkloadPriority, state: OperationalState) -> bool:
         """Keep essential workflows available while shedding optional work."""
         if priority == WorkloadPriority.ESSENTIAL:
-            return state != OperationalState.UNAVAILABLE
-        return state in {OperationalState.WATCH, OperationalState.DEGRADED}
+            return state not in {
+                OperationalState.UNAVAILABLE,
+                OperationalState.EMERGENCY,
+            }
+        return state in {OperationalState.NORMAL, OperationalState.WATCH}
+
+    @staticmethod
+    def allow_mode_work(priority: WorkloadPriority, mode: OperationalMode) -> bool:
+        """Apply mode policy before dispatching an essential or optional task."""
+        if mode in {OperationalMode.EMERGENCY, OperationalMode.MAINTENANCE}:
+            return False
+        if mode == OperationalMode.READ_ONLY:
+            return priority == WorkloadPriority.ESSENTIAL
+        if priority == WorkloadPriority.ESSENTIAL:
+            return True
+        return mode in {OperationalMode.NORMAL, OperationalMode.WATCH}
+
+
+MODE_MESSAGES: dict[OperationalMode, str] = {
+    OperationalMode.NORMAL: "All platform functions are operating normally.",
+    OperationalMode.WATCH: "The platform is being closely monitored; some responses may be slower.",
+    OperationalMode.DEGRADED: "Some optional functions are temporarily limited while core workflows remain available.",
+    OperationalMode.CONSTRAINED: "Optional processing is paused to protect essential workflows.",
+    OperationalMode.READ_ONLY: "The platform is read-only while changes are temporarily paused.",
+    OperationalMode.MAINTENANCE: "Scheduled maintenance is in progress; changes are temporarily unavailable.",
+    OperationalMode.RECOVERING: "The platform is recovering; availability may change while checks complete.",
+    OperationalMode.EMERGENCY: "Emergency protection is active; platform operations are temporarily paused.",
+    OperationalMode.UNAVAILABLE: "The platform is temporarily unavailable; please try again later.",
+}
+
+# Higher values represent greater customer impact. A worsening report may
+# change mode immediately; recovery is deliberately slower and confirmed.
+MODE_SEVERITY: dict[OperationalMode, int] = {
+    OperationalMode.NORMAL: 0,
+    OperationalMode.WATCH: 1,
+    OperationalMode.DEGRADED: 2,
+    OperationalMode.CONSTRAINED: 3,
+    OperationalMode.RECOVERING: 4,
+    OperationalMode.READ_ONLY: 5,
+    OperationalMode.MAINTENANCE: 6,
+    OperationalMode.UNAVAILABLE: 7,
+    OperationalMode.EMERGENCY: 8,
+}
 
 
 def classify_runtime_health(component: str, payload: Mapping[str, Any]) -> HealthReport:
