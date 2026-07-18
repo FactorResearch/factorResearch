@@ -1,7 +1,7 @@
 """Rendering helpers for the stock analysis view and shared charts."""
 
-from datetime import datetime
 from collections.abc import Callable
+from datetime import datetime
 from urllib.parse import quote
 
 import plotly.graph_objects as go
@@ -1665,43 +1665,84 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
     )
 
     graham_card = _safe_analysis_component(
-        "valuation", "Intrinsic value", _render_scorecard, "Intrinsic Value Analysis", g["criteria"], "graham"
+        "valuation",
+        "Intrinsic value",
+        _render_scorecard,
+        "Intrinsic Value Analysis",
+        g["criteria"],
+        "graham",
     )
     quality_card = _safe_analysis_component(
-        "valuation", "Moat rating", _render_scorecard, "Moat Rating Analysis", q["criteria"], "quality"
+        "moat-rating",
+        "Moat rating",
+        _render_scorecard,
+        "Moat Rating Analysis",
+        q["criteria"],
+        "quality",
     )
     buffett_card = (
         _safe_analysis_component(
-            "valuation", "Economic moat", _render_scorecard,
-            "Economic Moat Quality & Value", b_data.get("criteria", []), "buffett"
+            "economic-moat",
+            "Economic moat",
+            _render_scorecard,
+            "Economic Moat Quality & Value",
+            b_data.get("criteria", []),
+            "buffett",
         )
         if b_data.get("criteria")
         else html.Div()
     )
     momentum_card = (
         _safe_analysis_component(
-            "growth", "Momentum", _render_scorecard, "Momentum Analysis", m.get("criteria", []), "momentum"
+            "momentum",
+            "Momentum",
+            _render_scorecard,
+            "Momentum Analysis",
+            m.get("criteria", []),
+            "momentum",
         )
         if m.get("criteria")
         else html.Div()
     )
-    piotroski_card = _safe_analysis_component("accounting", "Piotroski", _piotroski_card, data)
-    altman_card = _safe_analysis_component("accounting", "Altman", _altman_card, data)
-    fcf_quality_card = _safe_analysis_component("accounting", "Cash-flow quality", _fcf_quality_card, data)
+    piotroski_card = _safe_analysis_component("piotroski", "Piotroski", _piotroski_card, data)
+    altman_card = _safe_analysis_component("altman", "Altman", _altman_card, data)
+    fcf_quality_card = _safe_analysis_component(
+        "fcf-quality", "Cash-flow quality", _fcf_quality_card, data
+    )
     risk_card = _safe_analysis_component("risk", "Risk", _risk_card, data)
-    market_fear_card = _safe_analysis_component("risk", "Market conditions", _market_fear_card, data)
+    market_fear_card = _safe_analysis_component(
+        "risk", "Market conditions", _market_fear_card, data
+    )
     regime_card = _safe_analysis_component("risk", "Market regime", _regime_card, data)
     comomentum_card = _safe_analysis_component("risk", "Co-momentum", _comomentum_card, data)
-    capital_allocation_card = _safe_analysis_component("growth", "Capital allocation", _capital_allocation_card, data)
-    growth_quality_card = _safe_analysis_component("growth", "Growth quality", _growth_quality_card, data)
-    factor_momentum_card = _safe_analysis_component("growth", "Factor momentum", _factor_momentum_card, data)
-    alternative_data_card = _safe_analysis_component("signals", "Alternative data", _alternative_data_card, data)
-    insider_card = _safe_analysis_component("signals", "Insider activity", _insider_activity_card, data)
-    greenblatt_card = _safe_analysis_component("valuation", "Greenblatt", _greenblatt_card, data)
-    profitability_card = _safe_analysis_component("growth", "Profitability", _profitability_card, data)
-    benchmark_bias_card = _safe_analysis_component("risk", "Benchmark bias", _benchmark_bias_card, data)
-    graham_details = _safe_analysis_component("valuation", "Intrinsic value details", _graham_details_card, g)
-    buffett_details = _safe_analysis_component("valuation", "Moat details", _buffett_details_card, data)
+    capital_allocation_card = _safe_analysis_component(
+        "capital-allocation", "Capital allocation", _capital_allocation_card, data
+    )
+    growth_quality_card = _safe_analysis_component(
+        "growth-quality", "Growth quality", _growth_quality_card, data
+    )
+    factor_momentum_card = _safe_analysis_component(
+        "factor-momentum", "Factor momentum", _factor_momentum_card, data
+    )
+    alternative_data_card = _safe_analysis_component(
+        "alternative-data", "Alternative data", _alternative_data_card, data
+    )
+    insider_card = _safe_analysis_component(
+        "insider-activity", "Insider activity", _insider_activity_card, data
+    )
+    greenblatt_card = _safe_analysis_component("greenblatt", "Greenblatt", _greenblatt_card, data)
+    profitability_card = _safe_analysis_component(
+        "profitability", "Profitability", _profitability_card, data
+    )
+    benchmark_bias_card = _safe_analysis_component(
+        "benchmark-bias", "Benchmark bias", _benchmark_bias_card, data
+    )
+    graham_details = _safe_analysis_component(
+        "intrinsic-details", "Intrinsic value details", _graham_details_card, g
+    )
+    buffett_details = _safe_analysis_component(
+        "moat-details", "Moat details", _buffett_details_card, data
+    )
 
     accounting_children = [
         html.Div(

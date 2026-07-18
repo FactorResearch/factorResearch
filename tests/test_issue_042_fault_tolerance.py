@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from codes.app_modules import analysis_ui
+from codes.app_modules.tabs import portfolio
 
 
 def test_failed_analysis_card_preserves_sibling_sections(monkeypatch) -> None:
@@ -28,3 +29,22 @@ def test_failed_analysis_card_preserves_sibling_sections(monkeypatch) -> None:
     assert "Valuation" in rendered
     assert "Risk is temporarily unavailable" in rendered
     assert "analysis-risk-retry" in rendered
+
+
+def test_portfolio_holdings_survive_optional_research_failure(monkeypatch) -> None:
+    monkeypatch.setattr(portfolio, "get_user_id", lambda: "user")
+    monkeypatch.setattr(
+        portfolio.portfolio_engine,
+        "load_portfolio",
+        lambda *_: {"holdings": {"ABC": {"shares": 10, "price_at_add": 100, "current_price": 95}}},
+    )
+    monkeypatch.setattr(
+        portfolio.portfolio_engine,
+        "analysis_entries",
+        lambda *_: (_ for _ in ()).throw(RuntimeError("cache unavailable")),
+    )
+
+    rendered = str(portfolio.render_portfolio_holdings("Core", 0))
+
+    assert "ABC" in rendered
+    assert "portfolio-table" in rendered
