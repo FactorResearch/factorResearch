@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 
 from codes.data import db
+from codes.services import pricing
 
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
 STRIPE_PREMIUM_PRICE_ID = os.environ.get("STRIPE_PREMIUM_PRICE_ID") or os.environ.get("STRIPE_PRICE_ID")
@@ -34,12 +35,16 @@ def _base_url() -> str:
 
 
 def _price_id_for_plan(plan: str) -> str:
-    plan = (plan or "premium").lower()
-    if plan != "premium":
-        raise StripeConfigurationError("Only the Premium plan is available.")
-    if not STRIPE_PREMIUM_PRICE_ID:
-        raise StripeConfigurationError("STRIPE_PREMIUM_PRICE_ID or STRIPE_PRICE_ID is not configured.")
-    return STRIPE_PREMIUM_PRICE_ID
+    normalized = str(plan or pricing.PREMIUM).lower()
+    definition = pricing.plan_definition(normalized)
+    if not definition or not definition.get("stripe_price_env"):
+        raise StripeConfigurationError(f"Plan {normalized!r} is not available for checkout.")
+    price_id = os.environ.get(str(definition["stripe_price_env"])) or (
+        STRIPE_PREMIUM_PRICE_ID if normalized == pricing.PREMIUM else None
+    )
+    if not price_id:
+        raise StripeConfigurationError(f"Price is not configured for plan {normalized!r}.")
+    return price_id
 
 
 def is_configured() -> bool:

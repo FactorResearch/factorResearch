@@ -2,18 +2,21 @@
 
 from __future__ import annotations
 
+import logging
 from urllib.parse import urlencode
 
 import flask
+
+from codes.app_modules.session import get_user_id
 from codes.core import app_flags
 from codes.core.config import is_production
-from codes.app_modules.session import get_user_id
 from codes.payments import stripe_client, subscriptions, webhooks
-from codes.services import permissions
-from codes.services import product_analytics
+from codes.services import permissions, pricing, product_analytics
+
+LOGGER = logging.getLogger(__name__)
 
 
-def init_billing(server: flask.Flask | None = None):
+def init_billing(server: flask.Flask | None = None):  # noqa: C901 - registers the billing lifecycle routes
     if server is None:
         return
 
@@ -22,7 +25,7 @@ def init_billing(server: flask.Flask | None = None):
         plan = flask.request.args.get("plan", "premium").lower()
         source = flask.request.args.get("source", "direct")
         feature = flask.request.args.get("feature", "")
-        if plan != "premium":
+        if not pricing.plan_definition(plan) or plan == pricing.FREE:
             return "Only the Premium plan is available.", 400
         try:
             user_id = get_user_id()
@@ -43,9 +46,8 @@ def init_billing(server: flask.Flask | None = None):
             checkout_kwargs = {"idempotency_key": idempotency_key} if idempotency_key else {}
             return flask.redirect(get_checkout_url(user_id, plan=plan, **checkout_kwargs))
         except Exception as exc:
-            if is_production():
-                return "Billing is unavailable. Please try again later.", 503
-            return f"Billing unavailable: {type(exc).__name__}: {exc}", 503
+            LOGGER.warning("Billing checkout unavailable: %s", type(exc).__name__)
+            return "Billing is unavailable. Please try again later.", 503
 
     @server.route("/billing/portal", methods=["GET"])
     def _portal():
@@ -56,9 +58,8 @@ def init_billing(server: flask.Flask | None = None):
         try:
             return flask.redirect(get_portal_url(user_id))
         except Exception as exc:
-            if is_production():
-                return "Billing portal is unavailable. Please try again later.", 503
-            return f"Billing portal unavailable: {type(exc).__name__}: {exc}", 503
+            LOGGER.warning("Billing portal unavailable: %s", type(exc).__name__)
+            return "Billing portal is unavailable. Please try again later.", 503
 
     @server.route("/billing/success", methods=["GET"])
     def _success():
@@ -103,7 +104,7 @@ def user_has_paid(user_id: str) -> bool:
 def get_checkout_url(
     user_id: str, plan: str = "premium", *, idempotency_key: str | None = None
 ) -> str:
-    if plan.lower() != "premium":
+    if not pricing.plan_definition(plan) or plan.lower() == pricing.FREE:
         raise ValueError("Only the Premium plan is available.")
     if stripe_client.is_configured():
         return stripe_client.create_checkout_session(
@@ -115,7 +116,7 @@ def get_checkout_url(
 
 
 def get_billing_entry_url(plan: str = "premium", **context: str | None) -> str:
-    if plan.lower() != "premium":
+    if not pricing.plan_definition(plan) or plan.lower() == pricing.FREE:
         raise ValueError("Only the Premium plan is available.")
     params = {"plan": plan}
     for key, value in context.items():

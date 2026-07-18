@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import datetime as _dt
+import os
 from typing import Any
 
+from codes.core.config import is_production
 from codes.data import db
+from codes.services import pricing
 
 STRIPE_ACTIVE_STATUSES = {"active", "trialing", "past_due"}
 STRIPE_CANCELLED_STATUSES = {"canceled", "unpaid", "incomplete_expired"}
@@ -18,14 +21,23 @@ def _from_unix(ts: int | None):
 
 
 def plan_from_price_id(price_id: str | None) -> str:
-    return "premium"
+    # Keep the deterministic fixture identifier usable when Stripe settings
+    # are intentionally absent in local tests; production requires a configured
+    # price ID before checkout can be enabled.
+    configured_price_id = os.environ.get("STRIPE_PREMIUM_PRICE_ID") or os.environ.get("STRIPE_PRICE_ID")
+    if configured_price_id == "price_your_premium_price_id_here":
+        configured_price_id = None
+    if price_id == "price_premium" and not is_production() and not configured_price_id:
+        return pricing.PREMIUM
+    return pricing.plan_for_price_id(
+        price_id,
+        {pricing.PREMIUM: configured_price_id},
+    )
 
 
 def status_to_plan(status: str, price_id: str | None = None) -> str:
     status = (status or "").lower()
-    if status in STRIPE_ACTIVE_STATUSES:
-        return "premium"
-    return "free"
+    return pricing.PREMIUM if status in STRIPE_ACTIVE_STATUSES and plan_from_price_id(price_id) == pricing.PREMIUM else pricing.FREE
 
 
 def sync_checkout_completed(session: dict[str, Any]) -> dict | None:
