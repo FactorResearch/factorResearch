@@ -5,13 +5,14 @@ import re
 import time as _time
 
 import dash
-from dash import Input, Output, State, callback, clientside_callback
+from dash import ALL, Input, Output, State, callback, clientside_callback, html
 from dash.exceptions import PreventUpdate
 from flask import has_request_context
 
 from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.components.upgrade_banner import UpgradeBanner
+from codes.app_modules.design_system.primitives import button
 from codes.app_modules.design_system.states import section_error
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
@@ -19,6 +20,7 @@ from codes.app_modules.tabs.pricing import open_upgrade_funnel
 from codes.core.config import is_production
 from codes.services import (
     analysis_demand,
+    company_search,
     performance_metrics,
     permissions,
     product_analytics,
@@ -31,6 +33,125 @@ from codes.services.stock_analysis import analyze_stock_primary as analyze_stock
 _ANALYZE_PATH_RE = re.compile(
     r"^(?:/analyze/([A-Za-z]{1,6})(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?"
     r"|/([A-Za-z]{1,6})/analyze/(?:\d{8}|\d{4}-\d{2}-\d{2}))/?$"
+)
+
+
+clientside_callback(
+    """
+    function(value) {
+        return new Promise(function(resolve) {
+            window.clearTimeout(window.factorResearchTickerSearchTimer);
+            window.factorResearchTickerSearchTimer = window.setTimeout(function() {
+                resolve(value || '');
+            }, 150);
+        });
+    }
+    """,
+    Output("ticker-query-debounced", "data"),
+    Input("ticker-input", "value"),
+    prevent_initial_call=False,
+)
+
+
+@callback(
+    Output("ticker-suggestions", "children"),
+    Output("ticker-search-status", "children"),
+    Output("ticker-suggestions", "data-query"),
+    Input("ticker-query-debounced", "data"),
+    Input("ticker-selected-symbol", "data"),
+    prevent_initial_call=True,
+)
+def update_company_suggestions(value: str | None, selected_symbol: str | None):
+    """Render non-submitting company suggestions for the Analyze input.
+
+    Suggestions query only the cached supported screener universe. Selection
+    updates the input but never calls ``analyze_stock``; analysis remains an
+    explicit button action. Search failures are rendered as a local status so
+    manual ticker submission remains available.
+    """
+    query = str(value or "").strip()
+    if not query or (selected_symbol and query.upper() == selected_symbol.upper()):
+        return [], "", query
+    try:
+        suggestions = company_search.search_companies(query)
+    except Exception as error:
+        print(f"Company suggestion lookup failed: {type(error).__name__}")
+        return [html.Div("Suggestions are temporarily unavailable.", className="ticker-suggestion-state")], "Company suggestions are temporarily unavailable; you can still enter a ticker manually.", query
+    if not suggestions:
+        return [html.Div("No supported companies found.", className="ticker-suggestion-state")], "No supported companies found.", query
+    return [
+        button(
+            [html.Strong(item.symbol), html.Span(item.name)],
+            id={"type": "ticker-suggestion", "symbol": item.symbol},
+            className="ticker-suggestion",
+            type="button",
+            role="option",
+            tabIndex=-1,
+            n_clicks=0,
+            **{"aria-selected": "false"},
+        )
+        for item in suggestions
+    ], f"{len(suggestions)} company suggestions available.", query
+
+
+@callback(
+    Output("ticker-input", "value", allow_duplicate=True),
+    Output("ticker-selected-symbol", "data"),
+    Input({"type": "ticker-suggestion", "symbol": ALL}, "n_clicks"),
+    prevent_initial_call=True,
+)
+def select_company_suggestion(_clicks: list[int | None]):
+    """Copy an explicit suggestion into the input without starting analysis."""
+    triggered = dash.ctx.triggered_id
+    if not isinstance(triggered, dict) or not triggered.get("symbol"):
+        raise PreventUpdate
+    symbol = str(triggered["symbol"]).upper()
+    return symbol, symbol
+
+
+clientside_callback(
+    """
+    function(children) {
+        var input = document.getElementById('ticker-input');
+        var list = document.getElementById('ticker-suggestions');
+        if (!input || !list) return Date.now();
+        if (list.getAttribute('data-query') !== (input.value || '').trim()) {
+            list.setAttribute('hidden', 'hidden');
+            return Date.now();
+        }
+        var options = Array.from(list.querySelectorAll('[role="option"]'));
+        var combobox = input.closest('[role="combobox"]');
+        if (combobox) combobox.setAttribute('aria-expanded', options.length ? 'true' : 'false');
+        if (options.length) list.removeAttribute('hidden');
+        else list.setAttribute('hidden', 'hidden');
+        if (input.dataset.autocompleteBound === 'true') return Date.now();
+        input.dataset.autocompleteBound = 'true';
+        input.addEventListener('keydown', function(event) {
+            var options = Array.from(list.querySelectorAll('[role="option"]'));
+            if (!options.length) return;
+            var current = options.indexOf(document.activeElement);
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+                var next = event.key === 'ArrowDown' ? current + 1 : current - 1;
+                if (next < 0) next = options.length - 1;
+                if (next >= options.length) next = 0;
+                options[next].focus();
+            } else if (event.key === 'Escape') {
+                list.setAttribute('hidden', 'hidden');
+                if (combobox) combobox.setAttribute('aria-expanded', 'false');
+            }
+        });
+        list.addEventListener('focusin', function(event) {
+            if (event.target.getAttribute('role') === 'option') {
+                if (combobox) combobox.setAttribute('aria-activedescendant', event.target.id || '');
+            }
+        });
+        return Date.now();
+    }
+    """,
+    Output("ticker-autocomplete-init", "children"),
+    Input("ticker-suggestions", "children"),
+    prevent_initial_call=False,
 )
 
 
@@ -155,7 +276,7 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
     Output("status-msg", "children"),
     Output("analyze-btn", "disabled"),
     Output("ticker-input", "disabled"),
-    Output("ticker-input", "value"),
+    Output("ticker-input", "value", allow_duplicate=True),
     Output("add-to-portfolio-panel", "style"),
     Output("active-analysis-symbol", "data"),
     Output("screener-viewed-store", "data"),
@@ -165,9 +286,9 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
     Input("url", "pathname"),
     State("ticker-input", "value"),
     State("screener-viewed-store", "data"),
-    prevent_initial_call=False,
+    prevent_initial_call="initial_duplicate",
 )
-def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, viewed_list):
+def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, viewed_list):  # noqa: C901
     """
     Single callback: fetch + score + render.
     The shared scoped loading container delays feedback and keeps the application

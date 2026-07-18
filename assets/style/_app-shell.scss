@@ -126,6 +126,54 @@ body.light {
 }
 
 .analyze-ticker-input {
+  position: relative;
+}
+
+.ticker-input-combobox {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ticker-suggestions {
+  position: absolute;
+  z-index: var(--fr-layer-dropdown);
+  top: calc(100% + var(--fr-space-2));
+  left: 0;
+  width: min(100%, 360px);
+  display: grid;
+  overflow: hidden;
+  border: var(--fr-border-thin) solid var(--fr-color-border-default);
+  border-radius: var(--fr-radius-md);
+  background: var(--fr-color-surface-overlay);
+  box-shadow: var(--fr-shadow-md);
+}
+
+.ticker-suggestion {
+  min-height: var(--fr-target-minimum);
+  display: flex;
+  align-items: center;
+  gap: var(--fr-space-3);
+  padding: var(--fr-space-2) var(--fr-space-3);
+  color: var(--fr-color-text-primary);
+  background: transparent;
+  border: 0;
+  border-block-end: var(--fr-border-thin) solid var(--fr-color-border-default);
+  cursor: pointer;
+  text-align: start;
+
+  &:last-child { border-block-end: 0; }
+  &:hover,
+  &:focus-visible { background: var(--fr-color-surface-raised); }
+  strong { min-width: 4.5rem; font-family: var(--fr-font-family-numeric); }
+}
+
+.ticker-suggestion-state {
+  padding: var(--fr-space-3);
+  color: var(--fr-color-text-muted);
+  font-size: var(--fr-text-sm);
+}
+
+.analyze-ticker-input {
   flex: 1 1 520px;
   flex-direction: row;
     flex-wrap: nowrap;

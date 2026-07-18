@@ -345,16 +345,30 @@ def build_layout():
         html.Div(id="tab-analyze", className="main-content", role="tabpanel", tabIndex=-1, **{"aria-labelledby": "tab-analyze-btn"}, children=[
             html.Div(className="analyze-header", children=[
                 html.Div(className="analyze-ticker-input", children=[
-                    html.Label("Stock ticker", htmlFor="ticker-input", className="sr-only"),
-                    input_control(
-                        id="ticker-input",
-                        type="text",
-                        placeholder="Enter stock ticker (e.g. KO, JNJ, XOM)",
-                        debounce=False,
-                        className="ticker-input",
-                        disabled=False
+                    html.Div(
+                        className="ticker-input-combobox",
+                        role="combobox",
+                        **{
+                            "aria-label": "Search supported companies",
+                            "aria-autocomplete": "list",
+                            "aria-controls": "ticker-suggestions",
+                            "aria-expanded": "false",
+                        },
+                        children=[
+                            html.Label("Stock ticker", htmlFor="ticker-input", className="sr-only"),
+                            input_control(
+                                id="ticker-input",
+                                type="text",
+                                placeholder="Enter stock ticker or company name",
+                                debounce=False,
+                                className="ticker-input",
+                                disabled=False,
+                            ),
+                        ],
                     ),
-                    button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False)
+                    button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False),
+                    html.Div(id="ticker-suggestions", className="ticker-suggestions", role="listbox", **{"aria-label": "Company suggestions"}),
+                    html.Div(id="ticker-search-status", className="sr-only", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
                 ]),
                 html.Span(id="analyze-current", className="analyze-current"),
                 html.Div(id="status-msg", className="status-msg w-full", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
@@ -653,6 +667,9 @@ def build_layout():
         dcc.Store(id="search-history-store"),
         dcc.Store(id="screener-quick-peek-symbol"),
         dcc.Store(id="screener-open-analysis-symbol"),
+        dcc.Store(id="ticker-selected-symbol"),
+        dcc.Store(id="ticker-query-debounced"),
+        html.Div(id="ticker-autocomplete-init", className="sr-only"),
         dcc.Store(id="portfolio-refresh-store", data=0),  # increment to trigger refresh
         dcc.Store(id="active-analysis-symbol"),           # symbol currently analyzed
         dcc.Store(id="upgrade-funnel-store", data=None),
