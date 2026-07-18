@@ -7,15 +7,16 @@ the complete session family. This module is deliberately independent of Flask
 session state so browser, mobile, and service clients receive the same identity
 boundary.
 
-The current store is process-local because the repository's optional database
-is not guaranteed at application startup. Production deployments must use one
-shared store (or a single-process deployment) before relying on revocation
-across workers; the API exposes no refresh token persistence contract yet.
+Lifecycle records use Redis when configured so access validation, refresh-token
+reuse detection, and logout work across workers. Non-production callers may
+still use the process-local fallback for development and deterministic tests;
+production fails closed when the shared store is unavailable.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -26,10 +27,13 @@ import flask
 import jwt
 
 from codes.core.config import get_config, is_production
+from codes.core.redis_client import get_redis
 
 ACCESS_TOKEN_TTL = timedelta(minutes=15)
 REFRESH_TOKEN_TTL = timedelta(days=30)
 _ISSUER = "factorresearch"
+_SESSION_KEY_PREFIX = "auth:session:"
+_REVOKED_TOKEN_KEY_PREFIX = "auth:revoked-token:"
 
 
 class TokenError(ValueError):
@@ -66,7 +70,7 @@ class _Session:
 class TokenService:
     """Issue, validate, rotate, and revoke signed first-party credentials."""
 
-    def __init__(self, secret: str | None = None) -> None:
+    def __init__(self, secret: str | None = None, *, require_shared_store: bool | None = None) -> None:
         configured = secret or str(get_config("AUTH_TOKEN_SECRET") or "")
         fallback = str(get_config("FLASK_SECRET_KEY") or "")
         if not configured and not is_production():
@@ -77,6 +81,7 @@ class TokenService:
         self._sessions: dict[str, _Session] = {}
         self._revoked_tokens: dict[str, datetime] = {}
         self._lock = RLock()
+        self._require_shared_store = is_production() if require_shared_store is None else require_shared_store
 
     def issue(self, user_id: str, *, now: datetime | None = None) -> TokenPair:
         """Create a new independent session for a validated user identity."""
@@ -86,7 +91,9 @@ class TokenService:
         current = _utc(now)
         session_id = secrets.token_urlsafe(18)
         with self._lock:
-            self._sessions[session_id] = _Session(subject, current + REFRESH_TOKEN_TTL)
+            session = _Session(subject, current + REFRESH_TOKEN_TTL)
+            self._store_session(session_id, session, current)
+            self._sessions[session_id] = session
             return self._pair(subject, session_id, current)
 
     def authenticate(self, token: str, *, now: datetime | None = None) -> TokenIdentity:
@@ -94,7 +101,7 @@ class TokenService:
         claims = self._decode(token, expected_type="access", now=now)
         identity = self._identity(claims)
         with self._lock:
-            session = self._sessions.get(identity.session_id)
+            session = self._load_session(identity.session_id, _utc(now))
             if not session or session.revoked or session.user_id != identity.user_id:
                 raise TokenError("session is revoked or unavailable")
         return identity
@@ -108,17 +115,21 @@ class TokenService:
         token_digest = _digest(refresh_token)
         session_id = str(claims.get("sid") or "")
         with self._lock:
-            session = self._sessions.get(session_id)
+            session = self._load_session(session_id, current)
             if not session or session.revoked or session.expires_at <= current:
                 if session:
                     session.revoked = True
+                    self._store_session(session_id, session, current)
                 raise TokenError("refresh session is revoked or unavailable")
-            if token_digest in self._revoked_tokens:
+            if self._token_is_revoked(token_digest, current):
                 session.revoked = True
+                self._store_session(session_id, session, current)
                 raise TokenError("refresh token reuse detected")
-            self._revoked_tokens[token_digest] = datetime.fromtimestamp(
+            expiry = datetime.fromtimestamp(
                 float(claims["exp"]), tz=timezone.utc
             )
+            self._revoked_tokens[token_digest] = expiry
+            self._store_revoked_token(token_digest, expiry, current)
             return self._pair(session.user_id, session_id, current)
 
     def revoke_token(self, token: str) -> None:
@@ -129,14 +140,19 @@ class TokenService:
             return
         expiry = datetime.fromtimestamp(float(claims["exp"]), tz=timezone.utc)
         with self._lock:
-            self._revoked_tokens[_digest(token)] = expiry
+            digest = _digest(token)
+            current = datetime.now(timezone.utc)
+            self._revoked_tokens[digest] = expiry
+            self._store_revoked_token(digest, expiry, current)
 
     def revoke_session(self, session_id: str) -> None:
         """Revoke all credentials in one browser/mobile session family."""
         with self._lock:
-            session = self._sessions.get(str(session_id or ""))
+            normalized_id = str(session_id or "")
+            session = self._load_session(normalized_id, datetime.now(timezone.utc))
             if session:
                 session.revoked = True
+                self._store_session(normalized_id, session, datetime.now(timezone.utc))
 
     def _pair(self, user_id: str, session_id: str, now: datetime) -> TokenPair:
         access_expiry = now + ACCESS_TOKEN_TTL
@@ -184,11 +200,75 @@ class TokenService:
                 return claims
             digest = _digest(token)
             expiry = self._revoked_tokens.get(digest)
+            if self._token_is_revoked(digest, current):
+                raise TokenError("token revoked")
             if expiry and expiry > current:
                 raise TokenError("token revoked")
             if expiry and expiry <= current:
                 self._revoked_tokens.pop(digest, None)
         return claims
+
+    def _shared_store(self):
+        store = get_redis()
+        if store is None and self._require_shared_store:
+            raise TokenError("shared authentication store is unavailable")
+        return store
+
+    def _store_session(self, session_id: str, session: _Session, now: datetime) -> None:
+        store = self._shared_store()
+        if store is None:
+            return
+        ttl = max(1, int((session.expires_at - now).total_seconds()))
+        payload = json.dumps({"user_id": session.user_id, "expires_at": session.expires_at.isoformat(), "revoked": session.revoked})
+        try:
+            store.set(f"{_SESSION_KEY_PREFIX}{session_id}", payload, ex=ttl)
+        except Exception as exc:
+            if self._require_shared_store:
+                raise TokenError("shared authentication store is unavailable") from exc
+
+    def _load_session(self, session_id: str, now: datetime) -> _Session | None:
+        store = self._shared_store()
+        if store is None:
+            return self._sessions.get(session_id)
+        try:
+            raw = store.get(f"{_SESSION_KEY_PREFIX}{session_id}")
+            if not raw:
+                return None
+            payload = json.loads(raw)
+            expiry = datetime.fromisoformat(str(payload["expires_at"])).astimezone(timezone.utc)
+            if expiry <= now:
+                return None
+            return _Session(str(payload["user_id"]), expiry, bool(payload.get("revoked")))
+        except Exception as exc:
+            if self._require_shared_store:
+                raise TokenError("shared authentication store is unavailable") from exc
+            return self._sessions.get(session_id)
+
+    def _store_revoked_token(self, digest: str, expiry: datetime, now: datetime) -> None:
+        store = self._shared_store()
+        if store is None:
+            return
+        ttl = max(1, int((expiry - now).total_seconds()))
+        try:
+            store.set(f"{_REVOKED_TOKEN_KEY_PREFIX}{digest}", "1", ex=ttl)
+        except Exception as exc:
+            if self._require_shared_store:
+                raise TokenError("shared authentication store is unavailable") from exc
+
+    def _token_is_revoked(self, digest: str, now: datetime) -> bool:
+        expiry = self._revoked_tokens.get(digest)
+        if expiry and expiry <= now:
+            self._revoked_tokens.pop(digest, None)
+            expiry = None
+        store = self._shared_store()
+        if store is None:
+            return expiry is not None and expiry > now
+        try:
+            return bool(store.get(f"{_REVOKED_TOKEN_KEY_PREFIX}{digest}"))
+        except Exception as exc:
+            if self._require_shared_store:
+                raise TokenError("shared authentication store is unavailable") from exc
+            return expiry is not None and expiry > now
 
     @staticmethod
     def _identity(claims: dict[str, Any]) -> TokenIdentity:

@@ -7,6 +7,7 @@ from codes import billing
 from codes.app_modules.tabs import analyze, factor_lab, navigation
 from codes.services.permissions import Feature, PermissionResult
 from codes.services import permissions
+from codes.services import pricing
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.components.upgrade_banner import UpgradeBanner
 
@@ -98,3 +99,10 @@ def test_billing_checkout_tracks_funnel_events(monkeypatch):
     assert response.status_code == 302
     assert response.headers["Location"] == "/checkout/current_user/premium"
     assert tracked.call_count == 2
+
+
+def test_pricing_surface_uses_canonical_plan_catalog():
+    catalog = pricing.plan_catalog()
+
+    assert [plan["key"] for plan in catalog] == [pricing.FREE, pricing.PREMIUM]
+    assert catalog[1]["features"][-1] == "Strategy validation workflow"

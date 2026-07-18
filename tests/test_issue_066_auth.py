@@ -8,6 +8,17 @@ from flask import Flask
 from codes.api.auth import TokenError, TokenService
 
 
+class _FakeRedis:
+    def __init__(self) -> None:
+        self.values: dict[str, str] = {}
+
+    def set(self, key: str, value: str, *, ex: int) -> None:
+        self.values[key] = value
+
+    def get(self, key: str) -> str | None:
+        return self.values.get(key)
+
+
 def test_access_token_is_short_lived_and_validates_identity() -> None:
     service = TokenService("test-secret" * 8)
     pair = service.issue("user-1")
@@ -67,3 +78,30 @@ def test_auth_endpoints_use_bearer_identity_and_do_not_trust_cookie(monkeypatch)
         session["_authenticated_user_id"] = "cookie-user"
     response = client.post("/api/auth/logout")
     assert response.status_code == 401
+
+
+def test_shared_store_allows_cross_worker_validation_and_replay_detection(monkeypatch) -> None:
+    from codes.api import auth as api_auth
+
+    shared = _FakeRedis()
+    monkeypatch.setattr(api_auth, "get_redis", lambda: shared)
+    first_worker = TokenService("test-secret" * 8, require_shared_store=True)
+    second_worker = TokenService("test-secret" * 8, require_shared_store=True)
+
+    pair = first_worker.issue("user-1")
+    assert second_worker.authenticate(pair.access_token).user_id == "user-1"
+    rotated = second_worker.rotate(pair.refresh_token)
+
+    try:
+        first_worker.rotate(pair.refresh_token)
+    except TokenError:
+        pass
+    else:
+        raise AssertionError("shared refresh replay must fail")
+
+    try:
+        second_worker.authenticate(rotated.access_token)
+    except TokenError:
+        pass
+    else:
+        raise AssertionError("shared refresh replay must revoke the family")

@@ -13,10 +13,12 @@ revokes its complete session family. `POST /api/auth/logout` revokes the
 current family. Explicit Bearer requests never fall back to a browser cookie,
 so browser, mobile, and service clients receive the same identity evaluation.
 
-The current lifecycle store is process-local because the optional PostgreSQL
-connection is not guaranteed during startup. A multi-worker production rollout
-must provide a shared revocation store before enabling this interface across
-workers. Tokens, authorization headers, refresh credentials, and raw provider
+Lifecycle records use the configured Redis instance under `auth:session:*` and
+`auth:revoked-token:*`, with TTLs matching the token expiry. This makes session
+revocation and refresh-token replay detection consistent across workers. In
+production, missing or unavailable Redis fails authentication operations closed;
+non-production services may use the process-local fallback for development and
+tests. Tokens, authorization headers, refresh credentials, and raw provider
 responses must not be logged.
 
 Security boundary: provider verification is the external trust boundary;

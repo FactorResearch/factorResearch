@@ -8,32 +8,7 @@ from dash import Input, Output, callback, html
 
 from codes.app_modules.design_system.primitives import link
 from codes.app_modules.session import get_user_id
-from codes.services import billing_service, product_analytics
-
-PLAN_CARDS = [
-    {
-        "name": "Free",
-        "price": "$0",
-        "subtitle": "Start free",
-        "features": [
-            "3 company analyses",
-            "Custom factor weights",
-        ],
-        "cta": None,
-    },
-    {
-        "name": "Premium",
-        "price": "$29",
-        "subtitle": "Per month",
-        "features": [
-            "Unlimited company analysis",
-            "Historical backtesting",
-            "Portfolio analytics and simulations",
-            "Strategy validation workflow",
-        ],
-        "cta": billing_service.get_entry_url(plan="premium", source="pricing_tab", feature="subscription"),
-    },
-]
+from codes.services import billing_service, pricing, product_analytics
 
 
 def build_upgrade_prompt(*, title: str, body: str, source: str, feature: str) -> html.Div:
@@ -74,12 +49,16 @@ def build_pricing_tab(context: dict | None = None) -> html.Div:
     source = context.get("source") or "pricing_tab"
 
     cards = []
-    for plan in PLAN_CARDS:
+    for plan in pricing.plan_catalog():
         cta = html.Span("Current plan", className="clr-muted fs-12")
-        if plan["cta"]:
+        if plan["key"] == pricing.PREMIUM:
             cta = html.A(
                 f"Choose {plan['name']}",
-                href=plan["cta"],
+                href=billing_service.get_entry_url(
+                    plan=pricing.PREMIUM,
+                    source="pricing_tab",
+                    feature="subscription",
+                ),
                 className="analyze-btn d-inline-block mt-12 link-reset",
             )
         cards.append(
