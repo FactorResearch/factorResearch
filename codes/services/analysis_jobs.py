@@ -6,14 +6,36 @@ import json
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from uuid import uuid4
 
 from codes.core.config import is_production
 from codes.core.redis_client import get_redis
 from codes.domain.responses import JobResponse
 
 _QUEUE = "jobs:analysis"
+_MAINTENANCE_QUEUE = f"{_QUEUE}:maintenance"
 _PROCESSING_QUEUE = f"{_QUEUE}:processing"
+_HEARTBEAT_KEY = f"{_QUEUE}:heartbeat"
 _local_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="analysis-job")
+
+
+def _prepare_job(job: dict) -> dict:
+    """Attach the queue contract without changing caller-owned job payloads."""
+    prepared = dict(job)
+    prepared.setdefault("job_id", f"job-{uuid4().hex}")
+    prepared.setdefault("created_at", datetime.now(timezone.utc).isoformat())
+    prepared.setdefault("attempts", 0)
+    prepared.setdefault("max_attempts", 3)
+    prepared.setdefault("timeout_seconds", 300)
+    prepared.setdefault(
+        "priority", "maintenance" if prepared.get("type") == "refresh-analysis" else "interactive"
+    )
+    return prepared
+
+
+def _queue_name(job: dict) -> str:
+    return _MAINTENANCE_QUEUE if job.get("priority") == "maintenance" else _QUEUE
 
 
 def _dispatch(job: dict) -> None:
@@ -28,10 +50,11 @@ def _dispatch(job: dict) -> None:
 
 
 def enqueue(job: dict) -> None:
+    job = _prepare_job(job)
     redis = get_redis()
     if redis is not None:
         try:
-            redis.rpush(_QUEUE, json.dumps(job, default=str))
+            redis.rpush(_queue_name(job), json.dumps(job, default=str))
             return
         except Exception as exc:
             if is_production():
@@ -64,7 +87,9 @@ def recover_interrupted_jobs(redis) -> int:
 
 
 def consume_one(redis, timeout: int = 5) -> bool:
-    raw = redis.brpoplpush(_QUEUE, _PROCESSING_QUEUE, timeout=timeout)
+    raw = redis.brpoplpush(_QUEUE, _PROCESSING_QUEUE, timeout=0)
+    if not raw:
+        raw = redis.brpoplpush(_MAINTENANCE_QUEUE, _PROCESSING_QUEUE, timeout=timeout)
     if not raw:
         return False
     job = json.loads(raw)
@@ -74,10 +99,15 @@ def consume_one(redis, timeout: int = 5) -> bool:
         redis.lrem(_PROCESSING_QUEUE, 1, raw)
     except Exception as exc:
         redis.lrem(_PROCESSING_QUEUE, 1, raw)
-        if attempts < 2:
-            redis.rpush(_QUEUE, json.dumps({**job, "attempts": attempts + 1}))
+        max_attempts = max(1, int(job.get("max_attempts", 3)))
+        if attempts + 1 < max_attempts:
+            retry = {**job, "attempts": attempts + 1, "last_error": type(exc).__name__}
+            redis.rpush(_queue_name(retry), json.dumps(retry))
         else:
-            redis.rpush(f"{_QUEUE}:dead", json.dumps({**job, "error": str(exc)}))
+            redis.rpush(
+                f"{_QUEUE}:dead",
+                json.dumps({**job, "error": type(exc).__name__, "terminal": True}),
+            )
     return True
 
 
@@ -96,6 +126,7 @@ def work_forever(stop_event: threading.Event | None = None) -> None:
             if not recovered:
                 recover_interrupted_jobs(redis)
                 recovered = True
+            redis.set(_HEARTBEAT_KEY, datetime.now(timezone.utc).isoformat(), ex=30)
             consume_one(redis, timeout=1)
         except Exception as exc:
             print(f"Analysis job worker error: {exc}")
@@ -116,7 +147,7 @@ def health() -> dict:
     try:
         return {
             "backend": "redis",
-            "queued": int(redis.llen(_QUEUE)),
+            "queued": int(redis.llen(_QUEUE)) + int(redis.llen(_MAINTENANCE_QUEUE)),
             "processing": int(redis.llen(_PROCESSING_QUEUE)),
             "dead_letter": int(redis.llen(f"{_QUEUE}:dead")),
         }
