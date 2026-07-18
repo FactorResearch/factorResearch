@@ -124,6 +124,55 @@ def update_user_settings(user_id: str, patch: dict) -> dict:
     return get_user_settings(user_id)
 
 
+def delete_user_settings(user_id: str, *, expected_version: int | None = None) -> dict:
+    """Tombstone account preferences while retaining a syncable record.
+
+    Args:
+        user_id: Stable authenticated account identifier.
+        expected_version: Version observed by the caller.  When omitted, the
+            current version is used for compatibility with server-owned flows.
+
+    Returns:
+        The deleted settings record including its synchronization metadata.
+
+    Raises:
+        RuntimeError: If the supplied version is stale.
+    """
+    current = _stored_user_settings(user_id)
+    sync = dict(current.get("_sync") or {})
+    current_version = int(sync.get("version") or 0)
+    if expected_version is not None and expected_version != current_version:
+        raise RuntimeError("User settings version conflict; reload before retrying.")
+    now = datetime.now(UTC).isoformat()
+    current["_sync"] = {
+        "created_at": sync.get("created_at") or now,
+        "updated_at": now,
+        "version": current_version + 1,
+        "deleted_at": now,
+    }
+    db.upsert_user_settings(user_id, current)
+    return get_user_settings(user_id, include_deleted=True)
+
+
+def restore_user_settings(user_id: str, *, expected_version: int) -> dict:
+    """Clear a settings tombstone after an optimistic version check."""
+    current = _stored_user_settings(user_id)
+    sync = dict(current.get("_sync") or {})
+    if not sync.get("deleted_at"):
+        raise ValueError("Deleted user settings not found.")
+    if int(sync.get("version") or 0) != expected_version:
+        raise RuntimeError("User settings version conflict; reload before retrying.")
+    now = datetime.now(UTC).isoformat()
+    current["_sync"] = {
+        "created_at": sync.get("created_at") or now,
+        "updated_at": now,
+        "version": expected_version + 1,
+        "deleted_at": None,
+    }
+    db.upsert_user_settings(user_id, current)
+    return get_user_settings(user_id)
+
+
 def set_theme(user_id: str, theme: str | None) -> dict:
     return update_user_settings(user_id, {"appearance": {"theme": _normalize_theme(theme)}})
 

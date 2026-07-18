@@ -32,6 +32,7 @@ from contextlib import contextmanager
 from dotenv import load_dotenv
 
 from codes.core.db_pool import ConnectionPool
+from codes.data.migrations import apply_migrations
 
 load_dotenv()
 try:
@@ -361,7 +362,10 @@ CREATE TABLE IF NOT EXISTS user_weights (
     user_id      TEXT NOT NULL,
     factor_name  TEXT NOT NULL,
     weight       REAL NOT NULL,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at   TEXT NOT NULL,
+    version      BIGINT NOT NULL DEFAULT 1,
+    deleted_at   TIMESTAMPTZ,
     PRIMARY KEY (user_id, factor_name)
 );
 CREATE TABLE IF NOT EXISTS subscriptions (
@@ -373,6 +377,9 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     end_date               TIMESTAMPTZ,
     stripe_customer_id     TEXT,
     stripe_subscription_id TEXT,
+    created_at             TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    version                BIGINT NOT NULL DEFAULT 1,
+    deleted_at             TIMESTAMPTZ,
     updated_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer
@@ -384,6 +391,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_stripe_subscription
 CREATE TABLE IF NOT EXISTS user_settings (
     user_id       TEXT PRIMARY KEY,
     settings_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    version       BIGINT NOT NULL DEFAULT 0,
+    deleted_at    TIMESTAMPTZ,
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE TABLE IF NOT EXISTS user_usage (
@@ -1360,26 +1370,83 @@ def upsert_factor_scores(ticker: str, scores: dict[str, tuple[float | None, floa
             })
 
 _UPSERT_USER_WEIGHT = """
-INSERT INTO user_weights (user_id, factor_name, weight, updated_at)
-VALUES (%(user_id)s, %(factor_name)s, %(weight)s, %(updated_at)s)
+INSERT INTO user_weights (user_id, factor_name, weight, created_at, updated_at, version, deleted_at)
+VALUES (%(user_id)s, %(factor_name)s, %(weight)s, %(updated_at)s, %(updated_at)s, %(version)s, NULL)
 ON CONFLICT (user_id, factor_name) DO UPDATE SET
-    weight = excluded.weight, updated_at = excluded.updated_at
+    weight = excluded.weight,
+    updated_at = excluded.updated_at,
+    version = excluded.version,
+    deleted_at = NULL
 """
-_SELECT_USER_WEIGHTS = "SELECT factor_name, weight FROM user_weights WHERE user_id = %(user_id)s"
-_DELETE_USER_WEIGHTS = "DELETE FROM user_weights WHERE user_id = %(user_id)s"
+_SELECT_USER_WEIGHTS = """
+SELECT factor_name, weight
+FROM user_weights
+WHERE user_id = %(user_id)s AND deleted_at IS NULL
+"""
+_SELECT_USER_WEIGHT_ROWS = """
+SELECT factor_name, weight, created_at, updated_at, version, deleted_at
+FROM user_weights
+WHERE user_id = %(user_id)s
+ORDER BY factor_name
+"""
+_TOMBSTONE_USER_WEIGHTS = """
+UPDATE user_weights
+SET updated_at = %(updated_at)s, version = %(version)s, deleted_at = %(updated_at)s
+WHERE user_id = %(user_id)s AND deleted_at IS NULL AND factor_name = ANY(%(factor_names)s)
+"""
 
 
-def set_user_weights(user_id: str, weights: dict[str, float]) -> None:
-    """Persist a user's factor weight config. Only the weights — never
-    company data — are duplicated per user (ISSUE_012 Layer 3)."""
+def set_user_weights(
+    user_id: str,
+    weights: dict[str, float],
+    *,
+    expected_version: int | None = None,
+) -> None:
+    """Persist a versioned factor strategy without destroying prior records.
+
+    The factor rows are the strategy's synchronization records.  A write
+    advances one shared version across the supplied factors and tombstones
+    factors omitted by a future strategy shape.  ``expected_version`` provides
+    optimistic concurrency for a client editing a previously-read strategy.
+
+    Args:
+        user_id: Stable authenticated account identifier.
+        weights: Factor names and normalized or raw weights for the strategy.
+        expected_version: Version observed by the caller, or ``None`` for the
+            server-owned legacy write path.
+
+    Raises:
+        RuntimeError: If the caller's expected version is stale.
+    """
     _ensure_user_init()
-    now = datetime.datetime.utcnow().isoformat()
+    now = datetime.datetime.now(datetime.UTC)
     with _users_conn() as con:
-        con.execute(_DELETE_USER_WEIGHTS, {"user_id": user_id})
+        con.row_factory = dict_row
+        con.execute(
+            "SELECT pg_advisory_xact_lock(hashtext(%(strategy_lock)s))",
+            {"strategy_lock": f"user_weights:{user_id}"},
+        )
+        rows = con.execute(_SELECT_USER_WEIGHT_ROWS, {"user_id": user_id}).fetchall()
+        current_version = max((int(row.get("version") or 0) for row in rows), default=0)
+        if expected_version is not None and current_version != expected_version:
+            raise RuntimeError("User strategy version conflict; reload before retrying.")
+        next_version = current_version + 1
         for factor_name, weight in weights.items():
             con.execute(_UPSERT_USER_WEIGHT, {
                 "user_id": user_id, "factor_name": factor_name,
-                "weight": weight, "updated_at": now,
+                "weight": weight, "updated_at": now, "version": next_version,
+            })
+        removed = [
+            row["factor_name"]
+            for row in rows
+            if row.get("deleted_at") is None and row["factor_name"] not in weights
+        ]
+        if removed:
+            con.execute(_TOMBSTONE_USER_WEIGHTS, {
+                "user_id": user_id,
+                "updated_at": now,
+                "version": next_version,
+                "factor_names": removed,
             })
 
 
@@ -1389,6 +1456,29 @@ def get_user_weights(user_id: str) -> dict[str, float]:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_USER_WEIGHTS, {"user_id": user_id}).fetchall()
     return {r["factor_name"]: r["weight"] for r in rows}
+
+
+def list_user_weight_changes(
+    user_id: str,
+    *,
+    changed_since: datetime.datetime | None = None,
+    include_deleted: bool = False,
+) -> list[dict]:
+    """Return strategy rows changed after a synchronization cursor.
+
+    Deleted factor rows remain available as tombstones until the account
+    retention policy permits physical erasure.
+    """
+    _ensure_user_init()
+    with _users_conn() as con:
+        con.row_factory = dict_row
+        rows = con.execute(_SELECT_USER_WEIGHT_ROWS, {"user_id": user_id}).fetchall()
+    return [
+        dict(row)
+        for row in rows
+        if (include_deleted or row.get("deleted_at") is None)
+        and (changed_since is None or row["updated_at"] > changed_since)
+    ]
 def get_factor_scores(ticker: str) -> dict[str, dict]:
     """Return {factor_name: {score, max_score, computed_at}} for a ticker."""
     _ensure_init()
@@ -1410,16 +1500,20 @@ _DELETE_STRATEGY_CACHE_PREFIX = "DELETE FROM strategy_backtest_cache WHERE cache
 _SELECT_SUBSCRIPTION = "SELECT * FROM subscriptions WHERE user_id = %(user_id)s"
 _SELECT_SUBSCRIPTION_BY_CUSTOMER = "SELECT * FROM subscriptions WHERE stripe_customer_id = %(stripe_customer_id)s"
 _SELECT_SUBSCRIPTION_BY_STRIPE_ID = "SELECT * FROM subscriptions WHERE stripe_subscription_id = %(stripe_subscription_id)s"
-_SELECT_USER_SETTINGS = "SELECT settings_json FROM user_settings WHERE user_id = %(user_id)s"
+_SELECT_USER_SETTINGS = """
+SELECT settings_json, created_at, updated_at, version, deleted_at
+FROM user_settings
+WHERE user_id = %(user_id)s
+"""
 _UPSERT_SUBSCRIPTION = """
 INSERT INTO subscriptions (
     user_id, plan, status, start_date, end_date,
-    stripe_customer_id, stripe_subscription_id, updated_at
+    stripe_customer_id, stripe_subscription_id, created_at, version, deleted_at, updated_at
 )
 VALUES (
     %(user_id)s, %(plan)s, %(status)s,
     COALESCE(%(start_date)s, NOW()), %(end_date)s,
-    %(stripe_customer_id)s, %(stripe_subscription_id)s, NOW()
+    %(stripe_customer_id)s, %(stripe_subscription_id)s, NOW(), 1, NULL, NOW()
 )
 ON CONFLICT (user_id) DO UPDATE SET
     plan = excluded.plan,
@@ -1428,16 +1522,25 @@ ON CONFLICT (user_id) DO UPDATE SET
     end_date = excluded.end_date,
     stripe_customer_id = COALESCE(excluded.stripe_customer_id, subscriptions.stripe_customer_id),
     stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, subscriptions.stripe_subscription_id),
+    version = subscriptions.version + 1,
+    deleted_at = NULL,
     updated_at = NOW()
+WHERE %(expected_version)s IS NULL OR subscriptions.version = %(expected_version)s
+RETURNING user_id
 """
 _UPSERT_USER_SETTINGS = """
-INSERT INTO user_settings (user_id, settings_json, updated_at)
-VALUES (%(user_id)s, %(settings_json)s::jsonb, NOW())
+INSERT INTO user_settings (
+    user_id, settings_json, created_at, version, deleted_at, updated_at
+)
+VALUES (
+    %(user_id)s, %(settings_json)s::jsonb, NOW(), %(version)s, %(deleted_at)s, NOW()
+)
 ON CONFLICT (user_id) DO UPDATE SET
     settings_json = excluded.settings_json,
+    version = excluded.version,
+    deleted_at = excluded.deleted_at,
     updated_at = NOW()
-WHERE COALESCE((user_settings.settings_json #>> '{_sync,version}')::integer, 0)
-    = %(expected_version)s
+WHERE user_settings.version = %(expected_version)s
 RETURNING settings_json
 """
 _SELECT_USAGE = """
@@ -1559,11 +1662,12 @@ def upsert_subscription(
     end_date=None,
     stripe_customer_id: str | None = None,
     stripe_subscription_id: str | None = None,
+    expected_version: int | None = None,
 ) -> dict:
     _ensure_user_init()
     with _users_conn() as con:
         con.row_factory = dict_row
-        con.execute(_UPSERT_SUBSCRIPTION, {
+        result = con.execute(_UPSERT_SUBSCRIPTION, {
             "user_id": user_id,
             "plan": plan,
             "status": status,
@@ -1571,7 +1675,11 @@ def upsert_subscription(
             "end_date": end_date,
             "stripe_customer_id": stripe_customer_id,
             "stripe_subscription_id": stripe_subscription_id,
+            "expected_version": expected_version,
         })
+        inserted_or_updated = result.fetchone()
+        if expected_version is not None and inserted_or_updated is None:
+            raise RuntimeError("Subscription version conflict; reload before retrying.")
         row = con.execute(_SELECT_SUBSCRIPTION, {"user_id": user_id}).fetchone()
     return dict(row)
 
@@ -1583,21 +1691,37 @@ def get_user_settings(user_id: str) -> dict:
         row = con.execute(_SELECT_USER_SETTINGS, {"user_id": user_id}).fetchone()
     if not row:
         return {}
-    return dict(row.get("settings_json") or {})
+    settings = dict(row.get("settings_json") or {})
+    if not any(key in row for key in ("created_at", "updated_at", "version", "deleted_at")):
+        return settings
+    sync = dict(settings.get("_sync") or {})
+    for key in ("created_at", "updated_at", "deleted_at"):
+        value = row.get(key)
+        if hasattr(value, "isoformat"):
+            value = value.isoformat()
+        if value is not None or key in {"created_at", "updated_at"}:
+            sync[key] = value
+    if row.get("version") is not None:
+        sync["version"] = int(row["version"])
+    settings["_sync"] = sync
+    return settings
 
 
 def upsert_user_settings(user_id: str, settings: dict) -> dict:
     _ensure_user_init()
     with _users_conn() as con:
         con.row_factory = dict_row
+        sync = dict(settings.get("_sync") or {})
+        version = int(sync.get("version") or 1)
+        deleted_at = sync.get("deleted_at")
         row = con.execute(
             _UPSERT_USER_SETTINGS,
             {
                 "user_id": user_id,
                 "settings_json": json.dumps(settings, default=str),
-                "expected_version": max(
-                    0, int((settings.get("_sync") or {}).get("version") or 1) - 1
-                ),
+                "version": version,
+                "deleted_at": deleted_at,
+                "expected_version": max(0, version - 1),
             },
         ).fetchone()
     if not row:
@@ -1882,6 +2006,7 @@ def init_db() -> None:
 def init_user_db() -> None:
     with _users_conn() as con:
         con.execute(_CREATE_USER_TABLES)
+        apply_migrations(con, "users")
 
 
 def delete_user_records(user_id: str) -> dict[str, int]:

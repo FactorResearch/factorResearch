@@ -93,3 +93,23 @@ def test_settings_database_rejects_a_stale_version(monkeypatch) -> None:
 
     with pytest.raises(RuntimeError, match="version conflict"):
         db.upsert_user_settings("user-1", {"_sync": {"version": 2}})
+
+
+def test_user_settings_delete_and_restore_preserve_tombstone(monkeypatch) -> None:
+    stored = {"appearance": {"theme": "dark"}}
+    monkeypatch.setattr(user_settings.db, "get_user_settings", lambda _user_id: stored)
+    monkeypatch.setattr(
+        user_settings.db,
+        "upsert_user_settings",
+        lambda _user_id, settings: stored.clear() or stored.update(settings) or settings,
+    )
+
+    deleted = user_settings.delete_user_settings("user-1")
+    assert deleted["_sync"]["deleted_at"]
+    deleted_version = deleted["_sync"]["version"]
+
+    restored = user_settings.restore_user_settings(
+        "user-1", expected_version=deleted_version
+    )
+    assert restored["_sync"]["deleted_at"] is None
+    assert restored["_sync"]["version"] == deleted_version + 1

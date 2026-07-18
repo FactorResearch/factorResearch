@@ -7,6 +7,8 @@ weighted_score is always computed dynamically at request time from
 company_analysis.get_company_analysis()'s shared factor_scores.
 """
 
+from datetime import datetime
+
 from ..data import db
 from . import company_analysis
 from .factor_engine import FACTOR_SOURCES
@@ -52,6 +54,20 @@ def set_user_weights(user_id: str, weights: dict[str, float]) -> dict[str, float
     normalized = normalize_weights(weights)
     db.set_user_weights(user_id, normalized)
     return normalized
+
+
+def list_user_weight_changes(
+    user_id: str,
+    *,
+    changed_since: datetime | None = None,
+    include_deleted: bool = False,
+) -> list[dict]:
+    """Expose synchronization records for a user's saved strategy weights."""
+    return db.list_user_weight_changes(
+        user_id,
+        changed_since=changed_since,
+        include_deleted=include_deleted,
+    )
 
 
 def compute_weighted_score(symbol: str, user_id: str | None = None,
