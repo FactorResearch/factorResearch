@@ -1,6 +1,7 @@
 """Rendering helpers for the stock analysis view and shared charts."""
 
 from datetime import datetime
+from collections.abc import Callable
 from urllib.parse import quote
 
 import plotly.graph_objects as go
@@ -11,7 +12,7 @@ from codes.app_modules.design_system.financial import data_trust_panel, methodol
 from codes.app_modules.design_system.layouts import analysis_grid, container
 from codes.app_modules.design_system.primitives import link, loading_container
 from codes.app_modules.design_system.schemas import SectionDefinition
-from codes.app_modules.design_system.states import chart_skeleton
+from codes.app_modules.design_system.states import chart_skeleton, section_error
 from codes.domain.responses import AnalysisResponse
 from codes.services import chart_service
 
@@ -19,6 +20,33 @@ from .config import AMBER, BLUE, BORDER, GREEN, MUTED, RED, TEXT, WHITE
 from .css_classes import tone_class
 
 _ANALYSIS_ROW_DIVIDER = "rgba(67, 52, 90, 0.65)"
+
+
+def _safe_analysis_component(
+    section_id: str, title: str, renderer: Callable[..., object], *args: object
+) -> object:
+    """Render one optional analysis section without aborting sibling sections.
+
+    Args:
+        section_id: Stable section identifier used by the local retry control.
+        title: User-facing section name for the degraded-state message.
+        renderer: Existing card renderer; financial calculations remain outside
+            this presentation boundary.
+        *args: Renderer inputs.
+
+    Returns:
+        The rendered component, or an accessible local error state when the
+        optional renderer fails. The exception type is exposed only as a
+        technical diagnostic identifier, never as user-facing content.
+    """
+    try:
+        return renderer(*args)
+    except Exception as error:
+        return section_error(
+            f"{title} is temporarily unavailable. Other analysis sections remain usable.",
+            retry_id=f"analysis-{section_id}-retry",
+            technical_id=type(error).__name__,
+        )
 
 
 def _verdict_presentation_label(verdict: object) -> str:
@@ -1636,35 +1664,44 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
         ],
     )
 
-    graham_card = _render_scorecard("Intrinsic Value Analysis", g["criteria"], "graham")
-    quality_card = _render_scorecard("Moat Rating Analysis", q["criteria"], "quality")
+    graham_card = _safe_analysis_component(
+        "valuation", "Intrinsic value", _render_scorecard, "Intrinsic Value Analysis", g["criteria"], "graham"
+    )
+    quality_card = _safe_analysis_component(
+        "valuation", "Moat rating", _render_scorecard, "Moat Rating Analysis", q["criteria"], "quality"
+    )
     buffett_card = (
-        _render_scorecard("Economic Moat Quality & Value", b_data.get("criteria", []), "buffett")
+        _safe_analysis_component(
+            "valuation", "Economic moat", _render_scorecard,
+            "Economic Moat Quality & Value", b_data.get("criteria", []), "buffett"
+        )
         if b_data.get("criteria")
         else html.Div()
     )
     momentum_card = (
-        _render_scorecard("Momentum Analysis", m.get("criteria", []), "momentum")
+        _safe_analysis_component(
+            "growth", "Momentum", _render_scorecard, "Momentum Analysis", m.get("criteria", []), "momentum"
+        )
         if m.get("criteria")
         else html.Div()
     )
-    piotroski_card = _piotroski_card(data)
-    altman_card = _altman_card(data)
-    fcf_quality_card = _fcf_quality_card(data)
-    risk_card = _risk_card(data)
-    market_fear_card = _market_fear_card(data)
-    regime_card = _regime_card(data)
-    comomentum_card = _comomentum_card(data)
-    capital_allocation_card = _capital_allocation_card(data)
-    growth_quality_card = _growth_quality_card(data)
-    factor_momentum_card = _factor_momentum_card(data)
-    alternative_data_card = _alternative_data_card(data)
-    insider_card = _insider_activity_card(data)
-    greenblatt_card = _greenblatt_card(data)
-    profitability_card = _profitability_card(data)
-    benchmark_bias_card = _benchmark_bias_card(data)
-    graham_details = _graham_details_card(g)
-    buffett_details = _buffett_details_card(data)
+    piotroski_card = _safe_analysis_component("accounting", "Piotroski", _piotroski_card, data)
+    altman_card = _safe_analysis_component("accounting", "Altman", _altman_card, data)
+    fcf_quality_card = _safe_analysis_component("accounting", "Cash-flow quality", _fcf_quality_card, data)
+    risk_card = _safe_analysis_component("risk", "Risk", _risk_card, data)
+    market_fear_card = _safe_analysis_component("risk", "Market conditions", _market_fear_card, data)
+    regime_card = _safe_analysis_component("risk", "Market regime", _regime_card, data)
+    comomentum_card = _safe_analysis_component("risk", "Co-momentum", _comomentum_card, data)
+    capital_allocation_card = _safe_analysis_component("growth", "Capital allocation", _capital_allocation_card, data)
+    growth_quality_card = _safe_analysis_component("growth", "Growth quality", _growth_quality_card, data)
+    factor_momentum_card = _safe_analysis_component("growth", "Factor momentum", _factor_momentum_card, data)
+    alternative_data_card = _safe_analysis_component("signals", "Alternative data", _alternative_data_card, data)
+    insider_card = _safe_analysis_component("signals", "Insider activity", _insider_activity_card, data)
+    greenblatt_card = _safe_analysis_component("valuation", "Greenblatt", _greenblatt_card, data)
+    profitability_card = _safe_analysis_component("growth", "Profitability", _profitability_card, data)
+    benchmark_bias_card = _safe_analysis_component("risk", "Benchmark bias", _benchmark_bias_card, data)
+    graham_details = _safe_analysis_component("valuation", "Intrinsic value details", _graham_details_card, g)
+    buffett_details = _safe_analysis_component("valuation", "Moat details", _buffett_details_card, data)
 
     accounting_children = [
         html.Div(

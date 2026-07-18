@@ -2,6 +2,7 @@
   "openapi": "3.1.0",
   "info": {"title": "CenvarnPublic API", "version": "1.0.0", "description": "Stable public client contract. All operations are served below /api/v1."},
   "servers": [{"url": "/api/v1"}],
+  "x-api-lifecycle": {"current_version": "v1", "supported_versions": ["v1"], "previous_major_support_months": 12, "deprecation_notice_months": 6, "policy": "docs/api-versioning.md"},
   "paths": {
     "/health": {"get": {"operationId": "getHealth", "responses": {"200": {"description": "Service is available", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HealthResponse"}}}}}}},
     "/openapi.yaml": {"get": {"operationId": "getOpenApiDocument", "responses": {"200": {"description": "This OpenAPI document", "content": {"application/yaml": {"schema": {"type": "string"}}}}}}},

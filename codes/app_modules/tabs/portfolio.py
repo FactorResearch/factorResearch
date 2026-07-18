@@ -337,7 +337,12 @@ def render_portfolio_holdings(active, refresh):
             h["shares"] * (h.get("current_price") or h["price_at_add"]) for h in holdings.values()
         )
         # ── Summary cards ──
-        analysis_entries = portfolio_engine.analysis_entries(holdings)
+        try:
+            analysis_entries = portfolio_engine.analysis_entries(holdings)
+        except Exception:
+            # Cached enrichment is optional; holdings and user-entered values
+            # remain usable when a provider/cache read fails.
+            analysis_entries = {}
         analyses = {symbol: (analysis_entries.get(symbol) or {}).get("data") for symbol in holdings}
         currencies = {
             ((analysis or {}).get("provenance") or {}).get("currency")

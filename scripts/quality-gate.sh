@@ -19,9 +19,11 @@ PROTECTED_PYTHON=(
   scripts/check-architecture.py
   scripts/check-duplication.py
   scripts/architecture-report.py
+  codes/api/compatibility.py
   tests/test_issue_076_architecture.py
   tests/test_issue_077_migrations.py
   tests/api/test_v1_contract.py
+  tests/api/test_api_compatibility.py
   tests/test_issue_061_domain_responses.py
 )
 
@@ -31,3 +33,4 @@ mypy
 python scripts/check-architecture.py
 python scripts/check-duplication.py
 python scripts/architecture-report.py --check --output /tmp/architecture-report.json
+python -m codes.api.compatibility
