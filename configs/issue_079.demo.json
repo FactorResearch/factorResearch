@@ -1,0 +1,11 @@
+{
+  "algorithm_version": "issue-079-demo-v1",
+  "data_version": "demo-v1",
+  "benchmark": "SPY",
+  "score_threshold": 70,
+  "max_holdings": 3,
+  "random_seed": 7901,
+  "random_sample_size": null,
+  "initial_capital": "10000",
+  "transaction_cost_bps": "10"
+}

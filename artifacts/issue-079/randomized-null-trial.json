@@ -1,0 +1,25 @@
+{
+  "status": "null-market-diagnostic",
+  "algorithm_scores": "codes.engine.factor_backtest._score_with_weights",
+  "future_returns": "independent seeded random draws",
+  "trials": 100,
+  "rows_per_trial": 1000,
+  "annual_snapshots": 20,
+  "seed_range": [
+    7901,
+    8000
+  ],
+  "mean_high_minus_low_spread_pct": -0.085,
+  "spread_95pct_confidence_interval_pct": [
+    -1.234,
+    1.064
+  ],
+  "mean_periods_beating_spy_pct": 48.769,
+  "diagnosis_counts": {
+    "inverted-synthetic-signal": 5,
+    "mixed-or-insufficient-signal": 55,
+    "null-or-weak-synthetic-signal": 39,
+    "strong-synthetic-signal": 1
+  },
+  "interpretation": "A valid null test should have a near-zero mean spread and a confidence interval that includes zero. Individual trials can look positive or negative by chance."
+}
