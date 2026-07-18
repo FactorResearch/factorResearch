@@ -366,6 +366,24 @@ def get_authenticated_user_id() -> str | None:
     return None
 
 
+def is_operations_admin(user_id: str | None = None) -> bool:
+    """Return whether the current identity is explicitly allowlisted for ops.
+
+    The allowlist is intentionally empty by default and is read at request
+    time so deployments can rotate operators without changing application
+    code. Subscription plans and developer personas never grant this access.
+    """
+    identity = user_id or get_authenticated_user_id()
+    if not identity:
+        return False
+    configured = {
+        value.strip()
+        for value in os.environ.get("OPERATIONS_ADMIN_USER_IDS", "").split(",")
+        if value.strip()
+    }
+    return identity in configured
+
+
 def set_authenticated_user(user_id: str) -> None:
     """Store only the nonsecret authenticated user ID in the client session."""
     session["_authenticated_user_id"] = user_id

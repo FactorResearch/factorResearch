@@ -40,6 +40,7 @@ from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
 from codes.services import performance_metrics, provider_gateway
+from codes.services.operations_dashboard import snapshot as operations_snapshot
 from codes.services import account_service, analysis_jobs, component_cache, screener_service
 from codes.services.operational_controller import classify_runtime_health, controller
 from codes.services.company_logo_cache import get_or_fetch_logo
@@ -159,6 +160,25 @@ def internal_performance():
             "snapshots": analysis_snapshot_service.pool_health(),
         },
     })
+
+
+@server.route("/_internal/operations")
+def internal_operations():
+    """Serve the read-only operations view to explicitly allowlisted admins."""
+    if not auth.is_operations_admin():
+        flask.abort(404)
+    try:
+        limit = int(flask.request.args.get("limit", "50"))
+    except ValueError:
+        return flask.jsonify({"error": "limit must be an integer"}), 400
+    if limit < 1 or limit > 100:
+        return flask.jsonify({"error": "limit must be between 1 and 100"}), 400
+    return flask.jsonify(
+        operations_snapshot(
+            search=flask.request.args.get("search", ""),
+            limit=limit,
+        )
+    )
 
 
 _REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")

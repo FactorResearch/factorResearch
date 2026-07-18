@@ -82,6 +82,8 @@ class AuditJournal:
     def search(
         self,
         *,
+        request_id: str | None = None,
+        correlation_id: str | None = None,
         user_id: str | None = None,
         ticker: str | None = None,
         provider: str | None = None,
@@ -94,6 +96,8 @@ class AuditJournal:
         if not 1 <= limit <= 1_000:
             raise ValueError("limit must be between 1 and 1000")
         filters = {
+            "request_id": request_id,
+            "correlation_id": correlation_id,
             "user_id": user_id,
             "ticker": ticker.upper() if ticker else None,
             "provider": provider,
