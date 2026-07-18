@@ -50,7 +50,15 @@
     if (!overlay || overlay.dataset.dsOverlay !== 'modal' || !window.location.hash) return false;
     const restoreTarget = previousFocus.get(overlay);
     previousFocus.delete(overlay);
-    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    overlay.querySelectorAll('.legal-modal-card.is-fullscreen').forEach(function (card) {
+      card.classList.remove('is-fullscreen');
+      const button = card.querySelector('[data-ds-fullscreen="true"]');
+      if (button) {
+        button.setAttribute('aria-pressed', 'false');
+        button.textContent = 'Full screen';
+      }
+    });
+    window.location.hash = '';
     if (restoreTarget && restoreTarget.isConnected) restoreTarget.focus();
     window.requestAnimationFrame(function () {
       syncOverlay();
@@ -64,6 +72,15 @@
     if (trigger) {
       const target = document.querySelector(trigger.getAttribute('href'));
       if (target?.matches('[data-ds-overlay]')) previousFocus.set(target, trigger);
+    }
+    const fullscreen = event.target.closest && event.target.closest('[data-ds-fullscreen="true"]');
+    if (fullscreen) {
+      const card = fullscreen.closest('.legal-modal-card');
+      if (card) {
+        const expanded = card.classList.toggle('is-fullscreen');
+        fullscreen.setAttribute('aria-pressed', String(expanded));
+        fullscreen.textContent = expanded ? 'Exit full screen' : 'Full screen';
+      }
     }
     const close = event.target.closest && event.target.closest('[data-ds-close="true"][href="#"]');
     if (!close) return;

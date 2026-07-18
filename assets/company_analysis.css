@@ -37,17 +37,19 @@ a {
 
 .topbar {
   height: 64px;
+}
+@media screen and (max-width: 767px) {
+  .topbar {
+    height: 100%;
+  }
+}
+.topbar {
   border-bottom: 1px solid #1e2a3a;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 max(20px, (100vw - 1360px) / 2);
   background: rgba(13, 17, 23, 0.96);
-}
-@media screen and (max-width: 767px) {
-  .topbar {
-    height: 100%;
-  }
 }
 
 .brand {
@@ -271,6 +273,7 @@ time {
   border: 1px solid rgba(0, 230, 118, 0.2);
   border-radius: 999px;
   padding: 5px 9px;
+  height: -moz-max-content;
   height: max-content;
 }
 
@@ -732,6 +735,4 @@ html.light nav[aria-label="History pages"] a {
     grid-template-columns: 1fr;
     gap: 4px;
   }
-}
-
-/*# sourceMappingURL=company_analysis.css.map */
+}/*# sourceMappingURL=company_analysis.css.map */

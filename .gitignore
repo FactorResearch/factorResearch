@@ -19,6 +19,7 @@ assets/*.css
 !assets/company_analysis.css
 !assets/error_pages.css
 !assets/legal_pages.css
+!assets/landing_pre.css
 agency-agents/*
 .ev.example
 .codex/

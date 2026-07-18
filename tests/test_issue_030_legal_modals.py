@@ -42,10 +42,11 @@ def test_footer_legal_links_open_in_app_modals():
 
     assert "#legal-terms" in hrefs
     assert "#legal-privacy" in hrefs
-    assert "/terms" in hrefs
-    assert "/privacy" in hrefs
     assert _find_by_id(layout, "legal-terms") is not None
     assert _find_by_id(layout, "legal-privacy") is not None
+
+    terms_modal = _find_by_id(layout, "legal-terms")
+    assert "legal-modal-fullscreen" in str(terms_modal)
 
 
 def test_legal_pages_have_real_content_and_external_assets():
@@ -55,7 +56,7 @@ def test_legal_pages_have_real_content_and_external_assets():
     assert "PLACEHOLDER" not in terms + privacy
     assert "[placeholder" not in terms + privacy
     assert "No Investment Advice" in terms
-    assert "Market Data and Model Risk" in terms
+    assert "Accuracy of Information" in terms
     assert "Information We Collect" in privacy
     assert "Retention and Deletion" in privacy
     assert '<link rel="stylesheet" href="/assets/legal_pages.css">' in terms
@@ -64,6 +65,14 @@ def test_legal_pages_have_real_content_and_external_assets():
     assert "<style" not in terms + privacy
     assert "style=" not in terms + privacy
     assert "(function" not in privacy
+
+
+def test_methodology_page_uses_public_methodology_source():
+    methodology = (ROOT / "codes/templates/methodology.html").read_text()
+
+    assert "Transparent. Auditable. Deterministic." in methodology
+    assert "Data Sources" in methodology
+    assert "Composite Score" in methodology
 
 
 def test_legal_modal_css_supports_popup_and_full_page_feel():

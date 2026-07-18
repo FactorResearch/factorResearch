@@ -136,33 +136,47 @@ def _topbar():
 
 def _legal_terms_content():
     return [
-        html.P("Cenvarnprovides research tools, scoring models, screeners, portfolio analytics, and educational content for self-directed investors.", className="legal-modal-lead"),
+        html.P("Welcome to Cenvarn. By accessing this website or joining the Cenvarn waitlist, you agree to these Terms of Service. If you do not agree, please do not use the website.", className="legal-modal-lead"),
+        html.H3("About Cenvarn"),
+        html.P("Cenvarn is a quantitative investment research platform currently in development. Joining the waitlist does not create a customer relationship and does not guarantee access to future products or services."),
+        html.H3("Waitlist"),
+        html.P("Invitations may be limited, access may be delayed or unavailable, features and pricing may change before launch, and Cenvarn may discontinue or modify the waitlist at any time."),
         html.H3("No Investment Advice"),
-        html.P("The Service is not a registered investment adviser, broker-dealer, tax adviser, or legal adviser. Scores, rankings, forecasts, alerts, and model outputs are informational only and are not personalized recommendations."),
-        html.H3("Market Data and Model Risk"),
-        html.P("Financial data may come from public filings, third-party providers, cached calculations, and derived models. Data can be delayed, incomplete, inaccurate, or unavailable. Past performance and backtests do not guarantee future results."),
-        html.H3("Accounts, Payments, and Access"),
-        html.P("You are responsible for account security and lawful use. Paid features depend on billing status and product access rules. Plan access may change if billing, abuse prevention, or product requirements change."),
-        html.H3("Limitation of Liability"),
-        html.P("Cenvarnis provided as is without warranties. We are not liable for investment losses, missed opportunities, data outages, provider errors, or indirect damages arising from use of the Service."),
+        html.P("Information provided by Cenvarn is for informational and educational purposes only. Nothing on this website constitutes investment, financial, legal, or tax advice, or a recommendation to buy, sell, or hold any security. You remain solely responsible for your own investment decisions."),
+        html.H3("Accuracy of Information"),
+        html.P("Financial data may contain errors, omissions, delays, or inaccuracies. You should independently verify information before making financial decisions. We make no guarantees regarding completeness, accuracy, or timeliness."),
+        html.H3("Intellectual Property and Acceptable Use"),
+        html.P("Cenvarn or its licensors own the website content, branding, software, methodologies, and documentation. You may not copy, distribute, modify, reverse engineer, commercially exploit, interfere with operations, attempt unauthorized access, scrape data without permission, introduce malicious software, or violate applicable laws."),
+        html.H3("Future Services and Third Parties"),
+        html.P("Future subscriptions, pricing, features, and service levels may differ from waitlist information. Our website may link to or integrate with third-party services, for which Cenvarn is not responsible."),
+        html.H3("Disclaimer and Limitation of Liability"),
+        html.P("The website and information are provided as is and as available without warranties. To the maximum extent permitted by law, Cenvarn and its affiliates are not liable for indirect, incidental, consequential, special, exemplary, or punitive damages arising from use of the website or reliance on its content."),
+        html.H3("Changes, Governing Law, and Contact"),
+        html.P("We may update these Terms; continued use after changes become effective constitutes acceptance. These Terms are governed by the laws of Ontario and the federal laws of Canada applicable there. Questions may be sent to legal@cenvarn.com."),
     ]
 
 
 def _legal_privacy_content():
     return [
-        html.P("We collect account identifiers, authentication session data, portfolio names and holdings, feature usage, billing status, waitlist submissions, and product analytics events.", className="legal-modal-lead"),
-        html.H3("How Information Is Used"),
-        html.P("Information is used to operate the app, save portfolios, enforce feature limits, process billing status, prevent abuse, improve product flows, and troubleshoot reliability issues."),
-        html.H3("Analytics and Providers"),
-        html.P("Product analytics can be disabled from the full Privacy Policy page. We may use infrastructure, authentication, analytics, email, market-data, and payment providers to operate the Service. We do not sell personal information."),
-        html.H3("Retention and Deletion"),
-        html.P("We keep data while needed to provide the Service, satisfy billing or security requirements, and maintain product records. Account deletion removes portfolios and session-linked user data through the account deletion flow."),
-        html.H3("Security"),
-        html.P("We use reasonable technical controls, but no internet service can be guaranteed secure. Do not submit private brokerage passwords or sensitive financial account credentials."),
+        html.P("Welcome to Cenvarn (Cenvarn, we, our, or us). Your privacy is important to us. This policy explains what information we collect, how we use it, and your choices when you visit our website or join our waitlist.", className="legal-modal-lead"),
+        html.H3("Information We Collect"),
+        html.P("When you join the waitlist, we may collect your email address, name if provided, country or region if voluntarily provided, and browser information such as IP address, browser type, device, pages visited, referral source, cookies, and similar technologies."),
+        html.H3("How We Use Your Information"),
+        html.P("We may use information to manage the waitlist, send launch updates and announcements, respond to inquiries, improve the website and services, detect fraud or abuse, address security issues, and comply with legal obligations. We do not sell personal information."),
+        html.H3("Marketing Emails and Cookies"),
+        html.P("Waitlist members may receive launch announcements, feature updates, and occasional product news. You may unsubscribe through every marketing email. Cookies and similar technologies may remember preferences, measure performance, understand visitor behavior, and improve the experience; browser settings can control cookies."),
+        html.H3("Analytics and Third-Party Services"),
+        html.P("We may use privacy-conscious analytics to understand page views, session duration, device type, country, and browser. Trusted providers may process information for hosting, email delivery, analytics, error monitoring, and security, only as necessary to perform services on our behalf."),
+        html.H3("Security, Retention, and Deletion"),
+        html.P("We implement reasonable administrative, technical, and organizational safeguards, but no internet transmission or storage method is completely secure. We retain information only as long as necessary or legally required. If you unsubscribe or request deletion, we remove or anonymize information within a reasonable period unless retention is required by law."),
+        html.H3("Your Rights and International Visitors"),
+        html.P("Depending on where you live, you may have rights to access, correct, delete, withdraw consent, object to processing, or request a copy of your information. Information may be processed outside your country, with safeguards where required by law."),
+        html.H3("Children, Changes, and Contact"),
+        html.P("The website is not directed to children under 13 or the minimum age in your jurisdiction, and we do not knowingly collect their information. Changes will be posted with an updated effective date. Privacy questions may be sent to privacy@cenvarn.com."),
     ]
 
 
-def _legal_modal(modal_id, title, full_page_href, children):
+def _legal_modal(modal_id, title, children):
     return html.Section(id=modal_id, className="legal-modal-overlay", **{"data-ds-overlay": "modal"}, children=[
         html.A(className="legal-modal-backdrop", href="#", tabIndex=-1, **{"aria-label": "Close legal dialog", "data-ds-close": "true"}),
         html.Div(className="legal-modal-card", role="dialog", **{"aria-modal": "true", "aria-labelledby": f"{modal_id}-title"}, children=[
@@ -175,7 +189,7 @@ def _legal_modal(modal_id, title, full_page_href, children):
             ]),
             html.Div(className="legal-modal-body", children=children),
             html.Div(className="legal-modal-actions", children=[
-                html.A("Open full page", href=full_page_href, className="legal-modal-primary"),
+                html.Button("Full screen", className="legal-modal-primary legal-modal-fullscreen", type="button", **{"data-ds-fullscreen": "true", "aria-pressed": "false"}),
                 html.A("Close", href="#", className="legal-modal-secondary", **{"data-ds-close": "true"}),
             ]),
         ]),
@@ -618,8 +632,8 @@ def build_layout():
             html.Div(id="profile-detail-card", className="scorecard"),
         ]),
 
-        _legal_modal("legal-terms", "Terms of Service", "/terms", _legal_terms_content()),
-        _legal_modal("legal-privacy", "Privacy Policy", "/privacy", _legal_privacy_content()),
+        _legal_modal("legal-terms", "Terms of Service", _legal_terms_content()),
+        _legal_modal("legal-privacy", "Privacy Policy", _legal_privacy_content()),
 
         # Legal footer
         html.Div(className="app-footer tac p-16 fs-11 clr-muted", children=[

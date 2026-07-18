@@ -1,4 +1,10 @@
-# Analyze Page
+# Superseded local page specification
+
+The current page specifications and visual prototype are maintained in Notion’s
+**New UI Design Implementation Plan**. This legacy file is retained only for
+backward-compatible links; do not use it as the visual source of truth.
+
+## Analyze Page (legacy reference)
 
 Purpose
 

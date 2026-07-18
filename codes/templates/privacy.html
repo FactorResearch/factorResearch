@@ -3,51 +3,65 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Privacy Policy</title>
+    <title>Privacy Policy — Cenvarn</title>
     <link rel="stylesheet" href="/assets/legal_pages.css">
     <link rel="stylesheet" href="/assets/accessibility.css">
 </head>
 <body class="legal-page">
     <a class="skip-link" href="#main-content">Skip to main content</a>
-    <main id="main-content" class="legal-document" tabindex="-1">
-        <p class="legal-kicker">Cenvarnprivacy</p>
-        <h1>Privacy Policy</h1>
-        <p class="legal-updated">Last updated: July 2026</p>
+    <header class="legal-header">
+        <a href="/landing" aria-label="Cenvarn home"><img class="brand-lockup" src="/assets/cenvarn-logo-dark.png" alt="Cenvarn — Research. Insight. Advantage."></a>
+        <nav class="legal-nav" aria-label="Legal navigation"><a href="/methodology">Methodology</a><a href="/terms">Terms</a><a href="/privacy" aria-current="page">Privacy</a></nav>
+    </header>
+    <main id="main-content" class="legal-layout" tabindex="-1">
+        <article class="legal-document">
+            <p class="legal-kicker">Cenvarn privacy</p>
+            <h1>Privacy Policy</h1>
+            <p class="legal-updated">Effective date: July 18, 2026</p>
+            <p>Welcome to Cenvarn (Cenvarn, we, our, or us). This Privacy Policy explains what information we collect, how we use it, and the choices you have when you visit our website or join our waitlist.</p>
 
-        <h2>Information We Collect</h2>
-        <p>We collect account identifiers, authentication session data, portfolio names and holdings you enter, feature usage, billing status, waitlist submissions, and product analytics events. Market data, public filings, and company facts are public source data and are not personal information by themselves.</p>
+            <h2>Information We Collect</h2>
+            <p>When you join our waitlist, we may collect your email address, name if provided, country or region if voluntarily provided, and information automatically collected by your browser such as IP address, browser type, device information, pages visited, referral source, cookies, and similar technologies.</p>
 
-        <h2>How We Use Information</h2>
-        <p>We use information to provide the app, save user portfolios, enforce feature limits, process billing status, prevent abuse, improve product flows, and troubleshoot reliability issues.</p>
+            <h2>How We Use Information</h2>
+            <p>We may use your information to manage the waitlist, notify you about launches, send product updates and important announcements, respond to inquiries, improve the website and services, detect fraud, abuse, or security issues, and comply with legal obligations. We do not sell personal information.</p>
 
-        <h2>Analytics Preference</h2>
-        <p>
-            Product analytics can be disabled for the current browser session.
-            Current status:
-            <strong id="analytics-opt-out-status" role="status" aria-live="polite" aria-atomic="true">
-                {{ "opted out" if analytics_opt_out else "tracking enabled" }}
-            </strong>
-        </p>
-        <button id="analytics-opt-out-toggle"
-                class="legal-toggle-button"
-                type="button">
-            {{ "Enable analytics for this session" if analytics_opt_out else "Disable analytics for this session" }}
-        </button>
-        <script src="/assets/legal_pages.js"></script>
+            <h2>Marketing Emails</h2>
+            <p>By joining the waitlist, you agree to receive emails related to Cenvarn, including launch announcements, feature updates, and occasional product news. You may unsubscribe at any time using the link included in every marketing email.</p>
 
-        <h2>Sharing and Providers</h2>
-        <p>We may use infrastructure, authentication, analytics, email, market-data, and payment providers to operate the Service. We do not sell personal information. Provider access is limited to operating the Service and complying with legal obligations.</p>
+            <h2>Cookies</h2>
+            <p>Our website may use cookies and similar technologies to remember preferences, measure website performance, understand visitor behavior, and improve the user experience. You can control cookies through your browser settings.</p>
 
-        <h2>Retention and Deletion</h2>
-        <p>We keep data while needed to provide the Service, satisfy billing or security requirements, and maintain product records. Account deletion removes portfolios and session-linked user data through the account deletion flow.</p>
+            <h2>Analytics Preference</h2>
+            <p>Product analytics can be disabled for the current browser session. Current status: <strong id="analytics-opt-out-status" role="status" aria-live="polite" aria-atomic="true">{{ "opted out" if analytics_opt_out else "tracking enabled" }}</strong></p>
+            <button id="analytics-opt-out-toggle" class="legal-toggle-button" type="button">{{ "Enable analytics for this session" if analytics_opt_out else "Disable analytics for this session" }}</button>
 
-        <h2>Security</h2>
-        <p>We use reasonable technical controls, but no internet service can be guaranteed secure. Do not submit sensitive personal financial account credentials or private brokerage passwords to the Service.</p>
+            <h2>Third-Party Services</h2>
+            <p>We may use trusted third-party providers for website hosting, email delivery, analytics, error monitoring, and security services. These providers may process personal information only as necessary to perform services on our behalf.</p>
 
-        <h2>Contact</h2>
-        <p>For privacy requests, contact the operator of this deployment through the published support channel.</p>
+            <h2>Retention and Deletion</h2>
+            <p>We retain personal information only as long as necessary for the purposes described in this policy or as required by applicable law. If you unsubscribe or request deletion, we will remove or anonymize your information within a reasonable period unless legally required to retain it.</p>
 
-        <p><a href="/">Back to app</a></p>
+            <h2>Data Security</h2>
+            <p>We implement reasonable administrative, technical, and organizational safeguards designed to protect your information. However, no method of transmission or storage over the Internet is completely secure, and we cannot guarantee absolute security.</p>
+
+            <h2>Your Rights</h2>
+            <p>Depending on where you live, you may have rights to access your information, correct inaccurate information, request deletion, withdraw consent, object to certain processing, or request a copy of your personal information. Contact us to exercise these rights.</p>
+
+            <h2>International Visitors</h2>
+            <p>Your information may be processed in countries other than your own. Where required by law, we implement appropriate safeguards for international data transfers.</p>
+
+            <h2>Children’s Privacy</h2>
+            <p>Our website is not directed to children under the age of 13, or the minimum age required by your jurisdiction, and we do not knowingly collect personal information from children.</p>
+
+            <h2>Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated effective date.</p>
+
+            <h2>Contact</h2>
+            <p>For privacy requests, contact <a href="mailto:privacy@cenvarn.com">privacy@cenvarn.com</a>.</p>
+        </article>
     </main>
+    <footer class="legal-footer"><span>© 2026 Cenvarn</span><span><a href="/landing">Back to Cenvarn</a> · <a href="/terms">Terms</a> · <a href="/methodology">Methodology</a></span></footer>
+    <script src="/assets/legal_pages.js"></script>
 </body>
 </html>

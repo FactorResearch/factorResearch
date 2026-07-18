@@ -33,7 +33,7 @@ def test_waitlist_burst_is_rate_limited_before_more_writes():
         responses = [
             client.post(
                 "/landing/waitlist",
-                data={"variant": "pre-a", "email": f"user{index}@example.com"},
+                data={"variant": "pre-b", "email": f"user{index}@example.com"},
                 headers={**ORIGIN, "X-Forwarded-For": "198.51.100.42"},
             )
             for index in range(6)

@@ -20,10 +20,10 @@ def _send_confirmation(email: str) -> None:
     if not host or not sender:
         raise WaitlistEmailError("Waitlist email is not configured.")
     message = EmailMessage()
-    message["Subject"] = "You're on the Research Factor waitlist"
+    message["Subject"] = "You're on the Cenvarn waitlist"
     message["From"] = sender
     message["To"] = email
-    message.set_content("You're on the Research Factor waitlist. We'll email you when we launch.\n\nThank you,\nResearch Factor")
+    message.set_content("You're on the Cenvarn waitlist. We'll email you when we launch.\n\nThank you,\nCenvarn")
     username = os.environ.get("SMTP_USERNAME")
     with smtplib.SMTP(host, int(os.environ.get("SMTP_PORT", "587")), timeout=10) as smtp:
         if os.environ.get("SMTP_USE_TLS", "true").lower() not in {"0", "false", "no"}:

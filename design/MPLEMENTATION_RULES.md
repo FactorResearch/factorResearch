@@ -1,3 +1,8 @@
+# Legacy filename — see `IMPLEMENTATION_RULES.md`
+
+This file remains temporarily for compatibility. The corrected local mirror is
+`design/IMPLEMENTATION_RULES.md`, synchronized with the current Notion source.
+
 # Implementation Rules
 
 These rules are mandatory.

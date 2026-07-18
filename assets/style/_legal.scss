@@ -30,6 +30,14 @@
     width: min(760px, 100%);
     max-height: min(82vh, 760px);
     overflow: hidden;
+
+    &.is-fullscreen {
+      width: 100vw;
+      max-width: none;
+      height: 100vh;
+      max-height: none;
+      border-radius: 0;
+    }
   }
 
   .legal-modal-header,

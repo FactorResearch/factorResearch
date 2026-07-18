@@ -1,6 +1,6 @@
 # Cenvarn Design Bible
 
-Version: 1.0
+Version: 1.1 — mirrored from the current Notion design source.
 
 This folder is the single source of truth for every visual and interaction decision
 inside Cenvarn.
@@ -15,8 +15,7 @@ Codex must always read documents in this order:
 4. RESPONSIVE.md
 5. ACCESSIBILITY.md
 6. ANIMATIONS.md
-7. SPEC.md for the page being implemented
-8. prototype/<page>.html
+7. The approved AI-readable HTML prototype attached to the Notion design page.
 
 Never redesign.
 
@@ -30,15 +29,22 @@ If anything conflicts:
 
 DESIGN_SYSTEM.md wins.
 
-If HTML differs from SPEC.md,
+If a local mirror differs from Notion,
 
-SPEC.md wins.
+Notion wins and the local mirror must be updated before implementation.
 
 If uncertainty exists,
 
 ask before implementing.
 
 ---
+
+## Source of truth
+
+The current Notion page is **New UI Design Implementation Plan**. Its attached HTML
+prototype is the canonical visual reference. The retained local Markdown files are
+execution mirrors for repository tooling. The former generic `SPEC.md` and old
+design-system wording are not authoritative.
 
 ## Folder Structure
 

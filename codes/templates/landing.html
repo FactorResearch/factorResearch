@@ -3,34 +3,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Research Factor — Smarter Investment Research</title>
+  <title>Cenvarn — Smarter Investment Research</title>
   <link rel="stylesheet" href="/assets/landing.css">
   <link rel="stylesheet" href="/assets/waitlist.css">
   <link rel="stylesheet" href="/assets/accessibility.css">
+  <link rel="stylesheet" href="/assets/legal_pages.css">
+  {% if phase == 'pre' %}<link rel="stylesheet" href="/assets/landing_pre.css">{% endif %}
 </head>
-<body class="landing {{ style }}">
+<body class="landing {{ phase }} {{ style }}">
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header">
+    {% if phase == 'pre' %}
+    <a class="brand" href="/landing/{{ variant }}" aria-label="Cenvarn home">
+      <img class="brand-lockup" src="/assets/cenvarn-logo-dark.png" alt="Cenvarn — Research. Insight. Advantage.">
+    </a>
+    {% else %}
     <a class="brand" href="/landing/{{ variant }}"><span class="brand-mark">FR</span><span>RESEARCH<br>FACTOR</span></a>
-    {% if phase == 'post' %}
     <nav aria-label="Primary navigation"><a href="#tools">Features</a><a href="#how-it-works">How it works</a><a href="/pricing">Pricing</a><a href="#resources">Resources</a></nav>
     {% endif %}
-    <div class="header-actions"><a href="/">{{ 'Sign in' if phase == 'pre' else 'Log in' }}</a>{% if phase == 'post' %}<a class="button button-light" href="/">Start Free</a>{% endif %}</div>
+
   </header>
 
   {% if phase == 'pre' %}
   <main id="main-content" class="pre-main" tabindex="-1">
-    <section class="pre-hero">
+    <section class="pre-hero" aria-labelledby="landing-title">
       <div class="hero-copy">
-        <span class="eyebrow">✦ Coming soon</span>
-        <h1>Smarter investing<br>starts with better research.</h1>
-        <p>Research Factor combines timeless value principles with quantitative models to help you find what others miss.</p>
-        <form class="waitlist" action="/landing/waitlist" method="post">
-          <h2>Be the first to know{% if style == 'pre-b' %} when we launch{% endif %}.</h2>
-          <p>Get early access, launch updates, and exclusive insights.</p>
+        <div class="content">
+          <span class="eyebrow">The next era of investing</span>
+          <h1 id="landing-title">Better Answers.<br><span>Bigger Opportunities.</span></h1>
+          <p>Cenvarn brings institutional-grade research to individual investors. 19 models. One score. Smarter investing for a stronger tomorrow.</p>
+        </div>
+
+        <form id="waitlist" class="waitlist" action="/landing/waitlist" method="post">
+          <h2>Join the Founding Waitlist</h2>
+          <p>Be among the first to experience Cenvarn.</p>
           <input type="hidden" name="variant" value="{{ variant }}">
-          <div><input aria-label="Email address" name="email" type="email" placeholder="Enter your email address" required autocomplete="email"><button>Join Waitlist <span>→</span></button></div>
-          <small>✓ No spam &nbsp;&nbsp; ✓ Early access &nbsp;&nbsp; ✓ Launch discounts</small>
+          <div><input aria-label="Email address" name="email" type="email" placeholder="Enter your email address" required autocomplete="email"><button type="submit">Get early access</button></div>
+          <small>♧ No spam. Unsubscribe anytime.</small>
           {% if request.args.get('waitlist') == 'confirmed' %}<p class="waitlist-result success" role="status">You're on the list — check your inbox for confirmation.</p>{% endif %}
           {% if request.args.get('waitlist') == 'confirmed_no_email' %}<p class="waitlist-result success" role="status">You're on the list. Confirmation email is temporarily unavailable.</p>{% endif %}
           {% if request.args.get('waitlist') == 'already_confirmed' %}<p class="waitlist-result" role="status">You're already on the waitlist.</p>{% endif %}
@@ -38,11 +47,11 @@
           {% if request.args.get('waitlist') == 'email_unavailable' %}<p class="waitlist-result error" role="alert">We couldn't send confirmation right now. Please try again shortly.</p>{% endif %}
         </form>
       </div>
-      {% if style == 'pre-b' %}
-      <aside class="product-preview product-preview-analysis" aria-label="Apple analysis preview">
+
+      <!-- <aside class="product-preview-analysis" aria-label="Cenvarn analysis preview">
         <div class="preview-nav">Analyze / AAPL / Apple Inc.</div>
         <div class="preview-title-row">
-          <div><span class="preview-kicker">CenvarnAnalysis</span><h2>AAPL <small>Apple Inc.</small></h2></div>
+          <div><span class="preview-kicker">Cenvarn Analysis</span><h2>AAPL <small>Apple Inc.</small></h2></div>
           <strong class="preview-price">$195.64 <em>+1.24%</em></strong>
         </div>
         <div class="preview-score-grid">
@@ -50,19 +59,10 @@
           <article><span>Intrinsic Value</span><b>$198.45</b><em>+1.4% margin</em></article>
           <article><span>Financial Health</span><b>7</b><small>/9</small></article>
         </div>
-        <div class="preview-model-list">
-          <span>Analysis Models</span>
-          <p>Value Quality Momentum Risk Profitability Growth</p>
-        </div>
-      </aside>
-      {% endif %}
+        <div class="preview-model-list"><span>Analysis Models</span><p>Value Quality Momentum Risk Profitability Growth</p></div>
+      </aside> -->
     </section>
-    {% if style == 'pre-a' %}
-    <section class="benefits"><article>✉<b>Launch Updates</b><span>Get notified as soon as we go live.</span></article><article>⌕<b>Early Access</b><span>Be among the first to try Research Factor.</span></article><article>▣<b>Exclusive Insights</b><span>Receive original research and market perspectives.</span></article><article>✓<b>Built for Investors</b><span>Designed by investors, for investors.</span></article></section>
-    <blockquote>“ The goal of investing is not to beat others at their game.<br>The goal is to control yourself at your own game. ”<cite>— Benjamin Graham</cite></blockquote>
-    {% else %}
-    <aside class="expect"><h2>What you can expect</h2><p>20+ Proven Analysis Models</p><p>Custom Weights & Backtesting</p><p>Portfolio Management</p><p>Historical Analysis & Tracking</p><p>Clear Explanations You Can Trust</p></aside>
-    {% endif %}
+
   </main>
   {% else %}
   <main id="main-content" tabindex="-1">
@@ -71,7 +71,7 @@
         <span class="eyebrow">Data-driven. Value-focused. Built for investors.</span>
         <h1>{% if style == 'post-b' %}Know if a stock is<br>worth buying.{% else %}Make better investment<br>decisions with clearer evidence.{% endif %}</h1>
         <p>{% if style == 'post-b' %}Advanced fundamental analysis powered by Benjamin Graham, Warren Buffett principles, and quantitative models.{% else %}Research Factor analyzes companies using Graham, Buffett, and quantitative models to reveal what's undervalued — and why.{% endif %}</p>
-        <form class="stock-search" action="/" method="get"><input name="ticker" placeholder="Search any stock (e.g. AAPL, MSFT, AMZN)" aria-label="Stock ticker"><button>Analyze{% if style == 'post-b' %} Now →{% endif %}</button></form>
+        <form class="stock-search" action="/" method="get"><input name="ticker" placeholder="Search any stock (e.g. AAPL, MSFT, AMZN)" aria-label="Stock ticker"><button type="submit">Analyze{% if style == 'post-b' %} Now →{% endif %}</button></form>
         {% if style == 'post-b' %}<p class="trust">★★★<b>★★</b> &nbsp; 4.9/5 &nbsp; Trusted by thousands of investors</p>{% else %}<p class="micro-proof">◉ Graham + Buffett + Quant &nbsp;&nbsp; ◉ Explainable Scores &nbsp;&nbsp; ◉ Backtest Your Strategy</p>{% endif %}
       </div>
       <aside class="analysis-preview"><div class="preview-side">FR<br><small>Overview<br><br>Analysis<br><br>Financials<br><br>Scores<br><br>Charts</small></div><div class="analysis-body"><small>Home › Analyze › AAPL</small><h2>AAPL <small>Apple Inc.</small><i>$175.30 <em>+1.25%</em></i></h2><div class="score-row"><strong>Intrinsic Value<b>$198.45</b><em>+13.2%</em></strong><strong>Overall Score<b>72</b>/100</strong><div class="radar">◇</div><div class="score-bars">Value ━━━<br>Quality ━━━━<br>Momentum ━━━<br>Profitability ━━━━</div></div><div class="chart">╱╲╱╲╱╲╱╲╱╲╱╲</div></div></aside>
@@ -81,6 +81,57 @@
     <section class="cta"><h2>Validate your strategy.<br>Understand the evidence.</h2><p>Backtests describe historical scenarios and do not predict future performance.</p><a class="button button-light" href="/">Start Your Free Analysis</a></section>
   </main>
   {% endif %}
-  <footer><a class="brand" href="/"><span class="brand-mark">FR</span><span>RESEARCH<br>FACTOR</span></a><span>Data, Models, Insight. Confidence.</span><span>© 2024 Research Factor. All rights reserved.</span><span><a href="/privacy">Privacy Policy</a> &nbsp; <a href="/terms">Terms of Service</a></span></footer>
+  <footer>{% if phase == 'pre' %}<a class="brand" href="/"><img class="brand-lockup" src="/assets/cenvarn-logo-dark.png" alt="Cenvarn — Research. Insight. Advantage."></a><span>Smarter analysis. Stronger decisions.</span><span>© 2026 Cenvarn. All rights reserved.</span>{% else %}<a class="brand" href="/"><span class="brand-mark">FR</span><span>RESEARCH<br>FACTOR</span></a><span>Data, Models, Insight. Confidence.</span><span>© 2024 Research Factor. All rights reserved.</span>{% endif %}<span><a href="#legal-methodology">Methodology</a> &nbsp; <a href="#legal-privacy">Privacy Policy</a> &nbsp; <a href="#legal-terms">Terms of Service</a></span></footer>
+
+  <section id="legal-privacy" class="legal-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="legal-privacy-title">
+    <a class="legal-modal-backdrop" href="#" data-legal-close="true" aria-label="Close privacy policy"></a>
+    <div class="legal-modal-card">
+      <header class="legal-modal-header"><div><p class="legal-kicker">Cenvarn privacy</p><h2 id="legal-privacy-title">Privacy Policy</h2></div><a class="legal-modal-close" href="#" data-legal-close="true">Close</a></header>
+      <div class="legal-modal-body">
+        <p class="legal-modal-lead"><strong>Effective date: July 18, 2026.</strong> Welcome to Cenvarn. This policy explains what information we collect, how we use it, and your choices when you visit our website or join our waitlist.</p>
+        <h3>Information We Collect</h3><p>We may collect your email address, name if provided, country or region if voluntarily provided, and browser information such as IP address, browser type, device, pages visited, referral source, cookies, and similar technologies.</p>
+        <h3>How We Use Your Information</h3><p>We use information to manage the waitlist, send launch announcements and updates, respond to inquiries, improve the website and services, detect fraud or security issues, and comply with legal obligations. We do not sell personal information.</p>
+        <h3>Marketing Emails, Cookies, and Analytics</h3><p>Waitlist members may receive product news and may unsubscribe through every marketing email. Cookies and privacy-conscious analytics may remember preferences, measure performance, and understand visitor behavior. Browser settings can control cookies.</p>
+        <h3>Third-Party Services</h3><p>Trusted providers may process information for hosting, email delivery, analytics, error monitoring, and security, only as necessary to perform services on our behalf.</p>
+        <h3>Security, Retention, and Your Rights</h3><p>We use reasonable safeguards, but no internet method is completely secure. We retain information only as necessary or legally required. Depending on where you live, you may have rights to access, correct, delete, withdraw consent, object to processing, or request a copy of your information.</p>
+        <h3>International Visitors, Children, Changes, and Contact</h3><p>Information may be processed outside your country with safeguards where required. The website is not directed to children under 13. Changes will be posted with an updated effective date. Contact <a href="mailto:privacy@cenvarn.com">privacy@cenvarn.com</a>.</p>
+      </div>
+      <footer class="legal-modal-actions"><button class="legal-modal-primary" type="button" data-legal-fullscreen="true" aria-pressed="false">Full screen</button><a class="legal-modal-secondary" href="#" data-legal-close="true">Close</a></footer>
+    </div>
+  </section>
+
+  <section id="legal-terms" class="legal-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="legal-terms-title">
+    <a class="legal-modal-backdrop" href="#" data-legal-close="true" aria-label="Close terms of service"></a>
+    <div class="legal-modal-card">
+      <header class="legal-modal-header"><div><p class="legal-kicker">Cenvarn legal</p><h2 id="legal-terms-title">Terms of Service</h2></div><a class="legal-modal-close" href="#" data-legal-close="true">Close</a></header>
+      <div class="legal-modal-body">
+        <p class="legal-modal-lead"><strong>Effective date: July 18, 2026.</strong> By accessing this website or joining the Cenvarn waitlist, you agree to these Terms. If you do not agree, please do not use the website.</p>
+        <h3>About Cenvarn and the Waitlist</h3><p>Cenvarn is a quantitative investment research platform in development. Joining the waitlist does not create a customer relationship or guarantee access. Invitations may be limited, access delayed or unavailable, features and pricing may change, and the waitlist may be modified or discontinued.</p>
+        <h3>No Investment Advice</h3><p>Information is informational and educational only. Nothing constitutes investment, financial, legal, or tax advice, or a recommendation to buy, sell, or hold a security. You remain responsible for your investment decisions.</p>
+        <h3>Accuracy and Intellectual Property</h3><p>Financial data may contain errors, omissions, delays, or inaccuracies; independently verify it. Cenvarn or its licensors own the website content, branding, software, methodologies, and documentation. Copying, distributing, modifying, reverse engineering, or commercial exploitation without permission is prohibited.</p>
+        <h3>Acceptable Use and Future Services</h3><p>Do not interfere with operations, attempt unauthorized access, scrape without permission, introduce malicious software, or violate applicable laws. Future subscriptions, pricing, features, and service levels may differ from waitlist information and are not binding promises.</p>
+        <h3>Third Parties, Disclaimer, and Liability</h3><p>We are not responsible for third-party websites or services. The website and information are provided “as is” and “as available.” To the maximum extent permitted by law, Cenvarn and its affiliates are not liable for indirect, incidental, consequential, special, exemplary, or punitive damages arising from use or reliance on the website.</p>
+        <h3>Changes, Governing Law, and Contact</h3><p>Continued use after changes become effective constitutes acceptance. These Terms are governed by Ontario law and applicable federal Canadian law. Contact <a href="mailto:legal@cenvarn.com">legal@cenvarn.com</a>.</p>
+      </div>
+      <footer class="legal-modal-actions"><button class="legal-modal-primary" type="button" data-legal-fullscreen="true" aria-pressed="false">Full screen</button><a class="legal-modal-secondary" href="#" data-legal-close="true">Close</a></footer>
+    </div>
+  </section>
+
+  <section id="legal-methodology" class="legal-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="legal-methodology-title">
+    <a class="legal-modal-backdrop" href="#" data-legal-close="true" aria-label="Close methodology"></a>
+    <div class="legal-modal-card">
+      <header class="legal-modal-header"><div><p class="legal-kicker">Cenvarn methodology</p><h2 id="legal-methodology-title">Scoring Methodology</h2></div><a class="legal-modal-close" href="#" data-legal-close="true">Close</a></header>
+      <div class="legal-modal-body">
+        <p class="legal-modal-lead"><strong>Transparent. Auditable. Deterministic.</strong> Every Cenvarn score can be traced to publicly available financial data and a documented mathematical formula.</p>
+        <h3>Philosophy</h3><p><strong>Transparency:</strong> Every score, rating, and recommendation can be explained. <strong>Reproducibility:</strong> Investors should be able to reproduce results from the same SEC filings and documented formulas. <strong>Independence:</strong> Models rely primarily on company fundamentals rather than analyst opinions. <strong>Evidence-based investing:</strong> Models draw from established frameworks, academic research, or historically validated quantitative methodologies.</p>
+        <h3>Data Sources</h3><p>Fundamental financial data comes directly from the SEC EDGAR XBRL filing system, including income statements, balance sheets, cash flow statements, shares outstanding, filing dates, and XBRL facts. Market data is retrieved in priority order from Finnhub, Tiingo, and Alpha Vantage.</p>
+        <h3>What We Do Not Use</h3><p>Cenvarn does not use black-box AI scoring, undocumented proprietary formulas, paid analyst opinions as part of the composite score, hidden weighting adjustments, or manual overrides.</p>
+        <h3>Scoring Models</h3><p>The methodology covers Composite Score, Graham, Buffett, Piotroski F-Score, Altman Z-Score, Quality, Momentum, Risk Metrics, Profitability, Free Cash Flow Quality, Capital Allocation, Growth Quality, Earnings Revision, Factor Momentum, Greenblatt Magic Formula, Regime Overlay, Insider Activity, Alternative Data, Data Lineage, and Reproducibility.</p>
+        <p>Each model documents its purpose, data required, scoring criteria, mathematical formula, interpretation, and limitations. The methodology is updated alongside the implementation as the platform evolves.</p>
+      </div>
+      <footer class="legal-modal-actions"><button class="legal-modal-primary" type="button" data-legal-fullscreen="true" aria-pressed="false">Full screen</button><a class="legal-modal-secondary" href="#" data-legal-close="true">Close</a></footer>
+    </div>
+  </section>
+  <script src="/assets/legal_pages.js"></script>
 </body>
 </html>

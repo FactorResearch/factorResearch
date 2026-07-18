@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import random
-
 import flask
 
 from codes.services import product_analytics
@@ -11,7 +9,6 @@ from codes.services import waitlist
 
 
 VARIANTS = {
-    "pre-a": {"phase": "pre", "style": "pre-a"},
     "pre-b": {"phase": "pre", "style": "pre-b"},
     "post-a": {"phase": "post", "style": "post-a"},
     "post-b": {"phase": "post", "style": "post-b"},
@@ -21,8 +18,8 @@ VARIANTS = {
 def register_landing_pages(server: flask.Flask) -> None:
     @server.route("/landing/waitlist", methods=["POST"])
     def landing_waitlist():
-        variant = flask.request.form.get("variant", "pre-a")
-        if variant not in VARIANTS or VARIANTS[variant]["phase"] != "pre":
+        variant = flask.request.form.get("variant", "pre-b")
+        if variant != "pre-b":
             flask.abort(400)
         try:
             result = waitlist.subscribe(flask.request.form.get("email", ""), variant)
@@ -35,14 +32,9 @@ def register_landing_pages(server: flask.Flask) -> None:
         return flask.redirect(flask.url_for("landing_variant", variant=variant, waitlist=result))
 
     @server.route("/landing")
-    def landing_ab():
-        phase = flask.request.args.get("phase", "post").lower()
-        phase = phase if phase in {"pre", "post"} else "post"
-        key = f"landing_variant_{phase}"
-        variant = flask.session.get(key)
-        if variant not in VARIANTS or VARIANTS[variant]["phase"] != phase:
-            variant = random.choice([f"{phase}-a", f"{phase}-b"])
-            flask.session[key] = variant
+    def landing_entry():
+        phase = flask.request.args.get("phase", "pre").lower()
+        variant = "post-b" if phase == "post" else "pre-b"
         return flask.redirect(flask.url_for("landing_variant", variant=variant))
 
     @server.route("/landing/<variant>")

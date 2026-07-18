@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scoring Methodology — Cenvarn</title>
+    <link rel="stylesheet" href="/assets/legal_pages.css">
+    <link rel="stylesheet" href="/assets/accessibility.css">
+</head>
+<body class="legal-page">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="legal-header">
+        <a href="/landing" aria-label="Cenvarn home"><img class="brand-lockup" src="/assets/cenvarn-logo-dark.png" alt="Cenvarn — Research. Insight. Advantage."></a>
+        <nav class="legal-nav" aria-label="Legal navigation"><a href="/methodology" aria-current="page">Methodology</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a></nav>
+    </header>
+    <main id="main-content" class="legal-layout" tabindex="-1">
+        <article class="legal-document">
+            <p class="legal-kicker">Cenvarn scoring methodology</p>
+            <h1>Transparent. Auditable. Deterministic.</h1>
+            <p class="legal-updated">No black boxes. Every score can be traced to public data and a documented formula.</p>
+            <p>Cenvarn combines decades of quantitative investing research into a transparent framework that helps investors evaluate companies consistently. Given the same financial statements and market data, the same inputs produce the same result.</p>
+
+            <nav class="legal-toc" aria-label="Methodology sections">
+                <a href="#philosophy">Philosophy</a><a href="#data-sources">Data Sources</a><a href="#reading">How to Read This Document</a><a href="#models">Scoring Models</a>
+            </nav>
+
+            <h2 id="philosophy">Philosophy</h2>
+            <h3>Transparency</h3>
+            <p>Every score, rating, and recommendation can be explained. Calculations, assumptions, weighting, normalization, and interpretation are documented rather than hidden behind a proprietary black box.</p>
+            <h3>Reproducibility</h3>
+            <p>Any investor should be able to reproduce our results independently. Using the same SEC filings and documented formulas should produce matching results, subject to normal market-price changes.</p>
+            <h3>Independence</h3>
+            <p>Our models are built primarily from company fundamentals rather than opinions. We do not rely on analyst ratings to determine whether a company is attractive.</p>
+            <h3>Evidence-Based Investing</h3>
+            <p>Models are based on established investment frameworks, academic research, or historically validated quantitative methodologies, including work associated with Benjamin Graham, Warren Buffett, Joseph Piotroski, Edward Altman, Joel Greenblatt, and Robert Novy-Marx.</p>
+
+            <h2 id="data-sources">Data Sources</h2>
+            <h3>Fundamental Financial Data</h3>
+            <p>Financial statement data is sourced directly from the SEC EDGAR XBRL filing system, including income statements, balance sheets, cash flow statements, shares outstanding, filing dates, and XBRL facts.</p>
+            <h3>Market Data</h3>
+            <p>Market data is retrieved from providers in priority order: Finnhub, Tiingo, and Alpha Vantage. Redundancy improves reliability while keeping calculations deterministic.</p>
+            <h3>What We Do Not Use</h3>
+            <ul><li>Black-box AI scoring</li><li>Undocumented proprietary formulas</li><li>Paid analyst opinions as part of the composite score</li><li>Hidden weighting adjustments or manual overrides</li></ul>
+
+            <h2 id="reading">How to Read This Document</h2>
+            <p>Each model follows the same structure: purpose, data required, scoring criteria, mathematical formula, interpretation, and limitations. You do not need to understand every formula to use the platform; the application performs the calculations automatically so the methodology can remain available for independent review.</p>
+
+            <h2 id="models">Scoring Models</h2>
+            <p>The complete implementation covers Composite Score, Graham, Buffett, Piotroski F-Score, Altman Z-Score, Quality, Momentum, Risk Metrics, Profitability, Free Cash Flow Quality, Capital Allocation, Growth Quality, Earnings Revision, Factor Momentum, Greenblatt Magic Formula, Regime Overlay, Insider Activity, Alternative Data, Data Lineage, and Reproducibility.</p>
+            <p>Every formula documented in <code>METHODOLOGY.MD</code> reflects the implementation currently used by the platform. As the platform evolves, the methodology is updated alongside the codebase.</p>
+        </article>
+    </main>
+    <footer class="legal-footer"><span>© 2026 Cenvarn</span><span><a href="/landing">Back to Cenvarn</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></span></footer>
+</body>
+</html>

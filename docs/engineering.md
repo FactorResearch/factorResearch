@@ -1,27 +1,15 @@
 # Purpose
-
 Define the shared engineering requirements that will govern the upcoming Python and JavaScript/TypeScript AI instruction pages.
-
 The objective is to make code consistent, predictable, easy to review, and understandable even when revisited six years later by someone who did not write it.
-
 # Mandatory long-term commenting and documentation standard
-
 Comments and documentation are required wherever they preserve design intent, explain non-obvious behavior, or prevent future developers and AI agents from having to reverse-engineer the code.
-
 Code must remain understandable years after implementation, even when the original author is unavailable.
-
 ## Core commenting principle
-
 Comments must explain **why the code exists, why a decision was made, what assumptions it depends on, and what could break if it changes**.
-
 Comments must not merely restate the syntax or describe an obvious line of code.
-
 Good comments preserve context that cannot be recovered easily from the implementation alone.
-
 ## Required documentation areas
-
 The Python and JavaScript/TypeScript instruction pages must require documentation for:
-
 - Public modules, packages, classes, functions, methods, hooks, services, repositories, providers, and reusable components.
 - Financial formulas, scoring rules, normalization decisions, thresholds, fallback logic, and data-quality assumptions.
 - Business rules that are not obvious from the code.
@@ -33,13 +21,9 @@ The Python and JavaScript/TypeScript instruction pages must require documentatio
 - Non-obvious regular expressions, date logic, currency handling, time-zone handling, and numerical edge cases.
 - Cross-language contracts between Python and JavaScript/TypeScript.
 - Any deliberate deviation from the project’s normal architecture or coding standards.
-
 ## Python documentation requirements
-
 Python code must use clear, consistent docstrings for public modules, classes, functions, methods, protocols, repositories, providers, and services.
-
 Docstrings must document, where applicable:
-
 - Purpose and responsibility.
 - Parameters and their expected meaning.
 - Return value and units.
@@ -48,66 +32,43 @@ Docstrings must document, where applicable:
 - External systems accessed.
 - Important assumptions and invariants.
 - Financial or business-rule references.
-
 The final Python page must define and enforce one project-wide docstring format. Google-style docstrings are the preferred default unless another format is explicitly selected before implementation.
-
 ## JavaScript and TypeScript documentation requirements
-
 JavaScript and TypeScript code must use JSDoc or TSDoc for exported functions, classes, services, hooks, reusable components, public types, and non-obvious utilities.
-
 Documentation must explain behavior not already expressed by the type system. It must not duplicate obvious TypeScript types without adding useful context.
-
 Component and hook documentation should explain:
-
 - User-facing responsibility.
 - Data dependencies.
 - Loading, empty, stale, degraded, and failure behavior.
 - Side effects.
 - Accessibility requirements.
 - Important performance or memoization decisions.
-
 ## Inline-comment placement
-
 Inline comments must be placed immediately above the block they explain.
-
 Avoid end-of-line comments except for short, unambiguous annotations.
-
 Comments must remain synchronized with the code. A misleading or outdated comment is considered a defect and must be updated or removed in the same change that modifies the related behavior.
-
 ## Decision and rationale comments
-
 When the implementation contains a decision that a future developer might reasonably replace or question, include a short rationale comment.
-
 Examples include:
-
 - Why a specific fallback order is required.
 - Why a calculation uses one data field instead of another.
 - Why a cache duration differs from the default.
 - Why a section retries independently.
 - Why a browser fallback exists.
 - Why a seemingly simpler implementation is unsafe or inaccurate.
-
 ## TODO and temporary-code rules
-
 Bare `TODO`, `FIXME`, `HACK`, or `TEMP` comments are prohibited.
-
 Every temporary-code marker must include:
-
 - The reason it exists.
 - The condition for removal.
 - A linked issue or task identifier.
 - Any deadline or compatibility boundary when applicable.
-
 Example:
-
-```
+```plain text
 TODO(ISSUE_123): Remove the legacy response adapter after all clients use API v2.
 ```
-
 ## Financial-code documentation
-
 Every material financial calculation must document:
-
 - Formula name.
 - Input definitions and units.
 - Source or methodology reference when applicable.
@@ -115,52 +76,34 @@ Every material financial calculation must document:
 - Rounding policy.
 - Currency and date assumptions.
 - Whether the output is authoritative, estimated, normalized, or display-only.
-
 Comments must not claim financial certainty when the result is an estimate or model output.
-
 ## Comments versus naming
-
 Comments do not excuse unclear code.
-
 The required order is:
-
 1. Use precise names.
 2. Keep functions and classes focused.
 3. Structure the code logically.
 4. Add comments for intent and context that clear code cannot express on its own.
-
 A comment should not be used to compensate for vague names, excessive nesting, duplicated logic, or an oversized function.
-
 ## File-level documentation
-
 Complex modules must begin with a short file-level description explaining:
-
 - The module’s responsibility.
 - Its architectural layer.
 - Its primary dependencies.
 - What it must not be responsible for.
 - Any important lifecycle, data-flow, or state assumptions.
-
 ## Change-history rule
-
 Do not maintain manual change logs inside source files. Git history and linked issues are the source of truth for historical changes.
-
 Comments should describe the current reason and behavior, not narrate every prior revision.
-
 ## AI implementation requirement
-
 Before generating or modifying Python or JavaScript/TypeScript code, the AI must:
-
 - Load the applicable language-standard page into active context.
 - Inspect nearby code and existing approved documentation patterns.
 - Preserve or improve relevant comments and docstrings.
 - Update documentation whenever behavior, assumptions, parameters, return values, errors, or side effects change.
 - Refuse to mark work complete when public or non-obvious behavior remains undocumented.
-
 ## Review and enforcement
-
 Code review and CI must reject:
-
 - Missing required public documentation.
 - Bare TODO or FIXME comments.
 - Comments that merely restate obvious code.
@@ -168,34 +111,22 @@ Code review and CI must reject:
 - Unexplained financial formulas or thresholds.
 - Temporary workarounds without an issue reference and removal condition.
 - Exported APIs whose behavior, errors, side effects, or assumptions are unclear.
-
 ## Acceptance criteria
-
 - A developer unfamiliar with the feature can understand its purpose and constraints without contacting the original author.
 - Important business and financial decisions are preserved in the codebase.
 - Public APIs and architectural boundaries are documented consistently.
 - Comments remain concise, accurate, useful, and synchronized with behavior.
 - Code can be revisited years later without requiring extensive reverse engineering.
-
 # Planned instruction pages
-
 The final standards will be split into two dedicated AI instruction pages:
-
 1. Python Engineering Standards
 2. JavaScript and TypeScript Engineering Standards
-
 Both pages must inherit this commenting and long-term documentation standard.
-
 # Mandatory class and function documentation templates
-
 Every class, function, method, hook, service, repository, provider, validator, and reusable component must follow a predictable documentation template. Documentation is required before the implementation body and must remain synchronized with the code.
-
 ## Class documentation requirements
-
 Every class must have a broad explanation placed immediately above or inside the class declaration using the language-standard documentation format.
-
 The class documentation must explain:
-
 - The class's primary responsibility.
 - Why the class exists and which architectural layer it belongs to.
 - What business or technical problem it solves.
@@ -206,15 +137,10 @@ The class documentation must explain:
 - External systems, databases, caches, APIs, browser APIs, or services it accesses.
 - Relevant failure, retry, fallback, timeout, and degraded-mode behavior.
 - One concise usage example when the intended usage is not obvious.
-
 Broad class documentation must provide enough context for a developer who has never seen the project to understand where the class fits without reading the entire file.
-
 ## Function and method documentation requirements
-
 Every function and method must have a documentation block immediately before its declaration. This applies to public and private functions. Very small language-required accessors may be exempt only when their behavior is fully obvious and the applicable language-standard page explicitly permits the exemption.
-
 Each function documentation block must explain:
-
 - What the function does.
 - Why it exists when the reason is not obvious.
 - The operation's important steps or decision flow.
@@ -227,28 +153,19 @@ Each function documentation block must explain:
 - Exceptions or errors it may raise, throw, return, or translate.
 - Side effects such as database writes, network requests, cache updates, logging, analytics, file access, or state mutation.
 - Important assumptions, invariants, edge cases, fallback behavior, and performance implications.
-
 A reader must not need to inspect the function body to determine what inputs are accepted or what output is returned.
-
 ## Mandatory type declarations
-
 Python functions and methods must declare parameter types and return types using Python type annotations.
-
 JavaScript production code should be TypeScript. TypeScript functions and methods must declare parameter types and explicit return types. Plain JavaScript exceptions must use complete JSDoc type declarations.
-
 The following are prohibited unless narrowly justified and documented:
-
 - Missing return types on exported or reusable functions.
 - Implicit `Any` in Python public boundaries.
 - TypeScript `any`.
 - Ambiguous dictionary or object return values without a named schema, type, interface, dataclass, or model.
 - Returning different unrelated types from the same function.
 - Undocumented `null`, `None`, or `undefined` behavior.
-
 ## Required Python documentation template
-
 Python must use the project-approved docstring convention consistently. Google-style docstrings are the default.
-
 ```python
 class PortfolioAnalysisService:
     """Coordinate portfolio analysis across scoring and market-data services.
@@ -299,12 +216,9 @@ class PortfolioAnalysisService:
             populate approved caches. It does not modify portfolio holdings.
         """
 ```
-
 ## Required TypeScript documentation template
-
 TypeScript must use TSDoc or JSDoc consistently for classes, functions, methods, hooks, components, and exported APIs.
-
-```tsx
+```typescript
 /**
  * Coordinates portfolio analysis requests and normalizes section-level results.
  *
@@ -340,13 +254,9 @@ export class PortfolioAnalysisService {
     }
 }
 ```
-
 ## Naming and documentation alignment
-
 Function and method names must describe the action and business object clearly. Documentation must agree with the name and declared types.
-
 Prohibited vague names include:
-
 - `processData`
 - `handleStuff`
 - `doWork`
@@ -354,11 +264,8 @@ Prohibited vague names include:
 - `manageItems`
 - `getResult`
 - `helper`
-
 Names must be specific enough that the function's primary purpose is visible at the call site, while the documentation supplies full behavior, constraints, and context.
-
 ## Documentation placement and formatting
-
 - Documentation must appear immediately before the declaration it documents.
 - Do not place a large group of function descriptions at the top of the file separated from their implementations.
 - Decorators and annotations may appear between documentation and declaration only where required by the language's standard syntax.
@@ -366,11 +273,8 @@ Names must be specific enough that the function's primary purpose is visible at 
 - Keep return and error documentation current when implementation behavior changes.
 - Comments must use complete, clear sentences and professional language.
 - Avoid unexplained acronyms. Define domain-specific terminology on first use.
-
 ## Enforcement and acceptance criteria
-
 Code review and CI must reject:
-
 - Classes without a broad responsibility explanation.
 - Functions or methods without the required documentation block.
 - Missing parameter or return types.
@@ -380,32 +284,21 @@ Code review and CI must reject:
 - Undocumented exceptions, side effects, nullability, units, or important edge cases.
 - Documentation that simply repeats the function name without explaining behavior.
 - Documentation contradicted by the implementation.
-
 A class or function is not complete until its declaration, types, documentation, implementation, and tests describe the same contract.
-
 # Mandatory comment-first implementation workflow
-
 Before writing or modifying implementation code, the AI agent must first write the explanatory comments, docstrings, or TSDoc/JSDoc that define the intended behavior.
-
 This is a blocking workflow requirement intended to make the agent reason through the design before implementation, reduce accidental overwrites, and prevent unnecessary abstraction or over-engineering.
-
 ## Required order of work
-
 For every new class, function, method, hook, service, repository, provider, component, or non-trivial code block, the agent must follow this order:
-
 1. Write the class-level or function-level documentation first.
 2. Define the responsibility, inputs, outputs, side effects, errors, assumptions, and edge cases.
 3. Confirm the scope is narrow and does not duplicate an existing abstraction.
 4. Implement only the behavior described by the documentation.
 5. Re-read the completed implementation and update the documentation if the behavior differs.
 6. Run formatting, linting, type checking, and tests before marking the task complete.
-
 The agent must not write a large implementation first and add comments afterward as a documentation pass.
-
 ## Comment-first planning requirements
-
 Before implementation begins, the documentation must make clear:
-
 - Why the class or function is needed.
 - What exact responsibility it owns.
 - What it must not be responsible for.
@@ -417,66 +310,44 @@ Before implementation begins, the documentation must make clear:
 - Which external systems, repositories, providers, caches, or APIs are touched.
 - Which assumptions, invariants, fallbacks, and edge cases apply.
 - Whether an existing function, class, or shared utility should be reused instead.
-
 ## Anti-overwriting rule
-
 Before modifying an existing class or function, the agent must read its current documentation and nearby implementation first.
-
 The agent must preserve existing behavior unless the task explicitly requires changing it. It must not replace a complete class, module, or function when a targeted edit is sufficient.
-
 The preferred order is:
-
 1. Understand the existing contract.
 2. Document the intended change.
 3. Make the smallest safe implementation change.
 4. Update only the affected tests and documentation.
-
 ## Anti-over-engineering rule
-
 The comment-first step must be used to challenge unnecessary complexity before code is written.
-
 The agent must not introduce:
-
 - A new class when a focused function is sufficient.
 - A new abstraction for a single one-off use without a clear future control point.
 - A new service, repository, manager, helper, factory, adapter, or wrapper that duplicates an existing responsibility.
 - Generic frameworks for hypothetical requirements not present in the task.
 - Configuration options that have no current consumer.
 - Premature extensibility that makes the current behavior harder to understand.
-
 If the planned documentation cannot describe a narrow and concrete responsibility, the code must be simplified before implementation.
-
 ## Required implementation-note evidence
-
 For each completed task, the agent's implementation notes must state:
-
 - That documentation was written before implementation.
 - Which existing code and contracts were inspected.
 - Why the chosen implementation is the smallest suitable change.
 - Which existing abstractions were reused.
 - Which tests, linting, formatting, and type checks passed.
-
 ## Review and enforcement
-
 Code review must reject:
-
 - Implementations created before required documentation.
 - Comments that were clearly added afterward and do not match the design process.
 - Broad rewrites where a targeted modification was possible.
 - New abstractions without a documented current need.
 - Code whose implementation exceeds the responsibility described by its comments.
 - Documentation that describes behavior not implemented by the code.
-
 A task is not complete until the comment-first workflow and its implementation evidence are present.
-
 # Engineering lifecycle, ownership, and operational standards
-
 These standards extend the code-writing rules into the full engineering lifecycle. A feature is not complete merely because the implementation compiles or tests pass. It must be understandable, reviewable, observable, reversible, secure, supportable, and safe to operate in production.
-
 ## Work-backwards requirement
-
 Before implementing a meaningful feature or system, the agent must document:
-
 - The user or internal customer.
 - The problem being solved.
 - The expected user experience.
@@ -485,26 +356,16 @@ Before implementing a meaningful feature or system, the agent must document:
 - The smallest viable solution.
 - Why existing functionality is insufficient.
 - The main risks and trade-offs.
-
 Small changes may use a concise implementation brief. Large or high-risk changes require a full design document.
-
 ## One-way-door and two-way-door decisions
-
 Every material architectural decision must be classified before implementation:
-
 - **Two-way door:** inexpensive, low-risk, and easy to reverse. These decisions should move quickly with lightweight review.
 - **One-way door:** difficult, expensive, data-destructive, contract-breaking, or operationally risky to reverse. These decisions require deeper review, migration planning, rollback planning, and explicit approval.
-
 Examples of one-way-door decisions include permanent schema changes, public API contract changes, destructive migrations, security-model changes, and financial-calculation changes that alter historical results.
-
 The agent must not apply enterprise-level ceremony to every reversible change. The purpose of this classification is to increase rigor where necessary while preventing over-engineering elsewhere.
-
 ## Mandatory design document for substantial changes
-
 A substantial feature, service, migration, data model, external provider integration, or architectural change must have a design document before implementation.
-
 The design document must include:
-
 - Problem statement.
 - Current system and current limitations.
 - Proposed design.
@@ -523,13 +384,9 @@ The design document must include:
 - Observability requirements.
 - Deployment strategy.
 - Open questions and unresolved risks.
-
 The document must state what the design deliberately does not solve.
-
 ## Explicit ownership
-
 Every production feature, service, scheduled job, provider integration, database, and critical workflow must identify:
-
 - Primary owner.
 - Backup owner or owning team.
 - Upstream and downstream dependencies.
@@ -538,15 +395,10 @@ Every production feature, service, scheduled job, provider integration, database
 - Runbook location.
 - Known risks.
 - Last review date.
-
 Code without a clear long-term owner must not be treated as production-ready.
-
 ## Operational readiness review
-
 Before production release, every meaningful feature must pass an operational readiness review.
-
 Required review areas:
-
 - Structured logging.
 - Metrics.
 - Tracing or correlation identifiers where applicable.
@@ -567,13 +419,9 @@ Required review areas:
 - Load or stress testing where relevant.
 - Cost-impact review.
 - Support and incident runbook.
-
 A feature must not launch with the assumption that failures will be debugged manually after release.
-
 ## Failure-mode analysis
-
 Before implementing a critical workflow or external integration, the agent must reason through and document:
-
 - What can fail.
 - How each failure is detected.
 - What the user sees.
@@ -587,15 +435,10 @@ Before implementing a critical workflow or external integration, the agent must 
 - Whether stale or incomplete data can be returned.
 - Whether fallback data changes the meaning or quality of the result.
 - How recovery occurs.
-
 Retries must be bounded. Infinite retries and unbounded retry loops are prohibited.
-
 ## Correction-of-error process
-
 Every meaningful production incident, data-integrity failure, security event, or repeated operational defect must result in a written correction-of-error review.
-
 The review must include:
-
 - Customer impact.
 - Start and end time.
 - Exact timeline.
@@ -611,13 +454,9 @@ The review must include:
 - Owners and deadlines.
 - How recurrence will be prevented.
 - Whether similar systems share the same weakness.
-
 Blame-based conclusions such as “the developer made a mistake” are prohibited as root causes. The review must identify why the system allowed one mistake to create customer impact.
-
 ## Pull-request and code-review template
-
 Every material pull request must document:
-
 - What changed.
 - Why the change is required.
 - What was intentionally not changed.
@@ -634,21 +473,15 @@ Every material pull request must document:
 - Rollback method.
 - Screenshots for user-interface work.
 - Documentation updates.
-
 Review rules:
-
 - Material changes require independent review.
 - Smaller focused pull requests are preferred.
 - Unrelated cleanup must be placed in a separate change.
 - Reviewers must understand the behavior and risk, not merely confirm that automated checks passed.
 - Large rewrites require explicit justification.
-
 ## Risk-based testing strategy
-
 Testing requirements must be based on customer and system risk, not only a coverage percentage.
-
 Required test categories where applicable:
-
 - Unit tests for business and domain rules.
 - Contract tests for external providers and cross-language boundaries.
 - Integration tests for database, cache, queue, and API workflows.
@@ -663,15 +496,10 @@ Required test categories where applicable:
 - Accessibility tests.
 - Performance and load tests.
 - Property-based tests for important financial formulas when useful.
-
 Coverage metrics may reveal missing tests, but coverage alone must never be accepted as evidence of correctness.
-
 ## API and data-contract discipline
-
 Every internal and external boundary must define an explicit versioned contract.
-
 Contracts must document:
-
 - Request type.
 - Response type.
 - Required and optional fields.
@@ -687,13 +515,9 @@ Contracts must document:
 - Backward-compatibility policy.
 - Deprecation policy.
 - Whether each value is authoritative, estimated, normalized, cached, stale, or display-only.
-
 The frontend must not independently recreate authoritative backend financial calculations. Shared contracts must prevent Python and TypeScript from assigning different meanings to the same field.
-
 ## Dependency-management standard
-
 Before adding a third-party dependency, the change must document:
-
 - Why the dependency is necessary.
 - Why existing project capabilities are insufficient.
 - Maintenance activity.
@@ -704,19 +528,14 @@ Before adding a third-party dependency, the change must document:
 - Upgrade strategy.
 - Exit or replacement strategy.
 - Whether the dependency controls a critical architectural boundary.
-
 Required controls:
-
 - Lock dependency versions.
 - Run automated vulnerability scans.
 - Review dependency updates regularly.
 - Avoid abandoned packages for critical functionality.
 - Do not add a dependency for trivial behavior that can be safely and clearly implemented internally.
-
 ## Security and privacy by default
-
 Every feature must evaluate:
-
 - Authentication requirements.
 - Authorization rules.
 - User and tenant isolation.
@@ -731,13 +550,9 @@ Every feature must evaluate:
 - Data deletion.
 - Encryption requirements.
 - Abuse and enumeration risks.
-
 Security and privacy are design inputs, not final cleanup tasks.
-
 ## Observability standard
-
 Every important operation must make it possible to determine:
-
 - Whether it ran.
 - Whether it succeeded.
 - How long it took.
@@ -746,9 +561,7 @@ Every important operation must make it possible to determine:
 - Whether the result was fresh, stale, partial, or degraded.
 - Which request, user-safe identifier, or background job triggered it.
 - How many customers or records were affected.
-
 Required practices:
-
 - Structured logs.
 - Stable event and metric names.
 - Correlation identifiers.
@@ -757,15 +570,10 @@ Required practices:
 - Alert ownership.
 - Alert deduplication.
 - Dashboards based on customer impact as well as infrastructure health.
-
 Logging must provide diagnostic context without becoming a substitute for proper error handling.
-
 ## Deployment and migration safety
-
 Meaningful production changes must use the safest practical release method.
-
 Required practices where applicable:
-
 - Feature flags.
 - Incremental rollout.
 - Canary or internal-user release.
@@ -777,15 +585,10 @@ Required practices where applicable:
 - Separate destructive schema removal from the release that stops using the old schema.
 - Tested rollback procedure.
 - Retention of the old path until the new path is proven stable.
-
 A migration is not complete until data integrity and rollback assumptions have been verified.
-
 ## Mechanisms over reminders
-
 Engineering requirements must be enforced through repeatable mechanisms whenever possible.
-
 Preferred mechanisms include:
-
 - Required pull-request templates.
 - CI gates.
 - Linters.
@@ -798,13 +601,9 @@ Preferred mechanisms include:
 - Release checklists.
 - Automated migration checks.
 - Scheduled documentation and ownership reviews.
-
 A rule that depends only on a developer or AI agent remembering it is incomplete.
-
 ## AI pre-implementation lifecycle
-
 Before implementing a non-trivial change, the AI agent must follow this sequence:
-
 1. Load the applicable engineering and language standards.
 2. Read the relevant existing code and documentation.
 3. Identify the customer problem and intended outcome.
@@ -818,13 +617,9 @@ Before implementing a non-trivial change, the AI agent must follow this sequence
 11. Run formatting, linting, type checking, tests, and security checks.
 12. Verify documentation matches the final behavior.
 13. Document deployment, migration, and rollback implications.
-
 The agent must not mark work complete when implementation exists without the required operational, testing, ownership, and documentation mechanisms.
-
 ## Final engineering acceptance criteria
-
 A production change is complete only when:
-
 - The customer problem and success criteria are clear.
 - Scope and non-goals are explicit.
 - Architectural decisions are documented.
@@ -840,13 +635,9 @@ A production change is complete only when:
 - Known risks are documented.
 - Review evidence exists.
 - A developer unfamiliar with the code can maintain and operate it years later.
-
 # Planned standards document set
-
 The engineering standards should ultimately be organized into three mandatory AI instruction pages:
-
 1. **Python Engineering Standards** — Python structure, naming, typing, documentation, testing, error handling, and tooling.
 2. **JavaScript and TypeScript Engineering Standards** — frontend and Node structure, naming, strict typing, components, state, contracts, testing, and tooling.
 3. **Engineering Development and Operational Standards** — work-backwards planning, decision classification, design review, ownership, operational readiness, deployment, incident learning, and enforcement mechanisms.
-
 All three pages must be loaded before an AI agent begins substantial cross-stack or production-facing work.

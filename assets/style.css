@@ -3221,6 +3221,13 @@ body.light .risk-row .metric_cell {
   max-height: min(82vh, 760px);
   overflow: hidden;
 }
+.legal-modal-overlay .legal-modal-card.is-fullscreen {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: none;
+  border-radius: 0;
+}
 .legal-modal-overlay .legal-modal-header,
 .legal-modal-overlay .legal-modal-actions {
   display: flex;
@@ -4612,5 +4619,3 @@ body.light .app-footer {
     box-shadow: none;
   }
 }
-
-/*# sourceMappingURL=style.css.map */

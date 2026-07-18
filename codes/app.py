@@ -57,7 +57,7 @@ app = dash.Dash(
     # must not be injected into the interactive Dash shell.
     assets_ignore=(
         r".*\.scss$|"
-        r"^(company_analysis|error_pages|landing|legal_pages|waitlist)\.css$"
+        r"^(company_analysis|error_pages|landing|landing_pre|legal_pages|waitlist)\.css$"
     ),
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1, viewport-fit=cover"},
@@ -222,6 +222,10 @@ def delete_account():
 @server.route("/terms")
 def terms_page():
     return render_template("terms.html")
+
+@server.route("/methodology")
+def methodology_page():
+    return render_template("methodology.html")
 
 @server.route("/privacy")
 def privacy_page():

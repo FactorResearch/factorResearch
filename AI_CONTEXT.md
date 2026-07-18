@@ -524,4 +524,13 @@ Never simplify.
 
 Never remove information.
 
+## Notion source synchronization
+
+The connected Notion workspace is the detailed source of truth for current
+engineering and design standards. The repository mirrors are the execution layer.
+For UI work, load the Notion **New UI Design Implementation Plan**, its attached
+prototype, and the applicable standards listed by the workspace page before
+editing code. If local Markdown conflicts with Notion, update the local mirror
+before implementation and record the synchronization in the task report.
+
 Implement exactly as documented.
