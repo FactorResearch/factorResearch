@@ -3,12 +3,19 @@ import json
 import math
 import re
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 
 from codes import security
 from codes.core.config import cache_root, is_production
+from codes.services.data_lineage import build_lineage
 
 CACHE_DIR = cache_root()
+
+
+def datetime_from_epoch(value: float) -> str:
+    """Return an ISO-8601 UTC timestamp for a cache acquisition time."""
+    return datetime.fromtimestamp(value, UTC).isoformat()
 
 # Fallback TTL used only for the ticker map (not for company facts).
 # Company facts are invalidated by filing date, not wall-clock time.
@@ -91,7 +98,13 @@ def _get_encryptor() -> "security.SensitiveDataEncryptor":
     return _encryptor
 
 
-def _dumps(data, *, latest_filing: str | None = None, kind: str | None = None) -> str:
+def _dumps(
+    data,
+    *,
+    latest_filing: str | None = None,
+    kind: str | None = None,
+    lineage: dict | None = None,
+) -> str:
     """
     Serialise a cache entry.
 
@@ -116,7 +129,18 @@ def _dumps(data, *, latest_filing: str | None = None, kind: str | None = None) -
         elif is_production():
             raise RuntimeError(f"Encryption unavailable for sensitive cache kind: {kind}")
 
-    payload: dict = {"ts": time.time(), "data": stored_data, "encrypted": encrypted}
+    acquired_at = datetime_from_epoch(time.time())
+    payload: dict = {
+        "ts": time.time(),
+        "data": stored_data,
+        "encrypted": encrypted,
+        "lineage": lineage or build_lineage(
+            source=kind or "cache",
+            acquired_at=acquired_at,
+            source_timestamp=latest_filing,
+            freshness_policy=("filing-aware" if latest_filing else "not-configured"),
+        ),
+    }
     if latest_filing is not None:
         payload["latest_filing"] = latest_filing
     return json.dumps(payload, indent=2, cls=_SafeEncoder)
@@ -203,10 +227,20 @@ def is_stale_for_company(symbol: str, sec_latest_filing: str) -> bool:
     return stale
 
 
-def write(kind: str, key: str, data, *, latest_filing: str | None = None) -> bool:
+def write(
+    kind: str,
+    key: str,
+    data,
+    *,
+    latest_filing: str | None = None,
+    lineage: dict | None = None,
+) -> bool:
+    """Persist a cache payload with durable source and freshness metadata."""
     try:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        _path(kind, key).write_text(_dumps(data, latest_filing=latest_filing, kind=kind))
+        _path(kind, key).write_text(
+            _dumps(data, latest_filing=latest_filing, kind=kind, lineage=lineage)
+        )
         suffix = f" (filing {latest_filing})" if latest_filing else ""
         if kind!="company_meta":
             print(f"[CACHE SAVED] {kind}:{key}{suffix}")

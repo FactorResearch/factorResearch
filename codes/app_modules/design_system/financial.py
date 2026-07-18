@@ -212,6 +212,8 @@ def data_trust_panel(data: dict | None, *, compact: bool = False):
         effects.append("Optional sources failed; their signals are excluded from the displayed support.")
     historical = bool(provenance.get("historical") or analysis.get("cache_stale"))
     custom = bool(provenance.get("custom_model"))
+    lineage = provenance.get("lineage") or {}
+    freshness = str(lineage.get("freshness_state") or "unavailable")
 
     rows = [
         ("Analysis date", _format_trust_date(generated)),
@@ -222,6 +224,7 @@ def data_trust_panel(data: dict | None, *, compact: bool = False):
         ("Normalization", str(normalization)),
         ("Calculation", str(calculation)),
         ("Model", str(model_scope)),
+        ("Freshness", freshness.replace("_", " ").title()),
     ]
     state_labels = []
     if historical:

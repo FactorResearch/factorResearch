@@ -233,6 +233,7 @@ def save_standard_snapshot(
                     json.dumps({
                         "metrics": snapshot.official_metrics or {},
                         "analysis_manifest": snapshot.analysis_manifest or {},
+                        "provenance": analysis_result.get("provenance") or {},
                     }),
                 ),
             )

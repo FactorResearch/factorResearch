@@ -59,6 +59,7 @@ from codes.models.analysis_snapshot import AnalysisType
 from codes.services import analysis_jobs, component_cache, performance_metrics, provider_gateway
 from codes.services.analysis_manifest import build_manifest
 from codes.services.analysis_snapshot_service import save_standard_snapshot
+from codes.services.data_lineage import build_lineage
 from codes.services.idempotency import idempotency
 
 # ── Performance Optimization: Module-level caches ─────────────────────────────
@@ -268,6 +269,9 @@ def _set_cache_metadata(result: dict, cache_hit: bool, cache_source: str) -> dic
         provenance["calculation_status"] = "cached" if cache_hit else "newly calculated"
         provenance["cache_source"] = cache_source
         provenance["historical"] = bool(result.get("cache_stale"))
+        lineage = provenance.setdefault("lineage", {})
+        lineage["freshness_state"] = "stale" if result.get("cache_stale") else "current"
+        lineage["cache_source"] = cache_source
     return result
 
 
@@ -320,6 +324,10 @@ def _analysis_provenance(symbol: str, sec_facts: dict, *, price, defer_secondary
         )
     if defer_secondary:
         effects.append("Optional signals are pending and are not presented as fully supported.")
+    source_category = (
+        "SEC EDGAR public filings" if market == "US" else "Verified normalized market records"
+    )
+    filing_period = filing_meta.get("latest_filing") or _reporting_period(sec_facts)
     return {
         "analysis_date": _datetime.datetime.now(_datetime.UTC).isoformat(),
         "price_timestamp": (
@@ -327,10 +335,8 @@ def _analysis_provenance(symbol: str, sec_facts: dict, *, price, defer_secondary
             if price is not None
             else "Unavailable"
         ),
-        "filing_period": filing_meta.get("latest_filing") or _reporting_period(sec_facts),
-        "source_category": (
-            "SEC EDGAR public filings" if market == "US" else "Verified normalized market records"
-        ),
+        "filing_period": filing_period,
+        "source_category": source_category,
         "currency": sec_facts.get("currency") or ("USD" if market == "US" else "Not available"),
         "normalization_status": sec_facts.get("normalization_method")
         or "Canonical financial facts",
@@ -340,6 +346,11 @@ def _analysis_provenance(symbol: str, sec_facts: dict, *, price, defer_secondary
         "missing_effects": effects,
         "historical": False,
         "custom_model": False,
+        "lineage": build_lineage(
+            source=source_category,
+            source_timestamp=filing_period,
+            freshness_policy="filing-aware",
+        ),
     }
 
 
