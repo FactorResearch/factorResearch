@@ -230,7 +230,10 @@ def save_standard_snapshot(
                     snapshot.market_price,
                     snapshot.market_fear_score,
                     snapshot.sector,
-                    json.dumps(snapshot.official_metrics or {}),
+                    json.dumps({
+                        "metrics": snapshot.official_metrics or {},
+                        "analysis_manifest": snapshot.analysis_manifest or {},
+                    }),
                 ),
             )
             row = cur.fetchone()
@@ -390,7 +393,8 @@ def get_snapshot(ticker: str, yyyymmdd: str) -> AnalysisSnapshot | None:
         market_fear_score=row[13],
         sector=row[14] or "",
         created_at=row[15],
-        official_metrics=row[16] or {},
+        official_metrics=(row[16] or {}).get("metrics", row[16] or {}),
+        analysis_manifest=(row[16] or {}).get("analysis_manifest", {}),
     )
 
 
@@ -430,7 +434,8 @@ def list_ticker_snapshots(ticker: str, limit: int = 24) -> list[AnalysisSnapshot
             market_fear_score=row[13],
             sector=row[14] or "",
             created_at=row[15],
-            official_metrics=row[16] or {},
+            official_metrics=(row[16] or {}).get("metrics", row[16] or {}),
+            analysis_manifest=(row[16] or {}).get("analysis_manifest", {}),
         )
         for row in rows
     ]
@@ -470,7 +475,8 @@ def list_public_snapshots(limit: int = 500) -> list[AnalysisSnapshot]:
             market_fear_score=row[13],
             sector=row[14] or "",
             created_at=row[15],
-            official_metrics=row[16] or {},
+            official_metrics=(row[16] or {}).get("metrics", row[16] or {}),
+            analysis_manifest=(row[16] or {}).get("analysis_manifest", {}),
         )
         for row in rows
     ]
@@ -494,7 +500,8 @@ def _snapshot_from_row(row) -> AnalysisSnapshot:
         market_fear_score=row[13],
         sector=row[14] or "",
         created_at=row[15],
-        official_metrics=row[16] or {},
+        official_metrics=(row[16] or {}).get("metrics", row[16] or {}),
+        analysis_manifest=(row[16] or {}).get("analysis_manifest", {}),
     )
 
 

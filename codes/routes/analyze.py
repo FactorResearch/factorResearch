@@ -11,6 +11,7 @@ import flask
 from codes import auth
 from codes.models.analysis_snapshot import company_slug
 from codes.services import permissions, stock_analysis
+from codes.services.analysis_manifest import compatibility
 from codes.services.analysis_snapshot_service import (
     get_company_snapshots_by_slug,
     get_custom_snapshot_for_owner,
@@ -365,6 +366,13 @@ def _history_links(snapshot, history) -> str:
 def _comparison_section(snapshot, comparison) -> str:
     if comparison is None:
         return ""
+    compatible, reasons = compatibility(snapshot.analysis_manifest, comparison.analysis_manifest)
+    if not compatible:
+        return (
+            '<section class="comparison-section"><h2>Historical comparison unavailable</h2>'
+            f'<p>These analyses use incompatible methodology manifests ({html.escape(", ".join(reasons))}). '
+            "Review each immutable snapshot independently.</p></section>"
+        )
 
     rating_changed = snapshot.final_rating != comparison.final_rating
     rating_class = "up" if rating_changed else "flat"

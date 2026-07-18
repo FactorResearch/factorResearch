@@ -57,6 +57,7 @@ from codes.models import (
 )
 from codes.models.analysis_snapshot import AnalysisType
 from codes.services import analysis_jobs, component_cache, performance_metrics, provider_gateway
+from codes.services.analysis_manifest import build_manifest
 from codes.services.analysis_snapshot_service import save_standard_snapshot
 from codes.services.idempotency import idempotency
 
@@ -721,6 +722,12 @@ def _analyze_stock(
         "price_history": hist.to_dict() if hist is not None else None,
         "spy_history": spy_hist.to_dict() if spy_hist is not None else None,
     }
+    result["analysis_manifest"] = build_manifest(
+        ANALYSIS_VERSION,
+        _MODEL_VERSIONS,
+        market_code=result["market_code"],
+        provenance=result["provenance"],
+    )
     _set_cache_metadata(result, False, "fresh")
     factor_engine.persist_factor_scores(
         symbol,

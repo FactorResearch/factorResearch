@@ -72,6 +72,7 @@ class AnalysisSnapshot:
     created_at: datetime | None = None
     id: int | None = None
     official_metrics: dict[str, Any] | None = None
+    analysis_manifest: dict[str, Any] | None = None
 
     @property
     def url_date(self) -> str:
@@ -193,6 +194,7 @@ class AnalysisSnapshot:
                 "compounder_flag": bool(enhanced.get("compounder_flag")),
                 "altman_cap_applied": bool(enhanced.get("altman_cap_applied")),
             },
+            analysis_manifest=dict(result.get("analysis_manifest") or {}),
         )
 
 
