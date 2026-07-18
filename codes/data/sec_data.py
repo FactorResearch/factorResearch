@@ -53,6 +53,8 @@ from datetime import datetime
 import pandas as pd
 import requests
 
+from codes.services.data_integrity import financial_data_integrity
+
 from . import cache, db
 
 SEC_HEADERS = {"User-Agent": "GrahamScoreApp/1.0 contact@example.com"}
@@ -927,8 +929,11 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
     if latest_filing and not cache.is_stale_for_company(symbol, latest_filing):
         cached = cache.read("sec_facts", symbol.lower())
         if cached:
-            print(f"  [SEC] ✅ Returning cached facts for {symbol}")
-            return cached
+            cached_report = financial_data_integrity.validate("sec", symbol, cached)
+            trusted_cached = financial_data_integrity.accept("sec", symbol, cached, cached_report)
+            if trusted_cached is not None:
+                print(f"  [SEC] ✅ Returning validated cached facts for {symbol}")
+                return trusted_cached
 
     # ── Step 3: fetch full companyfacts blob ──────────────────────────────────
     print(f"  [SEC] Fetching full companyfacts for {symbol}...")
@@ -1091,8 +1096,17 @@ def fetch_company_facts(symbol: str, include_delisted_warning: bool = True) -> d
         "dividends":         div_df.to_dict("records"),
     }
 
-    db.upsert_sec_facts(symbol.upper(), result, latest_filing)
-    return result
+    integrity_report = financial_data_integrity.validate("sec", symbol, result)
+    trusted_result = financial_data_integrity.accept("sec", symbol, result, integrity_report)
+    if trusted_result is None:
+        existing = db.get_sec_facts(symbol.upper())
+        if existing is not None:
+            print(f"  [SEC] ⚠️  Rejected refresh for {symbol}; preserving last-known-valid facts")
+            return existing
+        raise ValueError(f"SEC data for {symbol} failed integrity validation.")
+
+    db.upsert_sec_facts(symbol.upper(), trusted_result, latest_filing)
+    return trusted_result
 
 
 # ══════════════════════════════════════════════════════════════════════════════
