@@ -39,7 +39,9 @@ def init_billing(server: flask.Flask | None = None):
                 "subscription_started",
                 {"plan": plan, "source": source, "feature": feature},
             )
-            return flask.redirect(get_checkout_url(user_id, plan=plan))
+            idempotency_key = flask.request.headers.get("Idempotency-Key")
+            checkout_kwargs = {"idempotency_key": idempotency_key} if idempotency_key else {}
+            return flask.redirect(get_checkout_url(user_id, plan=plan, **checkout_kwargs))
         except Exception as exc:
             if is_production():
                 return "Billing is unavailable. Please try again later.", 503
@@ -98,11 +100,15 @@ def user_has_paid(user_id: str) -> bool:
     return permissions.is_paid_subscription(permissions.get_or_create_subscription(user_id))
 
 
-def get_checkout_url(user_id: str, plan: str = "premium") -> str:
+def get_checkout_url(
+    user_id: str, plan: str = "premium", *, idempotency_key: str | None = None
+) -> str:
     if plan.lower() != "premium":
         raise ValueError("Only the Premium plan is available.")
     if stripe_client.is_configured():
-        return stripe_client.create_checkout_session(user_id, plan=plan)
+        return stripe_client.create_checkout_session(
+            user_id, plan=plan, idempotency_key=idempotency_key
+        )
     if is_production():
         raise RuntimeError("Stripe checkout is not configured in production.")
     return "/billing/mark_paid"

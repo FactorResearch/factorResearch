@@ -14,6 +14,7 @@ from codes.core.redis_client import get_redis
 from codes.core.request_context import RequestContext, capture_context, context_scope
 from codes.domain.responses import JobResponse
 from codes.services.audit_journal import audit_journal
+from codes.services.idempotency import idempotency
 
 _QUEUE = "jobs:analysis"
 _MAINTENANCE_QUEUE = f"{_QUEUE}:maintenance"
@@ -57,7 +58,7 @@ def _dispatch(job: dict) -> None:
         analyze_stock(job["symbol"], force_refresh=True, defer_secondary=True)
 
 
-def enqueue(job: dict) -> None:
+def _enqueue_once(job: dict) -> dict:
     job = _prepare_job(job)
     audit_journal.record(
         "job",
@@ -71,13 +72,30 @@ def enqueue(job: dict) -> None:
     if redis is not None:
         try:
             redis.rpush(_queue_name(job), json.dumps(job, default=str))
-            return
+            return {"job_id": job["job_id"], "status": "queued"}
         except Exception as exc:
             if is_production():
                 raise RuntimeError("Durable analysis queue unavailable") from exc
     elif is_production():
         raise RuntimeError("Durable analysis queue unavailable")
     _local_executor.submit(_dispatch, job)
+    return {"job_id": job["job_id"], "status": "queued"}
+
+
+def enqueue(job: dict) -> dict:
+    """Submit a job, replaying the original job ID for keyed retries."""
+    key = job.get("idempotency_key")
+    user_id = str(job.get("user_id", ""))
+    if key and user_id:
+        result = idempotency.execute(
+            user_id=user_id,
+            key=str(key),
+            operation="job.submit",
+            payload={key: value for key, value in job.items() if key != "idempotency_key"},
+            handler=lambda: _enqueue_once(job),
+        )
+        return result.response
+    return _enqueue_once(job)
 
 
 def enqueue_existing_stock_backfill(symbols: list[str] | None = None) -> int:

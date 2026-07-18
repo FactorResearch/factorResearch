@@ -46,7 +46,9 @@ def is_configured() -> bool:
     return bool(STRIPE_SECRET_KEY and STRIPE_PREMIUM_PRICE_ID and PUBLIC_BASE_URL)
 
 
-def create_checkout_session(user_id: str, plan: str = "premium") -> str:
+def create_checkout_session(
+    user_id: str, plan: str = "premium", *, idempotency_key: str | None = None
+) -> str:
     stripe = _stripe()
     price_id = _price_id_for_plan(plan)
     subscription = db.get_subscription(user_id) or {}
@@ -62,6 +64,8 @@ def create_checkout_session(user_id: str, plan: str = "premium") -> str:
     }
     if subscription.get("stripe_customer_id"):
         params["customer"] = subscription["stripe_customer_id"]
+    if idempotency_key:
+        params["idempotency_key"] = idempotency_key
     session = stripe.checkout.Session.create(**params)
     return session.url
 

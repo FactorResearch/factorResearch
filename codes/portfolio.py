@@ -34,6 +34,7 @@ import numpy as np
 import pandas as pd
 
 from codes.core import financial_math as fm
+from codes.services.idempotency import idempotency
 
 from .data import api_fetcher, cache, temporal
 
@@ -272,7 +273,7 @@ def restore_portfolio(user_id: str, portfolio_id: str, *, expected_version: int)
     return record
 
 
-def create_portfolio(user_id: str, name: str) -> dict:
+def _create_portfolio(user_id: str, name: str) -> dict:
     p = {
         "id":       uuid.uuid4().hex,
         "name":     name,
@@ -283,12 +284,26 @@ def create_portfolio(user_id: str, name: str) -> dict:
     save_portfolio(user_id, p)
     return p
 
+
+def create_portfolio(user_id: str, name: str, *, idempotency_key: str | None = None) -> dict:
+    """Create a portfolio once and replay the original record on retry."""
+    if not idempotency_key:
+        return _create_portfolio(user_id, name)
+    result = idempotency.execute(
+        user_id=user_id,
+        key=idempotency_key,
+        operation="portfolio.create",
+        payload={"name": name},
+        handler=lambda: _create_portfolio(user_id, name),
+    )
+    return result.response
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Holdings management
 # ══════════════════════════════════════════════════════════════════════════════
 
-def add_holding(user_id: str, name: str, symbol: str, shares: int,
-                current_price: float, company_name: str) -> tuple[dict, str]:
+def _add_holding(user_id: str, name: str, symbol: str, shares: int,
+                 current_price: float, company_name: str) -> tuple[dict, str]:
     p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
@@ -315,6 +330,22 @@ def add_holding(user_id: str, name: str, symbol: str, shares: int,
     return p, ""
 
 
+def add_holding(user_id: str, name: str, symbol: str, shares: int,
+                current_price: float, company_name: str,
+                *, idempotency_key: str | None = None) -> tuple[dict, str]:
+    """Apply a holding mutation once and replay its result on retry."""
+    if not idempotency_key:
+        return _add_holding(user_id, name, symbol, shares, current_price, company_name)
+    result = idempotency.execute(
+        user_id=user_id,
+        key=idempotency_key,
+        operation="portfolio.add_holding",
+        payload={"name": name, "symbol": symbol, "shares": shares, "price": current_price, "company": company_name},
+        handler=lambda: _add_holding(user_id, name, symbol, shares, current_price, company_name),
+    )
+    return result.response
+
+
 def _security_id(symbol: str, company_name: str) -> str | None:
     market = "CA" if symbol.endswith(".TO") else "US"
     try:
@@ -337,7 +368,7 @@ def _security_id(symbol: str, company_name: str) -> str | None:
         return None
 
 
-def remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:
+def _remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:
     p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
@@ -347,6 +378,20 @@ def remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:
     del p["holdings"][symbol]
     save_portfolio(user_id, p)
     return p, ""
+
+
+def remove_holding(user_id: str, name: str, symbol: str, *, idempotency_key: str | None = None) -> tuple[dict, str]:
+    """Apply a holding removal once and replay its result on retry."""
+    if not idempotency_key:
+        return _remove_holding(user_id, name, symbol)
+    result = idempotency.execute(
+        user_id=user_id,
+        key=idempotency_key,
+        operation="portfolio.remove_holding",
+        payload={"name": name, "symbol": symbol},
+        handler=lambda: _remove_holding(user_id, name, symbol),
+    )
+    return result.response
 # ══════════════════════════════════════════════════════════════════════════════
 # Simulation helpers
 # ══════════════════════════════════════════════════════════════════════════════

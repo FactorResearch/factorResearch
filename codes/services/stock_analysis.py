@@ -58,6 +58,7 @@ from codes.models import (
 from codes.models.analysis_snapshot import AnalysisType
 from codes.services import analysis_jobs, component_cache, performance_metrics, provider_gateway
 from codes.services.analysis_snapshot_service import save_standard_snapshot
+from codes.services.idempotency import idempotency
 
 # ── Performance Optimization: Module-level caches ─────────────────────────────
 _spy_history = None
@@ -780,18 +781,38 @@ def _complete_secondary_analysis(symbol: str, shares_out: float | None) -> None:
 
 
 def analyze_stock(
-    symbol: str, *, force_refresh: bool = False, defer_secondary: bool = False
+    symbol: str,
+    *,
+    force_refresh: bool = False,
+    defer_secondary: bool = False,
+    user_id: str | None = None,
+    idempotency_key: str | None = None,
 ) -> dict:
+    """Submit analysis once when a caller supplies an idempotency key."""
     normalized = (symbol or "").strip().upper()
     mode = "refresh" if force_refresh else "primary" if defer_secondary else "request"
-    return singleflight.run(
-        f"analysis:{normalized}:{ANALYSIS_VERSION}:{mode}",
-        lambda: _analyze_stock(
-            normalized, force_refresh=force_refresh, defer_secondary=defer_secondary
-        ),
-        timeout=120,
-        result_ttl=10,
+    def run() -> dict:
+        return singleflight.run(
+            f"analysis:{normalized}:{ANALYSIS_VERSION}:{mode}",
+            lambda: _analyze_stock(
+                normalized, force_refresh=force_refresh, defer_secondary=defer_secondary
+            ),
+            timeout=120,
+            result_ttl=10,
+        )
+
+    if not idempotency_key:
+        return run()
+    if not user_id:
+        raise ValueError("user_id is required when idempotency_key is supplied")
+    result = idempotency.execute(
+        user_id=user_id,
+        key=idempotency_key,
+        operation="analysis.submit",
+        payload={"symbol": normalized, "force_refresh": force_refresh, "defer_secondary": defer_secondary},
+        handler=run,
     )
+    return result.response
 
 
 def analyze_stock_primary(symbol: str) -> dict:

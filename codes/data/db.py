@@ -2034,6 +2034,115 @@ def _ensure_user_init() -> None:
         _users_initialized = True
 
 
+def claim_idempotency(
+    user_id: str,
+    idempotency_key: str,
+    operation: str,
+    request_hash: str,
+    *,
+    ttl_seconds: int = 86_400,
+) -> dict[str, object]:
+    """Atomically claim or replay one user command in PostgreSQL."""
+    _ensure_user_init()
+    with _users_conn() as con:
+        row = con.execute(
+            """
+            INSERT INTO idempotency_records
+                (user_id, idempotency_key, operation, request_hash, status, expires_at)
+            VALUES (%(user_id)s, %(idempotency_key)s, %(operation)s, %(request_hash)s,
+                    'processing', NOW() + (%(ttl)s * INTERVAL '1 second'))
+            ON CONFLICT (user_id, idempotency_key) DO NOTHING
+            RETURNING user_id, idempotency_key, operation, request_hash, status,
+                      response_json, response_status
+            """,
+            {
+                "user_id": user_id,
+                "idempotency_key": idempotency_key,
+                "operation": operation,
+                "request_hash": request_hash,
+                "ttl": ttl_seconds,
+            },
+        ).fetchone()
+        if row:
+            return _idempotency_row(row)
+        existing = con.execute(
+            """
+            SELECT user_id, idempotency_key, operation, request_hash, status,
+                   response_json, response_status
+            FROM idempotency_records
+            WHERE user_id = %(user_id)s AND idempotency_key = %(idempotency_key)s
+              AND expires_at > NOW()
+            """,
+            {"user_id": user_id, "idempotency_key": idempotency_key},
+        ).fetchone()
+        if existing is None:
+            con.execute(
+                "DELETE FROM idempotency_records WHERE user_id = %(user_id)s AND idempotency_key = %(idempotency_key)s",
+                {"user_id": user_id, "idempotency_key": idempotency_key},
+            )
+            return claim_idempotency(user_id, idempotency_key, operation, request_hash, ttl_seconds=ttl_seconds)
+        return _idempotency_row(existing)
+
+
+def complete_idempotency(
+    user_id: str, idempotency_key: str, request_hash: str, response: object, status_code: int
+) -> None:
+    """Persist the original command outcome for deterministic replay."""
+    _ensure_user_init()
+    with _users_conn() as con:
+        con.execute(
+            """
+            UPDATE idempotency_records
+            SET status = 'completed', response_json = %(response)s::jsonb,
+                response_status = %(status_code)s, updated_at = NOW()
+            WHERE user_id = %(user_id)s AND idempotency_key = %(idempotency_key)s
+              AND request_hash = %(request_hash)s AND status = 'processing'
+            """,
+            {
+                "user_id": user_id,
+                "idempotency_key": idempotency_key,
+                "request_hash": request_hash,
+                "response": json.dumps(response, default=str),
+                "status_code": status_code,
+            },
+        )
+
+
+def fail_idempotency(
+    user_id: str, idempotency_key: str, request_hash: str, response: object, status_code: int
+) -> None:
+    """Persist a terminal failure so ambiguous retries do not repeat effects."""
+    _ensure_user_init()
+    with _users_conn() as con:
+        con.execute(
+            """
+            UPDATE idempotency_records
+            SET status = 'failed', response_json = %(response)s::jsonb,
+                response_status = %(status_code)s, updated_at = NOW()
+            WHERE user_id = %(user_id)s AND idempotency_key = %(idempotency_key)s
+              AND request_hash = %(request_hash)s AND status = 'processing'
+            """,
+            {
+                "user_id": user_id,
+                "idempotency_key": idempotency_key,
+                "request_hash": request_hash,
+                "response": json.dumps(response, default=str),
+                "status_code": status_code,
+            },
+        )
+
+
+def _idempotency_row(row: object) -> dict[str, object]:
+    values = list(row) if not isinstance(row, dict) else row
+    if isinstance(values, dict):
+        return dict(values)
+    return {
+        "user_id": values[0], "idempotency_key": values[1], "operation": values[2],
+        "request_hash": values[3], "status": values[4], "response_json": values[5],
+        "response_status": values[6],
+    }
+
+
 def upsert(
     ticker: str,
     *,
