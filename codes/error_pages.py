@@ -5,6 +5,8 @@ from http import HTTPStatus
 import flask
 from werkzeug.exceptions import HTTPException
 
+from codes.core.errors import classify_exception
+from codes.services.audit_journal import audit_journal
 
 ERROR_PAGE_COPY = {
     400: {
@@ -51,7 +53,15 @@ def _render_unhandled_error(error: Exception):
     if isinstance(error, HTTPException):
         return _render_error(error)
     current_app = flask.current_app
-    current_app.logger.exception("Unhandled server error")
+    structured = classify_exception(error)
+    current_app.logger.exception("Unhandled server error", extra={"error_code": structured.code})
+    audit_journal.record(
+        "error_classified",
+        action="unhandled_request",
+        severity=structured.definition.severity.value.upper(),
+        outcome="failure",
+        details={"error_code": structured.code, "category": structured.definition.category.value},
+    )
     return render_error_page(500, error), 500
 
 

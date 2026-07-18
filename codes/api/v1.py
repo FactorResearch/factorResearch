@@ -9,6 +9,7 @@ import flask
 
 from codes import auth
 from codes.api import contracts
+from codes.core.errors import error_for_code
 from codes.services import account_service, screener_service, stock_analysis
 
 api_v1 = flask.Blueprint("api_v1", __name__, url_prefix="/api/v1")
@@ -25,7 +26,11 @@ def _json(data: object, status: int = 200):
 
 
 def _error(code: str, message: str, status: int):
-    return _json(contracts.error_response(code, message, _request_id()), status)
+    structured = error_for_code(code)
+    return _json(
+        contracts.error_response(structured.code, message, _request_id()),
+        status,
+    )
 
 
 def _authenticated_user() -> str | None:

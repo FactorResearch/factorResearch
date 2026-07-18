@@ -15,6 +15,7 @@ from hashlib import sha256
 from threading import Event, Lock
 from typing import Any
 
+from codes.core.errors import classify_exception
 from codes.core.redis_client import get_redis
 from codes.core.request_context import RequestContext, capture_context, context_scope
 
@@ -328,6 +329,7 @@ class AdaptiveJobStore:
                 if timed_out.is_set():
                     self._dead_letter(job_id)
                     return
+                structured_error = classify_exception(error)
                 failure_class = getattr(error, "failure_class", "transient")
                 retryable = attempt < max_attempts and failure_class not in PERMANENT_FAILURES
                 if not retryable:
@@ -336,12 +338,12 @@ class AdaptiveJobStore:
                         status=AsyncStatus.ERROR,
                         stage="Failed",
                         retryable=False,
-                        error_code=type(error).__name__,
+                        error_code=structured_error.code,
                     )
                     self._dead_letter(job_id)
                     return
                 self._update(
-                    job_id, stage="Retrying", retryable=True, error_code=type(error).__name__
+                    job_id, stage="Retrying", retryable=True, error_code=structured_error.code
                 )
                 time.sleep(self._retry_policy.delay_ms(attempt) / 1000)
         monitor_thread.join(timeout=0.1)

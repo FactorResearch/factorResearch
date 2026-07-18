@@ -16,9 +16,7 @@ from codes.api.schemas import (
     PortfolioSummary,
     ScreenerResource,
 )
-from codes.domain.responses import (
-    ErrorResponse as DomainErrorResponse,
-)
+from codes.core.errors import error_for_code
 from codes.domain.responses import (
     PortfolioResponse as DomainPortfolioResponse,
 )
@@ -43,10 +41,27 @@ def data_response(data: object, request_id: str) -> DataResponse:
     return {"data": data, "meta": meta(request_id)}
 
 
-def error_response(code: str, message: str, request_id: str) -> ErrorResponse:
-    error = DomainErrorResponse(code, message)
+def error_response(
+    code: str,
+    message: str | None,
+    request_id: str,
+    *,
+    details: dict[str, object] | None = None,
+) -> ErrorResponse:
+    """Build the stable error envelope using the central error registry.
+
+    ``message`` is retained as a compatibility override for existing callers,
+    while the registry remains authoritative for category, severity, retry,
+    recovery, and safe default copy.
+    """
+    structured = error_for_code(code, details=details)
+    payload = {
+        "code": structured.code,
+        "message": message or structured.definition.message,
+        "retryable": structured.definition.retryable,
+    }
     return {
-        "error": error.to_dict(),
+        "error": payload,
         "meta": meta(request_id),
     }
 
