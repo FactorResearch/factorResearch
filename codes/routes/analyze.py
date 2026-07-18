@@ -590,6 +590,15 @@ def _structured_data(snapshot, canonical_url: str) -> str:
 @analyze_pages.route("/<ticker>/analyze/<yyyymmdd>")
 @analyze_pages.route("/analyze/<ticker>/<yyyymmdd>")
 def historical_analysis_page(ticker: str, yyyymmdd: str):
+    """Render one immutable official snapshot at its public historical URL.
+
+    The compact ``/analyze/{ticker}/{YYYYMMDD}`` route is the SEO canonical
+    contract. The older ``/{ticker}/analyze/{YYYYMMDD}`` route remains
+    renderable for existing internal links, while date-formatted and slug
+    variants continue to redirect to the legacy compatibility URL. Only
+    ``get_snapshot`` and related official-history queries feed this page;
+    custom and backtest records are never eligible for publication.
+    """
     route_id = ticker or ""
     if not _DATE_RE.match(yyyymmdd):
         flask.abort(404)
@@ -621,7 +630,8 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     if snapshot is None:
         return _dash_shell_or_404()
 
-    if flask.request.path.startswith("/analyze/") or route_id != snapshot.ticker or yyyymmdd != snapshot.url_date:
+    seo_route = flask.request.path == snapshot.permanent_path
+    if (flask.request.path.startswith("/analyze/") and not seo_route) or route_id != snapshot.ticker or yyyymmdd != snapshot.url_date:
         return _permanent_redirect(snapshot.public_path)
 
     compare_date = flask.request.args.get("compare", "").strip()
@@ -642,7 +652,8 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     keywords = html.escape(snapshot.keywords)
     company = html.escape(snapshot.company_name)
     rating = html.escape(snapshot.final_rating)
-    canonical_url = _absolute_url(snapshot.public_path)
+    canonical_path = snapshot.permanent_path if seo_route else snapshot.public_path
+    canonical_url = _absolute_url(canonical_path)
     url = html.escape(canonical_url)
     structured_data = _structured_data(snapshot, canonical_url)
     published = html.escape(

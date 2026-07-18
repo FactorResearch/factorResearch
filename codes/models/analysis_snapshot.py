@@ -88,7 +88,13 @@ class AnalysisSnapshot:
 
     @property
     def permanent_path(self) -> str:
-        return self.public_path
+        """Return the stable SEO URL for this official historical snapshot.
+
+        The ``/analyze/{ticker}/{YYYYMMDD}`` shape is the externally published
+        contract. ``public_path`` remains the legacy in-app link shape so
+        existing navigation can migrate without invalidating old links.
+        """
+        return f"/analyze/{self.ticker}/{self.url_date}"
 
     @property
     def title(self) -> str:
