@@ -41,6 +41,7 @@ from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
 from codes.services import performance_metrics, provider_gateway
 from codes.services.operations_dashboard import snapshot as operations_snapshot
+from codes.services import operations_console
 from codes.services import account_service, analysis_jobs, component_cache, screener_service
 from codes.services.operational_controller import classify_runtime_health, controller
 from codes.services.company_logo_cache import get_or_fetch_logo
@@ -179,6 +180,38 @@ def internal_operations():
             limit=limit,
         )
     )
+
+
+@server.route("/_internal/admin", methods=["GET"])
+def internal_admin():
+    """Return the authorized console catalogue and current operational state."""
+    actor = auth.get_authenticated_user_id()
+    if not auth.is_operations_admin(actor):
+        flask.abort(404)
+    return flask.jsonify({"console": operations_console.describe(), "operations": operations_snapshot()})
+
+
+@server.route("/_internal/admin/actions", methods=["POST"])
+def internal_admin_action():
+    """Execute one confirmed, authorized, reversible console action."""
+    actor = auth.get_authenticated_user_id()
+    if not auth.is_operations_admin(actor):
+        flask.abort(404)
+    payload = flask.request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return flask.jsonify({"error": "JSON object is required"}), 400
+    try:
+        result = operations_console.execute(
+            payload.get("action", ""),
+            actor=actor or "",
+            confirmation=payload.get("confirmation", ""),
+            parameters=payload.get("parameters") if isinstance(payload.get("parameters"), dict) else {},
+        )
+    except ValueError as exc:
+        return flask.jsonify({"error": str(exc)}), 400
+    except Exception:
+        return flask.jsonify({"error": "administrative action unavailable"}), 503
+    return flask.jsonify({"ok": True, "result": result})
 
 
 _REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")

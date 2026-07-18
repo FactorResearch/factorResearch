@@ -76,3 +76,12 @@ def stats() -> dict:
         "hit_rate": round(_hits / total, 4) if total else None,
         "memory_entries": len(_memory),
     }
+
+
+def clear_local() -> None:
+    """Clear only process-local component entries; shared cache remains intact."""
+    global _hits, _misses
+    with _lock:
+        _memory.clear()
+        _hits = 0
+        _misses = 0

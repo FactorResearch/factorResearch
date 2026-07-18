@@ -63,3 +63,14 @@ def call(provider: str, operation: str, callback: Callable, *, default=None, tim
 def health() -> dict:
     with _guard:
         return {name: dict(state) for name, state in _states.items()}
+
+
+def reset_circuit(provider: str) -> bool:
+    """Reset one registered provider circuit without invoking provider I/O."""
+    normalized = str(provider or "").strip().lower()
+    with _guard:
+        state = _states.get(normalized)
+        if state is None:
+            return False
+        state.update(failures=0, opened_at=0.0)
+        return True
