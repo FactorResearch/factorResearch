@@ -28,6 +28,7 @@ from codes import security
 from codes.api import api_v1
 from codes.composition import compose_runtime
 from codes.core.config import is_production
+from codes.core.request_context import RequestContext, bind_context, reset_context
 from flask import render_template
 from codes.data import sec_data
 from codes.engine import universe
@@ -156,7 +157,16 @@ _REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{1,80}$")
 @server.before_request
 def start_request_metrics():
     supplied = flask.request.headers.get("X-Request-ID", "")
-    flask.g.request_id = supplied if _REQUEST_ID.fullmatch(supplied) else runtime.ids.new_id()
+    request_id = supplied if _REQUEST_ID.fullmatch(supplied) else runtime.ids.new_id()
+    supplied_correlation = flask.request.headers.get("X-Correlation-ID", "")
+    correlation_id = (
+        supplied_correlation if _REQUEST_ID.fullmatch(supplied_correlation) else request_id
+    )
+    context = RequestContext.create(request_id=request_id, correlation_id=correlation_id)
+    flask.g.request_context_token = bind_context(context)
+    flask.g.request_id = context.request_id
+    flask.g.correlation_id = context.correlation_id
+    flask.g.operation_id = context.operation_id
     flask.g.request_started = runtime.clock.monotonic()
 
 
@@ -173,7 +183,17 @@ def finish_request_metrics(response):
     response.headers["X-Request-ID"] = getattr(
         flask.g, "request_id", runtime.ids.new_id()
     )
+    response.headers["X-Correlation-ID"] = getattr(flask.g, "correlation_id", "")
+    response.headers["X-Operation-ID"] = getattr(flask.g, "operation_id", "")
     return response
+
+
+@server.teardown_request
+def clear_request_context(_error):
+    """Restore the caller context after every request, including failures."""
+    token = getattr(flask.g, "request_context_token", None)
+    if token is not None:
+        reset_context(token)
 
 
 @server.route("/company-logo")

@@ -16,6 +16,7 @@ from threading import Event, Lock
 from typing import Any
 
 from codes.core.redis_client import get_redis
+from codes.core.request_context import RequestContext, capture_context, context_scope
 
 
 class AsyncStatus(StrEnum):
@@ -195,6 +196,7 @@ class AdaptiveJobStore:
         self._cancel: dict[str, Event] = {}
         self._dead_letters: dict[str, JobSnapshot] = {}
         self._job_config: dict[str, tuple[Callable[[JobContext], Any], float, int, float]] = {}
+        self._job_contexts: dict[str, RequestContext | None] = {}
         self._pending: queue.PriorityQueue[tuple[int, int, str]] = queue.PriorityQueue()
         self._sequence = itertools.count()
         self._stopping = Event()
@@ -253,6 +255,7 @@ class AdaptiveJobStore:
             self._snapshots[job_id] = snapshot
             self._cancel[job_id] = Event()
             self._job_config[job_id] = (work, timeout_seconds, attempts_limit, heartbeat_seconds)
+            self._job_contexts[job_id] = capture_context()
             self._persist(snapshot)
         priority_rank = 0 if selected_priority == JobPriority.INTERACTIVE else 1
         self._pending.put((priority_rank, next(self._sequence), job_id))
@@ -270,8 +273,10 @@ class AdaptiveJobStore:
             with self._lock:
                 config = self._job_config.get(job_id)
                 snapshot = self._snapshots.get(job_id)
+                job_context = self._job_contexts.get(job_id)
             if config and snapshot:
-                self._run(snapshot, config[0], config[1], config[2], config[3])
+                with context_scope(job_context):
+                    self._run(snapshot, config[0], config[1], config[2], config[3])
             self._pending.task_done()
 
     def _run(  # noqa: C901 - state transitions share one retry/timeout invariant

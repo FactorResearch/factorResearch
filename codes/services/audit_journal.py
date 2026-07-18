@@ -35,6 +35,8 @@ class AuditJournal:
         user_id: str = "",
         request_id: str = "",
         correlation_id: str = "",
+        operation_id: str = "",
+        parent_operation_id: str = "",
         job_id: str = "",
         ticker: str = "",
         provider: str = "",
@@ -44,6 +46,13 @@ class AuditJournal:
         details: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Append one redacted event; identifiers are bounded and non-secret."""
+        from codes.core.request_context import current_context
+
+        context = current_context()
+        request_id = request_id or (context.request_id if context else "")
+        correlation_id = correlation_id or (context.correlation_id if context else "")
+        operation_id = operation_id or (context.operation_id if context else "")
+        parent_operation_id = parent_operation_id or (context.parent_operation_id if context else "")
         event = {
             "event_id": f"evt-{uuid4().hex}",
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -53,6 +62,8 @@ class AuditJournal:
             "user_id": _bounded(user_id),
             "request_id": _bounded(request_id),
             "correlation_id": _bounded(correlation_id or request_id),
+            "operation_id": _bounded(operation_id),
+            "parent_operation_id": _bounded(parent_operation_id),
             "job_id": _bounded(job_id),
             "ticker": _bounded(ticker).upper(),
             "provider": _bounded(provider),

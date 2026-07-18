@@ -11,6 +11,7 @@ from uuid import uuid4
 
 from codes.core.config import is_production
 from codes.core.redis_client import get_redis
+from codes.core.request_context import RequestContext, capture_context, context_scope
 from codes.domain.responses import JobResponse
 from codes.services.audit_journal import audit_journal
 
@@ -24,6 +25,12 @@ _local_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="analysis
 def _prepare_job(job: dict) -> dict:
     """Attach the queue contract without changing caller-owned job payloads."""
     prepared = dict(job)
+    context = capture_context()
+    if context:
+        prepared.setdefault("request_id", context.request_id)
+        prepared.setdefault("correlation_id", context.correlation_id)
+        prepared.setdefault("operation_id", context.operation_id)
+        prepared.setdefault("parent_operation_id", context.parent_operation_id)
     prepared.setdefault("job_id", f"job-{uuid4().hex}")
     prepared.setdefault("created_at", datetime.now(timezone.utc).isoformat())
     prepared.setdefault("attempts", 0)
@@ -110,13 +117,28 @@ def consume_one(redis, timeout: int = 5) -> bool:
         return False
     job = json.loads(raw)
     attempts = int(job.get("attempts", 0))
+    request_id = str(job.get("request_id", ""))
+    job_context = (
+        RequestContext(
+            request_id=request_id,
+            correlation_id=str(job.get("correlation_id") or request_id),
+            operation_id=str(job.get("operation_id") or f"job-{job.get('job_id', 'unknown')}"),
+            parent_operation_id=job.get("parent_operation_id"),
+        )
+        if request_id
+        else None
+    )
     try:
-        _dispatch(job)
+        with context_scope(job_context):
+            _dispatch(job)
         redis.lrem(_PROCESSING_QUEUE, 1, raw)
         audit_journal.record(
             "job",
             action="complete",
             job_id=str(job.get("job_id", "")),
+            request_id=request_id,
+            correlation_id=str(job.get("correlation_id", "")),
+            operation_id=str(job.get("operation_id", "")),
             ticker=str(job.get("symbol", "")),
             component="analysis_jobs",
         )
@@ -130,6 +152,9 @@ def consume_one(redis, timeout: int = 5) -> bool:
                 "job",
                 action="retry",
                 job_id=str(job.get("job_id", "")),
+                request_id=request_id,
+                correlation_id=str(job.get("correlation_id", "")),
+                operation_id=str(job.get("operation_id", "")),
                 ticker=str(job.get("symbol", "")),
                 component="analysis_jobs",
                 severity="WARNING",
@@ -145,6 +170,9 @@ def consume_one(redis, timeout: int = 5) -> bool:
                 "job",
                 action="dead_letter",
                 job_id=str(job.get("job_id", "")),
+                request_id=request_id,
+                correlation_id=str(job.get("correlation_id", "")),
+                operation_id=str(job.get("operation_id", "")),
                 ticker=str(job.get("symbol", "")),
                 component="analysis_jobs",
                 severity="ERROR",
