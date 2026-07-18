@@ -121,6 +121,7 @@ DEFAULT_DEFINITIONS: Final[tuple[SettingDefinition, ...]] = (
     SettingDefinition("ANALYSIS_REFRESH_SECONDS", _parse_int, default=3600, hot_reloadable=True, owner="analysis-worker"),
     SettingDefinition("APP_FEATURE_FLAG", str, default="V1", owner="release"),
     SettingDefinition("FLASK_SECRET_KEY", str, secret=True, owner="security"),
+    SettingDefinition("AUTH_TOKEN_SECRET", str, secret=True, owner="security"),
     SettingDefinition("ENCRYPTION_KEY", str, secret=True, owner="security"),
 )
 

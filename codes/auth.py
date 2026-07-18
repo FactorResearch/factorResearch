@@ -338,6 +338,24 @@ def get_authenticated_user_id() -> str | None:
     Returns:
         Authenticated user_id if session is valid, None otherwise.
     """
+    # Every explicit Bearer request goes through the unified first-party
+    # lifecycle first. An invalid or revoked Bearer token must never fall back
+    # to a cookie identity, which would make API authorization inconsistent.
+    bearer = request.headers.get("Authorization", "")
+    if bearer.lower().startswith("bearer "):
+        from codes.api.auth import request_identity
+
+        identity = request_identity()
+        if identity:
+            return identity.user_id
+        token = bearer[7:].strip()
+        user_id = verify_token(token)
+        if user_id:
+            # Provider tokens are exchanged into the existing browser session
+            # for compatibility; the credential itself is never persisted.
+            set_authenticated_user(user_id)
+        return user_id
+
     persona = get_dev_persona()
     if persona:
         return persona["user_id"]
@@ -345,13 +363,6 @@ def get_authenticated_user_id() -> str | None:
     if "_authenticated_user_id" in session:
         return session.get("_authenticated_user_id")
 
-    auth_header = request.headers.get("Authorization", "")
-    if auth_header.startswith("Bearer "):
-        token = auth_header[7:]
-        user_id = verify_token(token)
-        if user_id:
-            session["_authenticated_user_id"] = user_id
-            return user_id
     return None
 
 
@@ -554,6 +565,14 @@ def init_auth(app_server):
         raise RuntimeError("AUTH_PROVIDER must be configured in production.")
 
     configure_secure_cookies(app_server)
+
+    # Register the provider-neutral API lifecycle once. Provider-specific
+    # login remains available for browser compatibility, while all first-party
+    # API clients can use the same exchange, refresh, and logout contract.
+    from codes.api.auth import auth_api
+
+    if "auth_api" not in app_server.blueprints:
+        app_server.register_blueprint(auth_api)
 
     @app_server.route("/dev/impersonate", methods=["GET"])
     def dev_impersonate():

@@ -18,6 +18,11 @@ Every setting must define:
 - Allowed values.
 - Owning subsystem.
 - Restart requirements.
+
+`AUTH_TOKEN_SECRET` is the sensitive security setting used to sign first-party
+API access and refresh tokens. It must be at least 32 characters in production.
+Rotating it requires coordinated session invalidation and rollout because
+existing signed tokens will no longer validate after rotation.
 # Feature flags
 Flags require owner, purpose, rollout plan, default behavior, telemetry, expiry date, and removal issue.
 # Reproducibility
