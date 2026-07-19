@@ -489,6 +489,7 @@ def build_layout():
             # Simulation results (charts)
             html.Div(id="portfolio-sim-results", children=[]),
             button("Cancel", id="portfolio-job-cancel", variant="secondary", className="job-cancel-control d-none", n_clicks=0),
+            html.Div(id="portfolio-url-state-sink", className="d-none"),
             dcc.Store(id="portfolio-job-store", storage_type="local"),
             dcc.Interval(id="portfolio-job-interval", interval=800, disabled=False),
         ]),

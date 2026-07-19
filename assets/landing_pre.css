@@ -410,6 +410,9 @@
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
 }
+.landing.pre .waitlist input::-moz-placeholder {
+  color: rgba(217, 216, 214, 0.72);
+}
 .landing.pre .waitlist input::placeholder {
   color: rgba(217, 216, 214, 0.72);
 }
@@ -430,11 +433,6 @@
 }
 .landing.pre.pre-b .waitlist {
   position: absolute;
-  right: max(5vw, 24px);
-  top: clamp(120px, 24vh, 220px);
-  width: min(100%, 360px);
-  margin-top: 0;
-  background: rgba(14, 24, 41, 0.88);
 }
 @media screen and (max-width: 767px) {
   .landing.pre.pre-b .waitlist {
@@ -446,6 +444,13 @@
     position: relative;
     right: 0px !important;
   }
+}
+.landing.pre.pre-b .waitlist {
+  right: max(5vw, 24px);
+  top: clamp(120px, 24vh, 220px);
+  width: min(100%, 360px);
+  margin-top: 0;
+  background: rgba(14, 24, 41, 0.88);
 }
 .landing.pre.pre-b .waitlist button {
   width: 100%;
@@ -729,4 +734,4 @@
     scroll-behavior: auto;
     transition: none;
   }
-}
+}/*# sourceMappingURL=landing_pre.css.map */

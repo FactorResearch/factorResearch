@@ -193,8 +193,30 @@ def methodology_disclosure(
     )
 
 
-def data_trust_panel(data: dict | None, *, compact: bool = False):
-    """Render explicit provenance without implying undocumented confidence."""
+def data_trust_panel(
+    data: dict | None,
+    *,
+    compact: bool = False,
+    collapsible: bool = False,
+) -> html.Section | html.Details:
+    """Render explicit provenance as a panel or closed native disclosure.
+
+    Args:
+        data: Analysis metadata containing optional provenance and lineage fields.
+            Missing fields receive explicit unavailable labels rather than inferred
+            values.
+        compact: Whether to apply the compact visual-density modifier.
+        collapsible: Whether to use native Details/Summary progressive disclosure.
+            The disclosure is deliberately closed on initial render.
+
+    Returns:
+        A Section for the existing always-visible contract, or a closed Details
+        component when ``collapsible`` is true. Both variants expose the same
+        trust state, badges, provenance rows, missing-data effects, and disclaimer.
+
+    Side Effects:
+        None. The component does not load, calculate, or persist financial data.
+    """
     analysis = data or {}
     provenance = analysis.get("provenance") or {}
     generated = provenance.get("analysis_date") or analysis.get("generated_at") or analysis.get("updated_at")
@@ -234,31 +256,58 @@ def data_trust_panel(data: dict | None, *, compact: bool = False):
     if effects:
         state_labels.append(badge("Partial inputs", tone="warning"))
 
-    return html.Section(
-        className="ds-trust-panel" + (" ds-trust-panel--compact" if compact else ""),
-        **{"aria-label": "Data trust and provenance", "data-trust-state": "partial" if effects else "supported"},
-        children=[
-            html.Div([
-                html.H3("Data trust", className="ds-trust-panel__title"),
-                html.Div(state_labels, className="ds-trust-panel__states"),
-            ], className="ds-trust-panel__header"),
-            html.Dl([
+    trust_state = "partial" if effects else "supported"
+    content = [
+        html.Dl([
                 html.Div([html.Dt(label), html.Dd(value)], className="ds-trust-panel__item")
                 for label, value in rows
             ], className="ds-trust-panel__grid"),
+        html.Div(
+            [html.Strong("Missing-data effects: "), html.Ul([html.Li(effect) for effect in effects])],
+            className="ds-trust-panel__effects",
+            role="alert",
+        ) if effects else html.P(
+            "No known missing input changes the displayed calculation scope.",
+            className="ds-trust-panel__effects",
+        ),
+        html.P(
+            "Scores are research estimates based on available inputs, not guarantees or personalized financial advice.",
+            className="ds-trust-panel__disclaimer",
+        ),
+    ]
+    classes = "ds-trust-panel" + (" ds-trust-panel--compact" if compact else "")
+    common_props = {
+        "aria-label": "Data trust and provenance",
+        "data-trust-state": trust_state,
+    }
+    if collapsible:
+        return html.Details(
+            [
+                html.Summary(
+                    [
+                        html.Span("Data trust", className="ds-trust-panel__title"),
+                        html.Div(state_labels, className="ds-trust-panel__states"),
+                    ],
+                    className="ds-trust-panel__summary",
+                ),
+                html.Div(content, className="ds-trust-panel__content"),
+            ],
+            className=f"{classes} ds-trust-panel--disclosure",
+            **common_props,
+        )
+    return html.Section(
+        [
             html.Div(
-                [html.Strong("Missing-data effects: "), html.Ul([html.Li(effect) for effect in effects])],
-                className="ds-trust-panel__effects",
-                role="alert",
-            ) if effects else html.P(
-                "No known missing input changes the displayed calculation scope.",
-                className="ds-trust-panel__effects",
+                [
+                    html.H3("Data trust", className="ds-trust-panel__title"),
+                    html.Div(state_labels, className="ds-trust-panel__states"),
+                ],
+                className="ds-trust-panel__header",
             ),
-            html.P(
-                "Scores are research estimates based on available inputs, not guarantees or personalized financial advice.",
-                className="ds-trust-panel__disclaimer",
-            ),
+            *content,
         ],
+        className=classes,
+        **common_props,
     )
 
 

@@ -6,8 +6,8 @@ from datetime import date, timedelta
 from urllib.parse import parse_qs
 
 import dash
-from dash import Input, Output, State, callback, clientside_callback, dcc, html
 import plotly.graph_objects as go
+from dash import Input, Output, State, callback, clientside_callback, dcc, html
 
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.company_identity import company_logo
@@ -22,8 +22,8 @@ from codes.app_modules.screener_markets import (
     market_from_path,
     row_matches_market,
 )
-from codes.data import db
 from codes.app_modules.session import get_portfolio_symbols, get_user_id
+from codes.data import db
 from codes.services import performance_metrics, product_analytics
 from codes.services import screener_service as screener
 from codes.services.screener_service import (
@@ -1265,17 +1265,30 @@ def register_clientside_callbacks(app):
         Input("screener-scroll-poll-interval", "n_intervals"),
     )
 
-    # Restore the saved scroll position when the screener tab becomes visible.
-    # Analyze / Portfolio tabs always reset to top on switch.
+    # Restore Screener's saved position and reset other research pages only on
+    # a real tab transition. URL changes within an already-visible page also
+    # refresh these style outputs; treating them as navigation would destroy the
+    # user's reading position during portfolio selection or analysis routing.
     app.clientside_callback(
         """
         function(screener_style, analyze_style, portfolio_style, saved_pos) {
-            if (screener_style && screener_style.display !== 'none') {
+            var activeTab = screener_style && screener_style.display !== 'none'
+                ? 'screener'
+                : analyze_style && analyze_style.display !== 'none'
+                ? 'analyze'
+                : portfolio_style && portfolio_style.display !== 'none'
+                ? 'portfolio'
+                : null;
+            var previousTab = window.__frVisibleResearchTab;
+            window.__frVisibleResearchTab = activeTab;
+            if (!activeTab || !previousTab || previousTab === activeTab) {
+                return window.dash_clientside.no_update;
+            }
+            if (activeTab === 'screener') {
                 requestAnimationFrame(function() {
                     window.scrollTo(0, saved_pos || 0);
                 });
-            } else if ((analyze_style && analyze_style.display !== 'none') ||
-                       (portfolio_style && portfolio_style.display !== 'none')) {
+            } else {
                 window.scrollTo(0, 0);
             }
             return window.dash_clientside.no_update;

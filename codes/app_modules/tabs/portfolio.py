@@ -2,10 +2,11 @@
 
 import json
 import time as _time
+from urllib.parse import quote, unquote
 
 import dash
 import plotly.graph_objects as go
-from dash import Input, Output, State, callback, dcc, html
+from dash import Input, Output, State, callback, clientside_callback, dcc, html
 from flask import has_request_context
 
 from codes import security
@@ -21,16 +22,10 @@ from codes.app_modules.config import (
     validate_portfolio_name,
 )
 from codes.app_modules.css_classes import tone_class
-from codes.app_modules.design_system.financial import (
-    FinancialFormat,
-    data_trust_panel,
-    delta,
-    metric_value,
-)
-from codes.app_modules.design_system.layouts import container, dashboard_grid, mobile_action_bar
+from codes.app_modules.design_system.financial import data_trust_panel, delta
+from codes.app_modules.design_system.layouts import container, mobile_action_bar
 from codes.app_modules.design_system.primitives import (
     button,
-    card,
     empty_state,
     input_control,
     responsive_table,
@@ -54,6 +49,27 @@ PORTFOLIO_SIMULATION_CALLS = 3
 PORTFOLIO_SIMULATION_PERIOD_SECONDS = 3600
 
 
+def _portfolio_path(name: str | None) -> str:
+    """Return the canonical client route for a validated portfolio name."""
+    validated = validate_portfolio_name(name or "")
+    return f"/portfolio/{quote(validated, safe='')}" if validated else "/portfolio"
+
+
+def _portfolio_name_from_path(pathname: str | None) -> str | None:
+    """Decode a portfolio route without loading or revealing a user-owned record."""
+    prefix = "/portfolio/"
+    raw_path = str(pathname or "")
+    if not raw_path.startswith(prefix):
+        return None
+    encoded_name = raw_path[len(prefix) :].rstrip("/")
+    if not encoded_name or "/" in encoded_name:
+        return None
+    try:
+        return validate_portfolio_name(unquote(encoded_name))
+    except (UnicodeDecodeError, ValueError):
+        return None
+
+
 def _analysis_score(analysis: dict | None) -> float | None:
     if not analysis:
         return None
@@ -69,7 +85,27 @@ def _analysis_score(analysis: dict | None) -> float | None:
 
 
 def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
-    """Build the summary-first portfolio hierarchy from holdings and cached research."""
+    """Build non-authoritative display insights from holdings and cached research.
+
+    The derived values feed summary metrics and section-local review signals.
+    Missing research remains unavailable. A research weak link is returned only
+    when at least two holdings have scores and exactly one has the lowest score;
+    ties and single-score portfolios do not receive an arbitrary label. This is
+    a display-only research comparison, not the historical counterfactual weak
+    link calculated by the portfolio simulation engine.
+
+    Args:
+        holdings: User-owned holdings keyed by ticker, with shares and available
+            current or entry prices.
+        analysis_entries: Optional cached analyses keyed by ticker.
+
+    Returns:
+        Display-only aggregate score, coverage, concentration, sector, freshness,
+        risk observations, and an optional uniquely lowest researched holding.
+
+    Side Effects:
+        None. Holdings, persistence, caches, and analysis records are not changed.
+    """
     positions = []
     for symbol, holding in holdings.items():
         current_price = holding.get("current_price") or holding.get("price_at_add") or 0
@@ -93,7 +129,14 @@ def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
     avg_score = sum(position["score"] for position in scored) / len(scored) if scored else 0
     coverage = len(scored) / len(positions) * 100 if positions else 0
     largest = max(positions, key=lambda position: position["weight"], default=None)
-    weak_link = min(scored, key=lambda position: position["score"], default=None)
+    weak_link = None
+    if len(scored) >= 2:
+        lowest_score = min(position["score"] for position in scored)
+        lowest_positions = [
+            position for position in scored if position["score"] == lowest_score
+        ]
+        if len(lowest_positions) == 1:
+            weak_link = lowest_positions[0]
     if coverage < 60 or avg_score < 45:
         health = "Needs review"
     elif coverage < 100 or avg_score < 65:
@@ -113,10 +156,6 @@ def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
     if len(positions) < 10:
         risks.append(
             f"Only {len(positions)} holdings are present, so diversification may be limited."
-        )
-    if weak_link:
-        risks.append(
-            f"{weak_link['symbol']} is the weakest researched holding at {weak_link['score']:.0f}/100."
         )
     if not risks:
         risks.append("No critical concentration or research-coverage warning is active.")
@@ -138,6 +177,141 @@ def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
     }
 
 
+def _portfolio_metric(label: str, value: str, detail: str, *, tone: str = "neutral") -> html.Article:
+    """Render one mockup-aligned metric using already-calculated portfolio data."""
+    return html.Article(
+        [html.Span(label), html.Strong(value), html.Small(detail)],
+        className=f"portfolio-metric-card portfolio-metric-card--{tone}",
+    )
+
+
+def _portfolio_allocation_card(
+    holdings: dict, analyses: dict[str, dict | None], total_value: float
+) -> html.Section:
+    """Render current-value sector allocation as an accessible donut and legend.
+
+    Unknown sectors remain explicit and zero total value produces a section-local
+    empty state. The visible legend duplicates every chart value in text so the
+    allocation does not rely on color or Plotly interaction alone.
+    """
+    sector_values: dict[str, float] = {}
+    for symbol, holding in holdings.items():
+        analysis = analyses.get(symbol) or {}
+        sector = str(analysis.get("sector") or "Unknown")
+        price = holding.get("current_price") or holding.get("price_at_add") or 0
+        sector_values[sector] = sector_values.get(sector, 0) + (holding.get("shares") or 0) * price
+    ordered = sorted(sector_values.items(), key=lambda item: item[1], reverse=True)
+    if not ordered or total_value <= 0:
+        allocation_body = empty_state(
+            "Allocation unavailable",
+            "Add holdings with usable prices to calculate sector allocation.",
+            icon="Allocation",
+        )
+    else:
+        labels = [sector for sector, _value in ordered]
+        values = [value for _sector, value in ordered]
+        figure = go.Figure(
+            go.Pie(
+                labels=labels,
+                values=values,
+                hole=0.62,
+                sort=False,
+                direction="clockwise",
+                textinfo="none",
+                hovertemplate="%{label}: %{percent:.1%}<extra></extra>",
+                marker={"colors": [BLUE, GREEN, AMBER, RED, MUTED]},
+            )
+        )
+        figure.update_layout(
+            **_chart_layout(""),
+            showlegend=False,
+            height=250,
+            margin={"l": 8, "r": 8, "t": 8, "b": 8},
+        )
+        allocation_body = html.Div(
+            [
+                html.Div(
+                    dcc.Graph(
+                        figure=figure,
+                        config={"displayModeBar": False, "responsive": True},
+                        className="portfolio-allocation-chart",
+                    ),
+                    className="portfolio-allocation-visual",
+                    role="img",
+                    **{"aria-label": "Portfolio sector allocation donut chart"},
+                ),
+                html.Ul(
+                    [
+                        html.Li(
+                            [
+                                html.Span(sector),
+                                html.Strong(f"{value / total_value * 100:.1f}%"),
+                            ]
+                        )
+                        for sector, value in ordered
+                    ],
+                    className="portfolio-allocation-list",
+                    **{"aria-label": "Portfolio sector allocation values"},
+                ),
+            ],
+            className="portfolio-allocation-body",
+        )
+    return html.Section(
+        [
+            html.Div(
+                [html.Div([html.H2("Allocation"), html.P("By sector")])],
+                className="portfolio-card-header",
+            ),
+            allocation_body,
+        ],
+        className=(
+            "portfolio-dashboard-card portfolio-card-span-2 portfolio-allocation-card"
+        ),
+        **{"aria-label": "Portfolio allocation by sector"},
+    )
+
+
+def _portfolio_weak_link_card(weak_link: dict | None) -> html.Section:
+    """Render one uniquely lowest research score without claiming return drag.
+
+    The card is a pre-simulation review priority. Historical performance weak-link
+    classification remains owned by ``codes.portfolio.analyze_weak_links``.
+    """
+    if weak_link:
+        symbol = weak_link["symbol"]
+        body = [
+            company_logo(symbol, symbol, "company-logo portfolio-weak-link-logo"),
+            html.Div(
+                [
+                    html.Strong(symbol),
+                    html.P(f"Lowest researched score at {weak_link['score']:.0f}/100."),
+                    html.A("Review position", href=f"#portfolio-holding-{symbol}"),
+                ]
+            ),
+        ]
+    else:
+        body = [
+            html.Div(
+                [
+                    html.Strong("No unique research weak link"),
+                    html.P(
+                        "At least two differently scored holdings are required for a relative comparison."
+                    ),
+                ]
+            )
+        ]
+    return html.Section(
+        [
+            html.Div(
+                [html.Div([html.H2("Weak link"), html.P("Lowest relative research score")])],
+                className="portfolio-card-header",
+            ),
+            html.Div(body, className="portfolio-weak-link-body"),
+        ],
+        className="portfolio-dashboard-card portfolio-weak-link-card",
+    )
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Portfolio callbacks
 # ══════════════════════════════════════════════════════════════════════════════
@@ -146,13 +320,61 @@ def portfolio_health_snapshot(holdings: dict, analysis_entries: dict) -> dict:
     Output("portfolio-select-dropdown", "options"),
     Output("portfolio-active-dropdown", "options"),
     Output("portfolio-compare-dropdown", "options"),
+    Output("portfolio-active-dropdown", "value"),
     Input("portfolio-refresh-store", "data"),
+    Input("url", "pathname"),
+    State("portfolio-active-dropdown", "value"),
     prevent_initial_call=False,
 )
-def refresh_portfolio_dropdowns(refresh):
+def refresh_portfolio_dropdowns(refresh, pathname, current_active):
+    """Refresh user-owned options and restore only changed route selections.
+
+    Route-triggered calls authorize and restore a selected name. Data-refresh
+    calls update option lists but preserve an already-valid Dash value with
+    ``no_update``; re-emitting it would retrigger route synchronization and the
+    full portfolio renderer without representing a user-visible state change.
+    """
     names = portfolio_engine.list_portfolios(get_user_id())
     opts = [{"label": n, "value": n} for n in names]
-    return opts, opts, opts
+    routed_name = _portfolio_name_from_path(pathname)
+    triggered = dash.ctx.triggered_id
+    if triggered in ("url", None) and str(pathname or "").startswith("/portfolio"):
+        selected = routed_name if routed_name in names else None
+    elif current_active in names:
+        selected = (
+            dash.no_update if triggered == "portfolio-refresh-store" else current_active
+        )
+    else:
+        selected = None
+    return opts, opts, opts, selected
+
+
+# Route writes use the browser history API so the declared Dash dependency graph
+# remains one-way (URL -> authorized dropdown selection) and cannot form a
+# callback cycle. Dispatching popstate updates dcc.Location and global navigation.
+clientside_callback(
+    """
+    function(portfolioClicks, active, pathname) {
+        var trigger = window.dash_clientside.callback_context.triggered_id;
+        if (trigger !== 'tab-portfolio-btn' && trigger !== 'portfolio-active-dropdown') {
+            return window.dash_clientside.no_update;
+        }
+        var target = active
+            ? '/portfolio/' + encodeURIComponent(active)
+            : '/portfolio';
+        if (pathname !== target) {
+            window.history.pushState(window.history.state, '', target);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+        }
+        return target;
+    }
+    """,
+    Output("portfolio-url-state-sink", "children"),
+    Input("tab-portfolio-btn", "n_clicks"),
+    Input("portfolio-active-dropdown", "value"),
+    State("url", "pathname"),
+    prevent_initial_call=True,
+)
 
 
 # ── Show/hide new-portfolio creation panel ────────────────────────────────────
@@ -173,7 +395,7 @@ def toggle_create_panel(new, confirm, cancel):
 # ── Create portfolio ──────────────────────────────────────────────────────────
 @callback(
     Output("portfolio-refresh-store", "data", allow_duplicate=True),
-    Output("portfolio-active-dropdown", "value"),
+    Output("portfolio-active-dropdown", "value", allow_duplicate=True),
     Output("portfolio-create-msg", "children"),
     Output("portfolio-create-name", "value"),
     Input("portfolio-create-confirm-btn", "n_clicks"),
@@ -294,6 +516,14 @@ def add_to_portfolio(n, selected, new_name, shares, symbol, analysis, refresh):
     prevent_initial_call=False,
 )
 def render_portfolio_holdings(active, refresh):
+    """Render one authorized portfolio as a single summary-first dashboard.
+
+    The callback reads user-owned holdings plus optional cached analysis data.
+    Independent enrichment failure degrades research sections without removing
+    holdings controls. Summary metrics have one visual owner; provenance is a
+    closed disclosure; Allocation and the research weak link form the first row;
+    and editable Holdings occupies the full row beneath them.
+    """
     started_at = _time.perf_counter()
     if not active:
         return empty_state(
@@ -313,14 +543,16 @@ def render_portfolio_holdings(active, refresh):
     holdings = p.get("holdings", {})
     count = len(holdings)
     cap = portfolio_engine.MAX_HOLDINGS
-    header = html.Div(
-        className="portfolio-header",
+    header = html.Header(
+        className="portfolio-page-heading",
         children=[
             html.Div(
-                className="portfolio-header-left",
                 children=[
-                    html.H2(active),
-                    html.Span(f"{count}/{cap} stocks", className="fs-13 clr-dim ml-8"),
+                    html.P("Portfolio intelligence", className="portfolio-page-eyebrow"),
+                    html.H1(active),
+                    html.P(
+                        f"Risk, return, concentration, and scenario analysis · {count}/{cap} holdings."
+                    ),
                 ],
             ),
         ],
@@ -391,109 +623,49 @@ def render_portfolio_holdings(active, refresh):
                 },
             },
             compact=True,
+            collapsible=True,
         )
+        portfolio_trust.className += " portfolio-data-trust"
         health = portfolio_health_snapshot(holdings, analysis_entries)
         scores = [
             analysis["composite_score"]
             for analysis in analyses.values()
             if analysis and analysis.get("composite_score") is not None
         ]
-        avg_score = sum(scores) / len(scores) if scores else 0
-        summary = (
-            (total_value, "Total Value", FinancialFormat.CURRENCY),
-            (total_invested, "Invested", FinancialFormat.CURRENCY),
-            (avg_score, "Avg Score", FinancialFormat.NUMBER),
-            (count, "Holdings", FinancialFormat.NUMBER),
-        )
-        summary_cards = dashboard_grid(
-            [
-                card(
-                    metric_value(label, value, kind=kind, decimals=0),
-                    className="portfolio-summary-card",
-                )
-                for value, label, kind in summary
-            ],
-            className="portfolio-summary portfolio-design-engine-reference",
-            minimum="sm",
-            **{"data-design-system": "issue-075"},
-        )
+        avg_score = sum(scores) / len(scores) if scores else None
         weak_link = health["weak_link"]
         largest = health["largest"]
-        portfolio_health = html.Section(
-            className="portfolio-health",
-            **{"aria-labelledby": "portfolio-health-title"},
-            children=[
-                html.Div(
-                    className="portfolio-health-lead",
-                    children=[
-                        html.Div(
-                            "Portfolio research snapshot", className="portfolio-health-kicker"
-                        ),
-                        html.H3(health["health"], id="portfolio-health-title"),
-                        html.P(
-                            f"{health['coverage']:.0f}% research coverage across {count} holdings; "
-                            f"{health['sector_count']} known sectors.",
-                            className="portfolio-health-copy",
-                        ),
-                    ],
+        concentration = largest["weight"] if largest else None
+        concentration_tone = "warning" if concentration is not None and concentration >= 25 else "neutral"
+        summary_cards = html.Section(
+            [
+                _portfolio_metric(
+                    "Total value",
+                    f"${total_value:,.0f}",
+                    f"${total_invested:,.0f} invested",
                 ),
-                html.Div(
-                    className="portfolio-health-metrics",
-                    children=[
-                        html.Div(
-                            [
-                                html.Strong(f"{health['average_score']:.0f}"),
-                                html.Span("Health score"),
-                            ],
-                            className="portfolio-health-metric",
-                        ),
-                        html.Div(
-                            [
-                                html.Strong(f"{largest['weight']:.1f}%" if largest else "—"),
-                                html.Span("Largest weight"),
-                            ],
-                            className="portfolio-health-metric",
-                        ),
-                        html.Div(
-                            [html.Strong(health["freshness"]), html.Span("Latest research")],
-                            className="portfolio-health-metric",
-                        ),
-                    ],
+                _portfolio_metric(
+                    "Portfolio score",
+                    f"{avg_score:.0f}" if avg_score is not None else "N/A",
+                    "Average researched score"
+                    if avg_score is not None
+                    else "Research unavailable",
+                    tone="positive" if avg_score is not None and avg_score >= 65 else "neutral",
                 ),
-                html.Div(
-                    className="portfolio-observations",
-                    children=[
-                        html.Div(
-                            [
-                                html.Span("Weak link", className="portfolio-observation-label"),
-                                html.A(
-                                    f"{weak_link['symbol']} · {weak_link['score']:.0f}/100",
-                                    href=f"#portfolio-holding-{weak_link['symbol']}",
-                                )
-                                if weak_link
-                                else html.Span("Run research to identify it"),
-                            ],
-                            className="portfolio-observation portfolio-observation--critical",
-                        ),
-                        *[
-                            html.Div(
-                                [
-                                    html.Span("Risk", className="portfolio-observation-label"),
-                                    html.Span(risk),
-                                ],
-                                className="portfolio-observation",
-                                role="alert" if index == 0 else None,
-                            )
-                            for index, risk in enumerate(health["risks"][:3])
-                        ],
-                    ],
+                _portfolio_metric(
+                    "Research coverage",
+                    f"{health['coverage']:.0f}%",
+                    f"{len(scores)} of {count} holdings scored",
                 ),
-                html.P(
-                    "Why this matters: review the weakest holding and concentration warning before charts or simulation. "
-                    "These are research observations, not personal financial advice.",
-                    className="portfolio-health-guidance",
+                _portfolio_metric(
+                    "Concentration",
+                    f"{concentration:.1f}%" if concentration is not None else "N/A",
+                    f"Largest position · {largest['symbol']}" if largest else "No positions",
+                    tone=concentration_tone,
                 ),
             ],
+            className="portfolio-metric-strip portfolio-design-engine-reference",
+            **{"aria-label": "Portfolio summary", "data-design-system": "issue-075"},
         )
         # ── Holdings table ──
         rows = []
@@ -634,9 +806,30 @@ def render_portfolio_holdings(active, refresh):
                 ),
             ]
         )
-        actions.className = "ds-mobile-actions portfolio-actions mt-16 d-flex gap-8"
+        actions.className = "ds-mobile-actions portfolio-actions d-flex gap-8"
+        header.children.append(actions)
+        holdings_card = html.Section(
+            [
+                html.Div(
+                    [html.Div([html.H2("Holdings"), html.P(f"{count} positions")])],
+                    className="portfolio-card-header",
+                ),
+                table,
+            ],
+            className=(
+                "portfolio-dashboard-card portfolio-card-span-3 portfolio-holdings-card"
+            ),
+        )
+        content_grid = html.Div(
+            [
+                _portfolio_allocation_card(holdings, analyses, total_value),
+                _portfolio_weak_link_card(weak_link),
+                holdings_card,
+            ],
+            className="portfolio-content-grid",
+        )
         body = html.Div(
-            [portfolio_trust, portfolio_health, summary_cards, actions, table],
+            [summary_cards, portfolio_trust, content_grid],
             className="portfolio-body",
         )
     duration_ms = (_time.perf_counter() - started_at) * 1000
@@ -872,7 +1065,12 @@ def _comparison_holdings_table(bt: dict) -> html.Div:
 
 
 def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.Div:
-    """Weak-link analysis card (reused for side-by-side display)."""
+    """Render counterfactual weak-link results without overstating tied impacts.
+
+    One unique largest positive SPY-swap improvement is shown as the weak link.
+    Other material underperformers remain drags. Equal largest impacts receive a
+    tie explanation rather than the false claim that every holding beat SPY.
+    """
     if bt.get("error"):
         return html.Div()
     p_obj = portfolio_engine.load_portfolio(user_id, port_name)
@@ -900,6 +1098,17 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
             f"by +{wd['swap_delta_pct']:.2f}%",
             className="portfolio-weak-link-alert portfolio-weak-link-alert--danger br-6 px-14 py-8 mb-12 fs-13 fw-600",
         )
+    elif any(
+        details.get("swap_delta_pct", 0) > 0
+        for details in wl.get("holdings", {}).values()
+    ):
+        banner = html.Div(
+            "No unique weakest link — the largest counterfactual impacts are tied.",
+            className=(
+                "portfolio-weak-link-alert portfolio-weak-link-alert--danger "
+                "br-6 px-14 py-8 mb-12 fs-13 fw-600"
+            ),
+        )
     else:
         banner = html.Div(
             "✅  No weak links — every holding beat SPY over the backtest period.",
@@ -909,7 +1118,13 @@ def _comparison_weak_link_card(user_id: str, port_name: str, bt: dict) -> html.D
     for sym in wl["ranking"]:
         d = wl["holdings"][sym]
         verdict = d["verdict"]
-        v_icon = "⚠️" if verdict == "weak link" else "✅" if verdict == "contributor" else "—"
+        v_icon = (
+            "⚠️"
+            if verdict in {"weak link", "drag"}
+            else "✅"
+            if verdict == "contributor"
+            else "—"
+        )
         wl_rows.append(
             html.Tr(
                 [

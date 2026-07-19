@@ -33,6 +33,19 @@ def test_data_trust_panel_exposes_provenance_and_missing_effects():
     assert component.to_plotly_json()["props"]["data-trust-state"] == "partial"
 
 
+def test_data_trust_panel_can_render_as_a_closed_native_disclosure():
+    """Optional progressive disclosure keeps provenance reachable but closed initially."""
+    component = data_trust_panel(
+        {"provenance": {"source_category": "Cached company analyses"}},
+        compact=True,
+        collapsible=True,
+    )
+
+    assert component.__class__.__name__ == "Details"
+    assert not getattr(component, "open", False)
+    assert "Data trust" in str(component.children[0])
+
+
 def test_stock_analysis_provenance_distinguishes_quote_and_filing_dates(monkeypatch):
     monkeypatch.setattr(
         stock_analysis.db,
@@ -108,4 +121,3 @@ def test_marketing_copy_does_not_promise_investment_confidence():
     assert "Invest with confidence" not in landing
     assert "decisions with confidence" not in landing
     assert "do not predict future performance" in landing
-

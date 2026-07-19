@@ -150,33 +150,6 @@ body.light {
     line-height: 1.55;
   }
 
-  .portfolio-health-metrics {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .portfolio-health-metric {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
-    padding: 12px;
-    border: 1px solid var(--fr-border);
-    border-radius: var(--fr-radius-card);
-
-    strong {
-      font-size: 20px;
-      overflow-wrap: anywhere;
-    }
-
-    span {
-      margin-top: 5px;
-      font-size: 11px;
-      color: var(--fr-text-muted);
-    }
-  }
-
   .portfolio-observations {
     display: grid;
     gap: 8px;
@@ -189,11 +162,6 @@ body.light {
     padding: 9px 11px;
     border-left: 3px solid var(--fr-warning);
     background: color-mix(in srgb, var(--fr-warning) 7%, transparent);
-
-    &--critical {
-      border-left-color: var(--fr-danger);
-      background: $red-glow;
-    }
 
     a {
       color: var(--fr-link);
@@ -429,6 +397,221 @@ body.light {
     }
   }
 
+  // Portfolio mockup migration: the grid mirrors preview.html while each card
+  // consumes existing holdings/research data and keeps its own failure boundary.
+  .portfolio-page-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+
+    h1 {
+      @include heading(34px, 800);
+      margin: 4px 0 8px;
+    }
+
+    p {
+      margin: 0;
+      color: var(--fr-text-dim);
+    }
+
+    .portfolio-page-eyebrow {
+      @include mono(11px, 700);
+      color: var(--fr-accent);
+      text-transform: uppercase;
+    }
+  }
+
+  .portfolio-metric-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .portfolio-metric-card {
+    @include panel;
+    display: grid;
+    min-width: 0;
+    padding: 18px;
+
+    > span,
+    > small {
+      color: var(--fr-text-muted);
+    }
+
+    > span {
+      @include mono(11px, 600);
+      text-transform: uppercase;
+    }
+
+    > strong {
+      @include heading(27px, 800);
+      margin: 10px 0 7px;
+      overflow-wrap: anywhere;
+    }
+
+    > small {
+      line-height: 1.4;
+    }
+
+    &--positive > strong {
+      color: var(--fr-positive);
+    }
+
+    &--warning > strong {
+      color: var(--fr-warning);
+    }
+  }
+
+  .portfolio-content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .portfolio-card-span-2 {
+    grid-column: span 2;
+  }
+
+  .portfolio-card-span-3 {
+    grid-column: 1 / -1;
+  }
+
+  .portfolio-dashboard-card {
+    @include panel;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .portfolio-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--fr-border);
+
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h2 {
+      @include heading(18px, 750);
+    }
+
+    p {
+      margin-top: 5px;
+      color: var(--fr-text-muted);
+      font-size: 12px;
+    }
+  }
+
+  .portfolio-data-trust {
+    margin: 0 0 16px;
+  }
+
+  .portfolio-allocation-body {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.9fr) minmax(180px, 1fr);
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 8px 12px 12px;
+  }
+
+  .portfolio-allocation-visual,
+  .portfolio-allocation-chart {
+    width: 100%;
+    min-width: 0;
+    height: 250px;
+    overflow: hidden;
+
+    .js-plotly-plot,
+    .plot-container,
+    .svg-container {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: 250px !important;
+    }
+  }
+
+  .portfolio-allocation-list {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 8px 16px 14px;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-width: 0;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--fr-border);
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      span {
+        color: var(--fr-text-dim);
+        overflow-wrap: anywhere;
+      }
+
+      strong {
+        @include mono(12px, 700);
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .portfolio-holdings-card {
+    .portfolio-table-wrap {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      margin: 0;
+    }
+  }
+
+  .portfolio-weak-link-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+
+    strong,
+    p {
+      margin: 0;
+    }
+
+    p {
+      margin-top: 7px;
+      color: var(--fr-text-dim);
+      line-height: 1.5;
+    }
+
+    a {
+      @include focus-ring;
+      display: inline-flex;
+      margin-top: 12px;
+      color: var(--fr-link);
+      font-weight: 700;
+    }
+  }
+
+  .portfolio-weak-link-logo {
+    flex: 0 0 auto;
+  }
+
   #portfolio-sim-results {
     display: grid;
     gap: 18px;
@@ -473,6 +656,18 @@ body.light .risk-row .metric_cell {
   border-color: $light-border;
 }
 
+@include media.tablet-down {
+  #tab-portfolio {
+    .portfolio-metric-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .portfolio-content-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
 @include media.phones {
   .portfolio-add-controls {
     flex-direction: column;
@@ -480,13 +675,26 @@ body.light .risk-row .metric_cell {
   }
 
   #tab-portfolio {
-    .portfolio-health {
-      grid-template-columns: 1fr;
-      padding: 18px;
+    .portfolio-page-heading {
+      align-items: stretch;
+      flex-direction: column;
+
+      .portfolio-actions {
+        width: 100%;
+      }
     }
 
-    .portfolio-health-metrics {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .portfolio-content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .portfolio-card-span-2,
+    .portfolio-card-span-3 {
+      grid-column: span 1;
+    }
+
+    .portfolio-allocation-body {
+      grid-template-columns: 1fr;
     }
 
     .portfolio-header {
@@ -546,6 +754,14 @@ body.light .risk-row .metric_cell {
       .portfolio-action-btn {
         width: 100%;
       }
+    }
+  }
+}
+
+@include media.sm-phones {
+  #tab-portfolio {
+    .portfolio-metric-strip {
+      grid-template-columns: 1fr;
     }
   }
 }

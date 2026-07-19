@@ -728,8 +728,7 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
-    """
-    Identify which holdings dragged portfolio performance below SPY over 10 years.
+    """Identify the unique largest portfolio drag relative to SPY over 10 years.
 
     Two complementary lenses:
 
@@ -746,7 +745,7 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
        Positive swap_delta_pct means swapping this stock for SPY would have
        *improved* returns — i.e. this stock was a drag.
 
-    Both lenses agree when a stock is truly the weak link. When they diverge,
+    Both lenses agree when a stock is materially detrimental. When they diverge,
     it is usually because a small-weight stock had a catastrophic individual
     return (lens 1 flags it) but its low weight limited the portfolio impact
     (lens 2 shows it barely mattered).
@@ -768,13 +767,21 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
               "cagr_vs_spy":      float,  # stock_cagr − spy_cagr
               "drag_bps":         float,  # weighted drag in basis points
               "swap_delta_pct":   float,  # total-return improvement if swapped for SPY
-              "verdict":          str,    # "weak link" | "neutral" | "contributor"
+              "verdict":          str,    # "weak link" | "drag" | "neutral" | "contributor"
             },
           },
           "ranking":  [SYM, ...],        # worst to best by drag_bps
-          "weakest":  SYM | None,        # single biggest drag (by swap_delta_pct)
+          "weakest":  SYM | None,        # unique biggest positive swap impact
           "error":    str | None,
         }
+
+    Classification invariant:
+        At most one holding is a ``weak link``. It must have the uniquely largest
+        positive counterfactual improvement at the displayed 0.01 percentage-point
+        precision. Other material underperformers are ``drag`` holdings. A tie or
+        non-positive best swap has no unique weak link. Contributor and neutral
+        thresholds, financial inputs, formulas, currency assumptions, date basis,
+        and rounding remain unchanged.
     """
     holdings = portfolio.get("holdings", {})
     if not holdings:
@@ -889,9 +896,10 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
         counterfactual_return = (counterfactual_final / total_entry - 1) * 100 if total_entry > 0 else 0.0
         swap_delta_pct = round(counterfactual_return - actual_total_return, 2)
 
-        # Verdict thresholds
+        # Material underperformance is initially a drag. The singular weak-link
+        # label is assigned only after every counterfactual impact can be ranked.
         if drag_bps < -30 or swap_delta_pct > 2.0:
-            verdict = "weak link"
+            verdict = "drag"
         elif drag_bps > 30 or swap_delta_pct < -2.0:
             verdict = "contributor"
         else:
@@ -911,11 +919,25 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     ranking = sorted(result_holdings.keys(),
                      key=lambda s: result_holdings[s]["drag_bps"])
 
-    # Weakest = largest positive swap_delta (most improved if swapped for SPY)
-    weakest = max(result_holdings, key=lambda s: result_holdings[s]["swap_delta_pct"],
-                  default=None)
-    if weakest and result_holdings[weakest]["swap_delta_pct"] <= 0:
-        weakest = None  # every stock beat SPY — no weak link
+    # Weakest is singular by definition. Rounded ties remain drags because
+    # choosing one would fabricate precision the model does not possess.
+    positive_impacts = sorted(
+        (
+            (details["swap_delta_pct"], symbol)
+            for symbol, details in result_holdings.items()
+            if details["swap_delta_pct"] > 0
+        ),
+        reverse=True,
+    )
+    weakest = None
+    if positive_impacts:
+        largest_impact = positive_impacts[0][0]
+        largest_symbols = [
+            symbol for impact, symbol in positive_impacts if impact == largest_impact
+        ]
+        if len(largest_symbols) == 1:
+            weakest = largest_symbols[0]
+            result_holdings[weakest]["verdict"] = "weak link"
 
     return {
         "spy_cagr":   round(spy_cagr, 2),

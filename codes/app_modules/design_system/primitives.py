@@ -312,12 +312,19 @@ def skeleton(*, lines: int = 3, label: str = "Loading content", decorative: bool
 
 
 def progress(value: int | None = None, *, label: str = "Loading"):
+    """Render an accessible progress element using Dash's string-valued HTML contract.
+
+    Callers use numeric percentages for calculations. Dash 4.4 validates the
+    native ``value`` and ``max`` properties as strings, so this boundary owns
+    serialization while keeping the ARIA value synchronized. ``None`` remains
+    an indeterminate progress state.
+    """
     attrs = {"aria-label": label, "aria-valuemin": "0", "aria-valuemax": "100"}
     if value is not None:
         attrs["aria-valuenow"] = str(value)
     return html.Progress(
-        value=value,
-        max=100,
+        value=str(value) if value is not None else None,
+        max="100",
         className="ds-progress",
         role="progressbar",
         **attrs,

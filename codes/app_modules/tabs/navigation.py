@@ -9,6 +9,7 @@ _ANALYZE_PATH_RE = re.compile(
     r"^(?:/analyze/[A-Za-z]{1,6}(?:/(?:\d{8}|\d{4}-\d{2}-\d{2}))?"
     r"|/[A-Za-z]{1,6}/analyze/(?:\d{8}|\d{4}-\d{2}-\d{2}))/?$"
 )
+_PORTFOLIO_PATH_RE = re.compile(r"^/portfolio(?:/[^/]+)?/?$")
 
 
 # ── Tab Navigation ───────────────────────────────────────────────────────────
@@ -66,6 +67,8 @@ def switch_tabs(
         return HIDE, HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     if _ANALYZE_PATH_RE.fullmatch(pathname or ""):
         return HIDE, SHOW, HIDE, HIDE, HIDE, HIDE, IDLE, ACTIVE, IDLE, IDLE, IDLE, IDLE
+    if _PORTFOLIO_PATH_RE.fullmatch(pathname or ""):
+        return HIDE, HIDE, SHOW, HIDE, HIDE, HIDE, IDLE, IDLE, ACTIVE, IDLE, IDLE, IDLE
     if (pathname or "") == "/pricing":
         return HIDE, HIDE, HIDE, HIDE, SHOW, HIDE, IDLE, IDLE, IDLE, IDLE, ACTIVE, IDLE
     return SHOW, HIDE, HIDE, HIDE, HIDE, HIDE, ACTIVE, IDLE, IDLE, IDLE, IDLE, IDLE

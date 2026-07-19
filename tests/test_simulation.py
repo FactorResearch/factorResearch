@@ -186,6 +186,74 @@ class TestPortfolio(unittest.TestCase):
         result = analyze_weak_links(portfolio)
         self.assertIsNone(result.get("error"))
 
+    @patch('codes.portfolio._splits_since', return_value=[])
+    @patch('codes.portfolio._load_history')
+    def test_only_largest_counterfactual_drag_is_the_weak_link(self, mock_load, _mock_splits):
+        """Several underperformers may be drags, but only one can be the weakest link."""
+        dates = pd.date_range('2020-01-01', periods=24, freq='ME')
+        closes = {
+            "AAA": np.linspace(100.0, 50.0, len(dates)),
+            "BBB": np.linspace(100.0, 70.0, len(dates)),
+            "SPY": np.linspace(100.0, 120.0, len(dates)),
+        }
+        mock_load.side_effect = lambda symbol: pd.DataFrame(
+            {"Date": dates, "Close": closes[symbol]}
+        )
+        portfolio = {
+            "created": "2020-01-01",
+            "holdings": {
+                "AAA": {"shares": 1, "price_at_add": 100.0},
+                "BBB": {"shares": 1, "price_at_add": 100.0},
+            },
+        }
+        backtest = {
+            "cagr": -20.0,
+            "spy_cagr": 9.5,
+            "error": None,
+            "holdings_detail": {"AAA": {}, "BBB": {}},
+        }
+
+        result = analyze_weak_links(portfolio, backtest)
+
+        assert result["weakest"] == "AAA"
+        assert result["holdings"]["AAA"]["verdict"] == "weak link"
+        assert result["holdings"]["BBB"]["verdict"] == "drag"
+        assert sum(
+            holding["verdict"] == "weak link" for holding in result["holdings"].values()
+        ) == 1
+
+    @patch('codes.portfolio._splits_since', return_value=[])
+    @patch('codes.portfolio._load_history')
+    def test_tied_counterfactual_drags_have_no_arbitrary_weak_link(self, mock_load, _mock_splits):
+        """Equal largest impacts remain drags because neither is uniquely weakest."""
+        dates = pd.date_range('2020-01-01', periods=24, freq='ME')
+        closes = {
+            "AAA": np.linspace(100.0, 60.0, len(dates)),
+            "BBB": np.linspace(100.0, 60.0, len(dates)),
+            "SPY": np.linspace(100.0, 120.0, len(dates)),
+        }
+        mock_load.side_effect = lambda symbol: pd.DataFrame(
+            {"Date": dates, "Close": closes[symbol]}
+        )
+        portfolio = {
+            "created": "2020-01-01",
+            "holdings": {
+                "AAA": {"shares": 1, "price_at_add": 100.0},
+                "BBB": {"shares": 1, "price_at_add": 100.0},
+            },
+        }
+        backtest = {
+            "cagr": -20.0,
+            "spy_cagr": 9.5,
+            "error": None,
+            "holdings_detail": {"AAA": {}, "BBB": {}},
+        }
+
+        result = analyze_weak_links(portfolio, backtest)
+
+        assert result["weakest"] is None
+        assert {holding["verdict"] for holding in result["holdings"].values()} == {"drag"}
+
     @patch('codes.portfolio.run_backtest')
     @patch('codes.portfolio.run_montecarlo')
     @patch('codes.portfolio.cache')

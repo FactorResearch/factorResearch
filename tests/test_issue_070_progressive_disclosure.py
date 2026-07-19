@@ -90,3 +90,17 @@ def test_portfolio_leads_with_health_concentration_coverage_and_weak_link():
     assert snapshot["weak_link"]["symbol"] == "BBB"
     assert snapshot["risks"][0].startswith("AAA is 80.0%")
 
+
+def test_portfolio_research_weak_link_requires_a_unique_peer_low():
+    """Tied scores and a lone researched holding must not create an arbitrary weak link."""
+    holdings = {
+        "AAA": {"shares": 1, "price_at_add": 100, "current_price": 100},
+        "BBB": {"shares": 1, "price_at_add": 100, "current_price": 100},
+    }
+    tied_entries = {
+        "AAA": {"data": {"composite_score": 40, "sector": "Tech"}},
+        "BBB": {"data": {"composite_score": 40, "sector": "Health"}},
+    }
+
+    assert portfolio_health_snapshot(holdings, tied_entries)["weak_link"] is None
+    assert portfolio_health_snapshot(holdings, {"AAA": tied_entries["AAA"]})["weak_link"] is None
