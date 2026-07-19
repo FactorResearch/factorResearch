@@ -311,7 +311,11 @@ def init_security(app: flask.Flask) -> None:
         response.headers.setdefault(
             "Content-Security-Policy",
             "default-src 'self'; script-src 'self' https://browser.sentry-cdn.com https://www.clarity.ms"
-            f"{script_hashes}; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; "
+            # Plotly injects runtime CSS rules through a <style> element. The
+            # existing style-src-attr exception only covers style attributes,
+            # so Plotly crashes at CSSStyleSheet.insertRule without this
+            # narrowly scoped compatibility allowance.
+            f"{script_hashes}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; "
             "font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://img.logo.dev; connect-src 'self'; "
             "object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
         )

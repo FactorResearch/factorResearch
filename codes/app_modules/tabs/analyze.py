@@ -7,13 +7,11 @@ import time as _time
 import dash
 from dash import ALL, Input, Output, State, callback, clientside_callback, html
 from dash.exceptions import PreventUpdate
-from flask import has_request_context
 
-from codes.app_modules.analysis_ui import _build_analysis_content, build_analysis_charts
+from codes.app_modules.analysis_ui import _build_analysis_content
 from codes.app_modules.components.feature_lock_modal import FeatureLockedModal
 from codes.app_modules.components.upgrade_banner import UpgradeBanner
 from codes.app_modules.design_system.primitives import button
-from codes.app_modules.design_system.states import section_error
 from codes.app_modules.rate_limit import RateLimited, check_rate_limit
 from codes.app_modules.session import get_user_id
 from codes.app_modules.tabs.pricing import open_upgrade_funnel
@@ -59,9 +57,12 @@ clientside_callback(
     Output("ticker-suggestions", "data-query"),
     Input("ticker-query-debounced", "data"),
     Input("ticker-selected-symbol", "data"),
+    Input("active-analysis-symbol", "data"),
     prevent_initial_call=True,
 )
-def update_company_suggestions(value: str | None, selected_symbol: str | None):
+def update_company_suggestions(
+    value: str | None, selected_symbol: str | None, active_symbol: str | None = None
+):
     """Render non-submitting company suggestions for the Analyze input.
 
     Suggestions query only the cached supported screener universe. Selection
@@ -70,7 +71,11 @@ def update_company_suggestions(value: str | None, selected_symbol: str | None):
     manual ticker submission remains available.
     """
     query = str(value or "").strip()
-    if not query or (selected_symbol and query.upper() == selected_symbol.upper()):
+    if (
+        not query
+        or active_symbol
+        or (selected_symbol and query.upper() == selected_symbol.upper())
+    ):
         return [], "", query
     try:
         suggestions = company_search.search_companies(query)
@@ -82,7 +87,10 @@ def update_company_suggestions(value: str | None, selected_symbol: str | None):
     return [
         button(
             [html.Strong(item.symbol), html.Span(item.name)],
-            id={"type": "ticker-suggestion", "symbol": item.symbol},
+            # Pattern IDs must use Dash's `index` key.  Using a custom key
+            # leaves the renderer without a path segment when it hashes the
+            # dynamic children, which can crash the entire React tree.
+            id={"type": "ticker-suggestion", "index": item.symbol},
             className="ticker-suggestion",
             type="button",
             role="option",
@@ -97,15 +105,15 @@ def update_company_suggestions(value: str | None, selected_symbol: str | None):
 @callback(
     Output("ticker-input", "value", allow_duplicate=True),
     Output("ticker-selected-symbol", "data"),
-    Input({"type": "ticker-suggestion", "symbol": ALL}, "n_clicks"),
+    Input({"type": "ticker-suggestion", "index": ALL}, "n_clicks"),
     prevent_initial_call=True,
 )
 def select_company_suggestion(_clicks: list[int | None]):
     """Copy an explicit suggestion into the input without starting analysis."""
     triggered = dash.ctx.triggered_id
-    if not isinstance(triggered, dict) or not triggered.get("symbol"):
+    if not isinstance(triggered, dict) or not triggered.get("index"):
         raise PreventUpdate
-    symbol = str(triggered["symbol"]).upper()
+    symbol = str(triggered["index"]).upper()
     return symbol, symbol
 
 
@@ -155,11 +163,6 @@ clientside_callback(
 )
 
 
-def _telemetry_user_id() -> str:
-    """Avoid making optional telemetry a request-context dependency."""
-    return get_user_id() if has_request_context() else "anonymous"
-
-
 def _client_analysis_payload(result) -> dict:
     """Keep large chart histories server-side until the user opens Charts."""
     if hasattr(result, "presentation_data"):
@@ -167,6 +170,18 @@ def _client_analysis_payload(result) -> dict:
     return {
         key: value for key, value in result.items() if key not in {"price_history", "spy_history"}
     }
+
+
+def _analysis_callback_root(children: list[object]) -> html.Div:
+    """Return one stable root for callback-rendered analysis content.
+
+    The initial layout owns a component tree directly, but the screener
+    navigation path replaces ``analysis-content.children`` through a Dash
+    callback. Dash 4.4 can expose a bare list of serialized child components
+    as React children during that replacement. A single root preserves the
+    same visual content while keeping the callback boundary unambiguous.
+    """
+    return html.Div(children=children, className="analysis-callback-root")
 
 
 clientside_callback(
@@ -291,6 +306,12 @@ def _ticker_from_analyze_path(pathname: str | None) -> str | None:
 def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, viewed_list):  # noqa: C901
     """
     Single callback: fetch + score + render.
+
+    Explicit ticker submissions and screener selections are refresh requests:
+    users expect those actions to reflect the latest quote and provider data.
+    URL-driven page loads may reuse the server cache so historical links remain
+    fast and resilient when an upstream provider is unavailable.
+
     The shared scoped loading container delays feedback and keeps the application
     shell interactive for the duration of this callback.
     """
@@ -362,7 +383,9 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
             )
             return (
                 "/pricing",
-                [FeatureLockedModal(feature="analysis", source="analyze_lock")],
+                _analysis_callback_root(
+                    [FeatureLockedModal(feature="analysis", source="analyze_lock")]
+                ),
                 None,
                 "🔒 Upgrade required to continue.",
                 False,
@@ -399,7 +422,14 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
     )
     started_at = _time.perf_counter()
     try:
-        result = analyze_stock(symbol)
+        # A cached analysis can be days old even when its model version is
+        # current.  An explicit user action is the clear intent to recalculate;
+        # route loads retain cache behavior for fast navigation.
+        refresh_requested = triggered in {
+            "analyze-btn",
+            "screener-open-analysis-symbol",
+        }
+        result = analyze_stock(symbol, force_refresh=refresh_requested)
     except Exception as e:
         duration_ms = int((_time.perf_counter() - started_at) * 1000)
         performance_metrics.record_ui_operation(
@@ -514,13 +544,14 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
         consumed = permissions.consume_analysis_if_allowed(user_id, ticker=symbol)
         usage_msg = f" · {consumed.remaining} free analyses remaining"
         content = [UpgradeBanner(remaining=consumed.remaining), *content]
+    callback_content = _analysis_callback_root(content)
     client_result = _client_analysis_payload(response)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return (
         dash.no_update
         if triggered in ("url", None)
         else f"/{symbol}/analyze/{_time.strftime('%Y%m%d')}",
-        content,
+        callback_content,
         client_result,
         f"✅ {result['name']} ({symbol}) — Analysis complete{usage_msg}",
         False,
@@ -534,68 +565,6 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
 
 
 @callback(
-    Output("analysis-charts-content", "children"),
-    Input("analysis-charts-summary", "n_clicks"),
-    Input("analysis-charts-retry", "n_clicks"),
-    Input("analysis-store", "data"),
-    State("analysis-store", "data"),
-    prevent_initial_call=True,
-)
-def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis_store=None, analysis=None):
-    if analysis is None:
-        analysis = analysis_store
-    if analysis is None and isinstance(retry_clicks, dict):
-        analysis, retry_clicks = retry_clicks, None
-    if not (n_clicks or retry_clicks or analysis_store) or not analysis:
-        return dash.no_update
-    started_at = _time.perf_counter()
-    chart_analysis = analysis
-    if not analysis.get("price_history"):
-        chart_analysis = stock_analysis.get_cached_analysis(analysis.get("symbol", "")) or analysis
-    if not chart_analysis.get("price_history") and not (chart_analysis.get("graham") or {}).get(
-        "eps_history"
-    ):
-        performance_metrics.record_ui_operation(
-            "chart-render", 0, outcome="empty", section="analysis-charts"
-        )
-        product_analytics.track_event(
-            _telemetry_user_id(),
-            "analysis_section_failed",
-            {"section": "charts", "failure_class": "no_data"},
-        )
-        return section_error("Historical observations are not available for this company.")
-    try:
-        rendered = build_analysis_charts(chart_analysis)
-    except Exception as error:
-        performance_metrics.record_failure("analysis-charts", error)
-        performance_metrics.record_ui_operation(
-            "chart-render",
-            (_time.perf_counter() - started_at) * 1000,
-            outcome="error",
-            section="analysis-charts",
-        )
-        product_analytics.track_event(
-            _telemetry_user_id(),
-            "analysis_section_failed",
-            {"section": "charts", "failure_class": type(error).__name__},
-        )
-        return section_error(
-            "The historical charts failed independently. The analysis above remains usable.",
-            retry_id="analysis-charts-retry",
-            technical_id=type(error).__name__,
-        )
-    performance_metrics.record_ui_operation(
-        "chart-render",
-        (_time.perf_counter() - started_at) * 1000,
-        section="analysis-charts",
-    )
-    product_analytics.track_event(
-        _telemetry_user_id(), "analysis_section_completed", {"section": "charts"}
-    )
-    return rendered
-
-
-@callback(
     Output("analysis-content", "children", allow_duplicate=True),
     Output("analysis-store", "data", allow_duplicate=True),
     Input("analysis-secondary-interval", "n_intervals"),
@@ -603,7 +572,14 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis_store
     prevent_initial_call=True,
 )
 def refresh_secondary_analysis(_n_intervals, analysis):
-    """Apply deferred analysis data without turning provider throttles into 500s."""
+    """Publish deferred analysis data without replacing the live page tree.
+
+    The initial analysis callback owns the page component tree.  Rebuilding
+    that tree from a later interval creates a second serialized component
+    graph while Dash is reconciling the first one; Dash 4.4 can expose those
+    component records as React children.  The store remains the authoritative
+    update channel, and independent sections (including charts) react to it.
+    """
     if not analysis or analysis.get("secondary_status") != "pending":
         raise PreventUpdate
     try:
@@ -620,7 +596,6 @@ def refresh_secondary_analysis(_n_intervals, analysis):
 
     try:
         response = stock_analysis.analysis_response(enriched, analysis.get("symbol", ""))
-        content = _build_analysis_content(response)
     except Exception as error:
         if _is_rate_limit_error(error) or "rate limit exceeded" in str(error).lower():
             degraded = dict(analysis)
@@ -628,12 +603,9 @@ def refresh_secondary_analysis(_n_intervals, analysis):
             degraded["secondary_error"] = "rate_limit"
             return dash.no_update, _client_analysis_payload(degraded)
         raise
-    access = permissions.can_access_feature(get_user_id(), permissions.Feature.ANALYSIS)
-    if access and access.remaining is not None:
-        content = [UpgradeBanner(remaining=access.remaining), *content]
     client_result = _client_analysis_payload(response)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
-    return content, client_result
+    return dash.no_update, client_result
 
 
 @callback(
@@ -644,25 +616,3 @@ def refresh_secondary_analysis(_n_intervals, analysis):
 def sync_secondary_analysis_polling(analysis):
     """Poll only while the current analysis has deferred sections."""
     return not bool(analysis and analysis.get("secondary_status") == "pending")
-
-
-clientside_callback(
-    """
-    function(children) {
-        function resizeCharts() {
-            if (!window.Plotly) return;
-            document.querySelectorAll('#analysis-charts-content .js-plotly-plot')
-                .forEach(function(graph) { window.Plotly.Plots.resize(graph); });
-        }
-        window.requestAnimationFrame(function() {
-            resizeCharts();
-            window.setTimeout(resizeCharts, 120);
-            window.setTimeout(resizeCharts, 350);
-        });
-        return Date.now();
-    }
-    """,
-    Output("analysis-chart-resize-trigger", "children"),
-    Input("analysis-charts-content", "children"),
-    prevent_initial_call=True,
-)

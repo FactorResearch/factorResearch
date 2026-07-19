@@ -158,7 +158,7 @@ def test_analyze_success_tracks_started_completed_and_stock_view(monkeypatch):
     monkeypatch.setattr(
         analyze,
         "analyze_stock",
-        lambda symbol: {"symbol": symbol, "name": "Apple", "cache_hit": True, "cache_source": "memory"},
+        lambda symbol, **kwargs: {"symbol": symbol, "name": "Apple", "cache_hit": True, "cache_source": "memory"},
     )
     monkeypatch.setattr(analyze, "_build_analysis_content", lambda result: ["content"])
     monkeypatch.setattr(analyze.screener, "update_stock_after_analysis", lambda *args, **kwargs: None)
@@ -181,7 +181,7 @@ def test_analyze_business_error_tracks_failure_class(monkeypatch):
     monkeypatch.setattr(analyze, "get_user_id", lambda: "u1")
     allow = PermissionResult(True, Feature.ANALYSIS, plan="trial", status="trialing", remaining=3)
     monkeypatch.setattr(analyze.permissions, "can_access_feature", lambda *_: allow)
-    monkeypatch.setattr(analyze, "analyze_stock", lambda symbol: {"error": "No data"})
+    monkeypatch.setattr(analyze, "analyze_stock", lambda symbol, **kwargs: {"error": "No data"})
     monkeypatch.setattr(analyze.dash, "ctx", SimpleNamespace(triggered_id="analyze-btn"))
     tracked = Mock()
     monkeypatch.setattr(analyze.product_analytics, "track_event", tracked)
@@ -272,6 +272,8 @@ def test_analyze_stock_marks_cache_source(monkeypatch):
     monkeypatch.setattr(stock_analysis.sec_data, "get_financials", lambda symbol: {"name": "Apple", "sector": "Technology"})
     monkeypatch.setattr(stock_analysis.quality, "score", lambda sec_facts: {"score": 1})
     monkeypatch.setattr(stock_analysis.api_fetcher, "get_price", lambda symbol: None)
+    monkeypatch.setattr(stock_analysis.api_fetcher, "get_price_history", lambda *args, **kwargs: None)
+    monkeypatch.setattr(stock_analysis, "_get_spy_history_lazy", lambda: None)
     monkeypatch.setattr(stock_analysis.graham, "score", lambda price, sec_facts: {"market_cap": None})
     monkeypatch.setattr(stock_analysis.scorer, "composite", lambda *args, **kwargs: {"score": 1})
     monkeypatch.setattr(stock_analysis.piotroski, "score", lambda sec_facts: {})

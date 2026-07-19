@@ -121,3 +121,23 @@ def test_analysis_chart_dataset_normalizes_price_history():
     assert dataset["series"][0]["y"] == [100.0, 110.00000000000001]
     assert dataset["series"][1]["name"] == "SPY"
     assert dataset["meta"]["cache_hit"] is False
+
+
+def test_analysis_chart_cache_revision_changes_with_history_payload():
+    calls = {"count": 0}
+
+    def builder():
+        calls["count"] += 1
+        return {"series": [{"x": ["2026"], "y": [calls["count"]]}]}
+
+    first = chart_service.get_analysis_chart_dataset(
+        {"symbol": "AAPL", "analysis_version": "analysis-1", "price_history": [{"Date": "2026", "Close": 100}]},
+        "price_history",
+    )
+    second = chart_service.get_analysis_chart_dataset(
+        {"symbol": "AAPL", "analysis_version": "analysis-1", "price_history": [{"Date": "2026", "Close": 110}]},
+        "price_history",
+    )
+
+    assert first["meta"]["cache_hit"] is False
+    assert second["meta"]["cache_hit"] is False

@@ -25,9 +25,18 @@ def _tab(tab_id):
 
 
 def test_add_to_portfolio_panel_is_after_analysis_content():
-    ids = [getattr(child, "id", None) for child in _tab("tab-analyze").children]
+    analyze_tab = _tab("tab-analyze")
+    ids = [getattr(child, "id", None) for child in analyze_tab.children]
     assert ids.index("analysis-loading") < ids.index("add-to-portfolio-panel")
     assert ids.index("add-to-portfolio-panel") < ids.index("analysis-anchor-scroll-trigger")
+
+    panel = next(
+        child
+        for child in analyze_tab.children
+        if getattr(child, "id", None) == "add-to-portfolio-panel"
+    )
+    assert panel.className == "is-hidden"
+    assert "Add to Portfolio" in str(panel)
 
 
 def test_screener_toolbar_does_not_include_manual_universe_loader():

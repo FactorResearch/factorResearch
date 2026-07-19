@@ -409,7 +409,16 @@ def _composite_banner(data: dict) -> html.Div:
         ],
     )
 
-    # Flags row
+    flags = _analysis_flags(data)
+
+    # Flags remain available to the legacy composite renderer for compatibility.
+    return _composite_banner_with_flags(data, flags)
+
+
+def _analysis_flags(data: dict) -> list:
+    """Return the original model signal pills without changing their meaning."""
+    enhanced = data.get("enhanced") or {}
+    comp = data.get("composite") or {}
     flags = []
     if enhanced.get("value_trap_warning") or comp.get("value_trap_warning"):
         flags.append(
@@ -440,6 +449,47 @@ def _composite_banner(data: dict) -> html.Div:
             )
         )
 
+    return flags
+
+
+def _composite_banner_with_flags(data: dict, flags: list) -> html.Div:
+    """Render the composite banner using a precomputed original flag list."""
+    enhanced = data.get("enhanced") or {}
+    comp = data.get("composite") or {}
+    g = data.get("graham") or {}
+    b = data.get("buffett") or {}
+    q = data.get("quality") or {}
+    r = data.get("risk") or {}
+    p = data.get("piotroski") or {}
+    er = data.get("earnings_revision") or {}
+    has_enh = bool(enhanced.get("composite_score") is not None)
+    src = enhanced if has_enh else comp
+    verdict = src.get("verdict", "N/A")
+    verdict_label = _verdict_presentation_label(src.get("verdict"))
+    verdict_desc = src.get("verdict_desc", "")
+    score = src.get("composite_score", 0) or 0
+    price = data.get("price")
+    vcls_map = {"strong-buy": "hc", "admirable": "hc", "high-conviction": "hc", "buy": "fav", "favorable": "fav", "watch": "bal", "balanced": "bal", "hold": "cau", "cautious": "cau", "caution": "cau", "avoid": "unfav", "unfavorable": "unfav", "pending": "bal"}
+    vcls = vcls_map.get(verdict_label, "bal")
+    if has_enh:
+        factor_data = [("Composite", score), ("Intrinsic", enhanced.get("graham_pct", 0)), ("Quality", enhanced.get("quality_pct", 0)), ("Momentum", enhanced.get("momentum_pct", 0)), ("Safety", enhanced.get("risk_pct", 0)), ("Profit.", enhanced.get("profitability_pct", 0))]
+    else:
+        factor_data = [("Composite", score), ("Intrinsic", comp.get("graham_pct", 0)), ("Quality", comp.get("quality_pct", 0)), ("Momentum", comp.get("momentum_pct") or 0), ("Safety", comp.get("safety_pct") or comp.get("altman_pct", 0)), ("Profit.", comp.get("profitability_pct", 0))]
+    verdict_colors = {"hc": GREEN, "fav": BLUE, "bal": AMBER, "cau": "#ff6d00", "unfav": RED}
+    verdict_color = verdict_colors[vcls]
+    hexagon = _factor_hexagon(factor_data, verdict_color)
+    trend = _composite_trend_chart(data.get("symbol", ""), verdict_color)
+    market_cap = g.get("market_cap")
+    mcap_str = _fmt_market_cap(market_cap) if market_cap else "N/A"
+    graham_score = g.get("total_score", 0)
+    graham_max = g.get("total_max", 105)
+    intrinsic_str = f"{g.get('grade', 'N/A')} {graham_score}/{graham_max}"
+    moat_grade = b.get("grade", "N/A")
+    moat_label = b.get("grade_label", "")
+    moat_str = f"{moat_grade} — {moat_label}" if moat_label else moat_grade
+    price_str = f"${price:.2f}" if price else "N/A"
+    stat_values = [("Market Cap", mcap_str), ("Price", price_str), ("Intrinsic", intrinsic_str), ("Buffett Moat", moat_str), ("P/E", f"{g.get('pe'):.1f}×" if g.get("pe") is not None else "N/A"), ("P/B", f"{g.get('pb'):.2f}×" if g.get("pb") is not None else "N/A"), ("ROE", f"{q.get('roe'):.1f}%" if q.get("roe") is not None else "N/A"), ("Op. Margin", f"{q.get('op_margin'):.1f}%" if q.get("op_margin") is not None else "N/A"), ("Sharpe", f"{r.get('sharpe'):.2f}" if r.get("sharpe") is not None else "N/A"), ("F-Score", f"{p.get('f_score')}/9" if p.get("f_score") is not None else "N/A"), ("E. Revision", f"{er.get('total_score'):.0f}/100" if er.get("total_score") is not None else "N/A")]
+    stats = html.Div(className="composite-stats", children=[html.Div(className="composite-stat", children=[html.Div(label, className="composite-stat-label"), html.Div(value, className="composite-stat-value")]) for label, value in stat_values])
     return html.Div(
         className="composite-banner",
         children=[
@@ -463,7 +513,7 @@ def _composite_banner(data: dict) -> html.Div:
                     stats,
                 ],
             ),
-            html.Div(flags, className="d-flex gap-8 flex-wrap") if flags else html.Div(),
+            html.Div(),
         ],
     )
 
@@ -990,20 +1040,27 @@ def _risk_card(data: dict) -> html.Div:
         for lbl, val, col in metrics
     ]
     risk_criteria = r.get("risk_criteria") or []
+    risk_breakdown = (
+        _render_scorecard("Risk Score Breakdown", risk_criteria, "risk")
+        if risk_criteria
+        else None
+    )
+    risk_children = [
+        html.Div(
+            className="metric_cell risk-metric-grid scorecard",
+            children=[
+                html.P(
+                    f"Risk & Performance — {n_yrs:.0f}yr History", className="scorecard-header"
+                ),
+                *metric_cells,
+            ],
+        )
+    ]
+    if risk_breakdown is not None:
+        risk_children.append(risk_breakdown)
     return html.Div(
         className="risk-row",
-        children=[
-            html.Div(
-                className="metric_cell risk-metric-grid scorecard",
-                children=[
-                    html.P(
-                        f"Risk & Performance — {n_yrs:.0f}yr History", className="scorecard-header"
-                    ),
-                    *metric_cells,
-                ],
-            ),
-            _render_scorecard("Risk Score Breakdown", risk_criteria, "risk"),
-        ],
+        children=risk_children,
     )
 
 
@@ -1448,8 +1505,6 @@ def _build_analysis_content_legacy(data: dict | AnalysisResponse) -> list:
         open_by_default: bool = False,
     ) -> html.Section:
         summary_props = {}
-        if section_id == "analysis-charts":
-            summary_props = {"id": "analysis-charts-summary", "n_clicks": 0}
         return html.Section(
             id=section_id,
             className="analysis-section",
@@ -1968,7 +2023,6 @@ def _build_analysis_content_legacy(data: dict | AnalysisResponse) -> list:
                                 **{"aria-busy": "false", "data-adaptive-loading": "true"},
                             ),
                         ),
-                        html.Div(id="analysis-chart-resize-trigger", className="d-none"),
                     ],
                 ),
             )
@@ -2101,8 +2155,9 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
 
     The renderer is deliberately presentation-only: all scores and financial
     values come from the normalized analysis response. Optional values are
-    displayed as ``N/A`` and independent chart loading keeps the summary usable
-    when historical data is unavailable.
+    displayed as ``N/A``. This renderer owns the complete analysis subtree,
+    including hydrated charts and their empty states, so a second callback
+    never updates a descendant while Dash is mounting this returned tree.
 
     Args:
         data: Legacy mapping or typed response returned by the analysis service.
@@ -2115,6 +2170,8 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
         data = data.presentation_data()
     if not data or "error" in data:
         return []
+
+    data = chart_service.hydrate_analysis_history(data)
 
     symbol = str(data.get("symbol") or "").upper()
     name = str(data.get("name") or symbol)
@@ -2198,6 +2255,11 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
     strongest = positive_drivers[0] if positive_drivers else ("Not available", None)
     weakest = weak_drivers[0] if weak_drivers else ("Not available", None)
     risk_component_status = _safe_analysis_component("risk", "Risk", _risk_card, data)
+    risk_cards = (
+        list(risk_component_status.children)
+        if getattr(risk_component_status, "className", "") == "risk-row"
+        else [risk_component_status]
+    )
 
     def metric(label: str, value: str, hint: str = "", tone: str = "") -> html.Article:
         return html.Article(
@@ -2271,8 +2333,14 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
                     html.Span("Overall Score  ⓘ"),
                     html.Strong([composite_number, html.Small("/100")]),
                     html.B(verdict, className="positive" if composite is not None and float(composite or 0) >= 66 else ""),
-                    html.Span(className="analysis-mockup-spark", **{"aria-hidden": "true"}),
                 ],
+            ),
+            html.Div(
+                # Pass the signal components through the named children prop.
+                # This keeps Dash's component serializer from treating the
+                # list of component objects as an ordinary React value.
+                children=_analysis_flags(data),
+                className="analysis-mockup-hero-pills",
             ),
         ],
     )
@@ -2281,7 +2349,12 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
         className="analysis-mockup-metric-strip",
         children=[
             metric("Intrinsic Value", money(intrinsic), "Fair Value"),
-            metric("Upside / Downside", f"{number(gap, 1, '%')}" if gap is not None else "N/A", "Upside" if gap is not None and gap > 0 else "Not available", price_tone),
+            metric(
+                "Upside / Downside vs Fair Value",
+                f"{number(gap, 1, '%')}" if gap is not None else "N/A",
+                "(fair value − price) ÷ price; not a return forecast",
+                price_tone,
+            ),
             metric("Quality Score", f"{number(quality_score, 0)} /100" if quality_score is not None else "N/A", "High Quality" if quality_score is not None and quality_score >= 66 else "Not available", "positive" if quality_score is not None and quality_score >= 66 else ""),
             metric("Piotroski F-Score", f"{piotroski.get('f_score')}/9" if piotroski.get("f_score") is not None else "N/A", "Strong" if piotroski.get("f_score") is not None and piotroski.get("f_score") >= 7 else "Not available"),
             metric("Dividend Yield", number(value_from(capital, graham, keys=("dividend_yield_implied", "dividend_yield")), 2, "%"), "Latest available"),
@@ -2294,12 +2367,38 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
         className="card analysis-mockup-highlights",
         children=[
             html.Strong("Investment Highlights"),
-            html.Span("Quality and durability" if quality_score is not None and quality_score >= 66 else "Quality requires review"),
-            html.Span("Cash flow quality" if (data.get("fcf_quality") or {}).get("fcf_quality_score") is not None else "Cash flow unavailable"),
-            html.Span("Balance-sheet context" if altman.get("zone_label") else "Balance sheet unavailable"),
-            html.Span("Score is model-derived"),
-            html.Span(f"Strongest: {strongest[0]}"),
-            html.Span(f"Weakest: {weakest[0]}"),
+            html.Span(
+                (
+                    f"Quality {quality_score:.0f}/100: ROE {number(quality.get('roe'), 1, '%')} "
+                    f"and operating margin {number(quality.get('op_margin'), 1, '%')}."
+                )
+                if quality_score is not None
+                else "Quality score is unavailable; review the detailed moat and quality criteria.",
+                title="Quality score, ROE, and operating margin describe current business quality; they do not prove future durability.",
+            ),
+            html.Span(
+                (
+                    f"Cash flow quality {(data.get('fcf_quality') or {}).get('fcf_quality_score'):.0f}/100: "
+                    "free-cash-flow conversion and stability support the earnings picture."
+                )
+                if (data.get("fcf_quality") or {}).get("fcf_quality_score") is not None
+                else "Cash-flow quality is unavailable; no conclusion is drawn from missing data.",
+            ),
+            html.Span(
+                (
+                    f"Balance sheet: Altman Z {number(altman.get('z_score'), 2)} "
+                    f"({altman.get('zone_label', 'zone unavailable')})."
+                )
+                if altman.get("z_score") is not None or altman.get("zone_label")
+                else "Balance-sheet risk is unavailable; no safety conclusion is drawn.",
+            ),
+            html.Span(
+                f"Composite {composite_number}/100: {verdict}. This is a model output, not a guarantee."
+            ),
+            html.Span(
+                f"Strongest measured factor: {strongest[0]} ({number(strongest[1], 0)}/100)."
+            ),
+            html.Span(f"Weakest measured factor: {weakest[0]} ({number(weakest[1], 0)}/100)."),
         ],
     )
 
@@ -2347,6 +2446,74 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
     )
     middle_grid = html.Section(className="analysis-mockup-middle-grid", children=[sentiment, factor_breakdown])
 
+    # Keep the mockup hierarchy, but expose the complete research record below
+    # the scan-friendly summary. These existing authoritative card renderers
+    # only compose presentation; they do not alter financial calculations.
+    momentum_card = _render_scorecard("Momentum Analysis", momentum.get("criteria", []), "momentum")
+    factor_momentum_card = _factor_momentum_card(data)
+    insider_card = _insider_activity_card(data)
+    alternative_data_card = _alternative_data_card(data)
+    profitability_card = _profitability_card(data)
+    detailed_analysis = html.Section(
+        className="analysis-mockup-factor-breakdown",
+        children=[
+            html.H2("Full Analysis Detail"),
+            html.P(
+                "The visual summary above is a quick read. The complete model detail remains available below.",
+                className="analysis-copy-leading fs-12 clr-muted",
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[_graham_details_card(graham), _buffett_details_card(data)],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[
+                    _render_scorecard("Intrinsic Value Analysis", graham.get("criteria", []), "graham"),
+                    _render_scorecard("Moat Rating Analysis", quality.get("criteria", []), "quality"),
+                ],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[
+                    _render_scorecard(
+                        "Economic Moat Quality & Value", buffett.get("criteria", []), "buffett"
+                    ),
+                    _greenblatt_card(data),
+                ],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[_piotroski_card(data), _altman_card(data)],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[_fcf_quality_card(data), *risk_cards],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[_regime_card(data), _comomentum_card(data)],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[_benchmark_bias_card(data), profitability_card],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[_capital_allocation_card(data), _growth_quality_card(data)],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[momentum_card, factor_momentum_card],
+            ),
+            html.Div(
+                className="analysis-card-grid analysis-card-grid--two",
+                children=[insider_card, alternative_data_card],
+            ),
+            _composite_banner(data),
+        ],
+    )
+
     chart_placeholder = html.Div(
         className="analysis-mockup-chart-placeholder-card",
         children=[html.H3("Price vs. Intrinsic Value"), html.Div("Historical price and modeled value load on request.")],
@@ -2359,11 +2526,35 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
         className="analysis-mockup-chart-placeholder-card",
         children=[html.H3("Dividend History"), html.Div("Dividend observations load on request.")],
     )
+    chart_content = [chart_placeholder, chart_history_placeholder, dividend_placeholder]
+    if data.get("price_history") or (graham.get("eps_history") or []):
+        try:
+            # The full server response still contains history, so render it
+            # immediately when available; the callback remains the retry path
+            # for deferred or failed chart requests.
+            chart_content = build_analysis_charts(data)
+        except Exception as error:
+            chart_content = [
+                section_error(
+                    "Historical charts are temporarily unavailable. The rest of the analysis remains usable.",
+                    technical_id=type(error).__name__,
+                )
+            ]
     chart_grid = html.Section(
         className="analysis-mockup-chart-grid",
         children=[
-            html.Div(className="analysis-mockup-chart-toolbar", children=[html.Div([html.H2("Historical Charts"), html.P("Price, earnings, and dividend context" )]), html.Button("Load charts", id="analysis-charts-summary", n_clicks=0, className="secondary-btn", type="button")]),
-            html.Div(id="analysis-charts-content", className="analysis-mockup-chart-results", children=[chart_placeholder, chart_history_placeholder, dividend_placeholder]),
+            html.Div(className="analysis-mockup-chart-toolbar", children=[html.Div([html.H2("Historical Charts"), html.P("Price, earnings, and dividend context from the latest analysis")])]),
+            # Keep the callback target's children as one Dash component.  A
+            # direct list of serialized dcc.Graph objects can be handed to
+            # React as plain objects during a partial callback update.
+            html.Div(
+                id="analysis-charts-content",
+                className="analysis-mockup-chart-results",
+                children=html.Div(
+                    chart_content,
+                    className="analysis-chart-results-stack",
+                ),
+            ),
         ],
     )
 
@@ -2386,14 +2577,29 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
     visible_warning = [html.Div([html.Strong("Critical warning: "), html.Span(warning)], className="analysis-mockup-warning", role="alert") for warning in warnings]
 
     sections = [
-        html.Section(id="analysis-overview", className="analysis-section analysis-section--overview", children=[toolbar, hero, metric_strip, highlights, *visible_warning, data_grid, middle_grid, chart_grid, compatibility], **{"data-disclosure-key": f"{symbol}:analysis-overview", "data-persist-disclosure": "true"}),
+        html.Section(
+            id="analysis-overview",
+            className="analysis-section analysis-section--overview",
+            children=[
+                toolbar,
+                hero,
+                metric_strip,
+                highlights,
+                *visible_warning,
+                data_grid,
+                middle_grid,
+                detailed_analysis,
+                chart_grid,
+                compatibility,
+            ],
+            **{"data-disclosure-key": f"{symbol}:analysis-overview", "data-persist-disclosure": "true"},
+        ),
         html.Div(id="analysis-valuation", className="analysis-mockup-compatibility-anchor", **{"data-disclosure-key": f"{symbol}:analysis-valuation", "data-persist-disclosure": "true"}),
         html.Div(id="analysis-accounting", className="analysis-mockup-compatibility-anchor"),
         html.Div(id="analysis-risk", className="analysis-mockup-compatibility-anchor"),
         html.Div(id="analysis-growth", className="analysis-mockup-compatibility-anchor"),
         html.Div(id="analysis-signals", className="analysis-mockup-compatibility-anchor"),
         html.Div(id="analysis-charts", className="analysis-mockup-compatibility-anchor"),
-        html.Div(id="analysis-chart-resize-trigger", className="d-none"),
     ]
     return [
         html.Div(
@@ -2405,7 +2611,25 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
 
 
 def build_analysis_charts(data: dict) -> list:
-    """Build Plotly figures only after the Charts disclosure is expanded."""
+    """Build the complete responsive chart layout for one analysis.
+
+    The first row compares earnings and normalized price history. The second
+    row pairs dividend history with persisted composite-score history so both
+    long-term shareholder views have equal visual weight on desktop. Existing
+    shared grid behavior stacks each pair when the viewport becomes compact.
+
+    Args:
+        data: Normalized analysis response containing the ticker and optional
+            price, benchmark, earnings, and dividend histories.
+
+    Returns:
+        A list containing two responsive two-card rows. Any unavailable series
+        remains represented by its chart-specific accessible empty state.
+
+    Side Effects:
+        Reads composite-score history through the chart service. It does not
+        mutate analysis data or recalculate any financial score.
+    """
     symbol = data.get("symbol") or "Stock"
     graham = data.get("graham") or {}
     return [
@@ -2416,8 +2640,60 @@ def build_analysis_charts(data: dict) -> list:
                 _price_chart(data.get("price_history"), data.get("spy_history"), symbol, data),
             ],
         ),
-        _div_chart(graham.get("div_history", []), symbol, data),
+        html.Div(
+            className=(
+                "analysis-card-grid analysis-card-grid--two "
+                "analysis-chart-history-pair"
+            ),
+            children=[
+                _div_chart(graham.get("div_history", []), symbol, data),
+                _score_history_chart(symbol),
+            ],
+        ),
     ]
+
+
+def _score_history_chart(symbol: str) -> html.Div:
+    """Render persisted composite-score history or its accessible empty state.
+
+    Args:
+        symbol: Uppercase ticker used to retrieve and label score snapshots.
+
+    Returns:
+        A responsive line chart when at least two observations exist;
+        otherwise a styled empty-state card. Scores remain on a 0–100 scale.
+
+    Side Effects:
+        Reads persisted score snapshots through the chart service.
+    """
+    dataset = chart_service.get_composite_trend_dataset(symbol, limit=365)
+    series = (dataset.get("series") or [{}])[0]
+    if len(series.get("x") or []) < 2:
+        return html.Div(
+            className="empty-card analysis-empty-history-card",
+            children=[
+                html.Div("Composite Score History", className="empty-card-title"),
+                html.Div("Not enough score observations", className="empty-title"),
+                html.Div("Score history appears after multiple completed analyses.", className="empty-msg"),
+            ],
+        )
+    figure = go.Figure(
+        go.Scatter(
+            x=series["x"],
+            y=series["y"],
+            mode="lines+markers",
+            line={"color": BLUE, "width": 2.5},
+            marker={"color": BLUE, "size": 6},
+            hovertemplate="%{x}<br>Composite score %{y:.1f}/100<extra></extra>",
+        )
+    )
+    figure.update_layout(**_chart_layout(f"{symbol} Composite Score History"), height=420)
+    figure.update_yaxes(range=[0, 100], title_text="Score")
+    return dcc.Graph(
+        figure=figure,
+        config={"displayModeBar": False, "responsive": True, "staticPlot": True},
+        className="analysis-history-graph analysis-score-history-graph",
+    )
 def format_currency(val) -> str:
     if val is None:
         return "N/A"
@@ -2508,6 +2784,19 @@ def _render_scorecard(title: str, criteria: list, card_type: str) -> html.Div:
 
 
 def _eps_chart(eps_history: list, symbol: str, data: dict | None = None) -> html.Div:
+    """Render reported EPS history or a styled unavailable-data state.
+
+    Args:
+        eps_history: Ordered historical EPS observations used when ``data`` is
+            not supplied.
+        symbol: Uppercase ticker used in chart labels and cache keys.
+        data: Optional complete analysis payload, including freshness metadata.
+
+    Returns:
+        A responsive Dash graph when observations exist; otherwise an
+        accessible empty-state card. The function has no external side effects
+        beyond reading the chart dataset cache.
+    """
     dataset = chart_service.get_analysis_chart_dataset(
         data or {"symbol": symbol, "graham": {"eps_history": eps_history}}, "eps_history"
     )
@@ -2533,10 +2822,22 @@ def _eps_chart(eps_history: list, symbol: str, data: dict | None = None) -> html
             textfont=dict(size=12, color=WHITE),
         )
     )
-    fig.update_layout(**_chart_layout(dataset.get("title") or f"{symbol} EPS History (10yr)"))
+    max_value = max((abs(float(value)) for value in y_values if value is not None), default=1.0)
+    layout = _chart_layout(dataset.get("title") or f"{symbol} EPS History (10yr)")
+    # Merge overrides before expanding keyword arguments. ``_chart_layout``
+    # already owns a margin key, and passing a second margin keyword raises
+    # before Plotly can construct the chart.
+    layout.update(
+        margin={"l": 52, "r": 32, "t": 76, "b": 64},
+        uniformtext={"minsize": 9, "mode": "hide"},
+    )
+    fig.update_layout(**layout)
+    fig.update_yaxes(range=[min(0, -max_value * 0.12), max_value * 1.2], automargin=True)
+    for trace in fig.data:
+        trace.cliponaxis = False
     return dcc.Graph(
         figure=fig,
-        config={"displayModeBar": False, "responsive": True},
+        config={"displayModeBar": False, "responsive": True, "staticPlot": True},
         className="analysis-history-graph",
     )
 
@@ -2552,7 +2853,7 @@ def _price_chart(
     series = dataset.get("series") or []
     if not series:
         return html.Div(
-            className="empty-card",
+            className="empty-card analysis-empty-history-card",
             children=[
                 html.Div("Price History", className="empty-card-title"),
                 html.Div("No price data", className="empty-title"),
@@ -2578,23 +2879,36 @@ def _price_chart(
     fig.update_yaxes(title_text="Index (100 = start)")
     return dcc.Graph(
         figure=fig,
-        config={"displayModeBar": False, "responsive": True},
+        config={"displayModeBar": False, "responsive": True, "staticPlot": True},
         className="analysis-history-graph",
     )
 
 
 def _div_chart(div_history: list, symbol: str, data: dict | None = None) -> html.Div:
+    """Render dividend-payment history or a styled no-dividend state.
+
+    Args:
+        div_history: Ordered dividend observations used when ``data`` is not
+            supplied.
+        symbol: Uppercase ticker used in chart cache keys.
+        data: Optional complete analysis payload, including currency metadata.
+
+    Returns:
+        A responsive Dash bar chart when payments exist; otherwise an
+        accessible empty-state card. Values retain the normalized units
+        supplied by the chart service.
+    """
     dataset = chart_service.get_analysis_chart_dataset(
         data or {"symbol": symbol, "graham": {"div_history": div_history}}, "dividend_history"
     )
     series = (dataset.get("series") or [{}])[0]
     if not series.get("x"):
         return html.Div(
-            className="empty-card",
+            className="empty-card analysis-empty-history-card",
             children=[
                 html.Div("Dividend History", className="empty-card-title"),
-                html.Div("No dividends", className="empty-title"),
-                html.Div("This company has not paid dividends", className="empty-msg"),
+                html.Div("No dividend history", className="empty-title"),
+                html.Div("No reported dividend payments are available for this company.", className="empty-msg"),
             ],
         )
     fig = go.Figure(
@@ -2607,13 +2921,21 @@ def _div_chart(div_history: list, symbol: str, data: dict | None = None) -> html
             textfont=dict(size=20, color=WHITE),
         )
     )
-    fig.update_layout(
-        **_chart_layout(dataset.get("title") or f"{symbol} Dividend Payments (USD Millions)")
+    max_value = max((abs(float(value)) for value in series.get("y", []) if value is not None), default=1.0)
+    layout = _chart_layout("")
+    layout.update(
+        height=420,
+        margin={"l": 56, "r": 32, "t": 28, "b": 64},
+        uniformtext={"minsize": 9, "mode": "hide"},
     )
+    fig.update_layout(**layout)
+    fig.update_yaxes(range=[0, max_value * 1.2], automargin=True)
+    for trace in fig.data:
+        trace.cliponaxis = False
     return dcc.Graph(
         figure=fig,
-        config={"displayModeBar": False, "responsive": True},
-        className="analysis-history-graph",
+        config={"displayModeBar": False, "responsive": True, "staticPlot": True},
+        className="analysis-history-graph analysis-dividend-graph",
     )
 
 

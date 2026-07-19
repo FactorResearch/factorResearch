@@ -17,6 +17,7 @@ import pandas as pd
 
 from codes.core.redis_client import get_redis, json_get, json_set
 from codes.data import db
+from codes.data import api_fetcher
 
 DATA_VERSION = "market-v1"
 CHART_SCHEMA_VERSION = "chart-schema-v1"
@@ -28,6 +29,38 @@ _LOCAL_MAX_ENTRIES = 256
 _local_cache: OrderedDict[str, dict] = OrderedDict()
 _local_locks = weakref.WeakValueDictionary()
 _local_guard = threading.Lock()
+
+
+def hydrate_analysis_history(data: dict) -> dict:
+    """Return analysis data with cached price and optional SPY histories.
+
+    The Dash browser store omits large series, and legacy analysis rows may
+    contain only scores. This is the single chart-history boundary: it reads
+    the provider's durable history cache, tolerates missing SPY data, and
+    leaves the original mapping unchanged when no series is available.
+
+    Args:
+        data: Analysis mapping containing at least ``symbol``.
+
+    Returns:
+        A shallow-copied mapping with JSON-compatible ``price_history`` and
+        ``spy_history`` when available.
+    """
+    symbol = str(data.get("symbol") or "").upper()
+    if not symbol:
+        return data
+    hydrated = dict(data)
+    missing_series = (
+        ((symbol, "price_history"),) if not data.get("price_history") else ()
+    ) + ((("SPY", "spy_history"),) if not data.get("spy_history") else ())
+    for ticker, key in missing_series:
+        try:
+            history = api_fetcher.get_price_history(ticker, 10)
+        except Exception:
+            continue
+        if history is not None and not history.empty:
+            hydrated[key] = history.to_dict()
+    return hydrated
 
 
 @dataclass(frozen=True)
@@ -92,12 +125,24 @@ def get_analysis_chart_dataset(
     config: dict[str, Any] | None = None,
 ) -> dict:
     ticker = str(data.get("symbol") or (config or {}).get("symbol") or "")
+    # Analysis versions identify the model, but not necessarily the persisted
+    # historical payload. Include a compact payload fingerprint so a prior
+    # empty/error dataset cannot mask newly available chart observations.
+    history_payload = {
+        "price_history": data.get("price_history"),
+        "spy_history": data.get("spy_history"),
+        "eps_history": (data.get("graham") or {}).get("eps_history"),
+        "div_history": (data.get("graham") or {}).get("div_history"),
+    }
+    history_revision = hashlib.sha256(
+        json.dumps(history_payload, sort_keys=True, default=str).encode("utf-8")
+    ).hexdigest()[:16]
     request = ChartRequest(
         ticker=ticker,
         chart_type=chart_type,
         period=period,
         analysis_version=analysis_version_for(data),
-        config=config,
+        config={**(config or {}), "history_revision": history_revision},
     )
     return get_chart_dataset(request, lambda: _build_analysis_dataset(data, chart_type))
 

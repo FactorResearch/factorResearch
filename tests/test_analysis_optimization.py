@@ -1,11 +1,12 @@
 from unittest.mock import Mock, call
 import json
 
+import dash
+
 from codes.services import stock_analysis as analysis
 from codes.app_modules.tabs.analyze import (
     _client_analysis_payload,
     refresh_secondary_analysis,
-    render_analysis_charts_on_demand,
     sync_secondary_analysis_polling,
 )
 from codes.app_modules.analysis_ui import _alternative_data_card, _insider_activity_card
@@ -37,18 +38,29 @@ def test_initial_analysis_payload_stays_below_contract_budget():
     assert len(json.dumps(payload).encode("utf-8")) <= 64 * 1024
 
 
-def test_chart_callback_loads_history_from_server_cache(monkeypatch):
-    cached = {"symbol": "AAPL", "price_history": {"Close": {"0": 1}}}
-    load = Mock(return_value=cached)
-    render = Mock(return_value=["chart"])
-    monkeypatch.setattr(
-        "codes.app_modules.tabs.analyze.stock_analysis.get_cached_analysis", load
-    )
-    monkeypatch.setattr("codes.app_modules.tabs.analyze.build_analysis_charts", render)
+def test_chart_history_reuses_in_memory_analysis_when_database_is_unavailable(monkeypatch):
+    cached = {"symbol": "AAPL", "price_history": {"Close": {"0": 1, "1": 2}}}
+    monkeypatch.setattr(analysis, "_analysis_cache", {"AAPL": cached})
+    database = Mock(side_effect=RuntimeError("database unavailable"))
+    monkeypatch.setattr(analysis.db, "get_analysis", database)
 
-    assert render_analysis_charts_on_demand(1, {"symbol": "AAPL"}) == ["chart"]
-    load.assert_called_once_with("AAPL")
-    render.assert_called_once_with(cached)
+    assert analysis.get_cached_analysis("AAPL") is cached
+    database.assert_not_called()
+
+
+def test_analysis_store_does_not_target_a_dynamic_chart_descendant():
+    """Keep one callback owner for the analysis subtree.
+
+    ``analysis-charts-content`` is created inside ``analysis-content``. A
+    callback driven by ``analysis-store`` must not target that descendant while
+    the parent callback is mounting it, because Dash may hand serialized
+    component records to React during the competing reconciliation.
+    """
+    import codes.app  # noqa: F401 - composes the complete callback graph
+    from dash._callback import GLOBAL_CALLBACK_MAP
+
+    assert "analysis-charts-content.children" not in GLOBAL_CALLBACK_MAP
+    assert "analysis-chart-resize-trigger.children" not in GLOBAL_CALLBACK_MAP
 
 
 def test_legacy_cache_is_served_and_marked_stale(monkeypatch):
@@ -115,18 +127,17 @@ def test_pending_secondary_cards_reserve_layout_space():
     assert "Background enrichment" in str(_alternative_data_card(data))
 
 
-def test_secondary_poll_rebuilds_content_when_enrichment_completes(monkeypatch):
+def test_secondary_poll_updates_store_without_replacing_page_tree(monkeypatch):
     enriched = {"symbol": "AAPL", "secondary_status": "complete"}
     monkeypatch.setattr(
         "codes.app_modules.tabs.analyze.stock_analysis.get_cached_analysis",
         lambda _symbol: enriched,
     )
-    monkeypatch.setattr("codes.app_modules.tabs.analyze._build_analysis_content", lambda result: [result["secondary_status"]])
     monkeypatch.setattr("codes.app_modules.tabs.analyze.permissions.can_access_feature", lambda *_args: None)
     monkeypatch.setattr("codes.app_modules.tabs.analyze.get_user_id", lambda: "test-user")
 
     content, payload = refresh_secondary_analysis(1, {"symbol": "AAPL", "secondary_status": "pending"})
-    assert content == ["complete"]
+    assert content is dash.no_update
     assert payload["secondary_status"] == "complete"
 
 

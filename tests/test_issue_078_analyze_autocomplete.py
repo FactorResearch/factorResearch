@@ -15,7 +15,7 @@ def test_suggestion_callback_renders_ticker_and_company_name_without_analysis():
     assert status == "1 company suggestions available."
     assert query == "apple"
     rendered = children[0].to_plotly_json()
-    assert rendered["props"]["id"] == {"type": "ticker-suggestion", "symbol": "AAPL"}
+    assert rendered["props"]["id"] == {"type": "ticker-suggestion", "index": "AAPL"}
     assert rendered["props"]["role"] == "option"
 
 
@@ -28,6 +28,16 @@ def test_suggestion_failure_keeps_manual_search_available():
 
     assert "temporarily unavailable" in status
     assert "temporarily unavailable" in children[0].to_plotly_json()["props"]["children"]
+
+
+def test_completed_analysis_clears_stale_ticker_suggestions():
+    with patch("codes.app_modules.tabs.analyze.company_search.search_companies") as search:
+        children, status, query = update_company_suggestions("visa", None, "V")
+
+    assert children == []
+    assert status == ""
+    assert query == "visa"
+    search.assert_not_called()
 
 
 def test_analyze_layout_exposes_combobox_and_live_suggestion_regions():

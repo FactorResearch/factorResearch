@@ -4,6 +4,7 @@ import hashlib
 import html
 import json
 import re
+from datetime import date
 from urllib.parse import urlencode
 
 import flask
@@ -206,6 +207,7 @@ def company_analysis_page(slug: str):
 <meta name="description" content="{html.escape(description)}"><meta name="robots" content="index,follow">
 <meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(description)}">
 <meta property="og:url" content="{html.escape(canonical)}"><link rel="canonical" href="{html.escape(canonical)}">
+<link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/company_analysis.css">
 <script type="application/ld+json">{landing_schema}</script>
 <script>(function(){{try{{var t=localStorage.getItem("fr-theme")||"system";var light=t==="light"||(t==="system"&&window.matchMedia("(prefers-color-scheme: light)").matches);if(light)document.documentElement.classList.add("light");}}catch(e){{}}}})();</script>
@@ -630,6 +632,15 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     if snapshot is None:
         return _dash_shell_or_404()
 
+    # The current snapshot is also the live analysis entry point. Serve the
+    # Dash shell for a bare link so the URL can load cached chart histories and
+    # invoke the chart callback. Older immutable snapshots remain static below;
+    # their interactive counterpart is available through ``?tab=analyze``.
+    if not flask.request.args and snapshot.analysis_date == date.today():
+        dash_shell = _dash_shell_response()
+        if dash_shell is not None:
+            return dash_shell
+
     seo_route = flask.request.path == snapshot.permanent_path
     if (flask.request.path.startswith("/analyze/") and not seo_route) or route_id != snapshot.ticker or yyyymmdd != snapshot.url_date:
         return _permanent_redirect(snapshot.public_path)
@@ -682,6 +693,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
   <meta name="twitter:title" content="{title}">
   <meta name="twitter:description" content="{description}">
   <link rel="canonical" href="{url}">
+  <link rel="stylesheet" href="/assets/style.css">
   <link rel="stylesheet" href="/assets/company_analysis.css">
   <script type="application/ld+json">{structured_data}</script>
 </head>
@@ -691,6 +703,7 @@ def historical_analysis_page(ticker: str, yyyymmdd: str):
     <p class="muted">Cenvarnhistorical analysis</p>
     <h1>{company} Stock Analysis</h1>
     <p><time datetime="{snapshot.analysis_date.isoformat()}">{snapshot.analysis_date.isoformat()}</time> · {html.escape(snapshot.ticker)} · Algorithm {html.escape(snapshot.algorithm_version)}</p>
+    <p><a href="{html.escape(_interactive_analysis_path(snapshot))}">Open interactive analysis &amp; charts</a></p>
   </header>
   <section class="grid">
     <div class="metric"><div class="label">Final Rating</div><div class="value">{rating}</div></div>

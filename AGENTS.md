@@ -102,6 +102,37 @@ Do not write a large implementation first and add comments afterward.
 
 Comments must explain intent, trade-offs, assumptions, and non-obvious behavior. They must not restate obvious syntax.
 
+## 5.1 Bug-first investigation workflow
+
+For every defect or production error, do not begin by editing code. First create
+an evidence-based bug note in the task discussion or the relevant issue
+comment. The note must state:
+
+- the exact observed behavior and error
+- the affected user journey and architectural layers
+- confirmed facts versus hypotheses
+- the files, callbacks, services, and neighboring implementations inspected
+- dependency, data, state, serialization, and failure-mode checks performed
+- the smallest candidate fix and why it addresses the confirmed cause
+- the regression test and observable acceptance criteria
+
+Only after the written bug analysis identifies a defensible root cause may code
+be changed. If investigation disproves the initial hypothesis, update the bug
+note before proceeding. The goal is accuracy, durable reasoning, and senior
+quality—not speed through speculative edits. After implementation, reconcile
+the note with the actual fix and record the validation results.
+
+## 5.2 Fix-attempt ledger and anti-regression rule
+
+Keep a concise record of each attempted fix for an active defect, including the
+hypothesis, files changed, validation result, user-observed result, and why the
+attempt was retained, rejected, or inconclusive. Before proposing another fix,
+review that ledger and do not repeat an earlier approach merely because it is
+familiar or quick. Reusing a prior approach requires a documented change in
+evidence, implementation context, dependency behavior, or acceptance criteria
+that explains why it is now appropriate. Three attempts must not silently
+return to the code from attempt one without that justification.
+
 ## 6. Change-scope rules
 
 - Read existing documentation and nearby code before modification.

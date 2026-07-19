@@ -166,6 +166,17 @@ body.light {
   padding: 18px;
 }
 
+.risk-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  column-gap: 14px;
+
+  > .scorecard-header {
+    grid-column: 1 / -1;
+  }
+}
+
 .risk-metric-cell {
   padding: 12px 0;
   border-bottom: 1px solid var(--fr-border);
@@ -191,6 +202,14 @@ body.light {
 }
 
 @include media.phones {
+  .risk-metric-grid {
+    grid-template-columns: 1fr;
+
+    > .scorecard-header {
+      grid-column: auto;
+    }
+  }
+
   .risk-row,
   .quant_row,
   .moment_quality_row,

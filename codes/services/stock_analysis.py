@@ -82,8 +82,19 @@ _MODEL_VERSIONS = {key: model.version for key, model in MODELS.items()}
 
 
 def get_cached_analysis(symbol: str) -> dict | None:
-    """Read a persisted analysis through the Analyze application boundary."""
-    return db.get_analysis(str(symbol or "").upper())
+    """Read the latest analysis from memory first, then durable storage.
+
+    The interactive analysis response deliberately omits large chart histories
+    from the browser store. Reusing the process cache keeps deferred charts
+    available when the database is temporarily unavailable after the primary
+    analysis has already completed.
+    """
+    normalized = str(symbol or "").upper()
+    with _analysis_cache_lock:
+        cached = _analysis_cache.get(normalized)
+    if cached is not None:
+        return cached
+    return db.get_analysis(normalized)
 
 
 def analysis_response(result: dict, symbol: str = "") -> AnalysisResponse:
@@ -468,8 +479,10 @@ def _analyze_stock(
     hist = None
     spy_hist = None
 
-    # 1B: Parallelize price history fetches with ThreadPoolExecutor
-    if price:
+    # 1B: Parallelize price history fetches with ThreadPoolExecutor. Historical
+    # charts are independent of the live quote: a quote outage must not erase
+    # otherwise available price, EPS, dividend, or benchmark context.
+    if sec_facts.get("source_market", "US") == "US":
         history_started = _time.perf_counter()
         with ThreadPoolExecutor(max_workers=2) as executor:
             # Fetch stock history + use lazy-loaded SPY history
@@ -833,6 +846,16 @@ def analyze_stock(
     return result.response
 
 
-def analyze_stock_primary(symbol: str) -> dict:
-    """Fast web entrypoint; display-only enrichment completes in background."""
-    return analyze_stock(symbol, defer_secondary=True)
+def analyze_stock_primary(symbol: str, *, force_refresh: bool = False) -> dict:
+    """Run the fast web analysis, optionally bypassing cached analysis data.
+
+    Args:
+        symbol: Ticker symbol to analyze.
+        force_refresh: Re-fetch current provider data instead of using memory or
+            database analysis caches.
+
+    Returns:
+        The primary analysis result. Optional secondary enrichment may continue
+        in the background.
+    """
+    return analyze_stock(symbol, force_refresh=force_refresh, defer_secondary=True)

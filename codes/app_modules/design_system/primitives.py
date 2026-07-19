@@ -253,9 +253,26 @@ def alert(
     urgent: bool = False,
     **props,
 ):
+    """Render an accessible alert with one flat Dash children sequence.
+
+    Args:
+        children: One child or a list/tuple of message components.
+        tone: Semantic visual tone used by the design system.
+        title: Optional heading rendered before the message content.
+        urgent: Whether assistive technology should announce the alert
+            immediately instead of using the polite status role.
+        **props: Additional supported Dash HTML properties.
+
+    Returns:
+        A Dash ``Div`` whose children are flat. Nested component lists are not
+        returned because Dash 4 may pass their serialized component records to
+        React as plain objects during callback rendering.
+    """
     role = "alert" if urgent else "status"
+    body = list(children) if isinstance(children, (list, tuple)) else [children]
+    title_component = html.Strong(title, className="ds-alert__title") if title else None
     return html.Div(
-        [html.Strong(title, className="ds-alert__title") if title else None, children],
+        [component for component in [title_component, *body] if component is not None],
         className=f"ds-alert ds-alert--{tone}",
         role=role,
         **props,

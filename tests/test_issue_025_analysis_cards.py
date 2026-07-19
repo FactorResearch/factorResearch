@@ -122,3 +122,13 @@ def test_market_fear_card_does_not_leave_an_empty_grid_slot():
 
     assert "Market Fear Gauge" in str(card)
     assert "Unavailable" in str(card)
+
+
+def test_risk_card_omits_empty_breakdown_column():
+    card = analysis_ui._risk_card({
+        "risk": {"n_years": 10, "sharpe": 0.8, "beta": 1.1},
+    })
+
+    rendered = str(card)
+    assert "Risk & Performance — 10yr History" in rendered
+    assert "Risk Score Breakdown" not in rendered

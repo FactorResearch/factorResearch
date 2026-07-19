@@ -72,6 +72,18 @@ def test_form_alert_loading_and_tooltip_semantics_are_centralized():
     assert "Try again" in _json(retry_panel("Provider unavailable", retry_id="retry"))
 
 
+def test_retry_alert_flattens_component_children_for_dash_callbacks():
+    """A degraded section must never hand serialized components to React."""
+    rendered = retry_panel(
+        "Historical charts are temporarily unavailable.",
+        technical_id="TypeError",
+    )
+    children = rendered.to_plotly_json()["props"]["children"]
+
+    assert all(not isinstance(child, (list, tuple)) for child in children)
+    assert [type(child).__name__ for child in children] == ["Strong", "P", "Details"]
+
+
 def test_confirmation_dialog_owns_overlay_and_destructive_contract():
     dialog = confirmation_dialog(
         "Delete account?",

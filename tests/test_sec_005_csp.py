@@ -12,6 +12,7 @@ def test_csp_hashes_every_inline_script_without_unsafe_script_execution():
 
     assert "script-src 'self'" in policy
     assert "script-src 'self' 'unsafe-inline'" not in policy
+    assert "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com" in policy
     assert "style-src-attr 'unsafe-inline'" in policy
     for script in scripts:
         if script.strip():

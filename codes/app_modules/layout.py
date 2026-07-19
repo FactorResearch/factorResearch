@@ -390,7 +390,10 @@ def build_layout():
             ),
             html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "analysis-content", "data-loading-label": "Updating analysis sections"}),
             # ── Add to Portfolio panel (shown after analysis completes) ──────────
-            html.Div(id="add-to-portfolio-panel", className="d-none", children=[
+            # This panel starts hidden but must remain overridable by the
+            # successful-analysis callback. ``d-none`` uses ``!important`` and
+            # would permanently suppress the existing portfolio workflow.
+            html.Div(id="add-to-portfolio-panel", className="is-hidden", children=[
                 html.Div(className="portfolio-add-panel", children=[
                     html.Div(className="portfolio-add-header", children=[
                         html.Span("💼", className="text-2xl"),

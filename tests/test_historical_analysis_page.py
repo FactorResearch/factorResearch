@@ -86,6 +86,7 @@ def test_historical_page_renders_compare_picker_and_history_links():
     body = response.get_data(as_text=True)
     assert "Compare Previous Analysis" in body
     assert 'href="/assets/company_analysis.css"' in body
+    assert 'href="/AAPL/analyze/20260708?tab=analyze"' in body
     assert '<body class="historical-analysis-page">' in body
     assert "<style" not in body
     assert "style=" not in body
