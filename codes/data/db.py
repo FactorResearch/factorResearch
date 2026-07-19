@@ -1525,7 +1525,8 @@ ON CONFLICT (user_id) DO UPDATE SET
     version = subscriptions.version + 1,
     deleted_at = NULL,
     updated_at = NOW()
-WHERE %(expected_version)s IS NULL OR subscriptions.version = %(expected_version)s
+WHERE %(expected_version)s::bigint IS NULL
+   OR subscriptions.version = %(expected_version)s::bigint
 RETURNING user_id
 """
 _UPSERT_USER_SETTINGS = """

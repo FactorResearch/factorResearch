@@ -12,13 +12,11 @@ from codes.engine import scorer
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_screener_layout_exposes_mobile_filters_columns_density_and_state():
+def test_screener_layout_exposes_filters_and_state_without_table_view_controls():
     rendered = str(layout.build_layout())
     for component_id in (
         "screener-filter-summary",
         "screener-clear-all-btn",
-        "screener-visible-columns",
-        "screener-table-density",
         "screener-scroll-pos",
         "screener-url-state-sink",
     ):
@@ -94,5 +92,5 @@ def test_url_and_scroll_restoration_are_registered_clientside():
     source = (ROOT / "codes/app_modules/tabs/screener.py").read_text()
     assert "history.replaceState" in source
     assert "window.scrollTo(0, saved_pos || 0)" in source
-    assert "screener-visible-columns" in source
-    assert "screener-table-density" in source
+    assert "screener-visible-columns" not in source
+    assert "screener-table-density" not in source

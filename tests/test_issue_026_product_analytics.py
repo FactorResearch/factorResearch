@@ -341,7 +341,7 @@ def test_screener_tracks_screener_run(monkeypatch):
     screener.render_screener_table(
         -1, "US", 1, "", "Technology",
         {"col": "composite_score", "asc": False}, 1,
-        screener.SCREENER_DEFAULT_COLUMNS, "comfortable", [],
+        [],
     )
 
     tracked.assert_called_once_with(

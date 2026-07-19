@@ -1,0 +1,7 @@
+@function token($name) {
+  @return var(--#{$name});
+}
+
+@function space($step) {
+  @return var(--space-#{$step});
+}

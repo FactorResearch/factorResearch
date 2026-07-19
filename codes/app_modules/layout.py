@@ -9,7 +9,6 @@ from codes.app_modules.design_system.primitives import (
     input_control,
     link,
     loading_container,
-    radio_group,
     select_control,
     slider,
 )
@@ -62,75 +61,147 @@ def _screener_index_pills(selected=None):
     ]
 
 
-def _topbar():
-    return html.Header(id="topbar", className="topbar", children=[
-        html.Div(className="topbar-brand", children=[
-            html.Img(src="/assets/logo.svg", alt="Research Factor", className="topbar-logo"),
-            html.Span("Cenvarn", className="topbar-title"),
-        ]),
-        html.Nav(className="topbar-nav", role="tablist", **{"aria-label": "Primary navigation"}, children=[
+def _primary_nav(class_name="rail-nav"):
+    return html.Nav(className=class_name, role="tablist", **{"aria-label": "Primary navigation"}, children=[
             button("Screener", id="tab-screener-btn", className="topbar-nav-btn tab-btn active", role="tab", **{"data-tab": "screener", "aria-controls": "tab-screener", "aria-selected": "true"}),
-            button("Analyze",  id="tab-analyze-btn",  className="topbar-nav-btn tab-btn", role="tab", **{"data-tab": "analyze", "aria-controls": "tab-analyze", "aria-selected": "false"}),
+            _rail_analyze_search(),
             button("Portfolio", id="tab-portfolio-btn", className="topbar-nav-btn tab-btn", role="tab", **{"data-tab": "portfolio", "aria-controls": "tab-portfolio", "aria-selected": "false"}),
             button("Factor Lab", id="tab-factorlab-btn", className="topbar-nav-btn tab-btn", role="tab", **{"data-tab": "factorlab", "aria-controls": "tab-factorlab", "aria-selected": "false"}),
             button("Pricing", id="tab-pricing-btn", className="topbar-nav-btn tab-btn", role="tab", **{"data-tab": "pricing", "aria-controls": "tab-pricing", "aria-selected": "false"}),
+        ])
+
+
+def _profile_menu():
+    return html.Div(className="profile-menu-shell", children=[
+        button(
+            id="profile-menu-btn",
+            className="topbar-nav-btn tab-btn",
+            n_clicks=0,
+            type="button",
+            **{"aria-expanded": "false", "aria-controls": "profile-quick-panel"},
+            children=[
+                html.Span("👤", className="mr-6"),
+                html.Span("Hi there", id="profile-menu-label"),
+                html.Span("▾", id="profile-menu-chevron", className="profile-menu-chevron ml-6"),
+            ],
+        ),
+        html.Div(id="profile-quick-panel", className="scorecard is-hidden", **{"data-ds-overlay": "popup", "data-ds-close-controller": "profile-menu-btn"}, children=[
+            html.Div("Quick settings", className="scorecard-header"),
+            html.Div(className="p-16", children=[
+                html.Label("Setting", htmlFor="profile-quick-section-dropdown", className="fs-13 clr-muted"),
+                select_control(
+                    id="profile-quick-section-dropdown",
+                    options=[
+                        {"label": "Account", "value": "account"},
+                        {"label": "Subscription", "value": "subscription"},
+                        {"label": "Appearance", "value": "appearance"},
+                        {"label": "Notifications", "value": "notifications"},
+                        {"label": "Saved portfolios", "value": "portfolios"},
+                        {"label": "Saved screeners", "value": "screeners"},
+                        {"label": "Security", "value": "security"},
+                    ],
+                    value="appearance",
+                    clearable=False,
+                    className="mb-16 min-w-240",
+                ),
+                html.Label("Theme", htmlFor="profile-quick-theme-dropdown", className="fs-13 clr-muted"),
+                select_control(
+                    id="profile-quick-theme-dropdown",
+                    options=[
+                        {"label": "System", "value": "system"},
+                        {"label": "Light", "value": "light"},
+                        {"label": "Dark", "value": "dark"},
+                    ],
+                    clearable=False,
+                    className="mb-16 min-w-220",
+                ),
+                html.Div(id="profile-quick-summary", className="mb-12 text-muted"),
+                html.Div(id="profile-quick-detail", className="mb-16"),
+                html.Div(className="d-flex gap-12 flex-wrap", children=[
+                    button("Save", id="profile-quick-save-btn", className="analyze-btn", n_clicks=0),
+                    link("More settings", id="profile-nav-link", href="/profile", className="load-btn"),
+                ]),
+                html.Div(id="profile-quick-msg", className="fs-13 mt-6", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
+            ]),
+        ]),
+    ])
+
+
+def _rail():
+    return html.Aside(className="rail", **{"aria-label": "Primary navigation"}, children=[
+        html.Div(className="rail-brand", children=[
+            html.Img(src="/assets/logo-icon.svg", alt="Cenvarn", className="rail-logo"),
+            html.Span("Cenvarn", className="rail-title"),
+        ]),
+        # Navigation callbacks still require this target; the search occupies
+        # its visual slot in the rail and opens analysis through its own submit.
+        html.Div(
+            button("Analyze", id="tab-analyze-btn", className="d-none", role="tab", **{"data-tab": "analyze", "aria-controls": "tab-analyze", "aria-selected": "false"}),
+            className="d-none",
+        ),
+        _primary_nav(),
+        html.Div(className="rail-footer", children=[
+            link("Support", href="mailto:support@cenvarn.com", className="rail-support"),
+            _profile_menu(),
+        ]),
+        html.Div(id="theme-dummy", className="d-none"),
+    ])
+
+
+def _rail_analyze_search():
+    """Render ISSUE_078's explicit ticker search inside the mockup rail."""
+    return html.Div(className="sidebar-analyze", role="search", children=[
+        html.Label("Analyze ticker", htmlFor="ticker-input"),
+        html.Div(className="sidebar-analyze-control", children=[
+            html.Span("⌕", **{"aria-hidden": "true"}),
+            html.Div(
+                className="ticker-input-combobox",
+                role="combobox",
+                **{
+                    "aria-label": "Search supported companies",
+                    "aria-autocomplete": "list",
+                    "aria-controls": "ticker-suggestions",
+                    "aria-expanded": "false",
+                },
+                children=[
+                    input_control(
+                        id="ticker-input",
+                        type="text",
+                        placeholder="Search company or ticker…",
+                        debounce=False,
+                        autoComplete="off",
+                        spellCheck=False,
+                        className="ticker-input",
+                        disabled=False,
+                    ),
+                ],
+            ),
+            button("↗", id="analyze-btn", className="sidebar-analyze-submit", **{"aria-label": "Open ticker analysis"}, disabled=False),
+        ]),
+        html.Small("Search a company or ticker"),
+        html.Div(id="ticker-suggestions", className="ticker-suggestions", role="listbox", **{"aria-label": "Company suggestions"}),
+        html.Div(id="ticker-search-status", className="sr-only", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
+    ])
+
+
+def _topbar():
+    return html.Header(id="topbar", className="topbar", children=[
+        html.Div(className="mobile-brand", children=[
+            html.Img(src="/assets/logo-icon.svg", alt="Cenvarn", className="topbar-logo"),
+            html.Span("Cenvarn", className="topbar-title"),
         ]),
         html.Div(className="topbar-actions", children=[
-            html.Div(className="profile-menu-shell", children=[
-                button(
-                    id="profile-menu-btn",
-                    className="topbar-nav-btn tab-btn",
-                    n_clicks=0,
-                    type="button",
-                    **{"aria-expanded": "false", "aria-controls": "profile-quick-panel"},
-                    children=[
-                        html.Span("👤", className="mr-6"),
-                        html.Span("Hi there", id="profile-menu-label"),
-                        html.Span("▾", id="profile-menu-chevron", className="profile-menu-chevron ml-6"),
-                    ],
-                ),
-                html.Div(id="profile-quick-panel", className="scorecard is-hidden", **{"data-ds-overlay": "popup", "data-ds-close-controller": "profile-menu-btn"}, children=[
-                    html.Div("Quick settings", className="scorecard-header"),
-                    html.Div(className="p-16", children=[
-                        html.Label("Setting", htmlFor="profile-quick-section-dropdown", className="fs-13 clr-muted"),
-                        select_control(
-                            id="profile-quick-section-dropdown",
-                            options=[
-                                {"label": "Account", "value": "account"},
-                                {"label": "Subscription", "value": "subscription"},
-                                {"label": "Appearance", "value": "appearance"},
-                                {"label": "Notifications", "value": "notifications"},
-                                {"label": "Saved portfolios", "value": "portfolios"},
-                                {"label": "Saved screeners", "value": "screeners"},
-                                {"label": "Security", "value": "security"},
-                            ],
-                            value="appearance",
-                            clearable=False,
-                            className="mb-16 min-w-240",
-                        ),
-                        html.Label("Theme", htmlFor="profile-quick-theme-dropdown", className="fs-13 clr-muted"),
-                        select_control(
-                            id="profile-quick-theme-dropdown",
-                            options=[
-                                {"label": "System", "value": "system"},
-                                {"label": "Light", "value": "light"},
-                                {"label": "Dark", "value": "dark"},
-                            ],
-                            clearable=False,
-                            className="mb-16 min-w-220",
-                        ),
-                        html.Div(id="profile-quick-summary", className="mb-12 text-muted"),
-                        html.Div(id="profile-quick-detail", className="mb-16"),
-                        html.Div(className="d-flex gap-12 flex-wrap", children=[
-                            button("Save", id="profile-quick-save-btn", className="analyze-btn", n_clicks=0),
-                            link("More settings", id="profile-nav-link", href="/profile", className="load-btn"),
-                        ]),
-                        html.Div(id="profile-quick-msg", className="fs-13 mt-6", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
-                    ]),
-                ]),
-            ]),
-            html.Div(id="theme-dummy", className="d-none"),
+            html.Span("Research workspace", className="topbar-context"),
         ]),
+    ])
+
+
+def _bottom_nav():
+    return html.Nav(className="bottom-nav", **{"aria-label": "Mobile navigation"}, children=[
+        button("Screener", className="bottom-nav-link", type="button", **{"data-shell-tab-target": "tab-screener-btn"}),
+        button("Analyze", className="bottom-nav-link", type="button", **{"data-shell-tab-target": "tab-analyze-btn"}),
+        button("Portfolio", className="bottom-nav-link", type="button", **{"data-shell-tab-target": "tab-portfolio-btn"}),
+        button("Factor Lab", className="bottom-nav-link", type="button", **{"data-shell-tab-target": "tab-factorlab-btn"}),
     ])
 
 
@@ -197,83 +268,32 @@ def _legal_modal(modal_id, title, children):
 
 
 def build_layout():
-    return html.Div(className="app-container", children=[
+    return html.Div(className="app-container app-shell", children=[
         dcc.Location(id="url", refresh=False),
         html.A("Skip to main content", href="#tab-screener", className="skip-link", id="skip-to-content"),
+        _rail(),
+        html.Div(className="workspace", children=[
         _topbar(),
         # ── Tab: Screener ────────────────────────────────────────────────────────
         html.Div(id="tab-screener", className="screener-content block", role="tabpanel", tabIndex=-1, **{"aria-labelledby": "tab-screener-btn"}, children=[
-            html.Div(className="screener-toolbar", children=[
-                html.Details(className="screener-filter-drawer", children=[
-                    html.Summary(
-                        html.Span("Filters (0 active)", id="screener-filter-summary"),
-                        className="screener-filter-summary",
-                    ),
-                    html.Div(className="screener-controls flex gap-lg align-items-center", children=[
-                    html.Div(className="screener-index-filter", children=[
-                        html.Label("Filter by index:", className="text-sm text-muted"),
-                        html.Div(
-                            id="index-filter-pill-container",
-                            className="screener-index-pills",
-                            children=_screener_index_pills(),
-                        ),
-                        dcc.Store(id="index-filter", data=[]),
-                    ]),
-                    html.Div(className="filters",children=[
-                    html.Label("Filter by sector:", htmlFor="sector-filter", className="text-sm text-muted"),
-                    select_control(
-                        id="sector-filter",
-                        options=[{"label": "All Sectors", "value": ""}],
-                        value="",
-                        clearable=False,
-                        className="bg-card br-10 clr-text",
-                    ),
-                    ]),
-                    button("Clear all", id="screener-clear-all-btn", variant="secondary", className="screener-clear-all", n_clicks=0),
-                    ]),
-                ]),
-                html.Details(className="screener-view-controls", children=[
-                    html.Summary("Table view", className="screener-view-summary"),
-                    html.Div(className="screener-view-panel", children=[
-                        html.Fieldset(className="screener-column-chooser", children=[
-                            html.Legend("Visible columns"),
-                            checkbox_group(
-                                id="screener-visible-columns",
-                                options=[
-                                    {"label": "Ticker", "value": "ticker", "disabled": True},
-                                    {"label": "Company", "value": "company"},
-                                    {"label": "Sector", "value": "sector"},
-                                    {"label": "Market cap", "value": "market_cap"},
-                                    {"label": "Composite", "value": "composite_score"},
-                                    {"label": "Fair value", "value": "graham_number"},
-                                    {"label": "Economic moat", "value": "buffett_iv"},
-                                    {"label": "Updated", "value": "updated_at"},
-                                    {"label": "Verdict", "value": "verdict"},
-                                    {"label": "Data support", "value": "data_support"},
-                                ],
-                                value=["ticker", "company", "sector", "market_cap", "composite_score", "graham_number", "buffett_iv", "updated_at", "verdict", "data_support"],
-                                persistence=True,
-                                persistence_type="local",
-                            ),
-                        ]),
-                        html.Fieldset(className="screener-density-control", children=[
-                            html.Legend("Row density"),
-                            radio_group(
-                                id="screener-table-density",
-                                options=[
-                                    {"label": "Comfortable", "value": "comfortable"},
-                                    {"label": "Compact", "value": "compact"},
-                                ],
-                                value="comfortable",
-                                persistence=True,
-                                persistence_type="local",
-                                inline=True,
-                            ),
-                        ]),
-                    ]),
-                ]),
+            # Hidden state bridge: the toolbar is intentionally removed, but
+            # URL/filter callbacks still need stable Dash targets.
+            html.Div(className="d-none", children=[
+                html.Div(id="screener-filter-summary"),
+                html.Div(id="index-filter-pill-container"),
+                dcc.Store(id="index-filter", data=[]),
+                select_control(
+                    id="sector-filter",
+                    options=[{"label": "All Sectors", "value": ""}],
+                    value="",
+                    clearable=False,
+                    className="d-none",
+                ),
+                button("Reset filters", id="screener-reset-filters", n_clicks=0),
+                button("Clear all", id="screener-clear-all-btn", n_clicks=0),
             ]),
             html.Div(id="screener-progress", className="mb-2xl"),
+            html.Div(id="screener-progress-info", className="mb-12", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
             html.Div(className="screener-market-shell", children=[
                 _screener_market_links(),
                 loading_container(
@@ -289,18 +309,26 @@ def build_layout():
                         ])
                     ]
                 ),
+                html.Div(
+                    id="screener-table-pagination",
+                    className="screener-table-pagination-slot",
+                    children=[
+                        html.Label("Stocks per page", htmlFor="screener-page-size", className="sr-only"),
+                        dcc.Dropdown(
+                            id="screener-page-size",
+                            options=[{"label": f"{size} per page", "value": size} for size in (5, 10, 15, 20)],
+                            value=5,
+                            clearable=False,
+                            searchable=False,
+                            className="pagination-page-size",
+                        ),
+                    ],
+                ),
                 html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "screener-table-container", "data-loading-label": "Updating screener rows"}),
                 html.Div(
                     id="screener-quick-peek-shell",
                     className="quick-peek-shell",
                     children=[
-                        button(
-                            id="quick-peek-backdrop",
-                            className="quick-peek-backdrop",
-                            n_clicks=0,
-                            type="button",
-                            **{"aria-label": "Close quick peek"},
-                        ),
                         html.Aside(
                             id="screener-quick-peek-panel",
                             className="quick-peek-panel",
@@ -316,7 +344,7 @@ def build_layout():
                                                 html.Div(
                                                     className="quick-peek-panel-copy",
                                                     children=[
-                                                        html.Div("Quick Peek", className="quick-peek-kicker"),
+                                                        html.Div("Quick Overview", className="quick-peek-kicker"),
                                                         html.H3("Stock snapshot", id="quick-peek-title", className="quick-peek-title"),
                                                     ],
                                                 ),
@@ -344,32 +372,6 @@ def build_layout():
         # ── Tab: Analyze ─────────────────────────────────────────────────────────
         html.Div(id="tab-analyze", className="main-content", role="tabpanel", tabIndex=-1, **{"aria-labelledby": "tab-analyze-btn"}, children=[
             html.Div(className="analyze-header", children=[
-                html.Div(className="analyze-ticker-input", children=[
-                    html.Div(
-                        className="ticker-input-combobox",
-                        role="combobox",
-                        **{
-                            "aria-label": "Search supported companies",
-                            "aria-autocomplete": "list",
-                            "aria-controls": "ticker-suggestions",
-                            "aria-expanded": "false",
-                        },
-                        children=[
-                            html.Label("Stock ticker", htmlFor="ticker-input", className="sr-only"),
-                            input_control(
-                                id="ticker-input",
-                                type="text",
-                                placeholder="Enter stock ticker or company name",
-                                debounce=False,
-                                className="ticker-input",
-                                disabled=False,
-                            ),
-                        ],
-                    ),
-                    button("Analyze", id="analyze-btn", className="analyze-btn", disabled=False),
-                    html.Div(id="ticker-suggestions", className="ticker-suggestions", role="listbox", **{"aria-label": "Company suggestions"}),
-                    html.Div(id="ticker-search-status", className="sr-only", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
-                ]),
                 html.Span(id="analyze-current", className="analyze-current"),
                 html.Div(id="status-msg", className="status-msg w-full", role="status", **{"aria-live": "polite", "aria-atomic": "true"}),
             ]),
@@ -483,6 +485,7 @@ def build_layout():
             html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "portfolio-content", "data-loading-label": "Updating portfolio holdings"}),
             # Simulation results (charts)
             html.Div(id="portfolio-sim-results", children=[]),
+            button("Cancel", id="portfolio-job-cancel", variant="secondary", className="job-cancel-control d-none", n_clicks=0),
             dcc.Store(id="portfolio-job-store", storage_type="local"),
             dcc.Interval(id="portfolio-job-interval", interval=800, disabled=False),
         ]),
@@ -557,11 +560,16 @@ def build_layout():
             ]),
 
             loading_container(type="default", color=BLUE, delay_show=250, delay_hide=200, show_initially=False, children=[
-                html.Div(id="fb-results", **{"aria-busy": "false", "data-adaptive-loading": "true"}, children=[])
+                html.Div(
+                    id="fb-results",
+                    **{"aria-busy": "false", "data-adaptive-loading": "true"},
+                    children=[],
+                )
             ]),
+            button("Cancel", id="factor-job-cancel", variant="secondary", className="job-cancel-control d-none", n_clicks=0),
             html.Div(className="sr-only", role="status", **{"aria-live": "polite", "data-loading-for": "fb-results", "data-loading-label": "Running factor backtest"}),
             dcc.Store(id="factor-job-store", storage_type="local"),
-            dcc.Interval(id="factor-job-interval", interval=800, disabled=False),
+            dcc.Interval(id="factor-job-interval", interval=800, disabled=True),
         ]),
         html.Div(id="tab-pricing", className="main-content is-hidden", role="tabpanel", tabIndex=-1, **{"aria-labelledby": "tab-pricing-btn"}, children=[]),
         html.Div(id="profile-page", className="main-content is-hidden", role="main", tabIndex=-1, children=[
@@ -690,7 +698,7 @@ def build_layout():
         dcc.Interval(id="page-load-interval", interval=600, max_intervals=1, disabled=False),
         # polls the screener tab's scroll position so it can be restored on tab switch
         dcc.Interval(id="screener-scroll-poll-interval", interval=1000, disabled=False),
-        dcc.Interval(id="analysis-secondary-interval", interval=1200, disabled=False),
+        dcc.Interval(id="analysis-secondary-interval", interval=1200, disabled=True),
         loading_container(
             id="loading",
             type="circle",
@@ -712,4 +720,6 @@ def build_layout():
                 "data-loading-label": "Updating application state",
             },
         ),
+        ]),
+        _bottom_nav(),
     ])

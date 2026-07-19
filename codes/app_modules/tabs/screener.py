@@ -2,10 +2,12 @@
 
 import math
 import time as _time
+from datetime import date, timedelta
 from urllib.parse import parse_qs
 
 import dash
-from dash import Input, Output, State, callback, clientside_callback, html
+from dash import Input, Output, State, callback, clientside_callback, dcc, html
+import plotly.graph_objects as go
 
 from codes.app_modules.analysis_ui import _fmt_market_cap, _fmt_updated
 from codes.app_modules.company_identity import company_logo
@@ -20,6 +22,7 @@ from codes.app_modules.screener_markets import (
     market_from_path,
     row_matches_market,
 )
+from codes.data import db
 from codes.app_modules.session import get_portfolio_symbols, get_user_id
 from codes.services import performance_metrics, product_analytics
 from codes.services import screener_service as screener
@@ -33,9 +36,7 @@ last_progress_state = None
 last_progress_bar_state = None
 
 SCREENER_DEFAULT_COLUMNS = [
-    "ticker",
     "company",
-    "sector",
     "market_cap",
     "composite_score",
     "graham_number",
@@ -116,7 +117,8 @@ def _verdict_presentation_label(verdict: object) -> str:
     }.get(normalized, normalized)
 
 
-def _build_quick_peek(symbol: str) -> html.Div:
+def _build_quick_peek(symbol: str, score_period: str = "5y") -> html.Div:
+    """Build the quick peek using the selected long-term score window."""
     row = _quick_peek_row(symbol) or {
         "symbol": symbol,
         "name": symbol,
@@ -141,65 +143,116 @@ def _build_quick_peek(symbol: str) -> html.Div:
     if score is None:
         score = row.get("composite_score", 0)
 
-    metric_items = [
-        ("Composite", f"{score:.0f}/100"),
-        ("Verdict", verdict.replace("_", " ").title()),
-        ("Price", f"{price:,.2f}" if price else "—"),
-        (
-            "Market Cap",
-            _fmt_market_cap((analysis or {}).get("market_cap") or row.get("market_cap")),
-        ),
-        ("Moat Value", f"{moat_value:,.2f}" if moat_value else "—"),
-    ]
+    try:
+        history = db.list_composite_score_history(symbol, limit=365)
+        cutoff_days = 365 * (5 if score_period == "5y" else 10)
+        cutoff = date.today() - timedelta(days=cutoff_days)
+        history = [
+            item
+            for item in history
+            if not item.get("snapshot_date")
+            or date.fromisoformat(str(item["snapshot_date"])[:10]) >= cutoff
+        ]
+    except Exception:
+        history = []
+    score_history = [float(item["composite_score"]) for item in history if item.get("composite_score") is not None]
+    chart = _score_development_chart(score, score_history)
+    return html.Div(className="quick-peek-detail-grid", children=[
+        html.Section(className="quick-overview-card", **{"aria-labelledby": "quick-overview-title"}, children=[
+            html.Div(className="quick-peek-section-title", children=[
+                html.Span("A", className="quick-peek-section-index"),
+                html.H3(f"Quick Overview – {row.get('name') or symbol} ({symbol})", id="quick-overview-title"),
+            ]),
+            html.Div(className="quick-overview-body", children=[
+                html.Div(className="overview-score", children=[
+                    html.Span("Composite Score"),
+                    html.Strong([f"{score:.1f}", html.Small("/100")]),
+                    html.Div(className="mini-divider"),
+                    html.Div(className="overview-values", children=[
+                        html.Div([html.Small("Industry Value"), html.B(f"{moat_value:,.2f}" if moat_value else "—")]),
+                        html.Div([html.Small("Current Price"), html.B(f"{price:,.2f}" if price else "—")]),
+                        html.Div([html.Small("Verdict"), html.B(verdict.replace("_", " ").title(), className="positive")]),
+                    ]),
+                    button("Open full analysis →", id="quick-peek-open-analysis-btn", className="quick-peek-open-analysis-btn", n_clicks=0),
+                ]),
+                html.Div(className="overview-verdict", children=[
+                    html.Span("Verdict"), html.Strong(verdict.replace("_", " ").title(), className="positive"),
+                ]),
+                html.Div(className="overview-signals", children=[
+                    html.Span("Available signals"),
+                    html.Ul([
+                        html.Li(f"✓ {row.get('sector') or 'Sector'} fundamentals loaded"),
+                        html.Li("✓ Composite score available" if score else "ⓘ Score not available"),
+                        html.Li("✓ Valuation data available" if moat_value else "ⓘ Valuation data pending"),
+                    ]),
+                    html.Span("Data status"),
+                    html.P(f"Updated {_fmt_updated((analysis or {}).get('updated_at') or row.get('updated_at'))}"),
+                ]),
+            ]),
+        ]),
+        html.Section(className="score-development-card", **{"aria-labelledby": "score-development-title"}, children=[
+            html.Div(className="quick-peek-section-title score-title", children=[
+                html.Span("B", className="quick-peek-section-index"),
+                html.H3(f"Score Development – {row.get('name') or symbol} ({symbol})", id="score-development-title"),
+                dcc.Dropdown(
+                    id="score-development-period",
+                    options=[
+                        {"label": "5 years", "value": "5y"},
+                        {"label": "10 years", "value": "10y"},
+                    ],
+                    value=score_period,
+                    clearable=False,
+                    searchable=False,
+                    className="score-period-select",
+                ),
+            ]),
+            html.Div(className="score-development-body", children=[
+                html.Div(className="score-side", children=[
+                    html.Span("Current Score"), html.Strong([f"{score:.1f}", html.Small("/100")]),
+                    html.Span("Trend"), html.B("Improving" if len(score_history) > 1 and score_history[-1] >= score_history[0] else "Unchanged", className="positive"),
+                    html.Div(className="delta-box", children=[html.Strong(f"{(score_history[-1] - score_history[0]):+.1f} pts" if len(score_history) > 1 else "—"), html.Small("vs. first snapshot")]),
+                ]),
+                chart,
+                html.Div(className="score-explainer", children=[
+                    html.A("What drove the change?"),
+                    html.P("Score development is based on recorded composite snapshots. New history appears after score updates."),
+                    html.A("View score breakdown →"),
+                ]),
+            ]),
+        ]),
+    ])
 
+
+def _score_development_chart(score: float, history: list[float]) -> dcc.Graph | html.Div:
+    """Render the compact score trend using recorded snapshots when available."""
+    if len(history) < 2:
+        return html.Div("Score development will appear after the next score update.", className="score-chart-empty")
+    figure = go.Figure(go.Scatter(
+        x=list(range(1, len(history) + 1)),
+        y=history,
+        mode="lines+markers",
+        line={"color": "#b18a54", "width": 2.5},
+        marker={"color": "#b18a54", "size": 6},
+        hovertemplate="Score: %{y:.0f}<extra></extra>",
+    ))
+    figure.update_layout(
+        height=180,
+        margin={"l": 8, "r": 8, "t": 8, "b": 8},
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        xaxis={"visible": False, "fixedrange": True},
+        yaxis={"range": [0, 100], "gridcolor": "rgba(177,138,84,.18)", "fixedrange": True},
+    )
     return html.Div(
-        className="quick-peek-card",
-        children=[
-            html.Div(
-                className="quick-peek-identity",
-                children=[
-                    company_logo(
-                        symbol, row.get("name") or symbol, "company-logo company-logo--quick-peek"
-                    ),
-                    html.Div(
-                        className="quick-peek-identity-copy",
-                        children=[
-                            html.Div(symbol, className="quick-peek-symbol"),
-                            html.H4(row.get("name") or symbol, className="quick-peek-company"),
-                            html.Div(
-                                f"Updated {_fmt_updated((analysis or {}).get('updated_at') or row.get('updated_at'))}",
-                                className="quick-peek-updated",
-                            ),
-                        ],
-                    ),
-                ],
-            ),
-            html.Div(
-                className="quick-peek-metrics",
-                children=[
-                    html.Div(
-                        className="quick-peek-metric",
-                        children=[
-                            html.Div(label, className="quick-peek-metric-label"),
-                            html.Div(value, className="quick-peek-metric-value"),
-                        ],
-                    )
-                    for label, value in metric_items
-                ],
-            ),
-            html.Div(
-                className="quick-peek-actions",
-                children=[
-                    button(
-                        "Open Full Analysis",
-                        id="quick-peek-open-analysis-btn",
-                        className="quick-peek-open-analysis-btn",
-                        n_clicks=0,
-                        type="button",
-                    )
-                ],
-            ),
-        ],
+        dcc.Graph(
+            figure=figure,
+            className="score-line-chart-plot",
+            config={"displayModeBar": False, "responsive": True},
+        ),
+        className="score-line-chart",
+        role="img",
+        **{"aria-label": f"Score development chart, current score {score:.0f} out of 100"},
     )
 
 
@@ -211,14 +264,12 @@ def _build_quick_peek(symbol: str) -> html.Div:
         "n_clicks",
     ),
     Input("quick-peek-close-btn", "n_clicks"),
-    Input("quick-peek-backdrop", "n_clicks"),
     prevent_initial_call=True,
 )
-def manage_quick_peek(n_clicks_list, close_clicks, backdrop_clicks):
+def manage_quick_peek(n_clicks_list, close_clicks):
     triggered = dash.ctx.triggered_id
     if isinstance(triggered, str) and triggered in {
         "quick-peek-close-btn",
-        "quick-peek-backdrop",
     }:
         return None
     triggered_value = dash.ctx.triggered[0].get("value") if dash.ctx.triggered else None
@@ -240,15 +291,16 @@ def manage_quick_peek(n_clicks_list, close_clicks, backdrop_clicks):
     Output("screener-quick-peek-shell", "className"),
     Output("screener-quick-peek-content", "children"),
     Input("screener-quick-peek-symbol", "data"),
+    Input("score-development-period", "value", allow_optional=True),
     prevent_initial_call=False,
 )
-def render_quick_peek(symbol):
+def render_quick_peek(symbol, score_period="5y"):
     if not symbol:
         return "quick-peek-shell", html.Div(
             "Select a stock to open a quick summary without leaving the screener.",
             className="quick-peek-empty",
         )
-    return "quick-peek-shell is-open", _build_quick_peek(symbol)
+    return "quick-peek-shell is-open", _build_quick_peek(symbol, score_period or "5y")
 
 
 @callback(
@@ -523,6 +575,7 @@ def update_progress_bar(n):
     Output("screener-table-container", "children"),
     Output("sector-filter", "options"),
     Output("screener-page-store", "data", allow_duplicate=True),
+    Output("screener-table-pagination", "children"),
     Input("screener-ready-store", "data"),
     Input("url", "pathname"),
     Input("page-load-interval", "n_intervals"),
@@ -530,9 +583,8 @@ def update_progress_bar(n):
     Input("sector-filter", "value"),
     Input("screener-sort-store", "data"),
     Input("screener-page-store", "data"),
-    Input("screener-visible-columns", "value"),
-    Input("screener-table-density", "value"),
     State("screener-viewed-store", "data"),
+    State("screener-page-size", "value"),
     prevent_initial_call=True,
 )
 def render_screener_table(
@@ -543,9 +595,8 @@ def render_screener_table(
     sector_filter,
     sort_state,
     page_num,
-    visible_columns,
-    density,
     viewed_data,
+    page_size=PAGE_SIZE,
 ):
     started_at = _time.perf_counter()
     triggered_id = dash.ctx.triggered_id
@@ -586,6 +637,7 @@ def render_screener_table(
                 ),
                 sector_options,
                 page_reset,
+                [],
             )
         if prog["running"]:
             return (
@@ -596,6 +648,7 @@ def render_screener_table(
                 ),
                 sector_options,
                 page_reset,
+                [],
             )
         return (
             empty_state(
@@ -604,6 +657,7 @@ def render_screener_table(
             ),
             sector_options,
             page_reset,
+            [],
         )
     portfolio_symbols = get_portfolio_symbols()
     filtered = [
@@ -660,22 +714,18 @@ def render_screener_table(
             )
         except Exception:
             pass
-    visible = set(visible_columns or SCREENER_DEFAULT_COLUMNS)
-    visible.add("ticker")
+    visible = set(SCREENER_DEFAULT_COLUMNS)
     SORT_COLS = [
-        ("#", None, None, "rank"),
-        ("Ticker", "symbol", "Stock ticker symbol. Click to run full analysis.", "ticker"),
         ("Company", "name", "Company name.", "company"),
-        ("Sector", "sector", "Industry sector from SEC filings.", "sector"),
         (
-            "Market Cap ↕",
-            "market_cap",
+            "Market Cap",
+            None,
             "Market capitalization (price × shares outstanding, $M). Populated after running full analysis on a stock.",
             "market_cap",
         ),
         (
-            "Composite ↕",
-            "composite_score",
+            "Composite",
+            None,
             "Composite score (0–100): weighted blend of the orthogonal scoring pillars. Pre-analysis uses FairValue+Quality only; run full analysis to include momentum, quality, forward revisions, growth, risk, and safety signals.",
             "composite_score",
         ),
@@ -739,12 +789,13 @@ def render_screener_table(
             )
     rows = []
     accordion_items = []
-    # Pagination — show PAGE_SIZE rows for the current page
+    page_size = int(page_size or PAGE_SIZE)
+    # Pagination — show the selected number of rows for the current page.
     total_rows = len(filtered)
-    total_pages = max(1, math.ceil(total_rows / PAGE_SIZE))
+    total_pages = max(1, math.ceil(total_rows / page_size))
     page = min(max(1, page), total_pages)
-    start_idx = (page - 1) * PAGE_SIZE
-    page_filtered = filtered[start_idx : start_idx + PAGE_SIZE]
+    start_idx = (page - 1) * page_size
+    page_filtered = filtered[start_idx : start_idx + page_size]
 
     for i, r in enumerate(page_filtered, start_idx + 1):
         sym = r["symbol"]
@@ -767,24 +818,21 @@ def render_screener_table(
                 html.Span(f"💼 {pname}", className="portfolio-name-badge fs-10 clr-amber")
             )
         # n_clicks on <td> not <button> — iOS Safari drops touch on <button> inside <table>
-        ticker_cell = html.Td(
+        company_cell = html.Td(
             html.Div(
                 [
                     company_logo(sym, r.get("name") or sym, "company-logo company-logo--table"),
-                    html.Div(
-                        [
-                            html.Span(sym, className="ticker-link-btn"),
-                            html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
-                            if badges
-                            else html.Div(),
-                        ]
-                    ),
+                    html.Span(r["name"][:30], className="company-name-text"),
+                    html.Span(f"({sym})", className="company-ticker"),
+                    html.Div(badges, className="d-flex gap-4 flex-wrap mt-3")
+                    if badges
+                    else html.Div(),
                 ],
                 className="ticker-identity",
             ),
             id={"type": "screener-ticker-btn", "index": sym, "source": "table"},
             n_clicks=0,
-            className="ticker-cell ticker-cell-touch cp",
+            className="company-name-cell ticker-cell ticker-cell-touch cp",
             role="button",
             tabIndex=0,
             **{"aria-label": f"Analyze {sym}, {r.get('name') or sym}"},
@@ -871,14 +919,12 @@ def render_screener_table(
         )
 
         row_cells = {
-            "rank": html.Td(str(i), className="rank-num"),
-            "ticker": ticker_cell,
-            "company": html.Td(r["name"][:30], className="company-name-cell", title=r["name"]),
+            "company": company_cell,
             "sector": html.Td(r["sector"][:18], className="text-xs text-muted", title=r["sector"]),
             "market_cap": html.Td(_fmt_market_cap(r.get("market_cap")), className="text-xs"),
             "composite_score": html.Td(
                 html.Span(
-                    f"{r['composite_score']:.0f}",
+                    f"{r['composite_score']:.1f}",
                     className=f"score-pill {get_score_class(r['composite_score'])}",
                 )
                 if r.get("analyzed")
@@ -907,8 +953,8 @@ def render_screener_table(
                 className=row_class,
                 children=[
                     row_cells[key]
-                    for key in ["rank", *SCREENER_DEFAULT_COLUMNS]
-                    if key == "rank" or key in visible
+                    for key in SCREENER_DEFAULT_COLUMNS
+                    if key in visible
                 ],
             )
         )
@@ -940,7 +986,7 @@ def render_screener_table(
                 [
                     html.Span("Composite", className="accordion-label"),
                     html.Span(
-                        f"{r['composite_score']:.0f}",
+                        f"{r['composite_score']:.1f}",
                         className=f"score-pill {get_score_class(r['composite_score'])}",
                     ),
                 ],
@@ -1049,9 +1095,9 @@ def render_screener_table(
                 className="text-muted",
             ),
         ],
-        className="fs-11 px-4 py-8 fsi",
+        className="screener-note fs-11 px-4 py-8 fsi",
     )
-    table_density = density if density in {"comfortable", "compact"} else "comfortable"
+    table_density = "comfortable"
     table_component = table(
         className=f"screener-table density-{table_density}",
         caption="Stock screener results",
@@ -1061,26 +1107,44 @@ def render_screener_table(
         ],
     )
     # Pagination controls
+    first_visible_page = min(max(page - 1, 1), max(total_pages - 2, 1))
+    visible_pages = range(first_visible_page, min(first_visible_page + 3, total_pages) + 1)
     pagination = html.Div(
         className="pagination-controls",
         children=[
+            dcc.Dropdown(
+                id="screener-page-size",
+                options=[{"label": f"{size} per page", "value": size} for size in (5, 10, 15, 20)],
+                value=page_size,
+                clearable=False,
+                searchable=False,
+                className="pagination-page-size",
+            ),
             button(
-                "◀ Prev",
+                "‹",
                 id={"type": "screener-page-btn", "index": "prev"},
                 className="pagination-btn pagination-btn--prev",
                 n_clicks=0,
                 disabled=(page <= 1),
+                **{"aria-label": "Previous page"},
             ),
-            html.Span(
-                f"Page {page} of {total_pages}  ({total_rows:,} stocks)",
-                className="pagination-info",
-            ),
+            *[
+                button(
+                    str(page_number),
+                    id={"type": "screener-page-btn", "index": page_number},
+                    className=f"pagination-btn {'is-current' if page_number == page else ''}",
+                    n_clicks=0,
+                    **{"aria-label": f"Page {page_number}", "aria-current": "page" if page_number == page else None},
+                )
+                for page_number in visible_pages
+            ],
             button(
-                "Next ▶",
+                "›",
                 id={"type": "screener-page-btn", "index": "next"},
                 className="pagination-btn pagination-btn--next",
                 n_clicks=0,
                 disabled=(page >= total_pages),
+                **{"aria-label": "Next page"},
             ),
         ],
     )
@@ -1095,12 +1159,11 @@ def render_screener_table(
             [
                 table_component,
                 html.Div(accordion_items, className="screener-accordion"),
-                note,
-                pagination,
             ]
         ),
         sector_options,
         page_reset,
+        html.Div([note, pagination], className="screener-table-footer-inner"),
     )
 
 
@@ -1113,10 +1176,12 @@ def render_screener_table(
     State("index-filter", "data"),
     State("sector-filter", "value"),
     State("url", "pathname"),
+    State("screener-page-size", "value"),
     prevent_initial_call=True,
 )
 def navigate_screener_page(
-    n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname
+    n_clicks_list, current_page, sort_state, selected_indices, sector_filter, pathname,
+    page_size=PAGE_SIZE,
 ):
     triggered = dash.ctx.triggered_id
     if not triggered or not any(n for n in n_clicks_list if n):
@@ -1129,12 +1194,25 @@ def navigate_screener_page(
         if row_matches_any_index(r, selected_indices)
         and (not sector_filter or r.get("sector") == sector_filter)
     ]
-    total_pages = max(1, math.ceil(len(filtered) / PAGE_SIZE))
+    page_size = int(page_size or PAGE_SIZE)
+    total_pages = max(1, math.ceil(len(filtered) / page_size))
     cp = current_page or 1
     direction = triggered.get("index", "next")
+    if isinstance(direction, int):
+        return max(1, min(total_pages, direction))
     if direction == "prev":
         return max(1, cp - 1)
     return min(total_pages, cp + 1)
+
+
+@callback(
+    Output("screener-page-store", "data", allow_duplicate=True),
+    Input("screener-page-size", "value"),
+    prevent_initial_call=True,
+)
+def reset_screener_page_for_page_size(_page_size):
+    """Return to the first page when the visible row count changes."""
+    return 1
 
 
 # ── Screener column sort ──────────────────────────────────────────────────────

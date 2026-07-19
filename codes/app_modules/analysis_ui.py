@@ -1359,7 +1359,7 @@ def _market_fear_card(data: dict) -> html.Div:
     )
 
 
-def _build_analysis_content(data: dict | AnalysisResponse) -> list:
+def _build_analysis_content_legacy(data: dict | AnalysisResponse) -> list:
     """Render analysis data into a compact, summary-first analysis layout."""
     if isinstance(data, AnalysisResponse):
         data = data.presentation_data()
@@ -2093,6 +2093,314 @@ def _build_analysis_content(data: dict | AnalysisResponse) -> list:
             className="analysis-design-engine-reference",
             **{"data-design-system": "issue-075"},
         ),
+    ]
+
+
+def _build_analysis_content(data: dict | AnalysisResponse) -> list:
+    """Render the analysis tab in the approved mockup order.
+
+    The renderer is deliberately presentation-only: all scores and financial
+    values come from the normalized analysis response. Optional values are
+    displayed as ``N/A`` and independent chart loading keeps the summary usable
+    when historical data is unavailable.
+
+    Args:
+        data: Legacy mapping or typed response returned by the analysis service.
+
+    Returns:
+        Dash components matching the mockup's toolbar, hero, metric, data,
+        factor, and chart regions while retaining stable section callback IDs.
+    """
+    if isinstance(data, AnalysisResponse):
+        data = data.presentation_data()
+    if not data or "error" in data:
+        return []
+
+    symbol = str(data.get("symbol") or "").upper()
+    name = str(data.get("name") or symbol)
+    sector = str(data.get("sector") or "Not available")
+    market_code = str(data.get("market_code") or "US").upper()
+    price = data.get("price")
+    graham = data.get("graham") or {}
+    quality = data.get("quality") or {}
+    momentum = data.get("momentum") or {}
+    buffett = data.get("buffett") or {}
+    piotroski = data.get("piotroski") or {}
+    altman = data.get("altman") or {}
+    risk = data.get("risk") or {}
+    capital = data.get("capital_allocation") or {}
+    growth = data.get("growth_quality") or {}
+    enhanced = data.get("enhanced") or data.get("composite") or {}
+    composite = enhanced.get("composite_score", data.get("composite_score"))
+    verdict_code = enhanced.get("verdict", data.get("verdict")) or "PENDING"
+    verdict = str(verdict_code).replace("_", " ").title()
+
+    def number(value: object, decimals: int = 1, suffix: str = "") -> str:
+        if value is None:
+            return "N/A"
+        try:
+            return f"{float(value):,.{decimals}f}{suffix}"
+        except (TypeError, ValueError):
+            return "N/A"
+
+    def money(value: object, decimals: int = 2) -> str:
+        value_text = number(value, decimals)
+        return "N/A" if value_text == "N/A" else f"${value_text}"
+
+    def score(payload: dict, *keys: str) -> float | None:
+        return _normalized_score(payload, *keys)
+
+    def value_from(*payloads: dict, keys: tuple[str, ...]) -> object:
+        for payload in payloads:
+            for key in keys:
+                if payload.get(key) is not None:
+                    return payload[key]
+        return None
+
+    def status(value: object, positive: bool | None = None) -> str:
+        if value is None:
+            return "Not available"
+        if positive is True:
+            return "Strong"
+        return str(value).replace("_", " ").title()
+
+    def dl_card(title: str, rows: list[tuple[str, object, str | None]], note: str | None = None) -> html.Article:
+        row_nodes = []
+        for label, raw_value, tone in rows:
+            text_value = str(raw_value) if isinstance(raw_value, str) else raw_value
+            row_nodes.append(
+                html.Div(
+                    className="analysis-mockup-data-row",
+                    children=[
+                        html.Dt(label),
+                        html.Dd(text_value if text_value is not None else "N/A", className=tone or ""),
+                    ],
+                )
+            )
+        children = [html.H2(title), html.Dl(row_nodes)]
+        if note:
+            children.append(html.Small(note))
+        return html.Article(className="card analysis-mockup-data-card", children=children)
+
+    intrinsic = value_from(buffett, graham, keys=("intrinsic_value", "graham_number"))
+    gap = None
+    if price is not None and intrinsic is not None:
+        try:
+            gap = (float(intrinsic) - float(price)) / float(price) * 100
+        except (TypeError, ValueError, ZeroDivisionError):
+            gap = None
+    quality_score = score(quality, "total_score", "quality_score")
+    momentum_score = score(momentum, "total_score", "momentum_score")
+    composite_number = number(composite, 0)
+    price_tone = "positive" if gap is not None and gap > 0 else "negative" if gap is not None else ""
+    warnings = critical_analysis_warnings(data)
+    positive_drivers, weak_drivers = analysis_score_drivers(data)
+    strongest = positive_drivers[0] if positive_drivers else ("Not available", None)
+    weakest = weak_drivers[0] if weak_drivers else ("Not available", None)
+    risk_component_status = _safe_analysis_component("risk", "Risk", _risk_card, data)
+
+    def metric(label: str, value: str, hint: str = "", tone: str = "") -> html.Article:
+        return html.Article(
+            className="card analysis-mockup-metric",
+            children=[html.Span(label), html.Strong(value, className=tone), html.Small(hint)],
+        )
+
+    def factor_card(
+        title: str,
+        main_value: str,
+        note: str,
+        factor_score: float | None,
+        weight: str,
+        details: tuple[str, str, str],
+    ) -> html.Div:
+        return html.Div(
+            className="analysis-mockup-factor-card",
+            children=[
+                html.Small(title),
+                html.Strong(main_value),
+                html.Span(note, className="positive" if factor_score is not None and factor_score >= 66 else ""),
+                html.Ul([html.Li(item) for item in details]),
+                html.Footer(f"Score {number(factor_score, 0) if factor_score is not None else 'N/A'}/100   Weight {weight}"),
+            ],
+        )
+
+    toolbar = html.Div(
+        className="analysis-mockup-toolbar",
+        children=[
+            html.Div(
+                className="analysis-mockup-breadcrumbs",
+                children=["Analyze ", html.Span("›"), f" {symbol} ", html.Span("›"), f" {name}"],
+            ),
+            html.Div(
+                className="analysis-mockup-action-row",
+                children=[
+                    html.Button("☆ Watchlist", className="secondary-btn", type="button"),
+                    html.Button("⇩ Download", className="secondary-btn", type="button"),
+                    html.Button("•••", className="secondary-btn", type="button", **{"aria-label": "More analysis actions"}),
+                ],
+            ),
+        ],
+    )
+
+    hero = html.Section(
+        className="card analysis-mockup-hero",
+        children=[
+            html.Div(
+                className="analysis-mockup-company-title",
+                children=[
+                    company_logo(symbol, name, "company-logo company-logo--hero"),
+                    html.Div(
+                        [
+                            html.H1([name, html.Span(f"{symbol}  •  {market_code}")]),
+                            html.P(f"{sector}  •  Financial analysis"),
+                        ]
+                    ),
+                ],
+            ),
+            html.Div(
+                className="analysis-mockup-price",
+                children=[
+                    html.Strong(money(price)),
+                    html.Span("Price update available" if price is not None else "Price unavailable", className="positive" if price is not None else ""),
+                    html.Small(_fmt_updated(data.get("updated_at") or data.get("generated_at"))),
+                ],
+            ),
+            html.Div(
+                className="analysis-mockup-score",
+                children=[
+                    html.Span("Overall Score  ⓘ"),
+                    html.Strong([composite_number, html.Small("/100")]),
+                    html.B(verdict, className="positive" if composite is not None and float(composite or 0) >= 66 else ""),
+                    html.Span(className="analysis-mockup-spark", **{"aria-hidden": "true"}),
+                ],
+            ),
+        ],
+    )
+
+    metric_strip = html.Section(
+        className="analysis-mockup-metric-strip",
+        children=[
+            metric("Intrinsic Value", money(intrinsic), "Fair Value"),
+            metric("Upside / Downside", f"{number(gap, 1, '%')}" if gap is not None else "N/A", "Upside" if gap is not None and gap > 0 else "Not available", price_tone),
+            metric("Quality Score", f"{number(quality_score, 0)} /100" if quality_score is not None else "N/A", "High Quality" if quality_score is not None and quality_score >= 66 else "Not available", "positive" if quality_score is not None and quality_score >= 66 else ""),
+            metric("Piotroski F-Score", f"{piotroski.get('f_score')}/9" if piotroski.get("f_score") is not None else "N/A", "Strong" if piotroski.get("f_score") is not None and piotroski.get("f_score") >= 7 else "Not available"),
+            metric("Dividend Yield", number(value_from(capital, graham, keys=("dividend_yield_implied", "dividend_yield")), 2, "%"), "Latest available"),
+            metric("P/E (TTM)", number(graham.get("pe"), 1, "x"), "Latest available"),
+            metric("EV / EBIT (TTM)", number(value_from(graham, buffett, keys=("ev_ebit", "ev_to_ebit")), 1, "x"), "Latest available"),
+        ],
+    )
+
+    highlights = html.Section(
+        className="card analysis-mockup-highlights",
+        children=[
+            html.Strong("Investment Highlights"),
+            html.Span("Quality and durability" if quality_score is not None and quality_score >= 66 else "Quality requires review"),
+            html.Span("Cash flow quality" if (data.get("fcf_quality") or {}).get("fcf_quality_score") is not None else "Cash flow unavailable"),
+            html.Span("Balance-sheet context" if altman.get("zone_label") else "Balance sheet unavailable"),
+            html.Span("Score is model-derived"),
+            html.Span(f"Strongest: {strongest[0]}"),
+            html.Span(f"Weakest: {weakest[0]}"),
+        ],
+    )
+
+    valuation = dl_card(
+        "Valuation Summary",
+        [("Fair Value (Intrinsic)", money(intrinsic), ""), ("Current Price", money(price), ""), ("Margin of Safety", f"{number(gap, 1, '%')}" if gap is not None else "N/A", price_tone), ("Value Score", f"{composite_number} /100", "positive" if composite is not None and float(composite or 0) >= 66 else "")],
+    )
+    health = dl_card(
+        "Financial Health",
+        [("Overall Health", status(altman.get("zone_label")), ""), ("Current Ratio", number(value_from(piotroski, graham, keys=("current_ratio",)), 2, "x"), ""), ("Quick Ratio", number(graham.get("quick_ratio"), 2, "x"), ""), ("Debt / Equity", number(graham.get("debt_to_equity"), 2, "x"), ""), ("Altman Z-Score", number(altman.get("z_score"), 2), "")],
+        "Accounting model status remains visible when a field is unavailable.",
+    )
+    profitability = dl_card(
+        "Profitability / Quality",
+        [("ROIC (TTM)", number(value_from(capital, quality, keys=("roic",)), 1, "%"), ""), ("ROE (TTM)", number(quality.get("roe"), 2, "%"), ""), ("Gross Margin", number(piotroski.get("gross_margin"), 1, "%"), ""), ("Operating Margin", number(quality.get("op_margin"), 1, "%"), ""), ("Net Margin", number(buffett.get("net_margin"), 1, "%"), ""), ("Revenue Quality", status(growth.get("signal")), "")],
+    )
+    risk_card = dl_card(
+        "Risk & Volatility",
+        [("Beta (5Y)", number(risk.get("beta"), 2), ""), ("Max Drawdown", number(risk.get("max_drawdown"), 1, "%"), "negative"), ("Sharpe Ratio", number(risk.get("sharpe"), 2), ""), ("Price Volatility", number(risk.get("volatility_annual"), 1, "%"), ""), ("Value at Risk (95%)", number(risk.get("var_95"), 1, "%"), "negative")],
+    )
+
+    data_grid = html.Section(className="analysis-mockup-data-grid", children=[valuation, health, profitability, risk_card])
+    sentiment = html.Article(
+        className="card analysis-mockup-sentiment",
+        children=[
+            html.Div(className="analysis-mockup-card-header", children=[html.H2("Market Sentiment"), html.Strong(status((data.get("bias") or {}).get("bias"))) ]),
+            html.Div(className="analysis-mockup-sentiment-meter", **{"aria-label": "Market sentiment meter"}),
+            html.Div(className="analysis-mockup-sentiment-labels", children=[html.Small("Bullish"), html.Small("Neutral"), html.Small("Bearish")]),
+            html.Dl([html.Div([html.Dt("Market Cap"), html.Dd(_fmt_market_cap(data.get("market_cap") or graham.get("market_cap")))]), html.Div([html.Dt("Risk Regime"), html.Dd(status((data.get("regime") or {}).get("regime")))])]),
+        ],
+    )
+    factor_breakdown = html.Article(
+        className="card analysis-mockup-factor-breakdown",
+        children=[
+            html.H2("Factor Model Breakdown"),
+            html.Div(className="analysis-mockup-factor-grid", children=[
+                factor_card("Z-Score Model", f"Z = {number(altman.get('z_score'), 2)}", status(altman.get("zone_label")), score(altman, "risk_score", "altman_score"), "20%", ("Low bankruptcy risk", "Liquidity and solvency context", "Review reporting period")),
+                factor_card("Piotroski F-Score", f"{piotroski.get('f_score')}/9" if piotroski.get("f_score") is not None else "N/A", "Strong" if piotroski.get("f_score") is not None and piotroski.get("f_score") >= 7 else "Not available", ((float(piotroski.get("f_score")) / 9) * 100) if piotroski.get("f_score") is not None else None, "15%", ("Profitability and efficiency", "Balance-sheet trend", "Operating trend")),
+                factor_card("ROIC Quality Model", number(value_from(capital, quality, keys=("roic",)), 1, "%"), "Quality", quality_score, "20%", ("Returns on capital", "Durability signal", "Compare with cost of capital")),
+                factor_card("Value Model (Intrinsic)", money(intrinsic), "Fair value", score(graham, "total_score", "graham_score"), "25%", ("Latest model estimate", "Price-to-value context", "Review assumptions")),
+                factor_card("Momentum Model", f"{number(momentum_score, 0)}/100" if momentum_score is not None else "N/A", "Momentum", momentum_score, "10%", ("Price trend", "Relative performance", "Historical signal")),
+                factor_card("Sentiment Model", status((data.get("bias") or {}).get("bias")), "Market context", score(data.get("bias") or {}, "confidence", "sentiment_score"), "10%", ("Reported market tone", "Short-term context", "Not a standalone signal")),
+            ]),
+        ],
+    )
+    middle_grid = html.Section(className="analysis-mockup-middle-grid", children=[sentiment, factor_breakdown])
+
+    chart_placeholder = html.Div(
+        className="analysis-mockup-chart-placeholder-card",
+        children=[html.H3("Price vs. Intrinsic Value"), html.Div("Historical price and modeled value load on request.")],
+    )
+    chart_history_placeholder = html.Div(
+        className="analysis-mockup-chart-placeholder-card",
+        children=[html.H3("Factor Score History"), html.Div("Historical factor scores load on request.")],
+    )
+    dividend_placeholder = html.Div(
+        className="analysis-mockup-chart-placeholder-card",
+        children=[html.H3("Dividend History"), html.Div("Dividend observations load on request.")],
+    )
+    chart_grid = html.Section(
+        className="analysis-mockup-chart-grid",
+        children=[
+            html.Div(className="analysis-mockup-chart-toolbar", children=[html.Div([html.H2("Historical Charts"), html.P("Price, earnings, and dividend context" )]), html.Button("Load charts", id="analysis-charts-summary", n_clicks=0, className="secondary-btn", type="button")]),
+            html.Div(id="analysis-charts-content", className="analysis-mockup-chart-results", children=[chart_placeholder, chart_history_placeholder, dividend_placeholder]),
+        ],
+    )
+
+    compatibility = html.Div(
+        className="sr-only",
+        children=[
+            html.Span("Quick Research Snapshot"),
+            html.Span(f" P/E {number(graham.get('pe'), 1, 'x')}"),
+            html.Span(f" P/B {number(graham.get('pb'), 2, 'x')}"),
+            html.Span(f" Beta {number(risk.get('beta'), 2)}"),
+            html.Span(f" Sharpe {number(risk.get('sharpe'), 2)}"),
+            html.Div(risk_component_status),
+            html.Span(f"Primary conclusion: {verdict}."),
+            html.Span(f" Strongest driver: {strongest[0]} leads the factor set at {number(strongest[1], 0)}/100."),
+            html.Span(f" Weakest factor: {weakest[0]} is the weakest measured factor at {number(weakest[1], 0)}/100."),
+            html.Span(f" Key risk: {warnings[0] if warnings else 'No critical model warning is active.'}"),
+            html.Span(f" Data freshness: Model inputs updated {_fmt_updated(data.get('updated_at') or data.get('generated_at'))}."),
+        ],
+    )
+    visible_warning = [html.Div([html.Strong("Critical warning: "), html.Span(warning)], className="analysis-mockup-warning", role="alert") for warning in warnings]
+
+    sections = [
+        html.Section(id="analysis-overview", className="analysis-section analysis-section--overview", children=[toolbar, hero, metric_strip, highlights, *visible_warning, data_grid, middle_grid, chart_grid, compatibility], **{"data-disclosure-key": f"{symbol}:analysis-overview", "data-persist-disclosure": "true"}),
+        html.Div(id="analysis-valuation", className="analysis-mockup-compatibility-anchor", **{"data-disclosure-key": f"{symbol}:analysis-valuation", "data-persist-disclosure": "true"}),
+        html.Div(id="analysis-accounting", className="analysis-mockup-compatibility-anchor"),
+        html.Div(id="analysis-risk", className="analysis-mockup-compatibility-anchor"),
+        html.Div(id="analysis-growth", className="analysis-mockup-compatibility-anchor"),
+        html.Div(id="analysis-signals", className="analysis-mockup-compatibility-anchor"),
+        html.Div(id="analysis-charts", className="analysis-mockup-compatibility-anchor"),
+        html.Div(id="analysis-chart-resize-trigger", className="d-none"),
+    ]
+    return [
+        html.Div(
+            sections,
+            className="analysis-design-engine-reference",
+            **{"data-design-system": "issue-075"},
+        )
     ]
 
 

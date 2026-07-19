@@ -80,7 +80,7 @@ def test_render_screener_table_filters_by_index(monkeypatch):
     tracked = Mock()
     monkeypatch.setattr(screener_tab.product_analytics, "track_event", tracked)
 
-    table_container, sector_options, page_reset = screener_tab.render_screener_table(
+    table_container, sector_options, page_reset, _pagination = screener_tab.render_screener_table(
         -1,
         "US",
         1,
@@ -88,8 +88,6 @@ def test_render_screener_table_filters_by_index(monkeypatch):
         "",
         {"col": "composite_score", "asc": False},
         1,
-        screener_tab.SCREENER_DEFAULT_COLUMNS,
-        "comfortable",
         [],
     )
 
@@ -100,6 +98,9 @@ def test_render_screener_table_filters_by_index(monkeypatch):
     )
     assert len(tbody.children) == 1
     assert "AAPL" in str(tbody.children[0])
+    assert "company-name-text" in str(tbody.children[0])
+    assert "company-ticker" in str(tbody.children[0])
+    assert len(tbody.children[0].children) == len(screener_tab.SCREENER_DEFAULT_COLUMNS)
     assert page_reset == 1
     assert sector_options == [
         {"label": "All Sectors", "value": ""},
@@ -125,7 +126,7 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
     )
     monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
 
-    table_container, _sector_options, _page_reset = screener_tab.render_screener_table(
+    table_container, _sector_options, _page_reset, _pagination = screener_tab.render_screener_table(
         0,
         "/screener/ca",
         1,
@@ -133,8 +134,6 @@ def test_canada_screener_empty_state_does_not_wait_on_us_progress(monkeypatch):
         "",
         {"col": "composite_score", "asc": False},
         1,
-        screener_tab.SCREENER_DEFAULT_COLUMNS,
-        "comfortable",
         [],
     )
 
@@ -158,13 +157,11 @@ def test_canada_route_rerenders_on_repeated_requests(monkeypatch):
     )
     monkeypatch.setattr(screener_tab.product_analytics, "track_event", Mock())
 
-    first, _sector_options, _page_reset = screener_tab.render_screener_table(
-        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1,
-        screener_tab.SCREENER_DEFAULT_COLUMNS, "comfortable", []
+    first, _sector_options, _page_reset, _pagination = screener_tab.render_screener_table(
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
     )
-    second, _sector_options, _page_reset = screener_tab.render_screener_table(
-        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1,
-        screener_tab.SCREENER_DEFAULT_COLUMNS, "comfortable", []
+    second, _sector_options, _page_reset, _pagination = screener_tab.render_screener_table(
+        0, "/screener/ca", 1, [], "", {"col": "composite_score", "asc": False}, 1, []
     )
 
     assert "AAPL" in str(first)

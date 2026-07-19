@@ -537,13 +537,16 @@ def run_analysis(n_clicks, open_analysis_symbol, pathname, ticker_input_value, v
     Output("analysis-charts-content", "children"),
     Input("analysis-charts-summary", "n_clicks"),
     Input("analysis-charts-retry", "n_clicks"),
+    Input("analysis-store", "data"),
     State("analysis-store", "data"),
     prevent_initial_call=True,
 )
-def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None):
+def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis_store=None, analysis=None):
+    if analysis is None:
+        analysis = analysis_store
     if analysis is None and isinstance(retry_clicks, dict):
         analysis, retry_clicks = retry_clicks, None
-    if not (n_clicks or retry_clicks) or not analysis:
+    if not (n_clicks or retry_clicks or analysis_store) or not analysis:
         return dash.no_update
     started_at = _time.perf_counter()
     chart_analysis = analysis
@@ -600,20 +603,47 @@ def render_analysis_charts_on_demand(n_clicks, retry_clicks=None, analysis=None)
     prevent_initial_call=True,
 )
 def refresh_secondary_analysis(_n_intervals, analysis):
+    """Apply deferred analysis data without turning provider throttles into 500s."""
     if not analysis or analysis.get("secondary_status") != "pending":
         raise PreventUpdate
-    enriched = stock_analysis.get_cached_analysis(analysis.get("symbol", ""))
+    try:
+        enriched = stock_analysis.get_cached_analysis(analysis.get("symbol", ""))
+    except Exception as error:
+        if _is_rate_limit_error(error):
+            degraded = dict(analysis)
+            degraded["secondary_status"] = "failed"
+            degraded["secondary_error"] = "rate_limit"
+            return dash.no_update, _client_analysis_payload(degraded)
+        raise
     if not enriched or enriched.get("secondary_status") not in {"complete", "failed"}:
         raise PreventUpdate
 
-    response = stock_analysis.analysis_response(enriched, analysis.get("symbol", ""))
-    content = _build_analysis_content(response)
+    try:
+        response = stock_analysis.analysis_response(enriched, analysis.get("symbol", ""))
+        content = _build_analysis_content(response)
+    except Exception as error:
+        if _is_rate_limit_error(error) or "rate limit exceeded" in str(error).lower():
+            degraded = dict(analysis)
+            degraded["secondary_status"] = "failed"
+            degraded["secondary_error"] = "rate_limit"
+            return dash.no_update, _client_analysis_payload(degraded)
+        raise
     access = permissions.can_access_feature(get_user_id(), permissions.Feature.ANALYSIS)
     if access and access.remaining is not None:
         content = [UpgradeBanner(remaining=access.remaining), *content]
     client_result = _client_analysis_payload(response)
     performance_metrics.record_payload(len(json.dumps(client_result, default=str)))
     return content, client_result
+
+
+@callback(
+    Output("analysis-secondary-interval", "disabled"),
+    Input("analysis-store", "data"),
+    prevent_initial_call=False,
+)
+def sync_secondary_analysis_polling(analysis):
+    """Poll only while the current analysis has deferred sections."""
+    return not bool(analysis and analysis.get("secondary_status") == "pending")
 
 
 clientside_callback(

@@ -1,5 +1,6 @@
 // Graham App stylesheet entrypoint
 // Keep this file small; component styles live in assets/style/*.scss partials.
+@use 'style/foundation';
 @use 'style/tokens';
 @use 'style/design_tokens.generated';
 @use 'style/helpers';
@@ -23,3 +24,5 @@
 @use 'style/compatibility';
 @use 'style/responsive';
 @use 'style/design_system';
+@use 'style/mockup-shell';
+@use 'style/analysis-mockup';

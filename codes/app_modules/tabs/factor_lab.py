@@ -184,6 +184,7 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
     Output("fb-status", "children"),
     Output("factor-job-store", "data"),
     Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Output("factor-job-cancel", "style"),
     Input("fb-run-btn", "n_clicks"),
     State("fb-top-n", "value"),
     State("fb-years", "value"),
@@ -192,19 +193,19 @@ def run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals, _uid=None, _ski
 )
 def start_factor_backtest_job(n_clicks, top_n, years, *weight_vals):
     if not n_clicks:
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
     uid = get_user_id()
     try:
         access = permissions.can_access_feature(uid, permissions.Feature.BACKTEST)
     except Exception:
-        return section_error("Billing is temporarily unavailable."), "Billing unavailable", dash.no_update, None
+        return section_error("Billing is temporarily unavailable."), "Billing unavailable", dash.no_update, None, {"display": "none"}
     if not access.allowed:
         result, status, upgrade = run_factor_backtest_cb(n_clicks, top_n, years, *weight_vals)
-        return result, status, dash.no_update, upgrade
+        return result, status, dash.no_update, upgrade, {"display": "none"}
     try:
             check_rate_limit("backtest", calls=30, period_seconds=60, cost=10, priority="optional")
     except RateLimited as rl:
-        return section_error(f"Backtest rate limited. Try again in {rl.retry_after}s."), "Rate limited", dash.no_update, None
+        return section_error(f"Backtest rate limited. Try again in {rl.retry_after}s."), "Rate limited", dash.no_update, None, {"display": "none"}
 
     weights = dict(zip(_FB_WEIGHT_KEYS, (value or 0 for value in weight_vals), strict=True))
     dedupe_key = json.dumps(
@@ -229,10 +230,11 @@ def start_factor_backtest_job(n_clicks, top_n, years, *weight_vals):
         total_units=2,
     )
     return (
-        background_job_status(snapshot.public_dict(), cancel_id="factor-job-cancel"),
+        background_job_status(snapshot.public_dict()),
         snapshot.stage,
         snapshot.public_dict(),
         None,
+        {"display": "inline-flex"},
     )
 
 
@@ -241,6 +243,7 @@ def start_factor_backtest_job(n_clicks, top_n, years, *weight_vals):
     Output("fb-status", "children", allow_duplicate=True),
     Output("factor-job-store", "data", allow_duplicate=True),
     Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Output("factor-job-cancel", "style", allow_duplicate=True),
     Input("factor-job-interval", "n_intervals"),
     Input("factor-job-cancel", "n_clicks"),
     State("factor-job-store", "data"),
@@ -248,24 +251,36 @@ def start_factor_backtest_job(n_clicks, top_n, years, *weight_vals):
 )
 def poll_factor_backtest_job(_tick, cancel_clicks, stored):
     if not stored or not stored.get("job_id"):
-        return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
     uid = get_user_id()
     job_id = stored["job_id"]
     if dash.ctx.triggered_id == "factor-job-cancel" and cancel_clicks:
         jobs.cancel(job_id, owner=uid)
     snapshot = jobs.snapshot(job_id, owner=uid)
     if snapshot is None:
-        return section_error("This backtest is no longer available."), "Unavailable", None, None
+        return section_error("This backtest is no longer available."), "Unavailable", None, None, {"display": "none"}
     public = snapshot.public_dict()
     if snapshot.status == AsyncStatus.SUCCESS:
         result = jobs.result(job_id, owner=uid)
         if result is not None:
-            return result[0], result[1], public, result[2]
+            return result[0], result[1], public, result[2], {"display": "none"}
     if snapshot.status == AsyncStatus.ERROR:
-        return section_error("The backtest failed. Retrying does not change your saved weights.", technical_id=snapshot.error_code), "Failed", public, None
+        return section_error("The backtest failed. Retrying does not change your saved weights.", technical_id=snapshot.error_code), "Failed", public, None, {"display": "none"}
     if snapshot.status == AsyncStatus.CANCELLED:
-        return empty_state("Backtest cancelled", "Your factor weights remain saved."), "Cancelled", public, None
-    return background_job_status(public, cancel_id="factor-job-cancel"), snapshot.stage, public, None
+        return empty_state("Backtest cancelled", "Your factor weights remain saved."), "Cancelled", public, None, {"display": "none"}
+    return background_job_status(public), snapshot.stage, public, None, {"display": "inline-flex"}
+
+
+@callback(
+    Output("factor-job-interval", "disabled"),
+    Input("factor-job-store", "data"),
+    prevent_initial_call=False,
+)
+def sync_factor_job_polling(stored):
+    """Poll only while a Factor Lab job is active."""
+    if not stored or not stored.get("job_id"):
+        return True
+    return stored.get("status") in {"success", "error", "cancelled"}
 
 
 def _render_fb_results(r: dict) -> list:

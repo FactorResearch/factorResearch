@@ -6,6 +6,7 @@ from codes.app_modules.tabs.analyze import (
     _client_analysis_payload,
     refresh_secondary_analysis,
     render_analysis_charts_on_demand,
+    sync_secondary_analysis_polling,
 )
 from codes.app_modules.analysis_ui import _alternative_data_card, _insider_activity_card
 from codes.services import performance_metrics
@@ -127,3 +128,9 @@ def test_secondary_poll_rebuilds_content_when_enrichment_completes(monkeypatch):
     content, payload = refresh_secondary_analysis(1, {"symbol": "AAPL", "secondary_status": "pending"})
     assert content == ["complete"]
     assert payload["secondary_status"] == "complete"
+
+
+def test_secondary_polling_stops_when_no_deferred_work_remains():
+    assert sync_secondary_analysis_polling(None) is True
+    assert sync_secondary_analysis_polling({"secondary_status": "complete"}) is True
+    assert sync_secondary_analysis_polling({"secondary_status": "pending"}) is False

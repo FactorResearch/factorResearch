@@ -7,7 +7,21 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _tab(tab_id):
-    return next(child for child in build_layout().children if getattr(child, "id", None) == tab_id)
+    def find(node):
+        if getattr(node, "id", None) == tab_id:
+            return node
+        children = getattr(node, "children", None)
+        if children is None:
+            return None
+        if not isinstance(children, (list, tuple)):
+            children = [children]
+        for child in children:
+            found = find(child)
+            if found is not None:
+                return found
+        return None
+
+    return find(build_layout())
 
 
 def test_add_to_portfolio_panel_is_after_analysis_content():

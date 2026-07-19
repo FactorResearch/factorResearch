@@ -1390,6 +1390,7 @@ def run_simulation(n, active, compare, *, _uid=None, _skip_guards=False):
     Output("portfolio-sim-results", "children"),
     Output("portfolio-job-store", "data"),
     Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Output("portfolio-job-cancel", "style"),
     Input("run-simulation-btn", "n_clicks"),
     State("portfolio-active-dropdown", "value"),
     State("portfolio-compare-dropdown", "value"),
@@ -1397,12 +1398,12 @@ def run_simulation(n, active, compare, *, _uid=None, _skip_guards=False):
 )
 def start_simulation_job(n, active, compare):
     if not n or not active:
-        return dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update
     uid = get_user_id()
     access = permissions.can_access_feature(uid, permissions.Feature.PORTFOLIO_ANALYTICS)
     if not access.allowed:
         locked, upgrade = run_simulation(n, active, compare)
-        return locked, dash.no_update, upgrade
+        return locked, dash.no_update, upgrade, {"display": "none"}
     try:
             check_rate_limit(
                 "portfolio_simulation",
@@ -1416,6 +1417,7 @@ def start_simulation_job(n, active, compare):
             html.Div(f"Portfolio simulation rate limit reached.{wait}", className="text-danger"),
             dash.no_update,
             None,
+            {"display": "none"},
         )
 
     dedupe_key = json.dumps({"active": active, "compare": compare or ""}, sort_keys=True)
@@ -1435,9 +1437,10 @@ def start_simulation_job(n, active, compare):
         total_units=2,
     )
     return (
-        background_job_status(snapshot.public_dict(), cancel_id="portfolio-job-cancel"),
+        background_job_status(snapshot.public_dict()),
         snapshot.public_dict(),
         None,
+        {"display": "inline-flex"},
     )
 
 
@@ -1445,6 +1448,7 @@ def start_simulation_job(n, active, compare):
     Output("portfolio-sim-results", "children", allow_duplicate=True),
     Output("portfolio-job-store", "data", allow_duplicate=True),
     Output("upgrade-funnel-store", "data", allow_duplicate=True),
+    Output("portfolio-job-cancel", "style", allow_duplicate=True),
     Input("portfolio-job-interval", "n_intervals"),
     Input("portfolio-job-cancel", "n_clicks"),
     State("portfolio-job-store", "data"),
@@ -1452,19 +1456,19 @@ def start_simulation_job(n, active, compare):
 )
 def poll_simulation_job(_tick, cancel_clicks, stored):
     if not stored or not stored.get("job_id"):
-        return dash.no_update, dash.no_update, dash.no_update
+        return dash.no_update, dash.no_update, dash.no_update, dash.no_update
     uid = get_user_id()
     job_id = stored["job_id"]
     if dash.ctx.triggered_id == "portfolio-job-cancel" and cancel_clicks:
         jobs.cancel(job_id, owner=uid)
     snapshot = jobs.snapshot(job_id, owner=uid)
     if snapshot is None:
-        return section_error("This simulation is no longer available."), None, None
+        return section_error("This simulation is no longer available."), None, None, {"display": "none"}
     public = snapshot.public_dict()
     if snapshot.status == AsyncStatus.SUCCESS:
         result = jobs.result(job_id, owner=uid)
         if result is not None:
-            return result[0], public, result[1]
+            return result[0], public, result[1], {"display": "none"}
     if snapshot.status == AsyncStatus.ERROR:
         return (
             section_error(
@@ -1473,6 +1477,7 @@ def poll_simulation_job(_tick, cancel_clicks, stored):
             ),
             public,
             None,
+            {"display": "none"},
         )
     if snapshot.status == AsyncStatus.CANCELLED:
         return (
@@ -1481,5 +1486,6 @@ def poll_simulation_job(_tick, cancel_clicks, stored):
             ),
             public,
             None,
+            {"display": "none"},
         )
-    return background_job_status(public, cancel_id="portfolio-job-cancel"), public, None
+    return background_job_status(public), public, None, {"display": "inline-flex"}

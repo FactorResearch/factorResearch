@@ -1,0 +1,23 @@
+// Canonical Cenvarn palette. Feature styles consume semantic custom properties.
+$cenvarn-midnight: #0e1829;
+$cenvarn-gold: #b18a54;
+$cenvarn-charcoal: #343435;
+$cenvarn-silver: #d9d8d6;
+$cenvarn-warm-white: #f3f2f1;
+$utility-white: #ffffff;
+
+:root {
+  --cv-canvas: #{$cenvarn-warm-white};
+  --cv-surface: #{$utility-white};
+  --cv-surface-raised: #{$utility-white};
+  --cv-text-primary: #{$cenvarn-midnight};
+  --cv-text-secondary: #{$cenvarn-charcoal};
+  --cv-text-muted: #66707c;
+  --cv-border: #{$cenvarn-silver};
+  --cv-accent: #{$cenvarn-gold};
+  --cv-positive: #287b62;
+  --cv-negative: #b84f4b;
+  --cv-warning: #8b6738;
+  --cv-nav-text: #f3f2f1;
+  --cv-nav-active: rgba(177, 138, 84, 0.18);
+}

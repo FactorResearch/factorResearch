@@ -203,7 +203,7 @@
   }
 
   function syncApplicationSemantics() {
-    const tabs = document.querySelectorAll('.topbar-nav [role="tab"]');
+    const tabs = document.querySelectorAll('.rail-nav [role="tab"], .topbar-nav [role="tab"]');
     let activePanel = null;
     tabs.forEach(function (tab) {
       const panel = document.getElementById(tab.getAttribute('aria-controls'));
@@ -224,6 +224,16 @@
       profileButton.setAttribute('aria-expanded', String(!profilePanel.classList.contains('is-hidden')));
     }
   }
+
+  document.addEventListener('click', function (event) {
+    const trigger = event.target.closest('[data-shell-tab-target]');
+    if (!trigger) return;
+    const target = document.getElementById(trigger.getAttribute('data-shell-tab-target'));
+    if (target) {
+      event.preventDefault();
+      target.click();
+    }
+  });
 
   function enhanceTables(root) {
     const scope = root && root.querySelectorAll ? root : document;

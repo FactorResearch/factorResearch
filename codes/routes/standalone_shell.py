@@ -14,7 +14,7 @@ def head(title: str) -> str:
 def header(active: str = "") -> str:
     links = (("Screener", "/"), ("Analyze", "/?tab=analyze"), ("Portfolio", "/?tab=portfolio"), ("Factor Lab", "/?tab=factorlab"), ("Pricing", "/pricing"))
     nav = "".join(f'<a class="topbar-nav-btn{" active" if label.lower().replace(" ", "-") == active else ""}" href="{href}">{label}</a>' for label, href in links)
-    return f"""<header class="topbar"><a class="topbar-brand" href="/"><img src="/assets/logo.svg" alt="Cenvarn" class="topbar-logo"><span class="topbar-title">Cenvarn</span></a>
+    return f"""<header class="topbar"><a class="topbar-brand" href="/"><img src="/assets/logo-icon.svg" alt="Cenvarn" class="topbar-logo"><span class="topbar-title">Cenvarn</span></a>
 <nav class="topbar-nav" aria-label="Primary navigation">{nav}</nav><div class="topbar-actions"><div class="theme-toggle" aria-label="Color theme">
 <button class="theme-btn" data-theme="light" aria-label="Use light theme">☀</button><button class="theme-btn" data-theme="system" aria-label="Use system theme">◐</button><button class="theme-btn" data-theme="dark" aria-label="Use dark theme">☾</button></div></div></header>"""
 

@@ -42,11 +42,12 @@ def test_dash_registers_global_callbacks_on_first_request():
             headers=headers,
             json={
                 "output": table_dependency["output"],
-                "outputs": [
-                    {"id": "screener-table-container", "property": "children"},
-                    {"id": "sector-filter", "property": "options"},
-                    {"id": "screener-page-store", "property": "data"},
-                ],
+                    "outputs": [
+                        {"id": "screener-table-container", "property": "children"},
+                        {"id": "sector-filter", "property": "options"},
+                        {"id": "screener-page-store", "property": "data"},
+                        {"id": "screener-table-pagination", "property": "children"},
+                    ],
                 "inputs": [
                     {"id": "screener-ready-store", "property": "data", "value": 0},
                     {"id": "url", "property": "pathname", "value": "/screener/ca"},
@@ -59,20 +60,11 @@ def test_dash_registers_global_callbacks_on_first_request():
                         "value": {"col": "composite_score", "asc": False},
                         },
                         {"id": "screener-page-store", "property": "data", "value": 1},
-                        {
-                            "id": "screener-visible-columns",
-                            "property": "value",
-                            "value": [
-                                "ticker", "company", "sector", "market_cap",
-                                "composite_score", "graham_number", "buffett_iv",
-                                "updated_at", "verdict", "data_support",
-                            ],
-                        },
-                        {"id": "screener-table-density", "property": "value", "value": "comfortable"},
                     ],
-                "state": [
-                    {"id": "screener-viewed-store", "property": "data", "value": []},
-                ],
+                    "state": [
+                        {"id": "screener-viewed-store", "property": "data", "value": []},
+                        {"id": "screener-page-size", "property": "value", "value": 5},
+                    ],
                 "changedPropIds": ["url.pathname"],
             },
         )

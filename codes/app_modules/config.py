@@ -24,7 +24,7 @@ def validate_portfolio_name(raw: str) -> str | None:
     return n if PORTFOLIO_NAME_RE.match(n) else None
 
 
-PAGE_SIZE = 20  # rows per page in screener table
+PAGE_SIZE = 5  # rows per page in screener table; matches the screener mockup
 # ── Moat grade tooltips (shown on hover in Buffett badge) ────────────────────
 _MOAT_TOOLTIPS = {
     "A": (

@@ -1,0 +1,25 @@
+html.dark,
+body.dark,
+html[data-theme='dark'] {
+  --cv-canvas: #0e1829;
+  --cv-surface: #162238;
+  --cv-surface-raised: #1c2b43;
+  --cv-text-primary: #f3f2f1;
+  --cv-text-secondary: #d9d8d6;
+  --cv-text-muted: #aeb7c4;
+  --cv-border: rgba(217, 216, 214, 0.18);
+  --cv-accent: #d0ad78;
+  --cv-nav-text: #f3f2f1;
+  --cv-nav-active: rgba(177, 138, 84, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
