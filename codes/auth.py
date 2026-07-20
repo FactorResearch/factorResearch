@@ -1,5 +1,5 @@
 """
-Authentication module for Intrinsic IQ.
+Authentication module
 
 Supports Auth0, Clerk, and Supabase Auth as managed authentication providers.
 Injects authenticated user_id into all callbacks and enforces secure cookie policies.
