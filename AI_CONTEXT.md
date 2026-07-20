@@ -1,536 +1,709 @@
-# CenvarnAI Context
+# Cenvarn — AI Engineering Instructions
 
-This is the single authoritative context file for AI work in this repository.
-Load this file before coding. It consolidates project memory, Ponytail simplicity,
-Caveman communication, and the Engineering, Design, Testing, and Security
-standards adapted from `Cenvarn/agency-agents`. Other Markdown files are
-product documentation, audit evidence, or optional tool references; they are not
-required to understand how to work here.
+## 1. Authority and scope
 
-## Product And Current Stage
+This file is the mandatory entry point for every AI coding task in this repository.
 
-Cenvarnis an early-development fundamental investing, stock analysis,
-screener, and portfolio analytics platform. It runs locally on `localhost` unless
-the user explicitly identifies another environment. It is not a registered
-investment adviser and must not present model output as personalized advice.
+These instructions apply to all files under this directory unless a more specific nested `AGENTS.md` exists. A nested file may add stricter local rules but must not weaken repository-wide safety, security, testing, documentation, financial correctness, data integrity, paper-first design, or no-reinvention requirements.
 
-The product goal is fast, trustworthy analysis: a user should be able to open the
-app between meetings or while travelling, analyze several stocks quickly, see the
-important conclusion immediately, and reveal detail only when wanted.
+Notion contains the full engineering standards. This file defines the startup sequence, minimum rules, routing requirements, and completion gates that always apply.
 
-The application uses Python, Flask, Dash, PostgreSQL, Redis, SCSS, and limited
-client-side JavaScript. Financial calculations, authentication, billing, provider
-access, SEC normalization, portfolio simulation, and authoritative persistence
-remain server-side. Client code may handle presentation, interaction, and safe
-derived display work, but must not duplicate trusted financial-model logic.
+`AI_CONTEXT.md` contains repository-specific product memory, Ponytail simplicity rules, financial-model conventions, design constraints, and current architectural context. It is mandatory reading for every non-trivial task and must never be silently replaced by a generic agent template.
 
-## Priority Order
+Do not rely on memory from previous conversations or coding sessions. Reload the current repository instructions and applicable standards for every task.
 
-When priorities conflict, use this order:
+When instructions conflict, use this priority order:
 
-1. Security, privacy, and prevention of data loss or cross-user access
-2. Mathematical and financial-model correctness
-3. Reproducibility, provenance, and backward compatibility
-4. Accessibility and user-task completion
-5. Test evidence and operational reliability
-6. Performance and resource efficiency
-7. Simplicity and maintainability
-8. Visual polish
+1. Security, privacy, authorization, and prevention of data loss or cross-user access.
+2. Mathematical and financial-model correctness.
+3. Reproducibility, provenance, point-in-time integrity, and backward compatibility.
+4. Accessibility and successful completion of the user task.
+5. Test evidence and operational reliability.
+6. Performance and resource efficiency.
+7. Simplicity and maintainability.
+8. Visual polish.
 
-Shorter code is preferred only when it preserves every higher priority. Never
-simplify away validation, authorization, accessibility, error handling that
-protects data, observability required for recovery, or explicitly requested work.
+Shorter code is preferred only when every higher priority remains protected.
 
-## Working Method
+## 2. Repository documentation layout
 
-Before editing:
+Repository standards:
 
-1. Restate the requested outcome and identify the user-visible behavior.
-2. Inspect the actual code path, existing tests, callers, persistence, and failure
-   boundaries. Do not assume the report identifies the root cause.
-3. Reproduce or otherwise prove the issue exists.
-4. Check the worktree and preserve unrelated user changes.
-5. Find existing helpers, patterns, native features, and dependencies before
-   creating anything.
-6. Explain the root cause and choose the smallest correct change at the shared
-   boundary where all affected callers pass.
-7. For substantial work, split it into independently testable phases.
+- `docs/engineering.md`
+- `docs/frontend.md`
+- `docs/api.md`
+- `docs/database.md`
+- `docs/testing.md`
+- `docs/security.md`
+- `docs/log.md`
+- `docs/workers.md`
+- `docs/caching.md`
+- `docs/financial.md`
+- `docs/data-providers.md`
+- `docs/config.md`
+- `docs/dependency.md`
+- `docs/release.md`
+- `docs/accessibility.md`
+- `docs/git.md`
+- `docs/ui.md`
 
-During implementation:
+Always load documents using actual repository paths. Do not invent names from memory.
 
-1. Make one coherent change at a time.
-2. Add the smallest meaningful regression test with each nontrivial change.
-3. Run focused checks first, then the full release gate before declaring success.
-4. Reinspect the diff and original request after tests pass; loop until no stated
-   requirement or adjacent regression was missed.
-5. Push only verified checkpoints when the user requests phase-by-phase delivery.
+## 3. Mandatory startup sequence
 
-Do not stop at a plan when implementation was requested. Continue through code,
-tests, runtime verification, documentation, and a concise outcome unless blocked
-by required user input or external infrastructure.
+Before writing or modifying code:
 
-## Ponytail Simplicity Standard
+1. Read this entire file.
+2. Read `AI_CONTEXT.md` for every non-trivial task.
+3. Read the issue, specification, design reference, acceptance criteria, and linked decisions.
+4. Inspect the affected files, callers, tests, persistence, contracts, and nearby implementations.
+5. Reproduce the problem or otherwise prove the requested gap exists.
+6. Check the worktree and preserve unrelated user changes.
+7. Identify every architectural layer and user-visible behavior affected.
+8. Load the mandatory core standards.
+9. Load every applicable specialist standard from the routing matrix.
+10. Search for existing functions, services, components, schemas, utilities, native platform features, and approved dependencies that may already solve the problem.
+11. Complete the written engineering design gate described below.
+12. Define behavior, boundaries, failure modes, invariants, tests, observability, migration, and rollback before implementation.
+13. Make the smallest complete change that satisfies the approved written solution.
+14. Run focused validation first, then the complete applicable release gate.
+15. Reinspect the diff against the issue and written design before declaring completion.
 
-Be a lazy senior engineer: efficient, not careless. The best code is code that
-does not need to exist. After understanding the complete path, stop at the first
-rung that fully holds:
+Do not begin implementation while required standards, repository context, or the written solution are missing.
 
-1. Does this need to exist? Skip speculative work.
-2. Does the repository already solve it? Reuse that implementation.
-3. Does the standard library solve it? Use it.
-4. Does the browser, database, framework, CSS, HTTP, or platform solve it natively?
-5. Does an already-installed dependency solve it?
-6. Can direct, readable code solve it without a new abstraction?
+## 4. Mandatory core standards
+
+Load and apply these standards for every coding task:
+
+- Engineering Code Standards.
+- Applicable Python Engineering Standards.
+- Applicable JavaScript and TypeScript Engineering Standards.
+- Testing Engineering Standards.
+- Security Engineering Standards.
+- Git and Pull Request Standards.
+- AI Standards Loading and Task Routing Policy.
+- Build-vs-Buy and No-Reinvention Policy.
+- `AI_CONTEXT.md` Ponytail and repository-specific rules.
+
+A task touching multiple languages or layers must load the standards for every affected area.
+
+## 5. Specialist standards routing matrix
+
+| Task area | Required specialist standards |
+|---|---|
+| UI, layout, component, SCSS, theme, responsive behavior | New UI Design Implementation Plan; Accessibility Engineering Standards; Performance Engineering Standards when rendering or bundle cost may change |
+| API endpoint, request, response, contract, authentication boundary | API Engineering Standards; Observability and Logging Standards |
+| Database schema, query, repository, transaction, migration | Database Engineering Standards; Release and Incident Standards for migrations |
+| Financial formula, score, valuation, backtest, benchmark, portfolio calculation | Financial Calculation Standards; Database Engineering Standards when persisted; Testing Engineering Standards |
+| External market, filing, quote, or fundamental data | Data Provider Engineering Standards; Caching Engineering Standards when cached; Observability and Logging Standards |
+| Worker, scheduled task, queue, batch, refresh process | Background Jobs and Worker Standards; Observability and Logging Standards; Configuration and Environment Standards |
+| Cache, memoization, stale data, invalidation | Caching Engineering Standards; Data Provider Engineering Standards where external data is involved |
+| Configuration, environment variables, feature flags, secrets | Configuration and Environment Standards; Security Engineering Standards |
+| New or upgraded package | Dependency and Package Standards; Security Engineering Standards; Build-vs-Buy and No-Reinvention Policy |
+| Performance-sensitive or native-code path | Performance Engineering Standards; Observability and Logging Standards; Rust migration rules in this file |
+| Deployment, schema rollout, production migration, incident remediation | Release and Incident Standards; Observability and Logging Standards |
+| Cross-cutting feature | Load all standards for every affected layer |
+
+Do not load every full specialist standard for an unrelated one-line change. Load the mandatory core set plus every standard relevant to the actual impact.
+
+## 6. Paper-first issue resolution
+
+Every non-trivial issue must be solved in writing before it is solved in code.
+
+The written solution may live in the issue, an approved design document, an ADR, or a checked-in implementation note. It must be concrete enough that another engineer could review the intended behavior before seeing the implementation.
+
+The written solution must define:
+
+1. The requested user-visible outcome.
+2. The verified current behavior and root cause.
+3. The exact scope and explicit non-goals.
+4. Existing code, platform features, or dependencies that will be reused.
+5. The proposed ownership and architectural boundary.
+6. Public contracts and persisted data affected.
+7. Inputs, outputs, units, nullability, ordering, freshness, and error behavior.
+8. Failure modes, degraded behavior, retries, idempotency, concurrency, cancellation, and restart behavior.
+9. Security, privacy, authorization, and tenant-isolation implications.
+10. Financial-methodology and point-in-time implications.
+11. Performance and resource implications.
+12. Observability and alerting requirements.
+13. Test plan and acceptance evidence.
+14. Migration, rollout, compatibility, and rollback plan.
+15. Why the solution is the smallest complete option.
+
+The written solution must be updated when implementation discoveries materially change the design. Code must not quietly diverge from the approved paper solution.
+
+A task is not complete merely because code exists. The issue must contain or link to the final reconciled design and observed verification evidence.
+
+## 7. Engineering design gate
+
+Before implementation, answer these questions in writing:
+
+1. What is the actual problem rather than the visible symptom?
+2. Does this behavior need to exist?
+3. Does the repository already solve it?
+4. Can an existing helper or approved abstraction solve it?
+5. Can the standard library solve it?
+6. Can PostgreSQL solve it safely and clearly?
+7. Can the browser, CSS, framework, operating system, CDN, or platform solve it natively?
+8. Can an already-approved dependency solve it?
+9. Can direct readable code solve it without a new abstraction?
+10. Is Rust justified by production-shaped evidence, or would the language boundary cost more than the work?
+11. Should the correct implementation be deletion or no code at all?
+
+Implementation starts only after the first defensible rung that fully solves the problem is selected.
+
+## 8. Ponytail simplicity standard
+
+Be a lazy senior engineer: efficient, not careless. The best code is code that does not need to exist.
+
+Use this order:
+
+1. Skip speculative work.
+2. Reuse the repository's existing implementation.
+3. Use the standard library.
+4. Use browser, database, framework, CSS, HTTP, operating-system, or platform-native behavior.
+5. Use an already-installed approved dependency.
+6. Use direct, readable code without a new abstraction.
 7. Only then add the minimum new implementation.
 
 Rules:
 
-- Root-cause fixes beat symptom patches. One shared guard is better than repeated
-  guards in every caller.
+- Root-cause fixes beat symptom patches.
+- One shared guard at the correct boundary is better than repeated guards in callers.
 - Delete dead behavior before adding replacement layers.
-- Prefer boring, explicit code over clever compression.
-- Use the fewest files and concepts that keep ownership clear.
-- Do not add interfaces with one implementation, factories with one product,
-  wrappers that only delegate, config nobody changes, speculative extension
-  points, or dependencies for a few clear lines.
-- A one-line rewrite is good only when it remains readable, correct on edge cases,
-  and easier to debug. Never optimize for line count alone.
-- Do not split large files merely to make files smaller. Split only when behavior,
-  ownership, change cadence, or test boundaries become clearer.
-- Do not consolidate similar financial-model helpers when thresholds, accepted
-  records, missing-data semantics, or outputs differ. Consolidate exact behavior.
-- Mark a deliberate shortcut only when it has a real ceiling, using
-  `ponytail: <ceiling>, <specific trigger/upgrade path>`.
-- No speculative refactoring. Refactor when requested or when it is the smallest
-  safe route to the required fix.
+- Prefer boring explicit code over clever compression.
+- Use the fewest files and concepts that preserve clear ownership.
+- Do not add interfaces with one implementation, factories with one product, wrappers that only delegate, configuration nobody changes, speculative extension points, or dependencies for a few clear lines.
+- Do not split large files merely to reduce line count. Split when ownership, behavior, change cadence, or test boundaries become clearer.
+- Consolidate only truly identical financial behavior. Do not merge formulas with different thresholds, accepted records, missing-data semantics, or output meaning.
+- No speculative refactoring. Refactor only when requested or when it is the smallest safe path to the required result.
+- Mark a deliberate shortcut only with `ponytail: <ceiling>, <specific trigger or upgrade path>`.
 
-Over-engineering reviews use these labels:
+Over-engineering review labels:
 
-- `delete`: dead or speculative behavior; replace with nothing.
+- `delete`: remove dead or speculative behavior and replace it with nothing.
 - `stdlib`: replace custom code with the named standard-library feature.
-- `native`: replace code/dependency with a platform feature.
-- `yagni`: remove unused abstraction or flexibility.
-- `shrink`: same behavior with materially simpler readable code.
+- `native`: replace code or dependency with a platform-native feature.
+- `yagni`: remove unused flexibility or abstraction.
+- `shrink`: preserve behavior with materially simpler readable code.
 
-Complexity findings are separate from correctness, security, and performance
-findings. Never recommend deleting a protective control as a simplification.
+Complexity findings are separate from correctness, security, accessibility, and performance findings. Never delete a protective control merely to simplify code.
 
-## Engineering Standards
+## 9. Documentation-first implementation workflow
 
-### Python And Service Code
+For every new or modified non-trivial class, function, method, hook, component, service, repository, provider, worker, query, financial calculation, Rust kernel, or public type:
+
+1. Write or update its documentation and contract before implementation.
+2. Define responsibility and why the unit exists.
+3. Define what it owns and what it must never own.
+4. Define inputs, outputs, types, units, nullability, ordering, currency, time zone, and freshness.
+5. Define side effects and external dependencies.
+6. Define errors, failure modes, degraded behavior, retries, idempotency, concurrency, cancellation, and restart expectations.
+7. Define assumptions, invariants, preconditions, postconditions, and edge cases.
+8. Define performance expectations and memory or payload limits where relevant.
+9. Confirm it does not duplicate an existing abstraction.
+10. Define tests before implementation.
+11. Implement only the documented behavior.
+12. Reconcile documentation, types, code, tests, and the issue before completion.
+
+Do not write a large implementation first and add comments afterward.
+
+### 9.1 Class contract requirement
+
+Every non-trivial class must document:
+
+- Purpose and domain responsibility.
+- Why a class is appropriate instead of a function or data structure.
+- Ownership and lifecycle.
+- Constructor inputs and validation.
+- Public methods and state transitions.
+- Mutable state and thread or process safety.
+- Persistence, network, cache, or file-system interactions.
+- Failure and degraded behavior.
+- Performance expectations.
+- Dependencies and forbidden responsibilities.
+- Security and privacy boundaries.
+- Test strategy.
+
+A class without this contract is incomplete.
+
+### 9.2 Comment quality
+
+Comments explain intent, trade-offs, assumptions, constraints, and non-obvious behavior. They must not restate obvious syntax.
+
+Bare `TODO`, `FIXME`, `HACK`, and `TEMP` comments are prohibited. Temporary markers require an issue identifier, reason, removal condition, and compatibility boundary or deadline where applicable.
+
+## 10. Working method
+
+Before editing:
+
+1. Restate the outcome and user-visible behavior.
+2. Inspect the complete path, callers, tests, persistence, contracts, and failure boundaries.
+3. Reproduce or otherwise prove the issue.
+4. Preserve unrelated worktree changes.
+5. Search for existing helpers, patterns, native features, and dependencies.
+6. Explain the root cause and choose the smallest correct shared boundary.
+7. Split substantial work into independently testable phases.
+
+During implementation:
+
+1. Make one coherent change at a time.
+2. Add the smallest meaningful regression test with each non-trivial change.
+3. Run focused checks first.
+4. Run the complete applicable release gate.
+5. Reinspect the diff and original request after tests pass.
+6. Continue until every stated requirement is implemented or explicitly documented as blocked.
+
+Do not stop at a plan when implementation was requested unless required user input or unavailable external infrastructure genuinely blocks the work.
+
+## 11. Change-scope rules
+
+- Preserve existing behavior unless the issue explicitly changes it.
+- Prefer targeted edits over replacing complete modules, classes, or components.
+- Do not perform unrelated refactoring in the same change.
+- Do not introduce speculative abstractions.
+- Reuse approved existing abstractions where they fit.
+- Do not preserve a flawed abstraction merely to avoid a justified correction; document and review substantial corrections first.
+- Treat public contracts, database schemas, financial formulas, authentication boundaries, computation identities, model versions, and persisted formats as one-way-door decisions requiring deeper review.
+- Preserve public APIs, CLI behavior, output schemas, model versions, and stored data unless the issue explicitly changes them.
+
+## 12. Architecture rules
+
+- Maintain clear separation between domain, application, infrastructure, persistence, API, and presentation responsibilities.
+- Financial calculations belong in approved backend domain engines, not routes, UI components, templates, or database triggers.
+- Routes and controllers orchestrate requests; they do not contain domain logic.
+- Repositories own persistence access. Business services do not embed SQL.
+- Provider-specific behavior stays behind provider interfaces and normalization layers.
+- The frontend consumes stable contracts and must not independently reinterpret financial formulas.
+- Shared behavior has one authoritative implementation.
+- Dependency direction points inward toward stable domain contracts.
+- Avoid circular dependencies and hidden global state.
+- Keep external I/O separate from deterministic calculation.
+- Keep Python as the control, provider, API, authorization, billing, explanation, and research plane.
+- Use Rust only for approved deterministic CPU-heavy kernels and data-plane operations.
+
+## 13. Documentation and typing
+
+- Public and non-trivial private code must use the project-approved documentation format.
+- Every parameter and return value must have an explicit type.
+- Python public boundaries must not use implicit `Any`.
+- TypeScript `any` is prohibited unless narrowly justified and documented.
+- Document nullability, units, currency, time zone, ordering, freshness, error behavior, and side effects.
+- Keep documentation synchronized with implementation.
+- Use explicit contracts at provider, database, queue, API, model, and native-language boundaries.
+
+## 14. Python and service-code minimum rules
 
 - Keep modules cohesive and dependencies directional.
-- Use explicit data contracts at provider, database, queue, API, and model
-  boundaries.
-- Validate once at each trust boundary; do not repeatedly sanitize trusted
-  internal values.
+- Validate once at each trust boundary; do not repeatedly sanitize trusted internal values.
 - Use parameterized SQL. Dynamic identifiers require fixed allowlists.
-- Keep database transactions short and explicit.
+- Keep transactions short and explicit.
 - Use bounded, lazy, fork-aware connection pools with health visibility.
-- Do not run schema DDL, historical migration, or network initialization on hot
-  read paths. Migrations belong to the release phase.
-- Bound every process cache, lock registry, executor queue, retry loop, and external
-  call. Expired entries must be evicted, not merely ignored.
-- A timeout does not stop a Python worker thread. Concurrency permits remain owned
-  until timed-out work actually exits.
-- Avoid broad exception swallowing. Catch expected errors, preserve a useful
-  signal, and fail securely without leaking secrets or internals.
-- Use structured, redacted logs and correlation IDs. Never log tokens, cookies,
-  secrets, connection strings, customer financial records, or unnecessary PII.
-- Prefer bulk database/provider operations over N+1 loops. Add query-count tests
-  for backtests, portfolios, and universe operations.
-- Preserve public APIs, CLI behavior, output schemas, model versions, and stored
-  data unless the task explicitly changes them.
+- Do not run schema DDL, historical migration, or network initialization on hot read paths.
+- Bound every process cache, lock registry, executor queue, retry loop, and external call.
+- Expired entries must be evicted rather than merely ignored.
+- A timeout does not stop a Python worker thread; concurrency permits remain owned until timed-out work exits.
+- Avoid broad exception swallowing. Catch expected errors, preserve useful signals, and fail securely.
+- Use structured redacted logs and correlation IDs.
+- Prefer bulk database and provider operations over N+1 loops.
+- Add query-count tests for backtests, portfolios, and universe operations.
 
-### JavaScript And Client Code
+## 15. JavaScript, TypeScript, and client minimum rules
 
-- Use JavaScript only where browser execution reduces latency or improves
-  interaction without duplicating trusted server logic.
-- Prefer native DOM/browser APIs and CSS over libraries.
-- Keep event ownership explicit; avoid global listeners and repeated callback
-  registration.
-- Never insert untrusted HTML. Use text nodes or safe framework children.
-- Reserve chart dimensions before rendering to prevent layout shift.
-- Draw expensive charts only after the user expands them; avoid doing hidden work.
-- Handle loading, stale, empty, error, retry, and offline states intentionally.
+- Use client execution only where it reduces latency or improves interaction without duplicating trusted server logic.
+- Prefer native browser APIs and CSS where appropriate.
+- Keep event ownership explicit; avoid global listeners and repeated callback registration.
+- Never insert untrusted HTML.
+- Reserve chart and media dimensions before rendering.
+- Draw expensive charts only when visible or requested.
+- Handle loading, stale, empty, degraded, error, retry, permission-denied, and offline states intentionally.
 - Keep client payloads bounded and versioned.
+- Do not move financial models to JavaScript merely to claim client offloading.
 
-### Performance
+## 16. Database minimum rules
 
-- Measure before optimizing. Record baseline, workload, environment, p50/p95/p99,
-  error rate, throughput, and resource saturation.
-- Optimize network/database round trips and repeated model/provider work before
-  micro-optimizing Python syntax.
-- Reuse persisted analysis for already-analyzed stocks; do not recalculate unchanged
-  authoritative inputs on every page load.
-- Use singleflight, versioned bounded caches, background workers, durable queues,
-  and idempotent persistence where they measurably reduce duplicate work.
-- Keep web workers free of scheduled/background maintenance in production.
-- Design graceful shutdown so workers stop accepting work, preserve unacknowledged
-  jobs, and recover them idempotently.
-- Localhost benchmarks do not prove production capacity because client, server,
-  database, and network may share one machine.
-- Never move financial models to JavaScript merely to claim client offloading.
+- PostgreSQL is the approved relational database unless an accepted architecture decision authorizes another system.
+- Access persistence through repositories or approved data-access modules.
+- Never use `SELECT *` in application queries.
+- Use parameterized queries only.
+- Every schema change uses a versioned migration.
+- Migrations define rollout, backward compatibility, verification, rollback, or forward recovery.
+- Use database constraints to enforce durable invariants.
+- Every table documents ownership, writers, readers, retention, update cadence, expected growth, and query patterns.
+- Store timestamps in UTC and use timezone-aware values.
+- Preserve immutable historical analyses and source lineage.
+- Do not overwrite point-in-time financial history.
+- Record provider, source timestamp, ingestion timestamp, freshness, and quality status for external data.
+- Review indexes against actual query patterns and validate significant queries with execution plans.
+- Multi-step writes forming one logical operation are transactional.
+- Retried writes and workers are idempotent.
+- Prefer `COPY`, staging tables, and set-based operations for bulk ingestion.
+- Avoid row-by-row reconstruction in hot scoring paths when compact point-in-time read models can be materialized safely.
 
-## Financial Model Standards
+## 17. Financial correctness minimum rules
 
-Correctness outranks elegance. Every model must declare required inputs, missing
-data behavior, output schema, version, provenance, and tests.
+- Document every material formula, input definition, unit, source, rounding policy, currency assumption, date assumption, missing-data rule, and model version.
+- Preserve point-in-time correctness.
+- Prevent look-ahead bias and survivorship bias.
+- Version material methodology changes.
+- Never silently convert missing data to zero.
+- Distinguish authoritative, calculated, estimated, normalized, stale, degraded, and unavailable values.
+- Make provider and filing lineage traceable to final results.
+- Add deterministic known-example tests for every material formula.
+- Formula changes require explicit review and regression comparison against the prior version.
+- Golden fixtures, invariants, boundary cases, and cross-period consistency tests are mandatory for material changes.
 
-### Shared Rules
+Repository-specific financial conventions:
 
-- Never convert missing data to a misleading zero.
-- Normalize partial weighted scores by available weight only when the methodology
-  explicitly permits partial scoring.
-- Align annual comparisons to fiscal periods approximately one year apart; never
-  compare arbitrary adjacent statements.
-- Guard `None`, NaN, infinity, zero denominators, negative values where undefined,
-  stale filings, split-adjustment differences, and restatements.
-- Keep source/provider and calculation timestamps distinct.
-- Persist model and data versions with results.
-- Golden fixtures, invariants, boundary cases, and cross-period consistency are
-  required for material model changes.
+- Graham dividend history must be consecutive; gaps break the qualifying streak.
+- Piotroski year-over-year signals use aligned fiscal periods, not arbitrary adjacent records.
+- Altman missing components must not silently depress the score; follow the approved partial-data methodology.
+- Greenblatt enterprise value has one authoritative implementation; do not duplicate it.
+- Portfolio volatility uses the covariance matrix; never assume assets are independent.
+- Monte Carlo geometric drift is `mu_geo = mu_arith - sigma^2 / 2` unless a versioned methodology explicitly states otherwise.
+- Sortino downside deviation uses all observations `N`, not only the downside count.
+- Preserve split, dividend, corporate-action, benchmark, FX, and calendar conventions across every engine.
 
-### Model-Specific Rules
-
-- Graham: dividend years must be consecutive; non-continuous history does not
-  qualify.
-- Piotroski: year-over-year signals use aligned fiscal periods.
-- Altman: missing components must not artificially depress the score; normalize
-  permissible partial scores by available weight.
-- Greenblatt: Net Working Capital excludes cash and equivalents; earnings yield is
-  enterprise-value based.
-- Portfolio volatility: use the covariance matrix; never assume assets are
-  independent.
-- Monte Carlo: use geometric drift `mu_geo = mu_arith - sigma^2 / 2`.
-- Sortino: downside deviation uses all observations `N`, not only downside count.
-
-### New Model Integration
+## 18. Model integration rules
 
 Every new model or engine must:
 
 1. Register a stable contract and version.
-2. Join the primary analysis pipeline and persisted result schema.
-3. Render in the correct UI section without mixing unrelated domains. Accounting
-   models stay in Accounting, not Overview.
-4. Work for newly analyzed stocks.
-5. Backfill or enqueue idempotent refreshes for every already-analyzed stock in the
-   database. A model is incomplete if existing stocks never receive its output.
-6. Avoid recalculating unchanged shared inputs.
-7. Add unit, integration, persistence, existing-stock backfill, and UI-presence
-   tests.
-8. Update the model manifest and roadmap/release documentation.
+2. Declare required inputs, missing-data behavior, outputs, provenance, and interpretation.
+3. Join the authoritative analysis pipeline and persisted schema when intended for production.
+4. Render in the correct UI section without mixing unrelated domains.
+5. Work for newly analyzed securities.
+6. Backfill or enqueue idempotent refreshes for already-analyzed securities when required.
+7. Avoid recalculating unchanged shared inputs.
+8. Add unit, integration, persistence, backfill, contract, and UI-presence tests as applicable.
+9. Update the model manifest and methodology documentation.
+10. Preserve an explanation layer even when a numeric kernel moves to Rust.
 
-Do not run an expensive model with no UI, API, persistence consumer, or explicit
-background purpose. Remove unused computation or expose the result intentionally.
+Do not run expensive models with no UI, API, persistence consumer, research purpose, or explicit background purpose.
 
-## Product And Design Standards
+## 19. Reliability and failure handling
 
-### Information Architecture
+Before implementation identify:
 
-- Keep Overview and Accounting separate.
-- Each section is short, informative, and scannable. Users should understand the
-  headline quickly without losing access to supporting information.
-- Landing state shows highlights only. Progressive disclosure reveals detail,
-  charts, methodology, and secondary metrics on demand.
-- Do not cram cards, graphs, pills, and tiny text into one viewport.
-- Information may be hidden behind a clearly named action, but not buried so users
-  cannot discover it.
-- Design for known future expansion before adding more cards.
-- Quick Peek must provide a useful decision without leaving the screener and must
-  never require scrolling: company identity, updated date, composite, verdict,
-  price, market cap, moat, and full-analysis action.
-- Navigation must maintain location: sticky main navigation where appropriate,
-  active section indication, stable jump navigation, and no scroll jumping.
+- dependency failures;
+- timeouts;
+- partial responses;
+- stale or malformed data;
+- duplicate delivery;
+- retries after successful side effects;
+- concurrent execution;
+- process restart;
+- user cancellation;
+- unavailable optional sections;
+- queue saturation and backpressure;
+- native-engine unavailability;
+- schema or model-version mismatch.
 
-### Visual Direction
+Use bounded retries with backoff and jitter only when safe. Never retry indefinitely.
 
-- Minimal and premium, not generic dashboard clutter.
-- Light and dark modes are equal products; neither may be an afterthought.
-- Use intentional typography, restrained hierarchy, subtle depth, and limited
-  meaningful motion.
-- Avoid excessive round corners, default framework styling, purple bias, flat
-  unstructured backgrounds, and interchangeable card grids.
-- Company logos may be used through the configured provider/cache. Provide robust
-  monogram fallbacks, accessible names, bounded dimensions, and no layout shift.
-- Every component state must match the site language: inputs, dropdowns, badges,
-  delete actions, accordions, charts, legal dialogs, portfolio controls, and
-  navigation.
+Optional section failures must not destroy successful independent results. Return clear degraded-state metadata and allow targeted retry.
 
-### SCSS Architecture
+Repeatable operations must be idempotent or protected by idempotency keys, uniqueness constraints, locks, leases, or equivalent approved mechanisms.
 
-- SCSS is the source of truth; generated CSS must match it exactly.
-- Keep colors in a color/token partial. Do not scatter literal theme colors.
-- Use variables, functions, mixins, partials, and imports where they reduce real
-  repetition and clarify ownership.
-- All media queries originate as mixins in `assets/_media.scss`; component files
-  call those mixins and contain no direct ad hoc media queries.
-- Nest child selectors inside the parent component so structure is readable.
-- Keep one coherent partial per component/domain; do not spread one component's
-  styles across unrelated files or create tiny single-rule partials.
-- Reuse structure, not arbitrary old colors or font sizes.
-- Compile with the repository command and no source map when updating tracked CSS.
-- Fix Sass deprecations rather than allowing warnings to become future build
-  failures.
+## 20. Security and privacy minimum rules
 
-### Responsive And Native Feel
+- Enforce authorization server-side for every protected resource.
+- Isolate all user-owned portfolios, analyses, settings, exports, formulas, jobs, and cached results.
+- Validate untrusted input at system boundaries.
+- Keep secrets out of code, logs, responses, client bundles, fixtures, and committed files.
+- Use centralized secret and configuration management.
+- Parameterize database queries.
+- Escape or safely render user-controlled output.
+- Apply rate limits and abuse controls where appropriate.
+- Do not log passwords, tokens, complete payment data, sensitive portfolio contents, or unnecessary personal data.
+- Apply least privilege to services, workers, databases, providers, caches, and object storage.
+- Security-sensitive changes require explicit threat analysis and tests.
+- Shared caches and immutable snapshots must preserve entitlement and tenant boundaries.
 
-- Desktop, tablet, and mobile must load and function independently.
-- Touch targets meet WCAG 2.2 minimums, with practical mobile sizing.
-- No horizontal overflow at supported widths or 200% zoom.
-- Sheets, quick peek, dialogs, and nav must respect viewport height and safe areas;
-  primary actions cannot render below the reachable screen.
-- Charts have bounded width/height and resize without escaping containers.
-- Prevent cumulative layout shift with reserved media/chart dimensions.
-- Prefer a few purposeful page/section transitions; honor reduced motion.
+## 21. Testing requirements
 
-## Security Standards
+Testing is based on behavior and risk, not coverage percentage alone.
 
-### Authorized Local Scope
+Applicable tests include:
 
-The repository owner authorizes security testing against Cenvarnprocesses
-running on `127.0.0.1` or `localhost`. This includes bounded SAST, DAST, dependency
-and secret scanning, malformed-input fuzzing, authentication/authorization tests,
-CSRF/XSS/SQL-injection/SSRF probes, method/header tests, concurrency tests, and
-controlled abuse/load tests.
+- Unit tests for business rules.
+- Integration tests for database, repository, service, cache, workflow, and native boundaries.
+- Contract tests for APIs and providers.
+- End-to-end tests for critical user journeys.
+- Regression tests for every fixed defect.
+- Boundary and invalid-input tests.
+- Timeout, retry, partial-failure, cancellation, restart, and degraded-mode tests.
+- Migration tests.
+- Accessibility tests.
+- Deterministic financial-model tests.
+- Performance tests for performance-sensitive work.
+- Python/Rust parity and fallback tests for native work.
+- Property-based tests for invariants where useful.
 
-This does not authorize attacks on third-party providers, external hosts, real
-customer accounts, production infrastructure, destructive database operations,
-credential theft, persistence, or exfiltration. Use isolated identities and
-disposable local data. Tool/sandbox approval prompts are execution permissions,
-not uncertainty about application ownership.
+Tests verify observable behavior rather than implementation details unless the detail is itself a required contract.
 
-### Secure Design And Code
+Do not delete, weaken, skip, or rewrite failing tests merely to make a change pass.
 
-- Start with assets, data flows, trust boundaries, attacker goals, abuse cases,
-  blast radius, and secure-failure behavior.
-- Scan for secrets and sensitive-data exposure before other review work.
-- Default deny. Enforce least privilege at routes, callbacks, database records,
-  queues, cloud roles, provider scopes, and administrative actions.
-- Authentication proves identity; authorization separately checks action and
-  object ownership. Every private record query is owner-scoped.
-- Fix JWT algorithms and validate signature, issuer, audience, expiration, not
-  before, token purpose/type, and authorized party as required by the provider.
-- Keep provider tokens out of client-side signed cookies. Prefer opaque server-side
-  sessions and revocable bounded token storage.
-- Require CSRF protection on every state-changing browser route except authentic
-  signed webhooks. Validate trusted hosts independently of same-origin checks.
-- Use explicit CORS allowlists; never wildcard credentials.
-- Set secure cookies, HSTS, CSP, frame denial, MIME sniffing prevention, referrer,
-  permissions, and cross-origin policies. Remove CSP `unsafe-inline` with nonces or
-  hashes where practical.
-- Set global and endpoint-specific request-body limits. Rate-limit expensive public
-  routes with durable shared storage in production.
-- Remote requests use fixed/allowlisted schemes and hosts, bounded response sizes,
-  short timeouts, circuit breakers, and no credential forwarding across hosts.
-- Use proven cryptographic libraries and managed keys. Never implement custom
-  cryptography.
-- Secrets live in a secrets manager in production, never source, images, logs,
-  frontend code, committed `.env`, or command output.
-- Errors preserve correct HTTP semantics and expose no stack, path, schema, token,
-  provider response, or secret.
-- Dependencies are pinned, integrity checked, inventoried with an SBOM, scanned on
-  every release, and upgraded within severity SLA.
-- Security findings require severity, location, evidence, reproduction, impact,
-  remediation, owner, SLA, and regression test. Retest before closure.
+## 22. Observability requirements
 
-Never approve a known exploitable vulnerability for later. Risk acceptance
-requires a named accountable owner, scope, expiry, compensating controls, and
-written impact acknowledgement.
+Important operations emit enough structured telemetry to determine:
 
-## Testing And Evidence Standards
+- what happened;
+- whether it succeeded;
+- duration and stage timings;
+- request, user-safe identifier, job, provider, dataset, model, or worker involved;
+- engine choice and fallback use;
+- stale or degraded data use;
+- failure reason;
+- records or users affected;
+- CPU, memory, database, cache, payload, queue, and cost impact where material.
 
-### Test Strategy
+Use structured logs, correlation IDs, metrics, traces where useful, and actionable alerts. Never expose secrets or unnecessary personal data.
 
-- Test behavior and contracts, not implementation trivia.
-- Use unit tests for pure financial logic and boundaries; integration tests for
-  database, cache, queue, auth, billing, provider, and callback ownership; browser
-  tests for real journeys and visual/responsive behavior.
-- Every bug fix adds a test that fails on the original defect.
-- Cover valid, invalid, missing, stale, duplicate, concurrent, unauthorized,
-  timeout, retry, partial-failure, and recovery paths where relevant.
-- Two-user authorization tests are mandatory for private data.
-- Use hermetic tests: no undeclared live network, clock, randomness, filesystem,
-  provider, or local database dependency.
-- Flaky tests are defects. Record seed, environment, timing, and evidence needed to
-  reproduce.
+Every production-critical path defines monitoring and alert ownership before release.
 
-### API And Security Testing
+## 23. API and contract rules
 
-- Inventory every route/method and expected auth, entitlement, ownership, body
-  limit, rate limit, content type, and error schema.
-- Test malformed JSON/form/multipart bodies, duplicate parameters, oversized
-  values, Unicode, traversal, injection, hostile headers, unsupported methods,
-  replay, concurrency, and idempotency.
-- Verify unknown hosts, wrong origins, wrong JWT claims, expired/revoked sessions,
-  invalid webhook signatures, and cross-user identifiers fail before business
-  logic.
-- A scanner warning is not a confirmed vulnerability until reachability,
-  exploitability, and business impact are checked. Record false positives and
-  mitigations.
+- Use explicit request and response schemas.
+- Define nullability, units, currency, freshness, pagination, errors, and compatibility expectations.
+- Use one stable error-envelope format.
+- Evolve contracts backward-compatibly or version them.
+- Do not silently rename, remove, or change field meaning.
+- Use idempotency protection for repeatable writes.
+- Generate and maintain OpenAPI or equivalent documentation.
+- Add consumer and provider contract tests.
+- Send compact job specifications and version references across service boundaries rather than copying large matrices unnecessarily.
 
-### Accessibility And UX Evidence
+## 24. UI, design, and accessibility rules
 
-- Target WCAG 2.2 AA.
-- Automated axe scans are baseline only, never certification.
-- Test keyboard order, visible focus, skip/navigation behavior, dialogs, tabs,
-  accordions, dropdowns, dynamic announcements, charts, errors, and loading states.
-- Manually test VoiceOver, NVDA, and TalkBack on supported devices before public
-  certification.
-- Test light/dark, forced colors, reduced motion, 200% zoom, text spacing, mobile
-  orientations, touch targets, and horizontal overflow.
-- Capture screenshots or machine-readable evidence for UI claims. Do not declare
-  visual success from source inspection alone.
+- SCSS remains the source of truth where the current application uses SCSS.
+- Use approved tokens, maps, functions, mixins, `@use`, and `@forward`.
+- Do not scatter hard-coded colors, typography, spacing, radii, shadows, z-indexes, or breakpoints.
+- Nest styles according to logical component structure.
+- Place responsive mixins inside the selectors they modify.
+- Design from 320 px through large desktop and 4K.
+- Meet WCAG 2.2 AA.
+- Support keyboard navigation, visible focus, semantic structure, screen readers, zoom, reduced motion, and accessible chart/table alternatives.
+- Define loading, empty, stale, degraded, permission-denied, and failure states.
+- A failed independent section must not crash the complete page.
+- Keep Overview and Accounting distinct.
+- Use progressive disclosure rather than dashboard clutter.
+- Quick Peek must remain useful without scrolling.
+- Light and dark modes are equal products.
+- Avoid generic card-grid design, excessive rounded corners, default framework styling, and unnecessary motion.
 
-### Performance And Reliability Evidence
+## 25. Performance and resource-efficiency rules
 
-- Test baseline, load, stress, spike, and soak against a production-equivalent
-  topology before certification.
-- Include warm/cold analysis, cached/uncached stocks, screener, portfolio,
-  authentication, billing, queues, database pools, provider quotas, and slow/error
-  dependencies.
-- Fault tests cover PostgreSQL, Redis, providers, disk/cache, worker death, queue
-  interruption, malformed data, clock/timeouts, and partial writes.
-- A backup is not proven until restored. Record RPO/RTO, row/constraint checks,
-  recent writes, application journeys, and cleanup.
+- Measure before optimizing.
+- Record baseline, workload, environment, p50, p95, p99, throughput, error rate, CPU, RSS, database queries, bytes read, payload size, and saturation.
+- Optimize network and database round trips and repeated work before micro-optimizing syntax.
+- Reuse persisted analyses for unchanged authoritative inputs.
+- Use immutable computation identities, singleflight, bounded caches, background workflows, and idempotent persistence where they reduce duplicate work.
+- Keep web workers free of CPU-heavy and scheduled maintenance work.
+- Use bounded concurrency, explicit backpressure, cancellation, and graceful shutdown.
+- Prefer bulk operations, compact read models, aligned matrices, memory mapping, and columnar boundaries.
+- Localhost benchmarks do not prove production capacity.
+- Include serialization, copying, language-boundary, and operational costs in benchmarks.
+- The fastest request is one served from an immutable cache or edge without recomputation.
 
-### Evidence And Release Decisions
+## 26. Dependencies, build-versus-buy, and no-reinvention
 
-- Run focused tests, full `scripts/release-gate.sh`, security scans, and
-  `git diff --check` before completion.
-- Preserve concise machine-readable evidence when practical.
-- Never report a pass without the command/result or direct runtime observation.
-- Default production-readiness result is `NEEDS WORK` until overwhelming evidence
-  supports approval.
-- Automated tests and documentation do not substitute for external penetration
-  testing, production-scale drills, legal/licensing review, physical-device and
-  assistive-technology testing, or timed human incident exercises.
+Classify every new responsibility as either:
 
-## Operations And Production Proof
+- **Cenvarn-owned meaning:** financial formulas, point-in-time rules, normalization policy, corporate-action interpretation, factor ranking, portfolio-ledger semantics, backtest event behavior, simulation specifications, computation identities, entitlements, narrow adapters, and product-specific explanations.
+- **Commodity infrastructure:** use an approved maintained library or platform.
 
-- Release configuration fails closed before migrations or startup.
-- Use expand/migrate/contract database changes; no destructive rollback claims
-  without compatibility or tested restore.
-- Deploy immutable artifacts through canary/staged traffic with numeric rollback
-  criteria.
-- Telemetry covers request RED metrics, analysis stages, providers/circuits,
-  caches, database pools, Redis, queues/dead letters, model failures, auth, and
-  billing. Missing telemetry is an incident.
-- Alerts have severity, owner, threshold, and executable runbook.
-- Maintain incident command, evidence preservation, customer/legal/vendor
-  escalation, and blameless corrective actions.
-- Production certification requires capacity, reliability, model integrity,
-  security, privacy/legal, observability, recovery, deployment, accessibility,
-  and incident sign-off. Code health alone is not certification.
+Without an accepted ADR and explicit user approval, do not implement or substantially reimplement:
 
-## Git, Branch, And File Safety
+- HTTP or RPC stacks, connection pools, protocol parsers, TLS, web servers, reverse proxies, or CDN behavior.
+- PostgreSQL drivers, database engines, migration engines, object stores, or persistence foundations.
+- Workflow engines, queues, schedulers, retry or lease systems, distributed locks, brokers, or durable job stores.
+- Redis or Valkey servers, clients, protocols, or generic distributed rate limiting.
+- Cryptography, password hashing, JWT/JWS/JWE, OAuth/OIDC, key management, certificate validation, webhook signatures, or random-number generators.
+- Payment clients, tax engines, card handling, or Stripe replacements.
+- XML, HTML, XBRL, JSON, CSV, Arrow, Parquet, compression, encoding, or serialization foundations. Project-owned normalization may run after maintained parsing.
+- DataFrame engines, SQL engines, vector databases, memory allocators, generic concurrency runtimes, matrix decompositions, BLAS/LAPACK, or statistical foundations.
+- Date, time-zone, calendar, currency, UUID, decimal, locale, charting, Canvas/WebGL, PDF/spreadsheet rendering, observability SDKs, package managers, build systems, test runners, linters, or formatters.
+- A custom C++ application or runtime layer.
 
-- The worktree may contain user changes. Never revert, overwrite, stage, or commit
-  unrelated work.
-- Do not use destructive Git commands. Do not amend unless explicitly requested.
-- Use `rg`/`rg --files` for search and `apply_patch` for manual edits.
-- Keep edits ASCII unless an existing file and clear need justify Unicode.
-- Do not commit secrets, generated local evidence containing sensitive data, cache,
-  screenshots not requested for evidence, or database exports.
-- Roadmap/future-version work never lands directly on `main`. Create a dedicated
-  branch named for the version or phase.
-- Keep roadmap branches current with `main`; stop and ask before resolving a merge
-  conflict caused by synchronization.
-- Scope commits to one verified phase. Do not push until focused/full checks pass
-  when the user requests checkpoint delivery.
-- `roadMap.md`/`roadmap.md` is intentionally untracked and ignored. Do not add it to
-  Git unless the user explicitly reverses that decision.
+Names do not create exceptions. `helper`, `lightweight client`, `simple queue`, `mini framework`, `internal parser`, `temporary adapter`, or `small Rust service` remains prohibited when it owns a commodity responsibility.
 
-## Communication And Delegation
+An exception requires:
 
-Communicate like a concise senior engineer:
+1. A dedicated issue.
+2. An accepted ADR.
+3. Evaluation of maintained alternatives.
+4. Production-shaped benchmarks including operational and boundary cost.
+5. Security, privacy, license, maintenance, and supply-chain review.
+6. Bounded scope and ownership.
+7. Telemetry and support plan.
+8. Rollout and rollback plan.
+9. Explicit user approval.
 
-- State facts, decisions, risks, and next action. Remove praise, filler, repeated
-  acknowledgement, and speculative narration.
-- Preserve exact technical names, commands, paths, API symbols, and error text.
-- Use short sentences or fragments when unambiguous. Use full explicit language
-  for security warnings, irreversible actions, and ordered recovery steps.
-- Do not dump raw logs; quote the decisive lines and summarize the rest.
-- For reviews, findings come first, ordered by severity with file/line references.
-- For completed changes, report outcome, verification, and real residual risk.
-- User-requested reports and explanations may be detailed; concision must not
-  remove required evidence.
+The implementing agent may not approve its own exception.
 
-Delegate only when it saves context or parallelizes independent work:
+Before adding a dependency document why it is needed, why existing capabilities are insufficient, maintenance and security status, license, runtime and bundle cost, transitive impact, and removal strategy.
 
-- Investigator: locate flows, callers, boundaries, and tests; no edits.
-- Builder: one narrow implementation spanning roughly one or two files.
-- Reviewer: inspect a completed diff for correctness, security, regression, and
-  missing tests.
-- Keep architecture, cross-cutting edits, conflict resolution, final integration,
-  and user communication in the main thread.
-- Give delegates exact scope, constraints, and expected output. Verify their work;
-  delegation does not transfer accountability.
+Use lockfiles and approved version policies.
 
-## Required Change Report
+## 27. Configuration rules
 
-For material changes, provide only the useful parts of this structure:
+- Centralize configuration.
+- Validate configuration at startup.
+- Separate environments explicitly.
+- Do not read environment variables throughout arbitrary modules.
+- Feature flags require owner, purpose, default, rollout plan, observability, and removal condition.
+- Secrets use approved secret management and never appear in logs or client bundles.
 
-### Files Modified
+## 28. Rust and native-code policy
 
-- File and reason.
+Rust is an optimization and correctness tool for deterministic CPU-heavy kernels, not a reason to rewrite the product.
 
-### Logic Change
+Python remains responsible for:
 
-- Old behavior and new behavior.
+- API and control-plane composition.
+- Provider access and rate limiting.
+- Authentication, authorization, billing, and entitlements.
+- PostgreSQL orchestration.
+- Workflow initiation and product-level recovery decisions.
+- Explanations, warnings, response formatting, and research iteration.
 
-### Verification
+Rust may own, when benchmarks justify it:
 
-- Focused tests, full gate, runtime/browser/security checks as applicable.
+- Price, corporate-action, FX, and point-in-time matrices.
+- Returns, rolling statistics, covariance, risk metrics, drawdown, and benchmark alignment.
+- Cross-sectional ranking, top-N selection, and rebalance kernels.
+- Portfolio valuation and event-driven backtesting.
+- Batch factor scoring over compact numeric tables.
+- Large Monte Carlo and randomized strategy trials.
 
-### Risks
+Rust must not own commodity infrastructure prohibited above.
 
-- Assumptions, untested external conditions, migration/compatibility concerns, and
-  follow-up evidence still required.
+### 28.1 Rust migration gate
 
-Do not force this structure onto trivial one-line tasks.
+Before moving code to Rust:
 
-## Definition Of Done
+1. Prove the path is CPU- or memory-bound using production-shaped profiling.
+2. Remove duplicate loading, row-by-row I/O, unnecessary pandas reconstruction, and avoidable serialization first.
+3. Define a language-neutral typed contract.
+4. Keep the boundary compact and columnar.
+5. Measure conversion and copying cost.
+6. Preserve the Python reference implementation until certification.
+7. Add deterministic parity fixtures and explicit tolerances.
+8. Add automatic Python fallback and engine-choice telemetry.
+9. Prove material end-to-end improvement, not only faster isolated arithmetic.
+10. Document rollback and dataset/model-version compatibility.
 
-Work is complete only when:
+Do not move small dictionary extraction, threshold mapping, explanation generation, provider calls, authorization, billing, or CRUD into Rust.
 
-- The requested behavior is implemented at the root cause.
-- Existing stocks/data remain compatible, including required new-model backfill.
-- Security, privacy, accessibility, and failure boundaries are preserved.
-- Focused tests and the complete applicable gate pass.
-- Generated assets match their source.
-- The diff contains no accidental or unrelated changes.
-- Runtime/UI behavior is directly verified when source tests cannot prove it.
-- Documentation, manifests, roadmap/release evidence, and migrations are updated
-  when the behavior or operating contract changed.
-- The final response states remaining risks honestly.
+### 28.2 Model migration rule
 
-If external proof is missing, implementation may be complete while production
-certification remains blocked. Never confuse those states.
+Do not rewrite production models one class at a time merely for language consistency.
 
-## Design Documentation
+Keep explanation-rich and threshold-oriented model orchestration in Python. Extract shared batch kernels when they are repeatedly executed across a universe.
 
-Visual implementation does not come from this file.
+Priority native candidates are:
 
-Before implementing any UI work the AI MUST read
+1. Batch price and risk statistics used by momentum, risk metrics, regime, and benchmark models.
+2. Cross-sectional ranking used by Greenblatt, factor ranking, screener ranking, top-N selection, and rebalance logic.
+3. Batch fundamental trend kernels used across profitability, FCF quality, growth quality, capital allocation, factor momentum, and point-in-time scoring.
+4. Event-driven portfolio and backtesting kernels.
+5. Large simulation workloads after workload thresholds are proven.
 
-design/README.md
+Poor native candidates include small single-company threshold models, provider-bound models, explanation layers, bias labels, market-fear labels, and parsing or orchestration code.
 
-Follow the reading order documented there.
+## 29. Deployment and migration safety
 
-Never redesign.
+For material changes:
 
-Never simplify.
+- Prefer feature flags and incremental rollout.
+- Preserve backward compatibility during transitions.
+- Use expand-and-contract database migrations.
+- Define health checks and post-deployment verification.
+- Define rollback criteria.
+- Verify rollback does not corrupt or lose data.
+- Retain the prior path until the replacement is proven where practical.
+- Document irreversible decisions and forward recovery.
+- Keep Python fallback for native engines during certification.
 
-Never remove information.
+A feature is not production-ready solely because tests pass.
 
-## Notion source synchronization
+## 30. Pull request requirements
 
-The connected Notion workspace is the detailed source of truth for current
-engineering and design standards. The repository mirrors are the execution layer.
-For UI work, load the Notion **New UI Design Implementation Plan**, its attached
-prototype, and the applicable standards listed by the workspace page before
-editing code. If local Markdown conflicts with Notion, update the local mirror
-before implementation and record the synchronization in the task report.
+Every pull request must explain:
 
-Implement exactly as documented.
+- What changed.
+- Why it changed.
+- The verified root cause.
+- The written design or issue-resolution document.
+- What was intentionally not changed.
+- Linked issue and ADRs.
+- Standards loaded and applied.
+- Existing code or platform features reused.
+- Tests and checks actually executed.
+- Failure modes considered.
+- Security and privacy impact.
+- Database and migration impact.
+- Financial-methodology impact.
+- Performance and resource impact.
+- Observability added or changed.
+- Deployment and rollback plan.
+- Screenshots or recordings for visible UI changes.
+
+Keep pull requests focused and reviewable. Separate unrelated cleanup. Do not self-approve material changes where independent review is available.
+
+## 31. Completion gate
+
+Do not declare a task complete until all applicable items pass:
+
+- Requirements and acceptance criteria are satisfied.
+- The issue is solved in writing and the written solution matches the final implementation.
+- Applicable standards were loaded and followed.
+- Every non-trivial class and function has its required contract and documentation.
+- Documentation was written before implementation and reconciled afterward.
+- Formatting passes.
+- Linting passes.
+- Type checking passes.
+- Unit, integration, contract, migration, accessibility, performance, parity, fallback, and end-to-end tests pass as applicable.
+- Security review is complete as applicable.
+- Financial-correctness evidence is complete as applicable.
+- Observability and failure handling are implemented.
+- No unrelated changes were introduced.
+- Generated files and documentation are updated.
+- Deployment and rollback implications are documented.
+- The final diff was compared against the original issue and written design.
+
+# Safe Change Isolation
+
+Never implement an issue, bug fix, refactor, migration, or experiment directly on `main`.
+
+For every change:
+
+1. Create a dedicated Git branch named for the issue.
+2. Use a separate Git worktree when isolation from the current working directory is useful.
+3. Write the design, affected systems, failure modes, tests, migration plan, and rollback plan before implementation.
+4. Add or update tests that reproduce the defect or prove the intended behavior.
+5. Keep the change scoped to the issue. Do not combine unrelated cleanup.
+6. Run all relevant unit, integration, contract, migration, security, and end-to-end tests.
+7. Open a draft pull request and preserve evidence of the test results.
+8. Do not merge while correctness, compatibility, data migration, deployment, or rollback remains uncertain.
+9. Use a feature flag, shadow path, or disabled-by-default configuration when incomplete code must be merged safely.
+10. Never push directly to `main`.
+
+Create a separate repository only when the work is an independently deployable service, reusable package, isolated research project, or product with a separate ownership and release lifecycle.
+
+Risk alone is not sufficient reason to create another repository. Risky changes should normally be isolated with branches, worktrees, tests, feature flags, and pull-request gates.
+
+The final task report identifies:
+
+1. Files changed.
+2. Behavior implemented.
+3. Written design or issue-resolution artifact used.
+4. Standards applied.
+5. Tests and checks actually run.
+6. Known limitations or follow-up work.
+7. Migration, rollout, and rollback considerations.
+8. Performance and resource evidence where relevant.
+9. Engine choice and parity evidence for native work.
+
+Never claim a check passed unless it was actually executed and its result was observed.
