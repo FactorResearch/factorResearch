@@ -4,9 +4,11 @@
 
 This file is the mandatory entry point for every AI coding task in this repository.
 
-These instructions apply to all files under this directory unless a more specific nested `AGENTS.md` exists. A nested file may add stricter local rules but must not weaken repository-wide safety, security, testing, documentation, financial correctness, data integrity, paper-first design, or no-reinvention requirements.
+These instructions apply to all files under this directory unless a more specific nested `AI_WORKFLOW.md` exists. A nested file may add stricter local rules but must not weaken repository-wide safety, security, testing, documentation, financial correctness, data integrity, paper-first design, or no-reinvention requirements.
 
 Notion contains the full engineering standards. This file defines the startup sequence, minimum rules, routing requirements, and completion gates that always apply.
+
+When the user says `Run ISSUE_046`, the AI open `AI_WORKFLOW.md` and read from there.
 
 `AI_CONTEXT.md` contains repository-specific product memory, Ponytail simplicity rules, financial-model conventions, design constraints, and current architectural context. It is mandatory reading for every non-trivial task and must never be silently replaced by a generic agent template.
 
