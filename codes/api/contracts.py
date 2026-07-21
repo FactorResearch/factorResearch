@@ -102,8 +102,14 @@ def decode_cursor(cursor: str) -> int:
 
 
 def collection_response(
-    data: list[object], page: int, page_size: int, total_items: int, request_id: str,
-    *, next_cursor: str | None = None, previous_cursor: str | None = None,
+    data: list[object],
+    page: int,
+    page_size: int,
+    total_items: int,
+    request_id: str,
+    *,
+    next_cursor: str | None = None,
+    previous_cursor: str | None = None,
     errors: list[dict[str, object]] | None = None,
 ) -> CollectionResponse:
     result: CollectionResponse = {

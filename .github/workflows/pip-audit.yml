@@ -4,12 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "requirements.txt"
+      - "pyproject.toml"
+      - "uv.lock"
       - ".github/workflows/pip-audit.yml"
   pull_request:
     branches: [main]
     paths:
-      - "requirements.txt"
+      - "pyproject.toml"
+      - "uv.lock"
   schedule:
     # Weekly scan even if no dependency changes are pushed
     - cron: "0 6 * * 1"
@@ -19,14 +21,19 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v9.0.0
         with:
           python-version: "3.12"
+          version: "0.11.30"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
-      - name: Install pip-audit
-        run: pip install pip-audit
+      - name: Synchronize locked audit tooling
+        run: uv sync --frozen
 
-      - name: Run pip-audit against requirements.txt
-        run: pip-audit -r requirements.txt --strict
+      - name: Export and audit the locked runtime graph
+        run: |
+          uv export --quiet --frozen --no-dev --no-emit-project --output-file /tmp/factorresearch-runtime.txt
+          uv run --frozen pip-audit -r /tmp/factorresearch-runtime.txt --strict

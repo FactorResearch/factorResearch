@@ -28,7 +28,7 @@ mkdir ~/graham-app
 cd ~/graham-app
 # Copy all Python files here: app.py, graham.py, quality.py, momentum.py, 
 # scorer.py, screener.py, universe.py, sec_data.py, cache.py, 
-# api_fetcher.py, requirements.txt
+# api_fetcher.py, pyproject.toml, uv.lock
 # Copy assets/style.css and assets/style.scss into assets/ folder
 ```
 
@@ -43,7 +43,7 @@ source venv/bin/activate   # Linux/Mac
 
 ### 3. Install Dependencies
 ```bash
-pip install -r requirements.txt
+uv sync --frozen
 ```
 
 Takes ~2 minutes. Installs dash, plotly, pandas, numpy, requests, alpha_vantage.
@@ -296,7 +296,7 @@ sass assets/style.scss assets/style.css
 ### ModuleNotFoundError
 ```bash
 source venv/bin/activate
-pip install -r requirements.txt
+uv sync --frozen
 ```
 
 ### Port 8050 already in use

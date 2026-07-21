@@ -3,7 +3,7 @@
 Run only against an approved staging environment with synthetic accounts/data and provider stubs. Never point certification traffic at live external market-data providers.
 
 ```bash
-python -m pip install -r requirements-proof.txt
+uv sync --frozen
 locust -f load/locustfile.py --headless --host "$STAGING_URL" \
   --users 100 --spawn-rate 20 --run-time 60m \
   --csv artifacts/production-proof/02-performance/peak

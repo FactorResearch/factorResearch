@@ -135,7 +135,9 @@ country branch merely to make its graph look cleaner.
 
 ### Prerequisites
 
-- Python 3.11 or newer.
+- Python 3.12 (Python 3.13 is tested as the next supported minor).
+- [uv](https://docs.astral.sh/uv/) 0.11.30 or a compatible newer release.
+- Node.js 24 with npm 11 (Node.js 22 remains in the compatibility matrix).
 - PostgreSQL and PostgreSQL client tools.
 - Redis for production session/rate-limit consistency. Local development can
   use the documented in-memory fallback.
@@ -144,10 +146,7 @@ country branch merely to make its graph look cleaner.
 ### Install
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+uv sync --frozen
 ```
 
 ### Databases
@@ -415,24 +414,16 @@ or distributing its code or container image:
 
 ### Dependency and Asset Audit
 
-Run the audit in a clean virtual environment built from the production
-requirements:
+Run the audit against the exact production graph exported from `uv.lock`:
 
 ```bash
-python3 -m venv /tmp/graham-release-audit-venv
-source /tmp/graham-release-audit-venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt pip-audit pip-licenses
-
-pip-audit -r requirements.txt --strict
-pip-licenses \
-  --format=plain-vertical \
-  --with-urls \
-  --with-license-file \
-  --no-license-path
+uv sync --frozen
+uv export --quiet --frozen --no-dev --no-emit-project --output-file /tmp/factorresearch-runtime.txt
+uv run --frozen pip-audit -r /tmp/factorresearch-runtime.txt --strict
+npm ci
+npm audit --audit-level=high
 
 find assets -type f -print | sort
-deactivate
 ```
 
 The tools provide an inventory; they do not give legal approval. For every

@@ -16,12 +16,14 @@ PROTECTED_PYTHON=(
   codes/services/product_analytics.py
   codes/app_modules/analytics_context.py
   codes/app_modules/composition.py
+  codes/services/analysis_snapshot_service.py
   scripts/check-architecture.py
   scripts/check-duplication.py
   scripts/architecture-report.py
   codes/api/compatibility.py
   tests/test_issue_076_architecture.py
   tests/test_issue_077_migrations.py
+  tests/test_issue_145_dependencies.py
   tests/api/test_v1_contract.py
   tests/api/test_api_compatibility.py
   tests/test_issue_061_domain_responses.py

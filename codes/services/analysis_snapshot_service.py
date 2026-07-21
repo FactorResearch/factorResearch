@@ -7,6 +7,7 @@ import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import date, datetime
+from functools import partial
 from typing import Any
 
 from codes.core.db_pool import ConnectionPool
@@ -114,9 +115,32 @@ def _database_urls() -> list[str]:
 
 @contextmanager
 def _connect() -> Iterator:
+    """Yield a healthy pooled Psycopg connection for snapshot persistence.
+
+    The service tries configured analytics and market database URLs in priority
+    order and reuses one bounded pool per distinct URL. Psycopg is the sole
+    supported PostgreSQL driver; adding a fallback driver would create a second
+    undeclared persistence contract and inconsistent error behavior.
+
+    Yields:
+        A live Psycopg connection owned temporarily by the caller. The pool
+        returns the connection when the context exits.
+
+    Raises:
+        RuntimeError: If no analytics or market database URL is configured.
+        Exception: The final driver or health-check error when no configured
+            database can supply a usable pool.
+
+    Side Effects:
+        Creates or evicts bounded process-local connection pools and opens
+        PostgreSQL connections. It does not execute schema or data statements.
+    """
+
     urls = _database_urls()
     if not urls:
-        raise RuntimeError("An analytics or market database URL is required for analysis snapshots.")
+        raise RuntimeError(
+            "An analytics or market database URL is required for analysis snapshots."
+        )
 
     pool = None
     last_error = None
@@ -125,12 +149,9 @@ def _connect() -> Iterator:
             with _pool_lock:
                 pool = _pools.get(dsn)
                 if pool is None:
-                    try:
-                        import psycopg
-                        connect = lambda dsn=dsn: psycopg.connect(dsn)
-                    except ImportError:
-                        import psycopg2
-                        connect = lambda dsn=dsn: psycopg2.connect(dsn)
+                    import psycopg
+
+                    connect = partial(psycopg.connect, dsn)
                     pool = _pools[dsn] = ConnectionPool(
                         connect,
                         max_size=int(os.environ.get("SNAPSHOT_DATABASE_POOL_SIZE", "3")),
@@ -230,11 +251,13 @@ def save_standard_snapshot(
                     snapshot.market_price,
                     snapshot.market_fear_score,
                     snapshot.sector,
-                    json.dumps({
-                        "metrics": snapshot.official_metrics or {},
-                        "analysis_manifest": snapshot.analysis_manifest or {},
-                        "provenance": analysis_result.get("provenance") or {},
-                    }),
+                    json.dumps(
+                        {
+                            "metrics": snapshot.official_metrics or {},
+                            "analysis_manifest": snapshot.analysis_manifest or {},
+                            "provenance": analysis_result.get("provenance") or {},
+                        }
+                    ),
                 ),
             )
             row = cur.fetchone()
@@ -244,7 +267,9 @@ def save_standard_snapshot(
     )
 
 
-def get_company_snapshots_by_slug(slug: str, *, limit: int = 12, offset: int = 0) -> list[AnalysisSnapshot]:
+def get_company_snapshots_by_slug(
+    slug: str, *, limit: int = 12, offset: int = 0
+) -> list[AnalysisSnapshot]:
     """Return a paginated official history for an exact normalized company slug."""
     with _connect() as conn:
         with conn.cursor() as cur:
@@ -260,7 +285,7 @@ def get_company_snapshots_by_slug(slug: str, *, limit: int = 12, offset: int = 0
     if not ticker:
         return []
     history = list_ticker_snapshots(ticker, limit=max(1, min(limit + offset, 120)))
-    return history[offset:offset + limit]
+    return history[offset : offset + limit]
 
 
 def save_custom_snapshot(
@@ -284,7 +309,9 @@ def save_custom_snapshot(
         company_name=str(analysis_result.get("name") or analysis_result.get("symbol") or ""),
         formula_name=formula_name,
         formula_version=formula_version,
-        composite_score=float(analysis_result["composite_score"]) if analysis_result.get("composite_score") is not None else None,
+        composite_score=float(analysis_result["composite_score"])
+        if analysis_result.get("composite_score") is not None
+        else None,
         factors=dict(factors),
         backtest_summary=dict(backtest_summary or {}),
         default_comparison=dict(default_comparison or {}),
@@ -305,11 +332,21 @@ def save_custom_snapshot(
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s::jsonb, %s::jsonb, %s::jsonb, %s::jsonb, %s, %s)
                 RETURNING created_at
                 """,
-                (snapshot.id, snapshot.user_id, snapshot.ticker, snapshot.company_name,
-                 snapshot.formula_name, snapshot.formula_version, snapshot.composite_score,
-                 json.dumps(snapshot.factors), json.dumps(snapshot.backtest_summary),
-                 json.dumps(snapshot.default_comparison), json.dumps(snapshot.benchmark_comparison),
-                 snapshot.notes, snapshot.analysis_date),
+                (
+                    snapshot.id,
+                    snapshot.user_id,
+                    snapshot.ticker,
+                    snapshot.company_name,
+                    snapshot.formula_name,
+                    snapshot.formula_version,
+                    snapshot.composite_score,
+                    json.dumps(snapshot.factors),
+                    json.dumps(snapshot.backtest_summary),
+                    json.dumps(snapshot.default_comparison),
+                    json.dumps(snapshot.benchmark_comparison),
+                    snapshot.notes,
+                    snapshot.analysis_date,
+                ),
             )
             created_at = cur.fetchone()[0]
     return CustomAnalysisSnapshot(**{**snapshot.__dict__, "created_at": created_at})
@@ -317,15 +354,26 @@ def save_custom_snapshot(
 
 def _custom_from_row(row) -> CustomAnalysisSnapshot:
     return CustomAnalysisSnapshot(
-        id=row[0], user_id=row[1], ticker=row[2], company_name=row[3],
-        formula_name=row[4], formula_version=row[5], composite_score=row[6],
-        factors=row[7] or {}, backtest_summary=row[8] or {},
-        default_comparison=row[9] or {}, benchmark_comparison=row[10] or {},
-        notes=row[11] or "", analysis_date=row[12], created_at=row[13],
+        id=row[0],
+        user_id=row[1],
+        ticker=row[2],
+        company_name=row[3],
+        formula_name=row[4],
+        formula_version=row[5],
+        composite_score=row[6],
+        factors=row[7] or {},
+        backtest_summary=row[8] or {},
+        default_comparison=row[9] or {},
+        benchmark_comparison=row[10] or {},
+        notes=row[11] or "",
+        analysis_date=row[12],
+        created_at=row[13],
     )
 
 
-def list_custom_snapshots(user_id: str, ticker: str, *, limit: int = 12, offset: int = 0) -> list[CustomAnalysisSnapshot]:
+def list_custom_snapshots(
+    user_id: str, ticker: str, *, limit: int = 12, offset: int = 0
+) -> list[CustomAnalysisSnapshot]:
     with _connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -506,7 +554,9 @@ def _snapshot_from_row(row) -> AnalysisSnapshot:
     )
 
 
-def list_related_snapshots(snapshot: AnalysisSnapshot, limit: int = 5) -> dict[str, list[AnalysisSnapshot]]:
+def list_related_snapshots(
+    snapshot: AnalysisSnapshot, limit: int = 5
+) -> dict[str, list[AnalysisSnapshot]]:
     """Return SEO link targets from the latest public snapshots.
 
     Links are intentionally based only on stored STANDARD snapshots so public

@@ -5,11 +5,14 @@ def test_pr_workflow_runs_locked_release_gate():
     workflow = Path(".github/workflows/pr-tests.yml").read_text()
     gate = Path("scripts/release-gate.sh").read_text()
     assert "./scripts/release-gate.sh" in workflow
+    assert "uv sync --frozen" in workflow
+    assert 'python-version: "3.13"' in workflow
     assert "pytest -q" in gate
     assert "coverage run --source=codes" in gate
     assert "python -m compileall" in gate
-    assert "python -m pip_audit -r requirements.txt --strict" in gate
-    assert "-r requirements-proof.txt" in workflow
+    assert "uv lock --check" in gate
+    assert "python -m pip_audit -r /tmp/factorresearch-runtime.txt --strict" in gate
+    assert "pip install" not in workflow
     assert "node --check" in gate
     assert "npx --no-install sass" in gate
     assert "npx --yes" not in gate

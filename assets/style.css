@@ -80,8 +80,8 @@ body.light {
   --fr-density-comfortable: 1;
   --fr-density-compact: 0.75;
   --fr-density-spacious: 1.25;
-  --fr-font-family-body: "Manrope", "Segoe UI", sans-serif;
-  --fr-font-family-numeric: "IBM Plex Mono", monospace;
+  --fr-font-family-body: 'Manrope', 'Segoe UI', sans-serif;
+  --fr-font-family-numeric: 'IBM Plex Mono', monospace;
   --fr-font-weight-bold: 700;
   --fr-font-weight-medium: 500;
   --fr-font-weight-regular: 400;
@@ -874,6 +874,20 @@ body.light .app-footer {
   background: none;
   color: inherit;
   font: inherit;
+}
+.analyze-btn:focus-visible,
+.load-btn:focus-visible,
+.pagination-btn:focus-visible,
+.quick-peek-open-analysis-btn:focus-visible,
+.quick-peek-close-btn:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
+.analyze-btn,
+.load-btn,
+.pagination-btn,
+.quick-peek-open-analysis-btn,
+.quick-peek-close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -884,14 +898,6 @@ body.light .app-footer {
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
-}
-.analyze-btn:focus-visible,
-.load-btn:focus-visible,
-.pagination-btn:focus-visible,
-.quick-peek-open-analysis-btn:focus-visible,
-.quick-peek-close-btn:focus-visible {
-  outline: 2px solid var(--fr-accent);
-  outline-offset: 2px;
 }
 .analyze-btn:hover,
 .load-btn:hover,
@@ -972,6 +978,14 @@ body.light .app-footer {
   background: none;
   color: inherit;
   font: inherit;
+}
+.topbar-nav-btn:focus-visible,
+.tab-btn:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
+.topbar-nav-btn,
+.tab-btn {
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
   font-size: 12px;
   font-weight: 600;
@@ -985,11 +999,6 @@ body.light .app-footer {
   color: var(--fr-text-dim);
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
-}
-.topbar-nav-btn:focus-visible,
-.tab-btn:focus-visible {
-  outline: 2px solid var(--fr-accent);
-  outline-offset: 2px;
 }
 .topbar-nav-btn:hover,
 .tab-btn:hover {
@@ -1040,17 +1049,17 @@ body.light .tab-btn.active {
 .screener-view-controls {
   min-width: 0;
 }
+.screener-filter-drawer > summary:focus-visible,
+.screener-view-controls > summary:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
 .screener-filter-drawer > summary,
 .screener-view-controls > summary {
   min-height: 44px;
   align-items: center;
   cursor: pointer;
   font-weight: 700;
-}
-.screener-filter-drawer > summary:focus-visible,
-.screener-view-controls > summary:focus-visible {
-  outline: 2px solid var(--fr-accent);
-  outline-offset: 2px;
 }
 
 .screener-filter-drawer {
@@ -1130,6 +1139,14 @@ body.light .tab-btn.active {
   background: none;
   color: inherit;
   font: inherit;
+}
+.screener-index-pill:focus-visible,
+.screener-country-tab:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
+.screener-index-pill,
+.screener-country-tab {
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
   font-size: 11px;
   font-weight: 600;
@@ -1145,11 +1162,6 @@ body.light .tab-btn.active {
   background: rgba(255, 255, 255, 0.04);
   color: var(--fr-text-dim);
   cursor: pointer;
-}
-.screener-index-pill:focus-visible,
-.screener-country-tab:focus-visible {
-  outline: 2px solid var(--fr-accent);
-  outline-offset: 2px;
 }
 .screener-index-pill.active,
 .screener-country-tab.active {
@@ -3016,6 +3028,16 @@ body.light .portfolio-delete-btn {
   background: none;
   color: inherit;
   font: inherit;
+}
+#tab-portfolio .shares-save-btn:focus-visible,
+#tab-portfolio .portfolio-remove-btn:focus-visible,
+#tab-portfolio .portfolio-action-btn:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
+#tab-portfolio .shares-save-btn,
+#tab-portfolio .portfolio-remove-btn,
+#tab-portfolio .portfolio-action-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3023,12 +3045,6 @@ body.light .portfolio-delete-btn {
   border: 1px solid var(--fr-border);
   border-radius: 2px;
   cursor: pointer;
-}
-#tab-portfolio .shares-save-btn:focus-visible,
-#tab-portfolio .portfolio-remove-btn:focus-visible,
-#tab-portfolio .portfolio-action-btn:focus-visible {
-  outline: 2px solid var(--fr-accent);
-  outline-offset: 2px;
 }
 #tab-portfolio .shares-save-btn {
   width: 38px;
@@ -3326,6 +3342,12 @@ body.light .risk-row .metric_cell {
 .legal-modal-overlay .legal-modal-actions {
   border-top: 1px solid var(--fr-border);
 }
+.legal-modal-overlay .legal-modal-close:focus-visible,
+.legal-modal-overlay .legal-modal-primary:focus-visible,
+.legal-modal-overlay .legal-modal-secondary:focus-visible {
+  outline: 2px solid var(--fr-accent);
+  outline-offset: 2px;
+}
 .legal-modal-overlay .legal-modal-close,
 .legal-modal-overlay .legal-modal-primary,
 .legal-modal-overlay .legal-modal-secondary {
@@ -3338,12 +3360,6 @@ body.light .risk-row .metric_cell {
   border-radius: 2px;
   color: var(--fr-text-dim);
   font-weight: 800;
-}
-.legal-modal-overlay .legal-modal-close:focus-visible,
-.legal-modal-overlay .legal-modal-primary:focus-visible,
-.legal-modal-overlay .legal-modal-secondary:focus-visible {
-  outline: 2px solid var(--fr-accent);
-  outline-offset: 2px;
 }
 .legal-modal-overlay .legal-modal-primary {
   border-color: transparent;
