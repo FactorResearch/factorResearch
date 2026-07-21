@@ -21,7 +21,7 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: astral-sh/setup-uv@v8
+      - uses: astral-sh/setup-uv@v9
         with:
           python-version: "3.12"
           version: "0.11.30"
