@@ -16,35 +16,35 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v8
         with:
           python-version: "3.12"
-          cache: pip
+          version: "0.11.30"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt -r requirements-proof.txt -r requirements-dev.txt pytest
+      - name: Synchronize locked Python dependencies
+        run: uv sync --frozen
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
 
       - name: Install frontend audit dependencies
         run: npm ci
 
       - name: Run release integrity gate
-        run: ./scripts/release-gate.sh
+        run: uv run --frozen ./scripts/release-gate.sh
 
       - name: Run design-system accessibility and visual regression
         env:
           WEBDRIVER_URL: http://127.0.0.1:4444
           DESIGN_SYSTEM_URL: http://127.0.0.1:8056/
         run: |
-          PYTHONPATH=. python scripts/design-system-workshop.py >/tmp/design-system-workshop.log 2>&1 &
+          PYTHONPATH=. uv run --frozen python scripts/design-system-workshop.py >/tmp/design-system-workshop.log 2>&1 &
           geckodriver --port 4444 >/tmp/design-system-geckodriver.log 2>&1 &
           for attempt in {1..30}; do
             curl --fail --silent http://127.0.0.1:8056/ >/dev/null && curl --fail --silent http://127.0.0.1:4444/status >/dev/null && break
@@ -58,7 +58,7 @@ jobs:
           A11Y_APP_URL: http://127.0.0.1:8055/
           A11Y_OUTPUT: /tmp/accessibility-audit-results.json
         run: |
-          APP_SKIP_STARTUP=1 APP_FEATURE_FLAG=V1 gunicorn --bind 127.0.0.1:8055 codes.app:server >/tmp/a11y-app.log 2>&1 &
+          APP_SKIP_STARTUP=1 APP_FEATURE_FLAG=V1 uv run --frozen gunicorn --bind 127.0.0.1:8055 codes.app:server >/tmp/a11y-app.log 2>&1 &
           geckodriver --port 4445 >/tmp/a11y-geckodriver.log 2>&1 &
           for attempt in {1..30}; do
             curl --fail --silent http://127.0.0.1:8055/ >/dev/null && curl --fail --silent http://127.0.0.1:4445/status >/dev/null && break
@@ -68,7 +68,7 @@ jobs:
 
       - name: Upload architecture quality reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: architecture-quality-reports
           path: |
@@ -79,8 +79,49 @@ jobs:
 
       - name: Upload design-system visual candidates
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: design-system-visual-candidates
           path: /tmp/factorresearch-design-system-visuals
           if-no-files-found: ignore
+
+  python-next-minor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v8
+        with:
+          python-version: "3.13"
+          version: "0.11.30"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Synchronize the frozen Python 3.13 environment
+        run: uv sync --frozen --python 3.13
+
+      - name: Run next-minor compatibility tests
+        env:
+          APP_SKIP_STARTUP: "1"
+          APP_FEATURE_FLAG: V1
+          PYTHONPATH: .
+        run: uv run --frozen --python 3.13 pytest -q
+
+  node-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["22", "24"]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Verify the frozen Node graph and frontend toolchain
+        run: |
+          npm ci
+          npm run quality:frontend
+          npm audit --audit-level=high

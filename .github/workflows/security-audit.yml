@@ -15,29 +15,39 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v8
         with:
           python-version: "3.12"
-      - uses: actions/setup-node@v4
+          version: "0.11.30"
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+      - uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
-      - run: python -m pip install pip-audit bandit cyclonedx-bom
-      - run: pip-audit -r requirements.txt --strict
+      - run: uv sync --frozen
+      - name: Audit the locked Python runtime graph
+        run: |
+          uv export --quiet --frozen --no-dev --no-emit-project --output-file /tmp/factorresearch-runtime.txt
+          uv run --frozen pip-audit -r /tmp/factorresearch-runtime.txt --strict
       - name: Block medium and high SAST findings
-        run: bandit -q -ll -r codes -x tests
+        run: uv run --frozen bandit -q -ll -r codes -x tests
       - name: Report low SAST findings without blocking release
-        run: bandit -q -l -r codes -x tests || true
+        run: uv run --frozen bandit -q -l -r codes -x tests || true
       - run: npm ci && npm audit --audit-level=high
-      - name: Generate software bill of materials
-        run: cyclonedx-py requirements requirements.txt --output-format JSON --output-file sbom-python.json
-      - uses: actions/upload-artifact@v4
+      - name: Generate Python and Node software bills of materials
+        run: |
+          uv run --frozen cyclonedx-py environment --output-format JSON --output-file sbom-python.json
+          npm sbom --sbom-format cyclonedx > sbom-node.json
+      - uses: actions/upload-artifact@v6
         with:
           name: security-sbom
-          path: sbom-python.json
+          path: |
+            sbom-python.json
+            sbom-node.json
