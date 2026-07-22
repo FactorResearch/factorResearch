@@ -80,3 +80,7 @@ def compare_portfolios(user_id: str, first: str, second: str) -> dict:
 
 def delete_all_user_data(user_id: str) -> dict:
     return _portfolio.delete_all_user_data(user_id)
+
+
+def export_user_data(user_id: str) -> dict:
+    return _portfolio.export_user_data(user_id)

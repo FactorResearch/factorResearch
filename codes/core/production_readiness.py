@@ -97,6 +97,8 @@ def _service_policy_errors() -> list[str]:
         errors.append("APP_FEATURE_FLAG must be a public production tier")
     if os.environ.get("DISABLE_CSRF_DEV", "").lower() in {"1", "true", "yes"}:
         errors.append("DISABLE_CSRF_DEV cannot be enabled in production")
+    if os.environ.get("PORTFOLIO_STORAGE_BACKEND", "").strip().lower() == "cache":
+        errors.append("PORTFOLIO_STORAGE_BACKEND cannot use cache in production")
     return errors
 
 

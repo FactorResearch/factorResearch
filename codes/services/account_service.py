@@ -128,7 +128,13 @@ def delete_account_data(user_id: str) -> dict:
     from codes.services.analysis_snapshot_service import delete_user_snapshots
 
     summary = portfolio_service.delete_all_user_data(user_id)
-    summary["database_records"] = db.delete_user_records(user_id)
+    account_records = db.delete_user_records(user_id)
+    summary.setdefault("database_records", {}).update(account_records)
     summary["analytics_events"] = analytics_db.delete_identity_events(user_id)
     summary["custom_snapshots"] = delete_user_snapshots(user_id)
     return summary
+
+
+def export_account_data(user_id: str) -> dict:
+    """Return complete user-owned portfolio state, including tombstones."""
+    return {"user_id": user_id, "portfolio_data": portfolio_service.export_user_data(user_id)}

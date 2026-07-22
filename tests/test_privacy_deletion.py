@@ -16,8 +16,21 @@ def test_delete_user_records_covers_all_user_tables(monkeypatch):
     monkeypatch.setattr(db, "_ensure_user_init", lambda: None)
     monkeypatch.setattr(db, "_users_conn", lambda: _connection(connection))
     result = db.delete_user_records("user-1")
-    assert result == {"user_weights": 1, "user_usage": 1, "subscriptions": 1, "user_settings": 1}
-    assert connection.execute.call_count == 4
+    assert result == {
+        "portfolio_simulation_results": 1,
+        "portfolio_transactions": 1,
+        "portfolio_holdings": 1,
+        "portfolio_tombstones": 1,
+        "portfolio_legacy_imports": 1,
+        "portfolios": 1,
+        "idempotency_records": 1,
+        "user_weights": 1,
+        "user_usage": 1,
+        "subscriptions": 1,
+        "user_settings": 1,
+    }
+    # One tenant-context statement plus one owner-scoped delete per table.
+    assert connection.execute.call_count == 12
 
 
 def test_delete_analytics_matches_authenticated_and_anonymous_identity(monkeypatch):

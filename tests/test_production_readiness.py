@@ -34,6 +34,7 @@ def _configure(monkeypatch):
         "DATABASE_MIGRATION_MARKET_URL",
         "DATABASE_MIGRATION_USERS_URL",
         "DATABASE_MIGRATION_ANALYTICS_URL",
+        "PORTFOLIO_STORAGE_BACKEND",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -57,10 +58,12 @@ def test_preflight_rejects_incomplete_auth_and_unsafe_flags(monkeypatch):
     monkeypatch.delenv("AUTH0_CLIENT_SECRET")
     monkeypatch.setenv("APP_FEATURE_FLAG", "INTERNAL")
     monkeypatch.setenv("DISABLE_CSRF_DEV", "true")
+    monkeypatch.setenv("PORTFOLIO_STORAGE_BACKEND", "cache")
     failures = validate_production_environment()
     assert any("AUTH0_CLIENT_SECRET" in failure for failure in failures)
     assert any("public production tier" in failure for failure in failures)
     assert any("cannot be enabled" in failure for failure in failures)
+    assert any("PORTFOLIO_STORAGE_BACKEND cannot use cache" in failure for failure in failures)
 
 
 def test_preflight_requires_clerk_claim_context(monkeypatch):
