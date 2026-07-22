@@ -4,13 +4,13 @@ from codes.data import migrate
 
 
 def test_release_migration_initializes_each_schema_once(monkeypatch):
+    """The release phase applies schema and role-grant migrations once per database."""
+
     market = Mock()
     users = Mock()
     analytics = Mock()
-    grants = Mock()
     monkeypatch.setattr(migrate.db, "init_db", market)
     monkeypatch.setattr(migrate.db, "init_user_db", users)
-    monkeypatch.setattr(migrate.db, "configure_users_runtime_role", grants)
     monkeypatch.setattr(migrate.db, "_db_url", Mock(return_value="postgresql://market"))
     monkeypatch.setattr(
         migrate.db,
@@ -35,4 +35,3 @@ def test_release_migration_initializes_each_schema_once(monkeypatch):
         "postgresql://market",
         lock_timeout_seconds=30.0,
     )
-    grants.assert_called_once_with("postgresql://runtime_users@users/database", "runtime_users")

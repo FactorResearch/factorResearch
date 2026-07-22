@@ -129,8 +129,25 @@ def test_rls_verification_fails_closed_and_logs_each_table(caplog) -> None:
 def test_production_rejects_superuser_or_bypassrls_runtime(monkeypatch) -> None:
     monkeypatch.setattr(db, "is_production", lambda: True)
 
-    for role_row in (("app", True, False), ("app", False, True)):
-        with pytest.raises(RuntimeError, match="superuser or have BYPASSRLS"):
+    safe_app = [
+        False,
+        False,
+        False,
+        False,
+        False,
+        True,
+        False,
+        False,
+        True,
+        False,
+        False,
+        False,
+        False,
+    ]
+    for unsafe_index in (0, 4):
+        role_row = list(safe_app)
+        role_row[unsafe_index] = True
+        with pytest.raises(RuntimeError, match="Unsafe PostgreSQL role"):
             db._verify_runtime_users_role(_Connection([role_row]))
 
-    db._verify_runtime_users_role(_Connection([("app", False, False)]))
+    db._verify_runtime_users_role(_Connection([safe_app]))

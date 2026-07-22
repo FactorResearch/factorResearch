@@ -10,6 +10,8 @@ from contextlib import contextmanager
 
 from dotenv import load_dotenv
 
+from codes.core.config import is_production
+from codes.core.database_roles import DatabaseWorkload, verify_database_role
 from codes.core.db_pool import ConnectionPool
 from codes.data import db
 from codes.data.migrations import verify_migrations
@@ -127,6 +129,8 @@ def ensure_schema() -> None:
         if _initialized:
             return
         with _conn() as con:
+            if is_production():
+                verify_database_role(con, DatabaseWorkload.APP)
             verify_migrations(con, "analytics", required_tables=("analytics_events",))
         _initialized = True
 

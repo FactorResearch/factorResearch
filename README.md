@@ -179,6 +179,8 @@ DATABASE_USERS_URL=postgresql://localhost/factorresearch_users
 DATABASE_USERS_SERVICE_URL=postgresql://localhost/factorresearch_users
 DATABASE_ANALYTICS_URL=postgresql://localhost/factorresearch_analytics
 DATABASE_JOBS_URL=postgresql://localhost/factorresearch_jobs
+# Dedicated market ingestion/analysis worker login in production.
+DATABASE_MARKET_WORKER_URL=postgresql://localhost/factorresearch_market
 
 REDIS_URL=redis://localhost:6379/0
 
@@ -199,6 +201,13 @@ from `DATABASE_USERS_URL`. The normal users role must not be a superuser or have
 `BYPASSRLS`; it receives only tenant-table DML and remains subject to forced row-
 level security. The service credential is reserved for Stripe reconciliation,
 waitlist operations, privacy erasure, and controlled maintenance.
+
+Market ingestion and analysis workers must set `DATABASE_MARKET_WORKER_URL` to a
+login distinct from `DATABASE_MARKET_URL` and must not receive users, service, or
+migration credentials. Apply the canonical PostgreSQL roles and database access
+scripts before the release migration. The complete role matrix, blue/green
+rotation procedure, emergency revocation steps, and verification contract are in
+[`docs/issue-082-postgresql-role-operations.md`](docs/issue-082-postgresql-role-operations.md).
 
 Initialize every schema through the explicit release migration command:
 
@@ -238,6 +247,7 @@ The production processes declared by `Procfile` are:
 ./scripts/release-migrate.sh
 gunicorn --bind 0.0.0.0:${PORT:-8050} codes.app:server
 ANALYSIS_BACKGROUND_JOBS=1 PROCESS_ROLE=analysis-worker \
+  DATABASE_MARKET_WORKER_URL=postgresql://worker@localhost/factorresearch_market \
   python -m codes.services.analysis_scheduler
 ```
 

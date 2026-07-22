@@ -30,6 +30,18 @@ records. In production its PostgreSQL role must not be a superuser or have
 for Stripe reconciliation, waitlist, privacy erasure, and controlled service
 workflows. Rotate either through the deployment secret manager; never expose
 migration or service URLs to clients or logs.
+
+`DATABASE_MARKET_WORKER_URL` is the restart-required market-worker credential.
+Production processes labelled `analysis-worker`, `canada-ingest-worker`,
+`market-worker`, or `sec-worker` require it and must not receive users, service,
+or migration URLs. Web and worker market URLs must use distinct PostgreSQL LOGIN
+principals with membership in `cenvarn_app` and `cenvarn_market_worker`
+respectively. Environment-specific blue/green LOGIN names are allowed; startup
+verifies canonical membership rather than a hard-coded login name.
+
+Canonical role provisioning, grants, ownership, no-downtime rotation, emergency
+revocation, and monitoring are defined in
+`docs/issue-082-postgresql-role-operations.md`.
 # Feature flags
 Flags require owner, purpose, rollout plan, default behavior, telemetry, expiry date, and removal issue.
 # Reproducibility

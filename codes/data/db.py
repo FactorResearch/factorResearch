@@ -35,6 +35,11 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 
 from codes.core.config import is_production
+from codes.core.database_roles import (
+    DatabaseWorkload,
+    is_market_worker_process,
+    verify_database_role,
+)
 from codes.core.db_pool import ConnectionPool
 from codes.data.migrations import (
     DatabaseNotReadyError,
@@ -2209,6 +2214,15 @@ def list_composite_score_history(ticker: str, limit: int = 90) -> list[dict]:
 
 
 def _db_url() -> str:
+    process_role = os.environ.get("PROCESS_ROLE")
+    worker_url = os.environ.get("DATABASE_MARKET_WORKER_URL")
+    if is_market_worker_process(process_role):
+        if worker_url:
+            return worker_url
+        if is_production():
+            raise RuntimeError(
+                "DATABASE_MARKET_WORKER_URL is required for production market workers"
+            )
     url = os.environ.get("DATABASE_MARKET_URL")
     if not url:
         raise RuntimeError(
@@ -2360,6 +2374,8 @@ def init_db(
     url = database_url or _db_url()
     bootstrap_sql = "\n".join((_CREATE_MARKET_TABLES, *additional_bootstrap_sql))
     with _pool(url).connection() as con:
+        if is_production():
+            verify_database_role(con, DatabaseWorkload.MIGRATION)
         apply_migrations(
             con,
             "market",
@@ -2394,6 +2410,8 @@ def init_user_db(
     """
     url = database_url or _users_db_url()
     with _pool(url).connection() as con:
+        if is_production():
+            verify_database_role(con, DatabaseWorkload.MIGRATION)
         apply_migrations(
             con,
             "users",
@@ -2401,42 +2419,6 @@ def init_user_db(
             lock_timeout_seconds=lock_timeout_seconds,
         )
         _verify_users_rls(con)
-
-
-def configure_users_runtime_role(database_url: str, runtime_role: str) -> None:
-    """Grant the normal runtime role only tenant-scoped users DML privileges.
-
-    Args:
-        database_url: Migration-role URL used by the release process.
-        runtime_role: Normal application role parsed from ``DATABASE_USERS_URL``.
-
-    Returns:
-        None after schema, table, and required sequence grants commit.
-
-    Raises:
-        ValueError: If the role name is empty.
-        Exception: Propagates PostgreSQL identifier or grant failures.
-
-    Side Effects:
-        Grants no DDL, role, waitlist, or service-only privileges. Forced RLS
-        remains the authoritative row boundary for every granted table.
-    """
-    normalized_role = str(runtime_role or "").strip()
-    if not normalized_role:
-        raise ValueError("A PostgreSQL users runtime role is required")
-    role = sql.Identifier(normalized_role)
-    tables = sql.SQL(", ").join(
-        sql.Identifier(table_name) for table_name, _owner_column in _USER_OWNED_TABLES
-    )
-    with _pool(database_url).connection() as connection:
-        connection.execute(sql.SQL("GRANT USAGE ON SCHEMA public TO {}").format(role))
-        connection.execute(
-            sql.SQL("GRANT SELECT, INSERT, UPDATE, DELETE ON {} TO {}").format(tables, role)
-        )
-        connection.execute(sql.SQL("GRANT SELECT ON schema_migrations TO {}").format(role))
-        connection.execute(
-            sql.SQL("GRANT USAGE, SELECT ON SEQUENCE subscriptions_id_seq TO {}").format(role)
-        )
 
 
 def verify_market_database() -> None:
@@ -2455,45 +2437,36 @@ def verify_market_database() -> None:
     """
     verify_runtime_credential_boundary()
     with _conn() as con:
+        if is_production():
+            workload = (
+                DatabaseWorkload.MARKET_WORKER
+                if is_market_worker_process(os.environ.get("PROCESS_ROLE"))
+                else DatabaseWorkload.APP
+            )
+            verify_database_role(con, workload)
         verify_migrations(con, "market", required_tables=_MARKET_REQUIRED_TABLES)
 
 
 def _verify_runtime_users_role(connection: MigrationConnection) -> None:
-    """Reject a production application role capable of bypassing tenant RLS.
+    """Reject a production users identity outside the canonical app profile.
 
     Args:
         connection: Open Psycopg-compatible normal users-database connection.
 
     Returns:
-        None outside production or when the connected role is neither a
-        superuser nor marked ``BYPASSRLS``.
+        None outside production or after all app-role invariants pass.
 
     Raises:
         RuntimeError: If production uses an unsafe or uninspectable role.
         Exception: Propagates PostgreSQL catalog failures.
 
     Side Effects:
-        Reads ``pg_roles`` without logging the role or credential value.
+        Reads bounded PostgreSQL catalogs without logging login or credential
+        values.
     """
     if not is_production():
         return
-    row = connection.execute(
-        """
-        SELECT rolname, rolsuper, rolbypassrls
-        FROM pg_roles
-        WHERE rolname = current_user
-        """
-    ).fetchone()
-    if not row:
-        raise RuntimeError("Unable to verify the PostgreSQL users runtime role")
-    if isinstance(row, dict):
-        is_superuser = bool(row.get("rolsuper"))
-        bypasses_rls = bool(row.get("rolbypassrls"))
-    else:
-        is_superuser = bool(row[1])
-        bypasses_rls = bool(row[2])
-    if is_superuser or bypasses_rls:
-        raise RuntimeError("Production users runtime role must not be superuser or have BYPASSRLS")
+    verify_database_role(connection, DatabaseWorkload.APP)
 
 
 def _verify_users_rls(connection: MigrationConnection) -> None:
@@ -2556,6 +2529,118 @@ def _verify_users_rls(connection: MigrationConnection) -> None:
         )
 
 
+def _verify_users_service_policies(connection: MigrationConnection) -> None:
+    """Verify explicit service-role access on every forced-RLS table.
+
+    Args:
+        connection: Open users-database connection with catalog visibility.
+
+    Returns:
+        None after every protected table exposes exactly the named permissive
+        policy to ``cenvarn_service``.
+
+    Raises:
+        DatabaseNotReadyError: If any service policy is absent or malformed.
+        Exception: Propagates PostgreSQL catalog failures.
+
+    Side Effects:
+        Performs bounded metadata reads only. Tenant rows and login identities
+        are never inspected or logged.
+    """
+
+    for table_name, _owner_column in _USER_OWNED_TABLES:
+        policy_name = f"{table_name}_service_access"
+        row = connection.execute(
+            """
+            SELECT EXISTS (
+                SELECT 1
+                FROM pg_policies
+                WHERE schemaname = 'public'
+                  AND tablename = %(table_name)s
+                  AND policyname = %(policy_name)s
+                  AND cmd = 'ALL'
+                  AND 'cenvarn_service' = ANY(roles)
+                  AND qual = 'true'
+                  AND with_check = 'true'
+            )
+            """,
+            {"table_name": table_name, "policy_name": policy_name},
+        ).fetchone()
+        verified = bool(row.get("exists")) if isinstance(row, dict) else bool(row and row[0])
+        if not verified:
+            raise DatabaseNotReadyError(
+                f"Users database service policy is incomplete for {table_name}"
+            )
+
+
+def _verify_users_table_privileges(
+    connection: MigrationConnection,
+    workload: DatabaseWorkload,
+) -> None:
+    """Verify app or service DML without granting app access to waitlist rows.
+
+    Args:
+        connection: Open users-database connection authenticated as the
+            workload being inspected.
+        workload: Either the normal app or explicit service profile.
+
+    Returns:
+        None when every protected table has required DML and waitlist access is
+        present only for the service workload.
+
+    Raises:
+        ValueError: If called for a workload not used by the users runtime.
+        RuntimeError: If a required grant is missing or app access is excessive.
+        Exception: Propagates PostgreSQL privilege inspection failures.
+
+    Side Effects:
+        Performs bounded privilege checks against fixed repository table names.
+    """
+
+    if workload not in {DatabaseWorkload.APP, DatabaseWorkload.SERVICE}:
+        raise ValueError("Users table privileges are defined only for app and service roles")
+    for table_name, _owner_column in _USER_OWNED_TABLES:
+        row = connection.execute(
+            """
+            SELECT
+                has_table_privilege(current_user, %(table_name)s, 'SELECT'),
+                has_table_privilege(current_user, %(table_name)s, 'INSERT'),
+                has_table_privilege(current_user, %(table_name)s, 'UPDATE'),
+                has_table_privilege(current_user, %(table_name)s, 'DELETE')
+            """,
+            {"table_name": table_name},
+        ).fetchone()
+        grants = tuple(bool(value) for value in row) if row is not None else ()
+        if grants != (True, True, True, True):
+            raise RuntimeError(
+                f"PostgreSQL {workload.value} privileges are incomplete for {table_name}"
+            )
+    waitlist_row = connection.execute(
+        """
+        SELECT
+            has_table_privilege(current_user, 'waitlist_signups', 'SELECT'),
+            has_table_privilege(current_user, 'waitlist_signups', 'INSERT'),
+            has_table_privilege(current_user, 'waitlist_signups', 'UPDATE'),
+            has_table_privilege(current_user, 'waitlist_signups', 'DELETE')
+        """
+    ).fetchone()
+    waitlist_grants = tuple(bool(value) for value in waitlist_row) if waitlist_row else ()
+    expected = (
+        (True, True, True, True)
+        if workload is DatabaseWorkload.SERVICE
+        else (
+            False,
+            False,
+            False,
+            False,
+        )
+    )
+    if waitlist_grants != expected:
+        raise RuntimeError(
+            f"PostgreSQL {workload.value} waitlist privileges violate least privilege"
+        )
+
+
 def verify_users_database() -> None:
     """Fail closed unless the runtime users database is fully initialized.
 
@@ -2578,6 +2663,13 @@ def verify_users_database() -> None:
         _verify_runtime_users_role(con)
         verify_migrations(con, "users", required_tables=_USERS_REQUIRED_TABLES)
         _verify_users_rls(con)
+        if is_production():
+            _verify_users_service_policies(con)
+            _verify_users_table_privileges(con, DatabaseWorkload.APP)
+    if is_production():
+        with _pool(_users_service_db_url()).connection() as service_connection:
+            verify_database_role(service_connection, DatabaseWorkload.SERVICE)
+            _verify_users_table_privileges(service_connection, DatabaseWorkload.SERVICE)
 
 
 def verify_runtime_databases() -> None:
@@ -2610,7 +2702,8 @@ def verify_runtime_credential_boundary() -> None:
     Side Effects:
         Reads environment variable names only. Values are never read or logged.
     """
-    if os.environ.get("PROCESS_ROLE", "").strip().lower() == "migration":
+    process_role = os.environ.get("PROCESS_ROLE", "").strip().lower()
+    if process_role == "migration":
         return
     exposed = [name for name in _MIGRATION_CREDENTIAL_NAMES if name in os.environ]
     if exposed:
@@ -2618,6 +2711,17 @@ def verify_runtime_credential_boundary() -> None:
             "Migration database credentials must not be available to runtime processes: "
             + ", ".join(exposed)
         )
+    if is_production() and is_market_worker_process(process_role):
+        forbidden = [
+            name
+            for name in ("DATABASE_USERS_URL", "DATABASE_USERS_SERVICE_URL")
+            if name in os.environ
+        ]
+        if forbidden:
+            raise RuntimeError(
+                "Users database credentials must not be available to market workers: "
+                + ", ".join(forbidden)
+            )
 
 
 def delete_user_records(user_id: str) -> dict[str, int]:
