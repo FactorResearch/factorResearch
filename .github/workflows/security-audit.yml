@@ -34,7 +34,7 @@ jobs:
           cache-dependency-glob: uv.lock
       - name: Install the pinned minimal Rust toolchain
         run: rustup toolchain install 1.97.1 --profile minimal
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
