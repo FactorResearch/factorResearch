@@ -18,18 +18,26 @@ def test_pricing_has_only_free_and_premium_tiers():
 
 
 def test_trial_analysis_limit_allows_three_then_locks():
-    with patch("codes.services.permissions.db.get_subscription", return_value=None), \
-         patch("codes.services.permissions.db.upsert_subscription",
-               return_value={"plan": "trial", "status": "trialing"}), \
-         patch("codes.services.permissions.db.get_total_usage", return_value=2):
+    with (
+        patch("codes.services.permissions.db.get_subscription", return_value=None),
+        patch(
+            "codes.services.permissions.db.upsert_subscription",
+            return_value={"plan": "trial", "status": "trialing"},
+        ),
+        patch("codes.services.permissions.db.get_total_usage", return_value=2),
+    ):
         result = permissions.can_access_feature("u1", permissions.Feature.ANALYSIS)
         assert result.allowed is True
         assert result.remaining == 1
 
-    with patch("codes.services.permissions.db.get_subscription", return_value=None), \
-         patch("codes.services.permissions.db.upsert_subscription",
-               return_value={"plan": "trial", "status": "trialing"}), \
-         patch("codes.services.permissions.db.get_total_usage", return_value=3):
+    with (
+        patch("codes.services.permissions.db.get_subscription", return_value=None),
+        patch(
+            "codes.services.permissions.db.upsert_subscription",
+            return_value={"plan": "trial", "status": "trialing"},
+        ),
+        patch("codes.services.permissions.db.get_total_usage", return_value=3),
+    ):
         result = permissions.can_access_feature("u1", permissions.Feature.ANALYSIS)
         assert result.allowed is False
         assert result.upgrade_required is True
@@ -44,19 +52,32 @@ def test_premium_subscription_unlocks_analysis_and_backtest():
 
 
 def test_trial_custom_weights_allowed_but_backtest_locked():
-    with patch("codes.services.permissions.db.get_subscription", return_value=None), \
-         patch("codes.services.permissions.db.upsert_subscription",
-               return_value={"plan": "trial", "status": "trialing"}):
-        assert permissions.can_access_feature("u1", permissions.Feature.CUSTOM_WEIGHTS).allowed is True
+    with (
+        patch("codes.services.permissions.db.get_subscription", return_value=None),
+        patch(
+            "codes.services.permissions.db.upsert_subscription",
+            return_value={"plan": "trial", "status": "trialing"},
+        ),
+    ):
+        assert (
+            permissions.can_access_feature("u1", permissions.Feature.CUSTOM_WEIGHTS).allowed is True
+        )
         result = permissions.can_access_feature("u1", permissions.Feature.BACKTEST)
         assert result.allowed is False
         assert result.upgrade_required is True
 
 
 def test_analysis_consumption_uses_atomic_limit_check():
-    with patch("codes.services.permissions.db.get_subscription", return_value={"plan": "free", "status": "trialing"}), \
-         patch("codes.services.permissions.db.get_total_usage", side_effect=[2, 3]), \
-         patch("codes.services.permissions.db.consume_limited_usage", return_value={"usage_count": 3}) as consume:
+    with (
+        patch(
+            "codes.services.permissions.db.get_subscription",
+            return_value={"plan": "free", "status": "trialing"},
+        ),
+        patch("codes.services.permissions.db.get_total_usage", side_effect=[2, 3]),
+        patch(
+            "codes.services.permissions.db.consume_limited_usage", return_value={"usage_count": 3}
+        ) as consume,
+    ):
         result = permissions.consume_analysis_if_allowed("u1", ticker="AAPL")
 
     assert result.allowed is True
@@ -78,6 +99,7 @@ def test_checkout_completed_syncs_subscription_by_metadata_user_id():
         status="active",
         stripe_customer_id="cus_123",
         stripe_subscription_id="sub_123",
+        privileged=True,
     )
 
 
@@ -99,18 +121,24 @@ def test_subscription_webhook_updates_status_from_stripe_payload():
     assert handled is True
     assert upsert.call_args.kwargs["plan"] == "free"
     assert upsert.call_args.kwargs["status"] == "canceled"
+    assert upsert.call_args.kwargs["privileged"] is True
 
 
 def test_subscription_created_webhook_sets_premium():
     event = {
         "type": "customer.subscription.created",
-        "data": {"object": {
-            "id": "sub_123", "customer": "cus_123", "status": "active",
-            "metadata": {"user_id": "u1"},
-            "items": {"data": [{"price": {"id": "price_premium"}}]},
-        }},
+        "data": {
+            "object": {
+                "id": "sub_123",
+                "customer": "cus_123",
+                "status": "active",
+                "metadata": {"user_id": "u1"},
+                "items": {"data": [{"price": {"id": "price_premium"}}]},
+            }
+        },
     }
     with patch("codes.payments.subscriptions.db.upsert_subscription") as upsert:
         assert webhooks.handle_event(event) is True
     assert upsert.call_args.kwargs["plan"] == "premium"
     assert upsert.call_args.kwargs["status"] == "active"
+    assert upsert.call_args.kwargs["privileged"] is True

@@ -83,7 +83,7 @@ class _Connection:
 
 
 @contextmanager
-def _connection():
+def _connection(*_args, **_kwargs):
     yield _Connection()
 
 
@@ -108,8 +108,6 @@ def test_user_settings_delete_and_restore_preserve_tombstone(monkeypatch) -> Non
     assert deleted["_sync"]["deleted_at"]
     deleted_version = deleted["_sync"]["version"]
 
-    restored = user_settings.restore_user_settings(
-        "user-1", expected_version=deleted_version
-    )
+    restored = user_settings.restore_user_settings("user-1", expected_version=deleted_version)
     assert restored["_sync"]["deleted_at"] is None
     assert restored["_sync"]["version"] == deleted_version + 1

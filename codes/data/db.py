@@ -25,15 +25,23 @@ Table: sec_facts
 
 import datetime
 import json
+import logging
 import os
 import threading
 from collections.abc import Sequence
 from contextlib import contextmanager
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
+from codes.core.config import is_production
 from codes.core.db_pool import ConnectionPool
-from codes.data.migrations import apply_migrations, verify_migrations
+from codes.data.migrations import (
+    DatabaseNotReadyError,
+    MigrationConnection,
+    apply_migrations,
+    verify_migrations,
+)
 
 load_dotenv()
 try:
@@ -53,6 +61,7 @@ _market_init_lock = threading.Lock()
 _users_init_lock = threading.Lock()
 _pools: dict[str, ConnectionPool] = {}
 _pools_lock = threading.Lock()
+_LOGGER = logging.getLogger(__name__)
 _MIGRATION_CREDENTIAL_NAMES = (
     "DATABASE_MIGRATION_MARKET_URL",
     "DATABASE_MIGRATION_USERS_URL",
@@ -473,13 +482,22 @@ _USERS_REQUIRED_TABLES = (
     "portfolio_simulation_results",
     "portfolio_legacy_imports",
 )
-_PORTFOLIO_RUNTIME_TABLES = (
-    "portfolios",
-    "portfolio_holdings",
-    "portfolio_transactions",
-    "portfolio_tombstones",
-    "portfolio_simulation_results",
-    "portfolio_legacy_imports",
+# PostgreSQL is the authoritative tenant boundary for these tables. The owner
+# column is explicit because the normalized portfolio schema predates the
+# account tables and intentionally uses ``owner_id``. Waitlist data is not
+# authenticated user-owned data and therefore remains outside tenant RLS.
+_USER_OWNED_TABLES = (
+    ("user_weights", "user_id"),
+    ("subscriptions", "user_id"),
+    ("user_settings", "user_id"),
+    ("user_usage", "user_id"),
+    ("idempotency_records", "user_id"),
+    ("portfolios", "owner_id"),
+    ("portfolio_holdings", "owner_id"),
+    ("portfolio_transactions", "owner_id"),
+    ("portfolio_tombstones", "owner_id"),
+    ("portfolio_simulation_results", "owner_id"),
+    ("portfolio_legacy_imports", "owner_id"),
 )
 _UPSERT_VALUE_METRICS = """
 INSERT INTO value_metrics
@@ -1550,7 +1568,7 @@ def set_user_weights(
     """
     _ensure_user_init()
     now = datetime.datetime.now(datetime.UTC)
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         con.execute(
             "SELECT pg_advisory_xact_lock(hashtext(%(strategy_lock)s))",
@@ -1591,7 +1609,7 @@ def set_user_weights(
 
 def get_user_weights(user_id: str) -> dict[str, float]:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_USER_WEIGHTS, {"user_id": user_id}).fetchall()
     return {r["factor_name"]: r["weight"] for r in rows}
@@ -1609,7 +1627,7 @@ def list_user_weight_changes(
     retention policy permits physical erasure.
     """
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_USER_WEIGHT_ROWS, {"user_id": user_id}).fetchall()
     return [
@@ -1649,13 +1667,24 @@ _DELETE_STRATEGY_CACHE_PREFIX = (
     "DELETE FROM strategy_backtest_cache WHERE cache_key LIKE %(prefix)s"
 )
 
-_SELECT_SUBSCRIPTION = "SELECT * FROM subscriptions WHERE user_id = %(user_id)s"
-_SELECT_SUBSCRIPTION_BY_CUSTOMER = (
-    "SELECT * FROM subscriptions WHERE stripe_customer_id = %(stripe_customer_id)s"
-)
-_SELECT_SUBSCRIPTION_BY_STRIPE_ID = (
-    "SELECT * FROM subscriptions WHERE stripe_subscription_id = %(stripe_subscription_id)s"
-)
+_SELECT_SUBSCRIPTION = """
+SELECT user_id, plan, status, start_date, end_date, stripe_customer_id,
+       stripe_subscription_id, created_at, version, deleted_at, updated_at
+FROM subscriptions
+WHERE user_id = %(user_id)s
+"""
+_SELECT_SUBSCRIPTION_BY_CUSTOMER = """
+SELECT user_id, plan, status, start_date, end_date, stripe_customer_id,
+       stripe_subscription_id, created_at, version, deleted_at, updated_at
+FROM subscriptions
+WHERE stripe_customer_id = %(stripe_customer_id)s
+"""
+_SELECT_SUBSCRIPTION_BY_STRIPE_ID = """
+SELECT user_id, plan, status, start_date, end_date, stripe_customer_id,
+       stripe_subscription_id, created_at, version, deleted_at, updated_at
+FROM subscriptions
+WHERE stripe_subscription_id = %(stripe_subscription_id)s
+"""
 _SELECT_USER_SETTINGS = """
 SELECT settings_json, created_at, updated_at, version, deleted_at
 FROM user_settings
@@ -1681,7 +1710,8 @@ ON CONFLICT (user_id) DO UPDATE SET
     version = subscriptions.version + 1,
     deleted_at = NULL,
     updated_at = NOW()
-WHERE %(expected_version)s IS NULL OR subscriptions.version = %(expected_version)s
+WHERE %(expected_version)s::bigint IS NULL
+   OR subscriptions.version = %(expected_version)s::bigint
 RETURNING user_id
 """
 _UPSERT_USER_SETTINGS = """
@@ -1784,7 +1814,7 @@ def invalidate_strategy_cache(data_version_prefix: str) -> None:
 
 def get_subscription(user_id: str) -> dict | None:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         row = con.execute(_SELECT_SUBSCRIPTION, {"user_id": user_id}).fetchone()
     return dict(row) if row else None
@@ -1792,7 +1822,7 @@ def get_subscription(user_id: str) -> dict | None:
 
 def get_subscription_by_customer(stripe_customer_id: str) -> dict | None:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(privileged=True) as con:
         con.row_factory = dict_row
         row = con.execute(
             _SELECT_SUBSCRIPTION_BY_CUSTOMER,
@@ -1803,7 +1833,7 @@ def get_subscription_by_customer(stripe_customer_id: str) -> dict | None:
 
 def get_subscription_by_stripe_id(stripe_subscription_id: str) -> dict | None:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(privileged=True) as con:
         con.row_factory = dict_row
         row = con.execute(
             _SELECT_SUBSCRIPTION_BY_STRIPE_ID,
@@ -1822,9 +1852,39 @@ def upsert_subscription(
     stripe_customer_id: str | None = None,
     stripe_subscription_id: str | None = None,
     expected_version: int | None = None,
+    privileged: bool = False,
 ) -> dict:
+    """Create or update one subscription through an explicit access mode.
+
+    Authenticated account actions use the default tenant-scoped transaction.
+    Stripe webhooks and reconciliation must pass ``privileged=True`` so the
+    dedicated service credential, rather than the normal application role,
+    owns the server-initiated transition.
+
+    Args:
+        user_id: Provider-neutral owner identifier for the subscription.
+        plan: Product plan to persist.
+        status: Billing lifecycle status to persist.
+        start_date: Optional timezone-aware subscription start timestamp.
+        end_date: Optional timezone-aware subscription end timestamp.
+        stripe_customer_id: Optional Stripe customer identifier.
+        stripe_subscription_id: Optional Stripe subscription identifier.
+        expected_version: Optional optimistic-concurrency version.
+        privileged: Whether this is a server-owned service workflow.
+
+    Returns:
+        The persisted subscription row.
+
+    Raises:
+        RuntimeError: If optimistic concurrency fails or a production service
+            credential is unavailable.
+        ValueError: If the user identity is empty for normal access.
+
+    Side Effects:
+        Writes one authoritative users-database subscription transaction.
+    """
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id if not privileged else None, privileged=privileged) as con:
         con.row_factory = dict_row
         result = con.execute(
             _UPSERT_SUBSCRIPTION,
@@ -1848,7 +1908,7 @@ def upsert_subscription(
 
 def get_user_settings(user_id: str) -> dict:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         row = con.execute(_SELECT_USER_SETTINGS, {"user_id": user_id}).fetchone()
     if not row:
@@ -1871,7 +1931,7 @@ def get_user_settings(user_id: str) -> dict:
 
 def upsert_user_settings(user_id: str, settings: dict) -> dict:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         sync = dict(settings.get("_sync") or {})
         version = int(sync.get("version") or 1)
@@ -1893,7 +1953,7 @@ def upsert_user_settings(user_id: str, settings: dict) -> dict:
 
 def get_usage(user_id: str, feature_name: str) -> dict:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         row = con.execute(
             _SELECT_USAGE,
@@ -1911,7 +1971,7 @@ def get_usage(user_id: str, feature_name: str) -> dict:
 
 def get_total_usage(user_id: str, feature_name: str) -> int:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         row = con.execute(
             _SELECT_TOTAL_USAGE,
@@ -1935,7 +1995,7 @@ def increment_usage(user_id: str, feature_name: str, usage_key: str | None = Non
         period_end = period_start.replace(year=period_start.year + 1, month=1)
     else:
         period_end = period_start.replace(month=period_start.month + 1)
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         row = con.execute(
             _INCREMENT_USAGE,
@@ -1966,7 +2026,7 @@ def consume_limited_usage(
         period_end = period_start.replace(year=period_start.year + 1, month=1)
     else:
         period_end = period_start.replace(month=period_start.month + 1)
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.row_factory = dict_row
         con.execute(
             "SELECT pg_advisory_xact_lock(hashtext(%(usage_lock)s))",
@@ -1999,14 +2059,14 @@ def consume_limited_usage(
 def create_waitlist_signup(email: str, source: str) -> bool:
     """Store a waitlist email and return whether it still needs confirmation."""
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(privileged=True) as con:
         row = con.execute(_UPSERT_WAITLIST_SIGNUP, {"email": email, "source": source}).fetchone()
     return bool(row)
 
 
 def mark_waitlist_confirmation_sent(email: str) -> None:
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(privileged=True) as con:
         con.execute(_MARK_WAITLIST_CONFIRMED, {"email": email})
 
 
@@ -2167,6 +2227,43 @@ def _users_db_url() -> str:
     )
 
 
+def _users_service_db_url() -> str:
+    """Return the explicit users service credential URL.
+
+    Production privileged workflows must not reuse the normal application
+    credential. Local and test environments may reuse the users URL so
+    disposable databases remain simple and deterministic.
+
+    Returns:
+        The configured service URL, or the normal users URL outside production.
+
+    Raises:
+        RuntimeError: If production has no dedicated service credential.
+
+    Side Effects:
+        Reads configuration names only and never logs credential values.
+    """
+    configured = os.environ.get("DATABASE_USERS_SERVICE_URL", "").strip()
+    if configured:
+        if is_production():
+            runtime_url = _users_db_url()
+            service_role = urlparse(configured).username
+            runtime_role = urlparse(runtime_url).username
+            if configured == runtime_url or (
+                service_role is not None and service_role == runtime_role
+            ):
+                raise RuntimeError(
+                    "DATABASE_USERS_SERVICE_URL must use credentials distinct "
+                    "from DATABASE_USERS_URL"
+                )
+        return configured
+    if is_production():
+        raise RuntimeError(
+            "DATABASE_USERS_SERVICE_URL is required for privileged users database operations"
+        )
+    return _users_db_url()
+
+
 def _pool(url: str) -> ConnectionPool:
     with _pools_lock:
         return _pools.setdefault(
@@ -2191,9 +2288,44 @@ def _conn():
 
 
 @contextmanager
-def _users_conn():
-    """Yield a Postgres connection for user/account state."""
-    with _pool(_users_db_url()).connection() as con:
+def _users_conn(user_id: str | None = None, *, privileged: bool = False):
+    """Yield one explicitly scoped users-database transaction.
+
+    Normal callers must provide a non-empty provider-neutral user identifier.
+    The identifier is stored with PostgreSQL's transaction-local ``set_config``
+    so it is cleared before a pooled physical connection can be reused.
+    Server-owned workflows must opt into the dedicated service credential with
+    ``privileged=True``; the two modes are mutually exclusive.
+
+    Args:
+        user_id: Authenticated Auth0, Clerk, Supabase, or development identity.
+            Whitespace-only values are rejected.
+        privileged: Whether to use the separately configured service workflow
+            credential without installing tenant identity.
+
+    Yields:
+        A Psycopg connection whose transaction is tenant scoped or explicitly
+        privileged. Commit, rollback, and pool return remain owned by the pool.
+
+    Raises:
+        ValueError: If neither or both access modes are requested.
+        RuntimeError: If production privileged access lacks a service URL.
+        Exception: Propagates connection and PostgreSQL configuration failures.
+
+    Side Effects:
+        Acquires one pooled connection and, for normal access, sets
+        ``app.current_user_id`` only for the current transaction.
+    """
+    normalized_user_id = str(user_id or "").strip()
+    if bool(normalized_user_id) == privileged:
+        raise ValueError("Choose exactly one users database access mode")
+    url = _users_service_db_url() if privileged else _users_db_url()
+    with _pool(url).connection() as con:
+        if normalized_user_id:
+            con.execute(
+                "SELECT set_config('app.current_user_id', %(user_id)s, true)",
+                {"user_id": normalized_user_id},
+            )
         yield con
 
 
@@ -2268,19 +2400,42 @@ def init_user_db(
             bootstrap_sql=_CREATE_USER_TABLES,
             lock_timeout_seconds=lock_timeout_seconds,
         )
+        _verify_users_rls(con)
 
 
-def configure_portfolio_runtime_role(database_url: str, runtime_role: str) -> None:
-    """Grant only tenant-data DML privileges to the users runtime role."""
+def configure_users_runtime_role(database_url: str, runtime_role: str) -> None:
+    """Grant the normal runtime role only tenant-scoped users DML privileges.
+
+    Args:
+        database_url: Migration-role URL used by the release process.
+        runtime_role: Normal application role parsed from ``DATABASE_USERS_URL``.
+
+    Returns:
+        None after schema, table, and required sequence grants commit.
+
+    Raises:
+        ValueError: If the role name is empty.
+        Exception: Propagates PostgreSQL identifier or grant failures.
+
+    Side Effects:
+        Grants no DDL, role, waitlist, or service-only privileges. Forced RLS
+        remains the authoritative row boundary for every granted table.
+    """
     normalized_role = str(runtime_role or "").strip()
     if not normalized_role:
         raise ValueError("A PostgreSQL users runtime role is required")
     role = sql.Identifier(normalized_role)
-    tables = sql.SQL(", ").join(sql.Identifier(table) for table in _PORTFOLIO_RUNTIME_TABLES)
+    tables = sql.SQL(", ").join(
+        sql.Identifier(table_name) for table_name, _owner_column in _USER_OWNED_TABLES
+    )
     with _pool(database_url).connection() as connection:
         connection.execute(sql.SQL("GRANT USAGE ON SCHEMA public TO {}").format(role))
         connection.execute(
             sql.SQL("GRANT SELECT, INSERT, UPDATE, DELETE ON {} TO {}").format(tables, role)
+        )
+        connection.execute(sql.SQL("GRANT SELECT ON schema_migrations TO {}").format(role))
+        connection.execute(
+            sql.SQL("GRANT USAGE, SELECT ON SEQUENCE subscriptions_id_seq TO {}").format(role)
         )
 
 
@@ -2303,6 +2458,104 @@ def verify_market_database() -> None:
         verify_migrations(con, "market", required_tables=_MARKET_REQUIRED_TABLES)
 
 
+def _verify_runtime_users_role(connection: MigrationConnection) -> None:
+    """Reject a production application role capable of bypassing tenant RLS.
+
+    Args:
+        connection: Open Psycopg-compatible normal users-database connection.
+
+    Returns:
+        None outside production or when the connected role is neither a
+        superuser nor marked ``BYPASSRLS``.
+
+    Raises:
+        RuntimeError: If production uses an unsafe or uninspectable role.
+        Exception: Propagates PostgreSQL catalog failures.
+
+    Side Effects:
+        Reads ``pg_roles`` without logging the role or credential value.
+    """
+    if not is_production():
+        return
+    row = connection.execute(
+        """
+        SELECT rolname, rolsuper, rolbypassrls
+        FROM pg_roles
+        WHERE rolname = current_user
+        """
+    ).fetchone()
+    if not row:
+        raise RuntimeError("Unable to verify the PostgreSQL users runtime role")
+    if isinstance(row, dict):
+        is_superuser = bool(row.get("rolsuper"))
+        bypasses_rls = bool(row.get("rolbypassrls"))
+    else:
+        is_superuser = bool(row[1])
+        bypasses_rls = bool(row[2])
+    if is_superuser or bypasses_rls:
+        raise RuntimeError("Production users runtime role must not be superuser or have BYPASSRLS")
+
+
+def _verify_users_rls(connection: MigrationConnection) -> None:
+    """Verify forced tenant RLS and canonical policies for all owned tables.
+
+    Args:
+        connection: Open Psycopg-compatible users-database connection with
+            catalog visibility.
+
+    Returns:
+        None after every registry entry has enabled and forced RLS plus one
+        canonical ``ALL`` policy using ``app.current_user_id`` in both clauses.
+
+    Raises:
+        DatabaseNotReadyError: If a protected table or policy is incomplete.
+        Exception: Propagates PostgreSQL catalog failures.
+
+    Side Effects:
+        Performs bounded catalog reads and emits metadata-only verification
+        logs. It never reads tenant rows or logs user identifiers.
+    """
+    for table_name, _owner_column in _USER_OWNED_TABLES:
+        policy_name = f"{table_name}_tenant_isolation"
+        row = connection.execute(
+            """
+            SELECT
+                class.relrowsecurity,
+                class.relforcerowsecurity,
+                EXISTS (
+                    SELECT 1
+                    FROM pg_policies
+                    WHERE schemaname = namespace.nspname
+                      AND tablename = class.relname
+                      AND policyname = %(policy_name)s
+                      AND cmd = 'ALL'
+                      AND qual LIKE '%%app.current_user_id%%'
+                      AND with_check LIKE '%%app.current_user_id%%'
+                ) AS policy_verified
+            FROM pg_class AS class
+            JOIN pg_namespace AS namespace ON namespace.oid = class.relnamespace
+            WHERE namespace.nspname = 'public' AND class.relname = %(table_name)s
+            """,
+            {"table_name": table_name, "policy_name": policy_name},
+        ).fetchone()
+        if isinstance(row, dict):
+            enabled = bool(row.get("relrowsecurity"))
+            forced = bool(row.get("relforcerowsecurity"))
+            policy_verified = bool(row.get("policy_verified"))
+        else:
+            enabled = bool(row and row[0])
+            forced = bool(row and row[1])
+            policy_verified = bool(row and row[2])
+        if not (enabled and forced and policy_verified):
+            raise DatabaseNotReadyError(
+                f"Users database tenant isolation is incomplete for {table_name}"
+            )
+        _LOGGER.info(
+            "[DB][RLS] %s: enabled, forced, policy verified",
+            table_name,
+        )
+
+
 def verify_users_database() -> None:
     """Fail closed unless the runtime users database is fully initialized.
 
@@ -2318,8 +2571,13 @@ def verify_users_database() -> None:
         Opens a runtime connection and performs read-only catalog checks.
     """
     verify_runtime_credential_boundary()
-    with _users_conn() as con:
+    # Readiness deliberately inspects the normal runtime credential rather than
+    # the service role so unsafe production grants cannot hide behind a healthy
+    # privileged connection.
+    with _pool(_users_db_url()).connection() as con:
+        _verify_runtime_users_role(con)
         verify_migrations(con, "users", required_tables=_USERS_REQUIRED_TABLES)
+        _verify_users_rls(con)
 
 
 def verify_runtime_databases() -> None:
@@ -2363,33 +2621,47 @@ def verify_runtime_credential_boundary() -> None:
 
 
 def delete_user_records(user_id: str) -> dict[str, int]:
-    """Delete all user-owned account, entitlement, usage, and strategy records."""
+    """Erase one account through the explicit privileged service boundary.
+
+    Args:
+        user_id: Provider-neutral account identifier to erase.
+
+    Returns:
+        Deleted row counts keyed by each authoritative user-owned table.
+
+    Raises:
+        RuntimeError: If production lacks the dedicated service credential.
+        Exception: Propagates database failures so partial erasure rolls back.
+
+    Side Effects:
+        Hard-deletes user-owned rows in one users-database transaction. Portfolio
+        children are deleted before parents to preserve exact erasure evidence.
+    """
     _ensure_user_init()
-    deleted = {}
-    with _users_conn() as con:
-        con.execute(
-            "SELECT set_config('app.user_id', %(user_id)s, true)",
-            {"user_id": user_id},
-        )
+    deleted: dict[str, int] = {}
+    with _users_conn(privileged=True) as con:
         # Portfolio children are deleted first so the result records exact
         # discovery evidence instead of relying on an opaque cascade.
-        for table in (
-            "portfolio_simulation_results",
-            "portfolio_transactions",
-            "portfolio_holdings",
-            "portfolio_tombstones",
-            "portfolio_legacy_imports",
-            "portfolios",
-            "idempotency_records",
-            "user_weights",
-            "user_usage",
-            "subscriptions",
-            "user_settings",
+        for table, owner_column in (
+            ("portfolio_simulation_results", "owner_id"),
+            ("portfolio_transactions", "owner_id"),
+            ("portfolio_holdings", "owner_id"),
+            ("portfolio_tombstones", "owner_id"),
+            ("portfolio_legacy_imports", "owner_id"),
+            ("portfolios", "owner_id"),
+            ("idempotency_records", "user_id"),
+            ("user_weights", "user_id"),
+            ("user_usage", "user_id"),
+            ("subscriptions", "user_id"),
+            ("user_settings", "user_id"),
         ):
-            # Table names come only from the fixed tuple above; user data remains parameterized.
-            deleted[table] = con.execute(
-                f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}
-            ).rowcount  # nosec B608
+            # Identifiers come only from the fixed registry above; the user
+            # value remains parameterized.
+            statement = sql.SQL("DELETE FROM {} WHERE {} = %(user_id)s").format(
+                sql.Identifier(table),
+                sql.Identifier(owner_column),
+            )
+            deleted[table] = con.execute(statement, {"user_id": user_id}).rowcount
     return deleted
 
 
@@ -2427,7 +2699,7 @@ def claim_idempotency(
 ) -> dict[str, object]:
     """Atomically claim or replay one user command in PostgreSQL."""
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         row = con.execute(
             """
             INSERT INTO idempotency_records
@@ -2474,7 +2746,7 @@ def complete_idempotency(
 ) -> None:
     """Persist the original command outcome for deterministic replay."""
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.execute(
             """
             UPDATE idempotency_records
@@ -2498,7 +2770,7 @@ def fail_idempotency(
 ) -> None:
     """Persist a terminal failure so ambiguous retries do not repeat effects."""
     _ensure_user_init()
-    with _users_conn() as con:
+    with _users_conn(user_id) as con:
         con.execute(
             """
             UPDATE idempotency_records

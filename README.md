@@ -174,6 +174,9 @@ FLASK_SECRET_KEY=replace-with-a-long-random-secret
 
 DATABASE_MARKET_URL=postgresql://localhost/factorresearch_market
 DATABASE_USERS_URL=postgresql://localhost/factorresearch_users
+# Privileged waitlist, Stripe reconciliation, and erasure workflows only.
+# Local development may omit this and reuse DATABASE_USERS_URL.
+DATABASE_USERS_SERVICE_URL=postgresql://localhost/factorresearch_users
 DATABASE_ANALYTICS_URL=postgresql://localhost/factorresearch_analytics
 DATABASE_JOBS_URL=postgresql://localhost/factorresearch_jobs
 
@@ -190,6 +193,12 @@ LOGO_DEV_PUBLISHABLE_KEY=pk_replace_with_your_publishable_key
 Do not use the same production URL for `DATABASE_MARKET_URL` and
 `DATABASE_USERS_URL`. Store production credentials in the deployment platform's
 secret manager, not in a deployed `.env` file.
+
+Production must also set `DATABASE_USERS_SERVICE_URL` to a service role distinct
+from `DATABASE_USERS_URL`. The normal users role must not be a superuser or have
+`BYPASSRLS`; it receives only tenant-table DML and remains subject to forced row-
+level security. The service credential is reserved for Stripe reconciliation,
+waitlist operations, privacy erasure, and controlled maintenance.
 
 Initialize every schema through the explicit release migration command:
 

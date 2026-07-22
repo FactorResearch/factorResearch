@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 from codes.app_modules import layout
 from codes.app_modules.tabs import navigation, profile
-from codes.services import user_settings
 from codes.data import db
+from codes.services import user_settings
 
 
 class _FakeResult:
@@ -89,7 +89,7 @@ def test_render_profile_menu_label_uses_display_name(monkeypatch):
 def test_user_settings_use_users_connection(monkeypatch):
     users_conn = _FakeConn(row={"settings_json": {"appearance": {"theme": "dark"}}})
     monkeypatch.setattr(db, "_users_initialized", True)
-    monkeypatch.setattr(db, "_users_conn", lambda: _ctx(users_conn))
+    monkeypatch.setattr(db, "_users_conn", lambda *_args, **_kwargs: _ctx(users_conn))
 
     result = db.get_user_settings("u1")
 

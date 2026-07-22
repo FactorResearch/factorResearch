@@ -24,7 +24,9 @@ def plan_from_price_id(price_id: str | None) -> str:
     # Keep the deterministic fixture identifier usable when Stripe settings
     # are intentionally absent in local tests; production requires a configured
     # price ID before checkout can be enabled.
-    configured_price_id = os.environ.get("STRIPE_PREMIUM_PRICE_ID") or os.environ.get("STRIPE_PRICE_ID")
+    configured_price_id = os.environ.get("STRIPE_PREMIUM_PRICE_ID") or os.environ.get(
+        "STRIPE_PRICE_ID"
+    )
     if configured_price_id == "price_your_premium_price_id_here":
         configured_price_id = None
     if price_id == "price_premium" and not is_production() and not configured_price_id:
@@ -37,7 +39,11 @@ def plan_from_price_id(price_id: str | None) -> str:
 
 def status_to_plan(status: str, price_id: str | None = None) -> str:
     status = (status or "").lower()
-    return pricing.PREMIUM if status in STRIPE_ACTIVE_STATUSES and plan_from_price_id(price_id) == pricing.PREMIUM else pricing.FREE
+    return (
+        pricing.PREMIUM
+        if status in STRIPE_ACTIVE_STATUSES and plan_from_price_id(price_id) == pricing.PREMIUM
+        else pricing.FREE
+    )
 
 
 def sync_checkout_completed(session: dict[str, Any]) -> dict | None:
@@ -53,6 +59,7 @@ def sync_checkout_completed(session: dict[str, Any]) -> dict | None:
         status="active",
         stripe_customer_id=stripe_customer_id,
         stripe_subscription_id=stripe_subscription_id,
+        privileged=True,
     )
 
 
@@ -88,6 +95,7 @@ def sync_subscription(subscription: dict[str, Any]) -> dict | None:
         end_date=_from_unix(subscription.get("current_period_end") or subscription.get("ended_at")),
         stripe_customer_id=stripe_customer_id,
         stripe_subscription_id=stripe_subscription_id,
+        privileged=True,
     )
 
 

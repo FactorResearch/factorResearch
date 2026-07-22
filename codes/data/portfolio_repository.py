@@ -58,12 +58,8 @@ def _owner(user_id: str) -> str:
 def _tenant_connection(user_id: str) -> Iterator[_Connection]:
     owner = _owner(user_id)
     db._ensure_user_init()
-    with db._users_conn() as connection:
+    with db._users_conn(owner) as connection:
         connection.row_factory = dict_row
-        connection.execute(
-            "SELECT set_config('app.user_id', %(user_id)s, true)",
-            {"user_id": owner},
-        )
         yield cast(_Connection, connection)
 
 
