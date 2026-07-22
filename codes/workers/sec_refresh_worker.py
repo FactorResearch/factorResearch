@@ -33,7 +33,9 @@ def _rate_wait(last_call: list[float]) -> None:
 
 def run_sweep(max_symbols: int | None = None) -> None:
     try:
-        db.init_db()
+        # ISSUE_126: worker credentials are intentionally unable to execute
+        # schema DDL; a missing release migration must stop the sweep.
+        db.verify_market_database()
         # ISSUE_003: use the validated Graham-eligible universe (excludes
         # ETFs/funds/trusts/SPACs via filer-type classification) instead of
         # the raw SEC ticker list, so CompanyFacts is never downloaded for

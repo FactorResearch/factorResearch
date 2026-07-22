@@ -120,14 +120,26 @@ class SecurityIdentity:
 
 
 def ensure_schema() -> None:
+    """Verify release-created temporal tables once per runtime process.
+
+    Returns:
+        None after the market database readiness contract passes.
+
+    Raises:
+        Exception: Propagates missing, partial, unavailable, or checksum-drift
+            database state so a normal process never attempts schema DDL.
+
+    Side Effects:
+        Performs read-only database readiness checks on the first successful
+        call in a process. It never creates or alters schema.
+    """
     global _initialized
     if _initialized:
         return
     with _init_lock:
         if _initialized:
             return
-        with db._conn() as con:
-            con.execute(SCHEMA)
+        db.verify_market_database()
         _initialized = True
 
 

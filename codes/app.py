@@ -36,11 +36,11 @@ from codes.routes.analyze import analyze_pages
 from codes.routes.charts import chart_pages
 from codes.error_pages import register_error_pages
 from codes.landing_pages import register_landing_pages
-from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services.analytics_bootstrap import build_head_snippets
 from codes.services import product_analytics
 from codes.services import performance_metrics, provider_gateway
 from codes.services.operations_dashboard import snapshot as operations_snapshot
+from codes.services.analysis_snapshot_service import ensure_schema_if_configured
 from codes.services import operations_console
 from codes.services import account_service, analysis_jobs, component_cache, screener_service
 from codes.services.operational_controller import classify_runtime_health, controller
@@ -453,9 +453,10 @@ compose_dash_ui(app, head_snippets=build_head_snippets())
 def startup():
     print("\n🚀 Graham Score — Quant Edition")
     from codes.data import db
-    if not is_production() or os.environ.get("RUN_SCHEMA_MIGRATIONS_ON_STARTUP") == "1":
-        db.init_db()
-        ensure_schema_if_configured()
+    # ISSUE_126: normal web processes verify release state and never mutate
+    # schema. The dedicated release phase must finish before traffic starts.
+    db.verify_runtime_databases()
+    ensure_schema_if_configured()
     sec_data.get_ticker_map()
     universe.get_universe()
     results = screener_service.load_cached_only()

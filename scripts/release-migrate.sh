@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-python scripts/check-production-config.py
-python -m codes.data.migrate
+PROCESS_ROLE=migration python scripts/check-production-config.py
+PROCESS_ROLE=migration python -m codes.data.migrate

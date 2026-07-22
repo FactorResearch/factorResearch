@@ -27,12 +27,13 @@ import datetime
 import json
 import os
 import threading
+from collections.abc import Sequence
 from contextlib import contextmanager
 
 from dotenv import load_dotenv
 
 from codes.core.db_pool import ConnectionPool
-from codes.data.migrations import apply_migrations
+from codes.data.migrations import apply_migrations, verify_migrations
 
 load_dotenv()
 try:
@@ -46,8 +47,15 @@ except ImportError:  # pragma: no cover
 
 _market_initialized = False
 _users_initialized = False
+_market_init_lock = threading.Lock()
+_users_init_lock = threading.Lock()
 _pools: dict[str, ConnectionPool] = {}
 _pools_lock = threading.Lock()
+_MIGRATION_CREDENTIAL_NAMES = (
+    "DATABASE_MIGRATION_MARKET_URL",
+    "DATABASE_MIGRATION_USERS_URL",
+    "DATABASE_MIGRATION_ANALYTICS_URL",
+)
 
 _CREATE_MARKET_TABLES = """
 CREATE TABLE IF NOT EXISTS sec_facts_meta (
@@ -413,6 +421,50 @@ CREATE TABLE IF NOT EXISTS waitlist_signups (
     confirmation_sent_at TIMESTAMPTZ
 );
 """
+
+# These explicit readiness contracts prevent a normal runtime role from
+# attempting DDL to discover whether a release phase completed. Keep each list
+# synchronized with the corresponding bootstrap SQL and versioned migrations.
+_MARKET_REQUIRED_TABLES = (
+    "sec_facts_meta",
+    "sec_facts_items",
+    "sec_8k_filings",
+    "value_metrics",
+    "analysis_cache",
+    "company_logo_cache",
+    "factor_scores",
+    "strategy_backtest_cache",
+    "factor_score_snapshots",
+    "composite_score_snapshots",
+    "market_issuers",
+    "market_fiscal_periods",
+    "market_source_documents",
+    "market_statement_facts",
+    "market_shares_outstanding",
+    "market_quality_reports",
+    "market_quality_issues",
+    "market_screener_rows",
+    "security_entities",
+    "securities",
+    "security_listings",
+    "security_identifiers",
+    "filing_versions",
+    "point_in_time_facts",
+    "corporate_actions",
+    "daily_prices",
+    "fx_rates",
+    "market_universes",
+    "universe_memberships",
+    "track_e_ingestion_checkpoints",
+)
+_USERS_REQUIRED_TABLES = (
+    "user_weights",
+    "subscriptions",
+    "user_settings",
+    "user_usage",
+    "waitlist_signups",
+    "idempotency_records",
+)
 _UPSERT_VALUE_METRICS = """
 INSERT INTO value_metrics
     (ticker, market_cap, graham_number, buffett_iv, composite_score, verdict, updated_at)
@@ -1998,15 +2050,155 @@ def _users_conn():
         yield con
 
 
-def init_db() -> None:
+def init_db(
+    database_url: str | None = None,
+    *,
+    additional_bootstrap_sql: Sequence[str] = (),
+    lock_timeout_seconds: float = 30.0,
+) -> None:
+    """Initialize the market schema from the dedicated release process.
+
+    Args:
+        database_url: Migration-role PostgreSQL URL. When omitted, the runtime
+            market URL is used for local compatibility only; production release
+            orchestration always passes an explicit dedicated URL.
+        additional_bootstrap_sql: Trusted market-owned schema fragments that
+            must share the same serialized transaction as the base schema.
+        lock_timeout_seconds: Maximum seconds to wait for another market
+            migration transaction.
+
+    Returns:
+        None after the complete market bootstrap transaction commits.
+
+    Raises:
+        Exception: Propagates connection, lock, privilege, SQL, and checksum
+            failures so the release phase fails closed and rolls back.
+
+    Side Effects:
+        Opens a PostgreSQL transaction and may execute market DDL. Runtime web
+        and worker paths must call ``verify_market_database`` instead.
+    """
+    url = database_url or _db_url()
+    bootstrap_sql = "\n".join((_CREATE_MARKET_TABLES, *additional_bootstrap_sql))
+    with _pool(url).connection() as con:
+        apply_migrations(
+            con,
+            "market",
+            bootstrap_sql=bootstrap_sql,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
+
+
+def init_user_db(
+    database_url: str | None = None,
+    *,
+    lock_timeout_seconds: float = 30.0,
+) -> None:
+    """Initialize the users schema from the dedicated release process.
+
+    Args:
+        database_url: Migration-role PostgreSQL URL. When omitted, the runtime
+            users URL is used for local compatibility only.
+        lock_timeout_seconds: Maximum seconds to wait for another users
+            migration transaction.
+
+    Returns:
+        None after bootstrap DDL, ordered migrations, and checksums commit.
+
+    Raises:
+        Exception: Propagates connection, lock, privilege, SQL, and checksum
+            failures so the release phase fails closed and rolls back.
+
+    Side Effects:
+        Opens a PostgreSQL transaction and may execute users DDL. Runtime web
+        and worker paths must call ``verify_users_database`` instead.
+    """
+    url = database_url or _users_db_url()
+    with _pool(url).connection() as con:
+        apply_migrations(
+            con,
+            "users",
+            bootstrap_sql=_CREATE_USER_TABLES,
+            lock_timeout_seconds=lock_timeout_seconds,
+        )
+
+
+def verify_market_database() -> None:
+    """Fail closed unless the runtime market database is fully initialized.
+
+    Returns:
+        None when every base table and repository market migration is present.
+
+    Raises:
+        DatabaseNotReadyError: If release initialization is missing or partial.
+        MigrationChecksumError: If an applied migration has drifted.
+        Exception: Propagates database availability and privilege failures.
+
+    Side Effects:
+        Opens a runtime connection and performs read-only catalog checks.
+    """
+    verify_runtime_credential_boundary()
     with _conn() as con:
-        con.execute(_CREATE_MARKET_TABLES)
+        verify_migrations(con, "market", required_tables=_MARKET_REQUIRED_TABLES)
 
 
-def init_user_db() -> None:
+def verify_users_database() -> None:
+    """Fail closed unless the runtime users database is fully initialized.
+
+    Returns:
+        None when every base table and repository users migration is present.
+
+    Raises:
+        DatabaseNotReadyError: If release initialization is missing or partial.
+        MigrationChecksumError: If an applied migration has drifted.
+        Exception: Propagates database availability and privilege failures.
+
+    Side Effects:
+        Opens a runtime connection and performs read-only catalog checks.
+    """
+    verify_runtime_credential_boundary()
     with _users_conn() as con:
-        con.execute(_CREATE_USER_TABLES)
-        apply_migrations(con, "users")
+        verify_migrations(con, "users", required_tables=_USERS_REQUIRED_TABLES)
+
+
+def verify_runtime_databases() -> None:
+    """Verify market and users release state before a normal process starts.
+
+    Returns:
+        None only after both runtime databases pass read-only verification.
+
+    Raises:
+        Exception: Propagates either scope's readiness, checksum, connection,
+            or privilege failure so startup cannot serve partial state.
+
+    Side Effects:
+        Opens one read-only verification transaction per configured database.
+    """
+    verify_market_database()
+    verify_users_database()
+
+
+def verify_runtime_credential_boundary() -> None:
+    """Reject migration secrets exposed to a normal web or worker process.
+
+    Returns:
+        None when no release-only database credential is present.
+
+    Raises:
+        RuntimeError: If any migration URL is available outside the dedicated
+            migration process.
+
+    Side Effects:
+        Reads environment variable names only. Values are never read or logged.
+    """
+    if os.environ.get("PROCESS_ROLE", "").strip().lower() == "migration":
+        return
+    exposed = [name for name in _MIGRATION_CREDENTIAL_NAMES if name in os.environ]
+    if exposed:
+        raise RuntimeError(
+            "Migration database credentials must not be available to runtime processes: "
+            + ", ".join(exposed)
+        )
 
 
 def delete_user_records(user_id: str) -> dict[str, int]:
@@ -2021,16 +2213,26 @@ def delete_user_records(user_id: str) -> dict[str, int]:
 
 
 def _ensure_init() -> None:
+    """Verify market readiness once per process with thread-safe publication."""
     global _market_initialized
-    if not _market_initialized:
-        init_db()
+    if _market_initialized:
+        return
+    with _market_init_lock:
+        if _market_initialized:
+            return
+        verify_market_database()
         _market_initialized = True
 
 
 def _ensure_user_init() -> None:
+    """Verify users readiness once per process with thread-safe publication."""
     global _users_initialized
-    if not _users_initialized:
-        init_user_db()
+    if _users_initialized:
+        return
+    with _users_init_lock:
+        if _users_initialized:
+            return
+        verify_users_database()
         _users_initialized = True
 
 

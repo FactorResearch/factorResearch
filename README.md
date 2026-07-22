@@ -191,19 +191,31 @@ Do not use the same production URL for `DATABASE_MARKET_URL` and
 `DATABASE_USERS_URL`. Store production credentials in the deployment platform's
 secret manager, not in a deployed `.env` file.
 
-Initialize the schemas used by the current application:
+Initialize every schema through the explicit release migration command:
 
 ```bash
 set -a
 source .env
 set +a
 
-PYTHONPATH=. python -c \
-  'from codes.data import db; db.init_db(); db.init_user_db(); print("market_and_user_schema_ready")'
-
-PYTHONPATH=. python -c \
-  'from codes.data.analytics_db import ensure_schema; ensure_schema(); print("analytics_schema_ready")'
+PYTHONPATH=. python -m codes.data.migrate
 ```
+
+Local development falls back to the runtime database URLs when that command is
+invoked explicitly. Production must inject separate migration-role secrets only
+into the `release` process:
+
+```dotenv
+DATABASE_MIGRATION_MARKET_URL=postgresql://cenvarn_migration@host/factorresearch_market
+DATABASE_MIGRATION_USERS_URL=postgresql://cenvarn_migration@host/factorresearch_users
+DATABASE_MIGRATION_ANALYTICS_URL=postgresql://cenvarn_migration@host/factorresearch_analytics
+DATABASE_MIGRATION_LOCK_TIMEOUT_SECONDS=30
+```
+
+The release URL for each database must use a role distinct from its runtime
+URL. Web and worker processes must not receive any `DATABASE_MIGRATION_*`
+secret. They perform read-only schema and checksum verification at startup and
+fail closed when the release phase is missing, partial, or drifted.
 
 Run locally:
 
@@ -211,10 +223,13 @@ Run locally:
 PYTHONPATH=. python -m codes.app
 ```
 
-The production process declared by `Procfile` is:
+The production processes declared by `Procfile` are:
 
 ```bash
+./scripts/release-migrate.sh
 gunicorn --bind 0.0.0.0:${PORT:-8050} codes.app:server
+ANALYSIS_BACKGROUND_JOBS=1 PROCESS_ROLE=analysis-worker \
+  python -m codes.services.analysis_scheduler
 ```
 
 Authentication must use a configured production provider and HTTPS. See
