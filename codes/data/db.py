@@ -38,10 +38,12 @@ from codes.data.migrations import apply_migrations, verify_migrations
 load_dotenv()
 try:
     import psycopg
+    from psycopg import sql
     from psycopg.rows import dict_row
 
 except ImportError:  # pragma: no cover
     psycopg = None
+    sql = None
     dict_row = None
 
 
@@ -464,6 +466,20 @@ _USERS_REQUIRED_TABLES = (
     "user_usage",
     "waitlist_signups",
     "idempotency_records",
+    "portfolios",
+    "portfolio_holdings",
+    "portfolio_transactions",
+    "portfolio_tombstones",
+    "portfolio_simulation_results",
+    "portfolio_legacy_imports",
+)
+_PORTFOLIO_RUNTIME_TABLES = (
+    "portfolios",
+    "portfolio_holdings",
+    "portfolio_transactions",
+    "portfolio_tombstones",
+    "portfolio_simulation_results",
+    "portfolio_legacy_imports",
 )
 _UPSERT_VALUE_METRICS = """
 INSERT INTO value_metrics
@@ -517,7 +533,9 @@ WHERE ticker = ANY(%(tickers)s)
 ORDER BY ticker
 """
 _SELECT_META = "SELECT * FROM sec_facts_meta WHERE ticker = %(ticker)s"
-_SELECT_ITEMS = "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
+_SELECT_ITEMS = (
+    "SELECT concept, year, value, end_date FROM sec_facts_items WHERE ticker = %(ticker)s"
+)
 
 _UPSERT_MARKET_ISSUER = """
 INSERT INTO market_issuers (
@@ -803,11 +821,14 @@ def upsert_analysis(ticker: str, data: dict) -> None:
     _ensure_init()
     now = datetime.datetime.utcnow().isoformat()
     with _conn() as con:
-        con.execute(_UPSERT_ANALYSIS, {
-            "ticker": ticker.upper(),
-            "data_json": json.dumps(data, default=str),
-            "updated_at": now,
-        })
+        con.execute(
+            _UPSERT_ANALYSIS,
+            {
+                "ticker": ticker.upper(),
+                "data_json": json.dumps(data, default=str),
+                "updated_at": now,
+            },
+        )
 
 
 def _analysis_entry_from_row(row) -> dict | None:
@@ -850,9 +871,7 @@ def list_analysis_entries() -> dict[str, dict]:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_ALL_ANALYSES).fetchall()
     return {
-        row["ticker"]: entry
-        for row in rows
-        if (entry := _analysis_entry_from_row(row)) is not None
+        row["ticker"]: entry for row in rows if (entry := _analysis_entry_from_row(row)) is not None
     }
 
 
@@ -866,9 +885,7 @@ def get_analysis_entries(tickers) -> dict[str, dict]:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_ANALYSES, {"tickers": normalized}).fetchall()
     return {
-        row["ticker"]: entry
-        for row in rows
-        if (entry := _analysis_entry_from_row(row)) is not None
+        row["ticker"]: entry for row in rows if (entry := _analysis_entry_from_row(row)) is not None
     }
 
 
@@ -885,16 +902,19 @@ def upsert_sec_8k_filings(ticker: str, filings: list[dict]) -> None:
             text = filing.get("text")
             if not accession or not text:
                 continue
-            con.execute(_UPSERT_SEC_8K, {
-                "ticker": t,
-                "accession": accession,
-                "form": filing.get("form"),
-                "filing_date": filing.get("filing_date"),
-                "document": filing.get("document"),
-                "source_url": filing.get("source_url"),
-                "text": text,
-                "fetched_at": now,
-            })
+            con.execute(
+                _UPSERT_SEC_8K,
+                {
+                    "ticker": t,
+                    "accession": accession,
+                    "form": filing.get("form"),
+                    "filing_date": filing.get("filing_date"),
+                    "document": filing.get("document"),
+                    "source_url": filing.get("source_url"),
+                    "text": text,
+                    "fetched_at": now,
+                },
+            )
 
 
 def get_sec_8k_filings(ticker: str, limit: int = 5) -> list[dict]:
@@ -932,6 +952,7 @@ def list_existing_sec_8k_accessions(ticker: str, accessions: list[str]) -> set[s
         ).fetchall()
     return {row[0] for row in rows}
 
+
 def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> None:
     """
     Normalize the sec_facts dict into meta + item rows.
@@ -947,7 +968,9 @@ def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> Non
 
     with _conn() as con:
         con.execute(_UPSERT_META, meta_params)
-        con.execute(_DELETE_ITEMS, {"ticker": t})  # full replace — same semantics as old blob overwrite
+        con.execute(
+            _DELETE_ITEMS, {"ticker": t}
+        )  # full replace — same semantics as old blob overwrite
         for concept, records in facts.items():
             if concept in _SCALAR_FIELDS or not isinstance(records, list):
                 continue
@@ -955,10 +978,16 @@ def upsert_sec_facts(ticker: str, facts: dict, latest_filing: str | None) -> Non
                 year = r.get("year", r.get("fy"))
                 if year is None:
                     continue
-                con.execute(_INSERT_ITEM, {
-                    "ticker": t, "concept": concept, "year": year,
-                    "value": r.get("value"), "end_date": r.get("end"),
-                })
+                con.execute(
+                    _INSERT_ITEM,
+                    {
+                        "ticker": t,
+                        "concept": concept,
+                        "year": year,
+                        "value": r.get("value"),
+                        "end_date": r.get("end"),
+                    },
+                )
 
 
 def get_sec_facts(ticker: str) -> dict | None:
@@ -975,9 +1004,13 @@ def get_sec_facts(ticker: str) -> dict | None:
     result: dict = {f: meta.get(f) for f in _SCALAR_FIELDS}
     by_concept: dict[str, list] = {}
     for row in items:
-        by_concept.setdefault(row["concept"], []).append({
-            "year": row["year"], "value": row["value"], "end": row["end_date"],
-        })
+        by_concept.setdefault(row["concept"], []).append(
+            {
+                "year": row["year"],
+                "value": row["value"],
+                "end": row["end_date"],
+            }
+        )
     for concept, recs in by_concept.items():
         result[concept] = sorted(recs, key=lambda r: r["year"] or 0, reverse=True)
     return result
@@ -1021,41 +1054,50 @@ def upsert_market_canonical_facts(
     issuer = {"market_code": market, "symbol": t}
 
     with _conn() as con:
-        con.execute(_UPSERT_MARKET_ISSUER, {
-            **issuer,
-            "name": company.name,
-            "exchange": company.exchange,
-            "country": company.country,
-            "currency": company.currency,
-            "regulator_id": getattr(company, "regulator_id", None),
-            "security_type": getattr(company, "security_type", None),
-            "accounting_standard": getattr(company, "accounting_standard", None),
-            "updated_at": now,
-        })
+        con.execute(
+            _UPSERT_MARKET_ISSUER,
+            {
+                **issuer,
+                "name": company.name,
+                "exchange": company.exchange,
+                "country": company.country,
+                "currency": company.currency,
+                "regulator_id": getattr(company, "regulator_id", None),
+                "security_type": getattr(company, "security_type", None),
+                "accounting_standard": getattr(company, "accounting_standard", None),
+                "updated_at": now,
+            },
+        )
 
         con.execute(_DELETE_MARKET_PERIODS, issuer)
         for period in financials.periods:
-            con.execute(_INSERT_MARKET_PERIOD, {
-                **issuer,
-                "fiscal_year": period.fiscal_year,
-                "fiscal_period": period.fiscal_period,
-                "period_end": period.period_end,
-                "currency": period.currency or company.currency,
-            })
+            con.execute(
+                _INSERT_MARKET_PERIOD,
+                {
+                    **issuer,
+                    "fiscal_year": period.fiscal_year,
+                    "fiscal_period": period.fiscal_period,
+                    "period_end": period.period_end,
+                    "currency": period.currency or company.currency,
+                },
+            )
 
         con.execute(_DELETE_MARKET_DOCUMENTS, issuer)
         for document in financials.source_documents:
-            con.execute(_INSERT_MARKET_DOCUMENT, {
-                **issuer,
-                "document_id": document.document_id,
-                "source": document.source,
-                "url": document.url,
-                "filing_date": document.filing_date,
-                "period_end": document.period_end,
-                "form": document.form,
-                "confidence": document.confidence,
-                "ingested_at": now,
-            })
+            con.execute(
+                _INSERT_MARKET_DOCUMENT,
+                {
+                    **issuer,
+                    "document_id": document.document_id,
+                    "source": document.source,
+                    "url": document.url,
+                    "filing_date": document.filing_date,
+                    "period_end": document.period_end,
+                    "form": document.form,
+                    "confidence": document.confidence,
+                    "ingested_at": now,
+                },
+            )
 
         con.execute(_DELETE_MARKET_FACTS, issuer)
         for statement_type, rows in (
@@ -1076,29 +1118,38 @@ def upsert_market_canonical_facts(
 
         con.execute(_DELETE_MARKET_SHARES, issuer)
         if shares and shares.shares_outstanding and shares.as_of and shares.source:
-            con.execute(_UPSERT_MARKET_SHARES, {
-                **issuer,
-                "shares_outstanding": shares.shares_outstanding,
-                "as_of": shares.as_of,
-                "source": shares.source,
-                "updated_at": now,
-            })
+            con.execute(
+                _UPSERT_MARKET_SHARES,
+                {
+                    **issuer,
+                    "shares_outstanding": shares.shares_outstanding,
+                    "as_of": shares.as_of,
+                    "source": shares.source,
+                    "updated_at": now,
+                },
+            )
 
-        con.execute(_UPSERT_MARKET_QUALITY, {
-            **issuer,
-            "can_score": quality_report.can_score,
-            "confidence": quality_report.confidence,
-            "updated_at": now,
-        })
+        con.execute(
+            _UPSERT_MARKET_QUALITY,
+            {
+                **issuer,
+                "can_score": quality_report.can_score,
+                "confidence": quality_report.confidence,
+                "updated_at": now,
+            },
+        )
         con.execute(_DELETE_MARKET_QUALITY_ISSUES, issuer)
         for issue in quality_report.issues:
-            con.execute(_INSERT_MARKET_QUALITY_ISSUE, {
-                **issuer,
-                "code": issue.code,
-                "field": issue.field or "",
-                "severity": issue.severity,
-                "message": issue.message,
-            })
+            con.execute(
+                _INSERT_MARKET_QUALITY_ISSUE,
+                {
+                    **issuer,
+                    "code": issue.code,
+                    "field": issue.field or "",
+                    "severity": issue.severity,
+                    "message": issue.message,
+                },
+            )
 
         # A failed or newly incomplete import must remove any older public row.
         con.execute(_DELETE_MARKET_SCREENER_ROW, issuer)
@@ -1153,12 +1204,15 @@ def get_market_statement_facts(
     results: dict[tuple[int, str], dict] = {}
     for row in rows:
         key = (row["fiscal_year"], row["fiscal_period"])
-        item = results.setdefault(key, {
-            "fiscal_year": row["fiscal_year"],
-            "fiscal_period": row["fiscal_period"],
-            "period_end": row["period_end"],
-            "currency": row["currency"],
-        })
+        item = results.setdefault(
+            key,
+            {
+                "fiscal_year": row["fiscal_year"],
+                "fiscal_period": row["fiscal_period"],
+                "period_end": row["period_end"],
+                "currency": row["currency"],
+            },
+        )
         item[row["fact_name"]] = row["value"]
     return list(results.values())
 
@@ -1233,11 +1287,14 @@ def list_market_symbols_missing_screener(
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        rows = con.execute(_SELECT_MARKET_SYMBOLS_MISSING_SCREENER, {
-            "market_codes": markets,
-            "confidences": list(confidences),
-            "projection_version": projection_version,
-        }).fetchall()
+        rows = con.execute(
+            _SELECT_MARKET_SYMBOLS_MISSING_SCREENER,
+            {
+                "market_codes": markets,
+                "confidences": list(confidences),
+                "projection_version": projection_version,
+            },
+        ).fetchall()
     return [dict(row) for row in rows]
 
 
@@ -1277,7 +1334,16 @@ def _market_fact_rows(
         if period is None:
             continue
         for fact_name, value in row.items():
-            if fact_name in {"fiscal_year", "year", "fiscal_period", "period", "period_end", "end", "end_date", "currency"}:
+            if fact_name in {
+                "fiscal_year",
+                "year",
+                "fiscal_period",
+                "period",
+                "period_end",
+                "end",
+                "end_date",
+                "currency",
+            }:
                 continue
             numeric = _float_or_none(value)
             provenance = (
@@ -1287,24 +1353,28 @@ def _market_fact_rows(
             )
             if numeric is None or provenance is None or not provenance.source_document_id:
                 continue
-            facts.append({
-                "market_code": market_code,
-                "symbol": symbol,
-                "statement_type": statement_type,
-                "fact_name": fact_name,
-                "fiscal_year": period.fiscal_year,
-                "fiscal_period": period.fiscal_period,
-                "period_end": period.period_end,
-                "currency": row.get("currency") or period.currency or financials.company.currency,
-                "value": numeric,
-                "source_document_id": provenance.source_document_id,
-                "source_url": provenance.source_url,
-                "confidence": provenance.confidence,
-                "accounting_standard": provenance.accounting_standard,
-                "extraction_method": provenance.extraction_method,
-                "normalization_method": provenance.normalization_method,
-                "ingested_at": ingested_at,
-            })
+            facts.append(
+                {
+                    "market_code": market_code,
+                    "symbol": symbol,
+                    "statement_type": statement_type,
+                    "fact_name": fact_name,
+                    "fiscal_year": period.fiscal_year,
+                    "fiscal_period": period.fiscal_period,
+                    "period_end": period.period_end,
+                    "currency": row.get("currency")
+                    or period.currency
+                    or financials.company.currency,
+                    "value": numeric,
+                    "source_document_id": provenance.source_document_id,
+                    "source_url": provenance.source_url,
+                    "confidence": provenance.confidence,
+                    "accounting_standard": provenance.accounting_standard,
+                    "extraction_method": provenance.extraction_method,
+                    "normalization_method": provenance.normalization_method,
+                    "ingested_at": ingested_at,
+                }
+            )
     return facts
 
 
@@ -1362,8 +1432,7 @@ def _market_screener_params(
     missing = [key for key in required if row.get(key) is None]
     if missing:
         raise ValueError(
-            "Market screener projection is missing required fields: "
-            + ", ".join(missing)
+            "Market screener projection is missing required fields: " + ", ".join(missing)
         )
     return {
         "market_code": _normalize_market_code(market_code),
@@ -1402,7 +1471,9 @@ VALUES (%(ticker)s, %(factor_name)s, %(score)s, %(max_score)s, %(computed_at)s)
 ON CONFLICT (ticker, factor_name) DO UPDATE SET
     score = excluded.score, max_score = excluded.max_score, computed_at = excluded.computed_at
 """
-_SELECT_FACTOR_SCORES = "SELECT factor_name, score, max_score, computed_at FROM factor_scores WHERE ticker = %(ticker)s"
+_SELECT_FACTOR_SCORES = (
+    "SELECT factor_name, score, max_score, computed_at FROM factor_scores WHERE ticker = %(ticker)s"
+)
 
 
 def upsert_factor_scores(ticker: str, scores: dict[str, tuple[float | None, float | None]]) -> None:
@@ -1416,10 +1487,17 @@ def upsert_factor_scores(ticker: str, scores: dict[str, tuple[float | None, floa
     now = datetime.datetime.utcnow().isoformat()
     with _conn() as con:
         for factor_name, (score, max_score) in scores.items():
-            con.execute(_UPSERT_FACTOR_SCORE, {
-                "ticker": t, "factor_name": factor_name,
-                "score": score, "max_score": max_score, "computed_at": now,
-            })
+            con.execute(
+                _UPSERT_FACTOR_SCORE,
+                {
+                    "ticker": t,
+                    "factor_name": factor_name,
+                    "score": score,
+                    "max_score": max_score,
+                    "computed_at": now,
+                },
+            )
+
 
 _UPSERT_USER_WEIGHT = """
 INSERT INTO user_weights (user_id, factor_name, weight, created_at, updated_at, version, deleted_at)
@@ -1484,22 +1562,31 @@ def set_user_weights(
             raise RuntimeError("User strategy version conflict; reload before retrying.")
         next_version = current_version + 1
         for factor_name, weight in weights.items():
-            con.execute(_UPSERT_USER_WEIGHT, {
-                "user_id": user_id, "factor_name": factor_name,
-                "weight": weight, "updated_at": now, "version": next_version,
-            })
+            con.execute(
+                _UPSERT_USER_WEIGHT,
+                {
+                    "user_id": user_id,
+                    "factor_name": factor_name,
+                    "weight": weight,
+                    "updated_at": now,
+                    "version": next_version,
+                },
+            )
         removed = [
             row["factor_name"]
             for row in rows
             if row.get("deleted_at") is None and row["factor_name"] not in weights
         ]
         if removed:
-            con.execute(_TOMBSTONE_USER_WEIGHTS, {
-                "user_id": user_id,
-                "updated_at": now,
-                "version": next_version,
-                "factor_names": removed,
-            })
+            con.execute(
+                _TOMBSTONE_USER_WEIGHTS,
+                {
+                    "user_id": user_id,
+                    "updated_at": now,
+                    "version": next_version,
+                    "factor_names": removed,
+                },
+            )
 
 
 def get_user_weights(user_id: str) -> dict[str, float]:
@@ -1531,14 +1618,23 @@ def list_user_weight_changes(
         if (include_deleted or row.get("deleted_at") is None)
         and (changed_since is None or row["updated_at"] > changed_since)
     ]
+
+
 def get_factor_scores(ticker: str) -> dict[str, dict]:
     """Return {factor_name: {score, max_score, computed_at}} for a ticker."""
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
         rows = con.execute(_SELECT_FACTOR_SCORES, {"ticker": ticker.upper()}).fetchall()
-    return {r["factor_name"]: {"score": r["score"], "max_score": r["max_score"],
-                                "computed_at": r["computed_at"]} for r in rows}
+    return {
+        r["factor_name"]: {
+            "score": r["score"],
+            "max_score": r["max_score"],
+            "computed_at": r["computed_at"],
+        }
+        for r in rows
+    }
+
 
 _UPSERT_STRATEGY_CACHE = """
 INSERT INTO strategy_backtest_cache (cache_key, result_json, computed_at)
@@ -1546,12 +1642,20 @@ VALUES (%(cache_key)s, %(result_json)s, %(computed_at)s)
 ON CONFLICT (cache_key) DO UPDATE SET
     result_json = excluded.result_json, computed_at = excluded.computed_at
 """
-_SELECT_STRATEGY_CACHE = "SELECT result_json, computed_at FROM strategy_backtest_cache WHERE cache_key = %(cache_key)s"
-_DELETE_STRATEGY_CACHE_PREFIX = "DELETE FROM strategy_backtest_cache WHERE cache_key LIKE %(prefix)s"
+_SELECT_STRATEGY_CACHE = (
+    "SELECT result_json, computed_at FROM strategy_backtest_cache WHERE cache_key = %(cache_key)s"
+)
+_DELETE_STRATEGY_CACHE_PREFIX = (
+    "DELETE FROM strategy_backtest_cache WHERE cache_key LIKE %(prefix)s"
+)
 
 _SELECT_SUBSCRIPTION = "SELECT * FROM subscriptions WHERE user_id = %(user_id)s"
-_SELECT_SUBSCRIPTION_BY_CUSTOMER = "SELECT * FROM subscriptions WHERE stripe_customer_id = %(stripe_customer_id)s"
-_SELECT_SUBSCRIPTION_BY_STRIPE_ID = "SELECT * FROM subscriptions WHERE stripe_subscription_id = %(stripe_subscription_id)s"
+_SELECT_SUBSCRIPTION_BY_CUSTOMER = (
+    "SELECT * FROM subscriptions WHERE stripe_customer_id = %(stripe_customer_id)s"
+)
+_SELECT_SUBSCRIPTION_BY_STRIPE_ID = (
+    "SELECT * FROM subscriptions WHERE stripe_subscription_id = %(stripe_subscription_id)s"
+)
 _SELECT_USER_SETTINGS = """
 SELECT settings_json, created_at, updated_at, version, deleted_at
 FROM user_settings
@@ -1661,11 +1765,14 @@ def set_strategy_backtest(cache_key: str, result: dict) -> None:
     _ensure_init()
     now = datetime.datetime.utcnow().isoformat()
     with _conn() as con:
-        con.execute(_UPSERT_STRATEGY_CACHE, {
-            "cache_key": cache_key,
-            "result_json": json.dumps(result, default=str),
-            "computed_at": now,
-        })
+        con.execute(
+            _UPSERT_STRATEGY_CACHE,
+            {
+                "cache_key": cache_key,
+                "result_json": json.dumps(result, default=str),
+                "computed_at": now,
+            },
+        )
 
 
 def invalidate_strategy_cache(data_version_prefix: str) -> None:
@@ -1719,16 +1826,19 @@ def upsert_subscription(
     _ensure_user_init()
     with _users_conn() as con:
         con.row_factory = dict_row
-        result = con.execute(_UPSERT_SUBSCRIPTION, {
-            "user_id": user_id,
-            "plan": plan,
-            "status": status,
-            "start_date": start_date,
-            "end_date": end_date,
-            "stripe_customer_id": stripe_customer_id,
-            "stripe_subscription_id": stripe_subscription_id,
-            "expected_version": expected_version,
-        })
+        result = con.execute(
+            _UPSERT_SUBSCRIPTION,
+            {
+                "user_id": user_id,
+                "plan": plan,
+                "status": status,
+                "start_date": start_date,
+                "end_date": end_date,
+                "stripe_customer_id": stripe_customer_id,
+                "stripe_subscription_id": stripe_subscription_id,
+                "expected_version": expected_version,
+            },
+        )
         inserted_or_updated = result.fetchone()
         if expected_version is not None and inserted_or_updated is None:
             raise RuntimeError("Subscription version conflict; reload before retrying.")
@@ -1785,10 +1895,13 @@ def get_usage(user_id: str, feature_name: str) -> dict:
     _ensure_user_init()
     with _users_conn() as con:
         con.row_factory = dict_row
-        row = con.execute(_SELECT_USAGE, {
-            "user_id": user_id,
-            "feature_name": feature_name,
-        }).fetchone()
+        row = con.execute(
+            _SELECT_USAGE,
+            {
+                "user_id": user_id,
+                "feature_name": feature_name,
+            },
+        ).fetchone()
     if not row:
         return {"usage_count": 0, "feature_usage": {}}
     result = dict(row)
@@ -1800,10 +1913,13 @@ def get_total_usage(user_id: str, feature_name: str) -> int:
     _ensure_user_init()
     with _users_conn() as con:
         con.row_factory = dict_row
-        row = con.execute(_SELECT_TOTAL_USAGE, {
-            "user_id": user_id,
-            "feature_name": feature_name,
-        }).fetchone()
+        row = con.execute(
+            _SELECT_TOTAL_USAGE,
+            {
+                "user_id": user_id,
+                "feature_name": feature_name,
+            },
+        ).fetchone()
     if not row:
         return 0
     if isinstance(row, dict):
@@ -1821,13 +1937,16 @@ def increment_usage(user_id: str, feature_name: str, usage_key: str | None = Non
         period_end = period_start.replace(month=period_start.month + 1)
     with _users_conn() as con:
         con.row_factory = dict_row
-        row = con.execute(_INCREMENT_USAGE, {
-            "user_id": user_id,
-            "period_start": period_start,
-            "period_end": period_end,
-            "feature_name": feature_name,
-            "usage_key": usage_key or feature_name,
-        }).fetchone()
+        row = con.execute(
+            _INCREMENT_USAGE,
+            {
+                "user_id": user_id,
+                "period_start": period_start,
+                "period_end": period_end,
+                "feature_name": feature_name,
+                "usage_key": usage_key or feature_name,
+            },
+        ).fetchone()
     result = dict(row)
     result["feature_usage"] = result.get("feature_usage") or {}
     return result
@@ -1853,19 +1972,25 @@ def consume_limited_usage(
             "SELECT pg_advisory_xact_lock(hashtext(%(usage_lock)s))",
             {"usage_lock": f"{user_id}:{feature_name}"},
         )
-        used = con.execute(_SELECT_TOTAL_USAGE, {
-            "user_id": user_id,
-            "feature_name": feature_name,
-        }).fetchone()[0]
+        used = con.execute(
+            _SELECT_TOTAL_USAGE,
+            {
+                "user_id": user_id,
+                "feature_name": feature_name,
+            },
+        ).fetchone()[0]
         if int(used or 0) >= limit:
             return None
-        row = con.execute(_INCREMENT_USAGE, {
-            "user_id": user_id,
-            "period_start": period_start,
-            "period_end": period_end,
-            "feature_name": feature_name,
-            "usage_key": usage_key or feature_name,
-        }).fetchone()
+        row = con.execute(
+            _INCREMENT_USAGE,
+            {
+                "user_id": user_id,
+                "period_start": period_start,
+                "period_end": period_end,
+                "feature_name": feature_name,
+                "usage_key": usage_key or feature_name,
+            },
+        ).fetchone()
     result = dict(row)
     result["feature_usage"] = result.get("feature_usage") or {}
     return result
@@ -1883,6 +2008,7 @@ def mark_waitlist_confirmation_sent(email: str) -> None:
     _ensure_user_init()
     with _users_conn() as con:
         con.execute(_MARK_WAITLIST_CONFIRMED, {"email": email})
+
 
 _UPSERT_FACTOR_SNAPSHOT = """
 INSERT INTO factor_score_snapshots (ticker, factor_name, snapshot_date, score, max_score, recorded_at)
@@ -1923,8 +2049,9 @@ LIMIT %(limit)s
 """
 
 
-def record_factor_snapshot(ticker: str, snapshot_date: str,
-                           scores: dict[str, tuple[float | None, float | None]]) -> None:
+def record_factor_snapshot(
+    ticker: str, snapshot_date: str, scores: dict[str, tuple[float | None, float | None]]
+) -> None:
     """
     Append-only dated snapshot of factor scores (ISSUE_012 Layer 5).
     Unlike factor_scores (Layer 1, latest-only), this never overwrites
@@ -1936,10 +2063,17 @@ def record_factor_snapshot(ticker: str, snapshot_date: str,
     now = datetime.datetime.utcnow().isoformat()
     with _conn() as con:
         for factor_name, (score, max_score) in scores.items():
-            con.execute(_UPSERT_FACTOR_SNAPSHOT, {
-                "ticker": t, "factor_name": factor_name, "snapshot_date": snapshot_date,
-                "score": score, "max_score": max_score, "recorded_at": now,
-            })
+            con.execute(
+                _UPSERT_FACTOR_SNAPSHOT,
+                {
+                    "ticker": t,
+                    "factor_name": factor_name,
+                    "snapshot_date": snapshot_date,
+                    "score": score,
+                    "max_score": max_score,
+                    "recorded_at": now,
+                },
+            )
 
 
 def get_factor_score_asof(ticker: str, factor_name: str, as_of: str) -> dict | None:
@@ -1947,9 +2081,14 @@ def get_factor_score_asof(ticker: str, factor_name: str, as_of: str) -> dict | N
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        row = con.execute(_SELECT_SNAPSHOTS_ASOF, {
-            "ticker": ticker.upper(), "factor_name": factor_name, "as_of": as_of,
-        }).fetchone()
+        row = con.execute(
+            _SELECT_SNAPSHOTS_ASOF,
+            {
+                "ticker": ticker.upper(),
+                "factor_name": factor_name,
+                "as_of": as_of,
+            },
+        ).fetchone()
     return dict(row) if row else None
 
 
@@ -1982,13 +2121,16 @@ def record_composite_score_snapshot(
     """Store one current composite observation per ticker and day."""
     _ensure_init()
     with _conn() as con:
-        con.execute(_UPSERT_COMPOSITE_SNAPSHOT, {
-            "ticker": ticker.upper(),
-            "snapshot_date": snapshot_date or datetime.date.today(),
-            "algorithm_version": algorithm_version,
-            "composite_score": float(composite_score),
-            "verdict": verdict,
-        })
+        con.execute(
+            _UPSERT_COMPOSITE_SNAPSHOT,
+            {
+                "ticker": ticker.upper(),
+                "snapshot_date": snapshot_date or datetime.date.today(),
+                "algorithm_version": algorithm_version,
+                "composite_score": float(composite_score),
+                "verdict": verdict,
+            },
+        )
 
 
 def list_composite_score_history(ticker: str, limit: int = 90) -> list[dict]:
@@ -1996,10 +2138,15 @@ def list_composite_score_history(ticker: str, limit: int = 90) -> list[dict]:
     _ensure_init()
     with _conn() as con:
         con.row_factory = dict_row
-        rows = con.execute(_SELECT_COMPOSITE_SNAPSHOTS, {
-            "ticker": ticker.upper(), "limit": max(1, min(int(limit), 365)),
-        }).fetchall()
+        rows = con.execute(
+            _SELECT_COMPOSITE_SNAPSHOTS,
+            {
+                "ticker": ticker.upper(),
+                "limit": max(1, min(int(limit), 365)),
+            },
+        ).fetchall()
     return [dict(row) for row in reversed(rows)]
+
 
 def _db_url() -> str:
     url = os.environ.get("DATABASE_MARKET_URL")
@@ -2123,6 +2270,20 @@ def init_user_db(
         )
 
 
+def configure_portfolio_runtime_role(database_url: str, runtime_role: str) -> None:
+    """Grant only tenant-data DML privileges to the users runtime role."""
+    normalized_role = str(runtime_role or "").strip()
+    if not normalized_role:
+        raise ValueError("A PostgreSQL users runtime role is required")
+    role = sql.Identifier(normalized_role)
+    tables = sql.SQL(", ").join(sql.Identifier(table) for table in _PORTFOLIO_RUNTIME_TABLES)
+    with _pool(database_url).connection() as connection:
+        connection.execute(sql.SQL("GRANT USAGE ON SCHEMA public TO {}").format(role))
+        connection.execute(
+            sql.SQL("GRANT SELECT, INSERT, UPDATE, DELETE ON {} TO {}").format(tables, role)
+        )
+
+
 def verify_market_database() -> None:
     """Fail closed unless the runtime market database is fully initialized.
 
@@ -2206,9 +2367,29 @@ def delete_user_records(user_id: str) -> dict[str, int]:
     _ensure_user_init()
     deleted = {}
     with _users_conn() as con:
-        for table in ("user_weights", "user_usage", "subscriptions", "user_settings"):
+        con.execute(
+            "SELECT set_config('app.user_id', %(user_id)s, true)",
+            {"user_id": user_id},
+        )
+        # Portfolio children are deleted first so the result records exact
+        # discovery evidence instead of relying on an opaque cascade.
+        for table in (
+            "portfolio_simulation_results",
+            "portfolio_transactions",
+            "portfolio_holdings",
+            "portfolio_tombstones",
+            "portfolio_legacy_imports",
+            "portfolios",
+            "idempotency_records",
+            "user_weights",
+            "user_usage",
+            "subscriptions",
+            "user_settings",
+        ):
             # Table names come only from the fixed tuple above; user data remains parameterized.
-            deleted[table] = con.execute(f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}).rowcount  # nosec B608
+            deleted[table] = con.execute(
+                f"DELETE FROM {table} WHERE user_id = %(user_id)s", {"user_id": user_id}
+            ).rowcount  # nosec B608
     return deleted
 
 
@@ -2282,7 +2463,9 @@ def claim_idempotency(
                 "DELETE FROM idempotency_records WHERE user_id = %(user_id)s AND idempotency_key = %(idempotency_key)s",
                 {"user_id": user_id, "idempotency_key": idempotency_key},
             )
-            return claim_idempotency(user_id, idempotency_key, operation, request_hash, ttl_seconds=ttl_seconds)
+            return claim_idempotency(
+                user_id, idempotency_key, operation, request_hash, ttl_seconds=ttl_seconds
+            )
         return _idempotency_row(existing)
 
 
@@ -2339,8 +2522,12 @@ def _idempotency_row(row: object) -> dict[str, object]:
     if isinstance(values, dict):
         return dict(values)
     return {
-        "user_id": values[0], "idempotency_key": values[1], "operation": values[2],
-        "request_hash": values[3], "status": values[4], "response_json": values[5],
+        "user_id": values[0],
+        "idempotency_key": values[1],
+        "operation": values[2],
+        "request_hash": values[3],
+        "status": values[4],
+        "response_json": values[5],
         "response_status": values[6],
     }
 
@@ -2440,8 +2627,12 @@ def get_all(order_by: str = "market_cap") -> list[dict]:
     order_by must be one of the allowed column names to prevent injection.
     """
     _safe_cols = {
-        "market_cap", "composite_score", "graham_number",
-        "buffett_iv", "updated_at", "ticker",
+        "market_cap",
+        "composite_score",
+        "graham_number",
+        "buffett_iv",
+        "updated_at",
+        "ticker",
     }
     col = order_by if order_by in _safe_cols else "market_cap"
     _ensure_init()

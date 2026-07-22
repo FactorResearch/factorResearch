@@ -102,6 +102,7 @@ def test_two_release_processes_initialize_empty_users_database_once() -> None:
             assert rows == [
                 ("001_issue_063_sync_metadata_users.sql", 1),
                 ("002_issue_064_idempotency_users.sql", 1),
+                ("003_issue_116_portfolio_authority_users.sql", 1),
             ]
             verify_migrations(
                 connection,
@@ -193,9 +194,7 @@ def test_multiple_runtime_processes_reject_partial_schema_without_mutation() -> 
         for process in processes:
             process.join(timeout=10)
 
-        assert [outcomes.get(timeout=1) for _ in processes] == [
-            "DatabaseNotReadyError"
-        ] * 4
+        assert [outcomes.get(timeout=1) for _ in processes] == ["DatabaseNotReadyError"] * 4
         with psycopg.connect(database_url) as connection:
             tables = connection.execute(
                 "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename"

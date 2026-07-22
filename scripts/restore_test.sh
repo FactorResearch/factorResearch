@@ -89,6 +89,17 @@ for db_name in "${!SANITY_TABLES[@]}"; do
         echo "✅ $db_name restored OK — $table has $row_count rows"
     fi
 
+    if [ "$db_name" = "factorresearch_users" ]; then
+        portfolio_table_count=$(psql -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" \
+            -d "$scratch_db" -tAc "SELECT COUNT(*) FROM unnest(ARRAY['portfolios','portfolio_holdings','portfolio_transactions','portfolio_tombstones','portfolio_simulation_results','portfolio_legacy_imports']) AS table_name WHERE to_regclass(table_name) IS NOT NULL;" 2>/dev/null || echo "ERROR")
+        if [ "$portfolio_table_count" != "6" ]; then
+            echo "❌ Portfolio authority schema missing after restore ($portfolio_table_count/6 tables)"
+            FAILED=1
+        else
+            echo "✅ Portfolio authority schema restored — 6/6 tables present"
+        fi
+    fi
+
     # Cleanup — never leave the scratch database behind.
     dropdb -h "$RESTORE_HOST" -p "$RESTORE_PORT" -U "$RESTORE_USER" "$scratch_db"
 done

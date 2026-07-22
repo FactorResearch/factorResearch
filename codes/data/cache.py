@@ -17,9 +17,10 @@ def datetime_from_epoch(value: float) -> str:
     """Return an ISO-8601 UTC timestamp for a cache acquisition time."""
     return datetime.fromtimestamp(value, UTC).isoformat()
 
+
 # Fallback TTL used only for the ticker map (not for company facts).
 # Company facts are invalidated by filing date, not wall-clock time.
-TICKER_MAP_TTL = 7 * 24 * 60 * 60   # 7 days in seconds
+TICKER_MAP_TTL = 7 * 24 * 60 * 60  # 7 days in seconds
 
 # SECURITY (NEW-1): cache keys become filenames — enforce an allow-list
 # as a hard backstop against path traversal.
@@ -35,6 +36,7 @@ def _path(kind: str, key: str) -> Path:
 
 # ── JSON encoder that handles numpy / pandas scalar types ─────────────────────
 
+
 class _SafeEncoder(json.JSONEncoder):
     """
     Converts types that the stdlib json module can't handle:
@@ -49,6 +51,7 @@ class _SafeEncoder(json.JSONEncoder):
     def default(self, obj):
         try:
             import numpy as np
+
             if isinstance(obj, np.bool_):
                 return bool(obj)
             if isinstance(obj, np.integer):
@@ -63,6 +66,7 @@ class _SafeEncoder(json.JSONEncoder):
 
         try:
             import pandas as pd
+
             if obj is pd.NA or obj is pd.NaT:
                 return None
         except ImportError:
@@ -87,7 +91,7 @@ class _SafeEncoder(json.JSONEncoder):
 # Cache kinds whose payload contains user-identifiable data (portfolio names,
 # holdings, shares) are encrypted at rest. Market/reference data (sec_facts,
 # hist, analysis, etc.) is public and left plaintext.
-_ENCRYPTED_KINDS = {"portfolio"}
+_ENCRYPTED_KINDS = {"portfolio", "port_sim"}
 _encryptor: "security.SensitiveDataEncryptor | None" = None
 
 
@@ -134,7 +138,8 @@ def _dumps(
         "ts": time.time(),
         "data": stored_data,
         "encrypted": encrypted,
-        "lineage": lineage or build_lineage(
+        "lineage": lineage
+        or build_lineage(
             source=kind or "cache",
             acquired_at=acquired_at,
             source_timestamp=latest_filing,
@@ -155,6 +160,7 @@ def _maybe_decrypt(entry: dict):
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
+
 
 def read(kind: str, key: str):
     """
@@ -219,11 +225,12 @@ def is_stale_for_company(symbol: str, sec_latest_filing: str) -> bool:
 
     stale = sec_latest_filing > cached_filing
     if stale:
-        print(f"[CACHE STALE] sec_facts:{symbol} — "
-              f"new filing {sec_latest_filing} > cached {cached_filing}")
+        print(
+            f"[CACHE STALE] sec_facts:{symbol} — "
+            f"new filing {sec_latest_filing} > cached {cached_filing}"
+        )
     else:
-        print(f"[CACHE HIT]   sec_facts:{symbol} — "
-              f"up to date (latest filing {cached_filing})")
+        print(f"[CACHE HIT]   sec_facts:{symbol} — up to date (latest filing {cached_filing})")
     return stale
 
 
@@ -242,7 +249,7 @@ def write(
             _dumps(data, latest_filing=latest_filing, kind=kind, lineage=lineage)
         )
         suffix = f" (filing {latest_filing})" if latest_filing else ""
-        if kind!="company_meta":
+        if kind != "company_meta":
             print(f"[CACHE SAVED] {kind}:{key}{suffix}")
         return True
     except Exception as e:
@@ -270,3 +277,21 @@ def clear(kind: str, key: str) -> None:
     if p.exists():
         p.unlink()
         print(f"[CACHE CLEARED] {kind}:{key}")
+
+
+def list_keys(kind: str, *, prefix: str = "") -> list[str]:
+    """List cache keys for a fixed kind without reading their payloads."""
+    normalized_kind = str(kind).lower()
+    if not _SAFE_KEY_RE.fullmatch(normalized_kind):
+        raise ValueError(f"Unsafe cache kind rejected: {kind!r}")
+    if not CACHE_DIR.exists():
+        return []
+    filename_prefix = f"{normalized_kind}-"
+    keys = []
+    for path in CACHE_DIR.glob(f"{normalized_kind}-*.json"):
+        if not path.is_file() or not path.name.startswith(filename_prefix):
+            continue
+        key = path.name[len(filename_prefix) : -5]
+        if key.startswith(prefix.lower()):
+            keys.append(key)
+    return sorted(keys)

@@ -27,6 +27,7 @@ Simulation output:
 
 import datetime
 import hashlib
+import json
 import time
 import uuid
 
@@ -36,18 +37,18 @@ import pandas as pd
 from codes.core import financial_math as fm
 from codes.services.idempotency import idempotency
 
-from .data import api_fetcher, cache, temporal
+from .data import api_fetcher, cache, portfolio_repository, temporal
 
-MAX_HOLDINGS  = 10
-MIN_SHARES    = 5
-MC_PATHS      = 1000
-MC_YEARS      = 2
-MC_MONTHS     = MC_YEARS * 12
+MAX_HOLDINGS = 10
+MIN_SHARES = 5
+MC_PATHS = 1000
+MC_YEARS = 2
+MC_MONTHS = MC_YEARS * 12
 
 # ── In-process split cache (lives for the server session, refreshed every 6h) ─
 # Avoids re-fetching the same symbol's splits on every backtest call.
 _splits_memo: dict[str, tuple[float, list]] = {}
-_SPLITS_TTL  = 6 * 3600   # seconds
+_SPLITS_TTL = 6 * 3600  # seconds
 
 
 def _splits_since(symbol: str, since_date: str) -> list[dict]:
@@ -57,7 +58,9 @@ def _splits_since(symbol: str, since_date: str) -> list[dict]:
     """
     now = time.time()
     try:
-        identity = temporal.resolve_security("TICKER", symbol, market_code="CA" if symbol.upper().endswith(".TO") else "US")
+        identity = temporal.resolve_security(
+            "TICKER", symbol, market_code="CA" if symbol.upper().endswith(".TO") else "US"
+        )
         if identity:
             actions = temporal.list_corporate_actions(identity["security_id"])
             splits = [
@@ -66,7 +69,10 @@ def _splits_since(symbol: str, since_date: str) -> list[dict]:
                 if action.get("action_type") == "split" and action.get("ratio")
             ]
             if splits:
-                return sorted((split for split in splits if split["date"] >= since_date), key=lambda split: split["date"])
+                return sorted(
+                    (split for split in splits if split["date"] >= since_date),
+                    key=lambda split: split["date"],
+                )
     except Exception as exc:
         print(f"Track E split lookup unavailable for {symbol}: {type(exc).__name__}")
     if symbol in _splits_memo:
@@ -106,12 +112,14 @@ def get_cumulative_split_factor(symbol: str, since_date: str) -> float:
     the current split-adjusted share count.
     """
     splits = _splits_since(symbol, since_date)
-    today  = pd.Timestamp.today().normalize()
+    today = pd.Timestamp.today().normalize()
     return _split_factor_at(splits, today)
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Storage helpers
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def _cache_token(value: str) -> str:
     """Stable filename-safe token for user-controlled cache key parts."""
@@ -165,12 +173,164 @@ def _read_cache_if_safe(kind: str, key: str):
         return None
 
 
+def _legacy_user_keys(user_id: str) -> tuple[list[str], list[str]]:
+    """Discover indexed, tombstoned, orphaned, and simulation legacy keys."""
+    token = _cache_token(user_id)
+    portfolio_keys = set(cache.list_keys("portfolio", prefix=f"u_{token}_p_"))
+    simulation_keys = set(cache.list_keys("port_sim", prefix=f"u_{token}_sim_"))
+    for entry in _load_index(user_id):
+        name = entry["name"]
+        if entry.get("id"):
+            portfolio_keys.add(_portfolio_key(user_id, entry["id"]))
+        portfolio_keys.add(_encoded_name_portfolio_key(user_id, name))
+        portfolio_keys.add(_legacy_portfolio_key(user_id, name))
+        simulation_keys.add(_simulation_key(user_id, name))
+        simulation_keys.add(_legacy_simulation_key(user_id, name))
+    # Old safe user ids were embedded directly in filenames. Unsafe provider
+    # ids were rejected by the cache boundary and therefore have no such keys.
+    portfolio_keys.update(cache.list_keys("portfolio", prefix=f"{user_id}_p_"))
+    simulation_keys.update(cache.list_keys("port_sim", prefix=f"{user_id}_"))
+    return sorted(portfolio_keys), sorted(simulation_keys)
+
+
+def _erase_legacy_user_files(user_id: str) -> dict[str, int]:
+    """Erase every discoverable file, clearing indexes only after children."""
+    portfolio_keys, simulation_keys = _legacy_user_keys(user_id)
+    for key in simulation_keys:
+        _clear_cache_if_safe("port_sim", key)
+    for key in portfolio_keys:
+        _clear_cache_if_safe("portfolio", key)
+    for key in (_portfolio_index_key(user_id), _legacy_index_key(user_id)):
+        _clear_cache_if_safe("portfolio", key)
+    return {"portfolio_files": len(portfolio_keys), "simulation_files": len(simulation_keys)}
+
+
+def _payload_checksum(payload: object) -> str:
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+_MIGRATION_METADATA_FIELDS = (
+    "id",
+    "version",
+    "created",
+    "created_at",
+    "updated_at",
+    "deleted_at",
+)
+
+
+def _migration_payload(payload: dict) -> dict:
+    comparable = dict(payload)
+    for field in _MIGRATION_METADATA_FIELDS:
+        comparable.pop(field, None)
+    return comparable
+
+
+def _import_legacy_portfolio(user_id: str, source_key: str, payload: dict) -> tuple[str, str]:
+    checksum = _payload_checksum(payload)
+    name = str(payload["name"])
+    if portfolio_repository.completed_legacy_checksum(user_id, source_key) == checksum:
+        return "skipped", name
+    portfolio_repository.record_legacy_import(user_id, source_key, checksum, status="processing")
+    existing = portfolio_repository.load_portfolio(user_id, name)
+    if existing:
+        if _migration_payload(existing) != _migration_payload(payload):
+            raise RuntimeError(f"Legacy import conflicts with existing portfolio {name!r}")
+        saved = existing
+        outcome = "existing"
+    else:
+        saved = dict(payload)
+        saved["id"] = str(saved.get("id") or uuid.uuid4().hex)
+        saved["version"] = 0
+        portfolio_repository.save_portfolio(user_id, saved, expected_version=0)
+        outcome = "imported"
+    portfolio_repository.record_legacy_import(
+        user_id,
+        source_key,
+        checksum,
+        status="completed",
+        portfolio_id=saved["id"],
+    )
+    return outcome, name
+
+
+def _import_legacy_simulations(user_id: str, simulation_keys: list[str]) -> None:
+    for source_key in simulation_keys:
+        result = _read_cache_if_safe("port_sim", source_key)
+        if not isinstance(result, dict):
+            continue
+        name = str(result.get("portfolio_name") or "")
+        portfolio_record = portfolio_repository.load_portfolio(user_id, name)
+        if portfolio_record:
+            portfolio_repository.save_simulation(user_id, portfolio_record, result)
+
+
+def _rollback_legacy_imports(user_id: str, imported: list[tuple[str, str]], exc: Exception) -> None:
+    for name, source_key in reversed(imported):
+        portfolio_repository.delete_portfolio(user_id, name, hard=True)
+        payload = _read_cache_if_safe("portfolio", source_key)
+        portfolio_repository.record_legacy_import(
+            user_id,
+            source_key,
+            _payload_checksum(payload),
+            status="failed",
+            error_code=type(exc).__name__,
+        )
+
+
+def migrate_legacy_user(user_id: str, *, purge_files: bool = True) -> dict:
+    """Idempotently import one user's legacy files into PostgreSQL.
+
+    All child payloads are imported and verified before file indexes are
+    cleared. A partial attempt is rolled back to its pre-import PostgreSQL
+    shape and remains visible in ``portfolio_legacy_imports``.
+    """
+    if not portfolio_repository.is_enabled():
+        raise RuntimeError("Legacy portfolio import requires PostgreSQL storage")
+    portfolio_keys, simulation_keys = _legacy_user_keys(user_id)
+    imported: list[tuple[str, str]] = []
+    skipped: list[str] = []
+    names: set[str] = set()
+    try:
+        for source_key in portfolio_keys:
+            payload = _read_cache_if_safe("portfolio", source_key)
+            if not isinstance(payload, dict) or not payload.get("name"):
+                continue
+            outcome, name = _import_legacy_portfolio(user_id, source_key, payload)
+            names.add(name)
+            if outcome == "skipped":
+                skipped.append(source_key)
+            elif outcome == "imported":
+                imported.append((name, source_key))
+        _import_legacy_simulations(user_id, simulation_keys)
+        for name in names:
+            if portfolio_repository.load_portfolio(user_id, name) is None:
+                raise RuntimeError(f"Imported portfolio {name!r} failed read-back verification")
+    except Exception as exc:
+        _rollback_legacy_imports(user_id, imported, exc)
+        raise
+
+    purged = {"portfolio_files": 0, "simulation_files": 0}
+    if purge_files:
+        purged = _erase_legacy_user_files(user_id)
+    return {
+        "user_id": user_id,
+        "imported": [name for name, _ in imported],
+        "skipped": skipped,
+        "purged": purged,
+    }
+
+
 def _load_index(user_id: str) -> list[dict[str, str]]:
     encoded = cache.read("portfolio", _portfolio_index_key(user_id))
-    raw = encoded if encoded is not None else _read_cache_if_safe("portfolio", _legacy_index_key(user_id))
+    raw = (
+        encoded
+        if encoded is not None
+        else _read_cache_if_safe("portfolio", _legacy_index_key(user_id))
+    )
     return [
-        item if isinstance(item, dict) else {"id": "", "name": str(item)}
-        for item in (raw or [])
+        item if isinstance(item, dict) else {"id": "", "name": str(item)} for item in (raw or [])
     ]
 
 
@@ -179,13 +339,21 @@ def _save_index(user_id: str, entries: list[dict[str, str]]) -> None:
 
 
 def list_portfolios(user_id: str) -> list[str]:
+    if portfolio_repository.is_enabled():
+        return portfolio_repository.list_portfolios(user_id)
     return [entry["name"] for entry in _load_index(user_id) if not entry.get("deleted_at")]
 
 
 def load_portfolio(user_id: str, name: str) -> dict | None:
+    if portfolio_repository.is_enabled():
+        stored = portfolio_repository.load_portfolio(user_id, name)
+        return _refresh_holding_symbols(stored) if stored is not None else None
     entry = next(
-        (item for item in _load_index(user_id)
-         if item["name"] == name and not item.get("deleted_at")),
+        (
+            item
+            for item in _load_index(user_id)
+            if item["name"] == name and not item.get("deleted_at")
+        ),
         None,
     )
     if entry and entry["id"]:
@@ -219,6 +387,9 @@ def _refresh_holding_symbols(portfolio: dict) -> dict:
 
 
 def save_portfolio(user_id: str, portfolio: dict, *, expected_version: int | None = None) -> None:
+    if portfolio_repository.is_enabled():
+        portfolio_repository.save_portfolio(user_id, portfolio, expected_version=expected_version)
+        return
     name = portfolio["name"]
     portfolio_id = portfolio.setdefault("id", uuid.uuid4().hex)
     key = _portfolio_key(user_id, portfolio_id)
@@ -229,12 +400,17 @@ def save_portfolio(user_id: str, portfolio: dict, *, expected_version: int | Non
     portfolio["version"] = expected + 1
     if cache.write_if_version("portfolio", key, portfolio, expected) is False:
         raise RuntimeError(f"Failed to write cache entry portfolio:{key}")
-    entries = [item for item in _load_index(user_id) if item["id"] != portfolio_id and item["name"] != name]
+    entries = [
+        item for item in _load_index(user_id) if item["id"] != portfolio_id and item["name"] != name
+    ]
     entries.append({"id": portfolio_id, "name": name, "deleted_at": portfolio.get("deleted_at")})
     _save_index(user_id, entries)
 
 
 def delete_portfolio(user_id: str, name: str, *, hard: bool = False) -> None:
+    if portfolio_repository.is_enabled():
+        portfolio_repository.delete_portfolio(user_id, name, hard=hard)
+        return
     entries = _load_index(user_id)
     entry = next((item for item in entries if item["name"] == name), None)
     if entry and entry["id"]:
@@ -253,6 +429,8 @@ def delete_portfolio(user_id: str, name: str, *, hard: bool = False) -> None:
 
 def list_portfolio_changes(user_id: str, since: str | None = None) -> list[dict]:
     """Return active records and tombstones changed after an ISO timestamp."""
+    if portfolio_repository.is_enabled():
+        return portfolio_repository.list_portfolio_changes(user_id, since)
     records = []
     for entry in _load_index(user_id):
         if not entry.get("id"):
@@ -265,6 +443,10 @@ def list_portfolio_changes(user_id: str, since: str | None = None) -> list[dict]
 
 
 def restore_portfolio(user_id: str, portfolio_id: str, *, expected_version: int) -> dict:
+    if portfolio_repository.is_enabled():
+        return portfolio_repository.restore_portfolio(
+            user_id, portfolio_id, expected_version=expected_version
+        )
     record = cache.read("portfolio", _portfolio_key(user_id, portfolio_id))
     if not record or not record.get("deleted_at"):
         raise ValueError("Deleted portfolio not found.")
@@ -275,10 +457,10 @@ def restore_portfolio(user_id: str, portfolio_id: str, *, expected_version: int)
 
 def _create_portfolio(user_id: str, name: str) -> dict:
     p = {
-        "id":       uuid.uuid4().hex,
-        "name":     name,
-        "created":  datetime.datetime.now().isoformat(),
-        "version":  0,
+        "id": uuid.uuid4().hex,
+        "name": name,
+        "created": datetime.datetime.now().isoformat(),
+        "version": 0,
         "holdings": {},
     }
     save_portfolio(user_id, p)
@@ -298,12 +480,15 @@ def create_portfolio(user_id: str, name: str, *, idempotency_key: str | None = N
     )
     return result.response
 
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Holdings management
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _add_holding(user_id: str, name: str, symbol: str, shares: int,
-                 current_price: float, company_name: str) -> tuple[dict, str]:
+
+def _add_holding(
+    user_id: str, name: str, symbol: str, shares: int, current_price: float, company_name: str
+) -> tuple[dict, str]:
     p = load_portfolio(user_id, name)
     if p is None:
         return {}, f'Portfolio "{name}" not found'
@@ -321,18 +506,25 @@ def _add_holding(user_id: str, name: str, symbol: str, shares: int,
 
     p["holdings"][symbol] = {
         "security_id": _security_id(symbol, company_name),
-        "shares":       shares,
+        "shares": shares,
         "price_at_add": current_price,
-        "name":         company_name,
-        "added_date":   datetime.date.today().isoformat(),
+        "name": company_name,
+        "added_date": datetime.date.today().isoformat(),
     }
     save_portfolio(user_id, p)
     return p, ""
 
 
-def add_holding(user_id: str, name: str, symbol: str, shares: int,
-                current_price: float, company_name: str,
-                *, idempotency_key: str | None = None) -> tuple[dict, str]:
+def add_holding(
+    user_id: str,
+    name: str,
+    symbol: str,
+    shares: int,
+    current_price: float,
+    company_name: str,
+    *,
+    idempotency_key: str | None = None,
+) -> tuple[dict, str]:
     """Apply a holding mutation once and replay its result on retry."""
     if not idempotency_key:
         return _add_holding(user_id, name, symbol, shares, current_price, company_name)
@@ -340,7 +532,13 @@ def add_holding(user_id: str, name: str, symbol: str, shares: int,
         user_id=user_id,
         key=idempotency_key,
         operation="portfolio.add_holding",
-        payload={"name": name, "symbol": symbol, "shares": shares, "price": current_price, "company": company_name},
+        payload={
+            "name": name,
+            "symbol": symbol,
+            "shares": shares,
+            "price": current_price,
+            "company": company_name,
+        },
         handler=lambda: _add_holding(user_id, name, symbol, shares, current_price, company_name),
     )
     return result.response
@@ -380,7 +578,9 @@ def _remove_holding(user_id: str, name: str, symbol: str) -> tuple[dict, str]:
     return p, ""
 
 
-def remove_holding(user_id: str, name: str, symbol: str, *, idempotency_key: str | None = None) -> tuple[dict, str]:
+def remove_holding(
+    user_id: str, name: str, symbol: str, *, idempotency_key: str | None = None
+) -> tuple[dict, str]:
     """Apply a holding removal once and replay its result on retry."""
     if not idempotency_key:
         return _remove_holding(user_id, name, symbol)
@@ -392,9 +592,12 @@ def remove_holding(user_id: str, name: str, symbol: str, *, idempotency_key: str
         handler=lambda: _remove_holding(user_id, name, symbol),
     )
     return result.response
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Simulation helpers
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def _load_history(symbol: str) -> pd.DataFrame:
     """Return monthly price history as a DataFrame with Date + Close."""
@@ -402,7 +605,7 @@ def _load_history(symbol: str) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame()
     df = df.copy()
-    df["Date"]  = pd.to_datetime(df["Date"])
+    df["Date"] = pd.to_datetime(df["Date"])
     df["Close"] = pd.to_numeric(df["Close"], errors="coerce")
     df = df.dropna().sort_values("Date").reset_index(drop=True)
     return df
@@ -429,6 +632,7 @@ def _align_histories(histories: dict[str, pd.DataFrame]) -> pd.DataFrame:
 # ══════════════════════════════════════════════════════════════════════════════
 # Backtest
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def run_backtest(portfolio: dict) -> dict:
     """
@@ -460,7 +664,7 @@ def run_backtest(portfolio: dict) -> dict:
     symbols = list(holdings.keys())
 
     # Load all histories + SPY
-    print(f"  [Backtest] loading {len(symbols)+1} price histories...")
+    print(f"  [Backtest] loading {len(symbols) + 1} price histories...")
     histories = {}
     for sym in symbols + ["SPY"]:
         h = _load_history(sym)
@@ -487,8 +691,8 @@ def run_backtest(portfolio: dict) -> dict:
     port_created = portfolio.get("created", "2000-01-01")[:10]
     splits_by_sym: dict[str, list[dict]] = {}
     for sym in available:
-        h        = holdings[sym]
-        since    = h.get("added_date") or port_created
+        h = holdings[sym]
+        since = h.get("added_date") or port_created
         splits_by_sym[sym] = _splits_since(sym, since)
 
     # Entry values at first date — apply any splits that already happened
@@ -496,35 +700,33 @@ def run_backtest(portfolio: dict) -> dict:
     entry_row = wide.iloc[0]
     entry_date = entry_row["Date"]
     port_entry_value = sum(
-        holdings[s]["shares"]
-        * _split_factor_at(splits_by_sym[s], entry_date)
-        * float(entry_row[s])
-        for s in available if s in wide.columns
+        holdings[s]["shares"] * _split_factor_at(splits_by_sym[s], entry_date) * float(entry_row[s])
+        for s in available
+        if s in wide.columns
     )
 
-    spy_entry_price  = float(entry_row["SPY"])
+    spy_entry_price = float(entry_row["SPY"])
     spy_shares_equiv = port_entry_value / spy_entry_price  # same $ in SPY
 
     # Monthly values — share count adjusts forward as each split date passes.
     dates = wide["Date"].dt.strftime("%Y-%m-%d").tolist()
     port_values = []
-    spy_values  = []
+    spy_values = []
 
     for _, row in wide.iterrows():
         row_date = row["Date"]
         pv = sum(
-            holdings[s]["shares"]
-            * _split_factor_at(splits_by_sym[s], row_date)
-            * float(row[s])
-            for s in available if s in wide.columns
+            holdings[s]["shares"] * _split_factor_at(splits_by_sym[s], row_date) * float(row[s])
+            for s in available
+            if s in wide.columns
         )
         port_values.append(round(pv, 2))
         spy_values.append(round(spy_shares_equiv * float(row["SPY"]), 2))
 
-   # CAGR
+    # CAGR
     first_date = wide["Date"].iloc[0]
-    last_date  = wide["Date"].iloc[-1]
-    n_years    = max((last_date - first_date).days / 365.25, 1 / 12)
+    last_date = wide["Date"].iloc[-1]
+    n_years = max((last_date - first_date).days / 365.25, 1 / 12)
 
     port_cagr_raw = fm.cagr(port_values[0], port_values[-1], n_years)
     spy_cagr_raw = fm.cagr(spy_values[0], spy_values[-1], n_years)
@@ -532,7 +734,7 @@ def run_backtest(portfolio: dict) -> dict:
     spy_cagr = spy_cagr_raw * 100 if spy_cagr_raw is not None else 0.0
 
     # Per-holding detail — shares and current_value use fully split-adjusted count.
-    last_row  = wide.iloc[-1]
+    last_row = wide.iloc[-1]
     last_date = last_row["Date"]
     holdings_detail = {}
     for s in available:
@@ -542,41 +744,42 @@ def run_backtest(portfolio: dict) -> dict:
         cp = float(last_row[s])
 
         # Cumulative split factor from purchase date through end of backtest
-        factor     = _split_factor_at(splits_by_sym[s], last_date)
+        factor = _split_factor_at(splits_by_sym[s], last_date)
         adj_shares = holdings[s]["shares"] * factor
 
         gain = (cp - ep) / ep * 100 if ep > 0 else 0
 
         holdings_detail[s] = {
-            "shares":          round(adj_shares),        # split-adjusted count
-            "original_shares": holdings[s]["shares"],    # as-stored (pre-split)
-            "split_factor":    round(factor, 4),         # e.g. 20.0 for one 20:1 split
-            "splits":          splits_by_sym[s],         # list of individual split events
-            "entry_price":     round(ep, 2),
-            "current_price":   round(cp, 2),
-            "gain_pct":        round(gain, 1),
-            "current_value":   round(adj_shares * cp, 2),
+            "shares": round(adj_shares),  # split-adjusted count
+            "original_shares": holdings[s]["shares"],  # as-stored (pre-split)
+            "split_factor": round(factor, 4),  # e.g. 20.0 for one 20:1 split
+            "splits": splits_by_sym[s],  # list of individual split events
+            "entry_price": round(ep, 2),
+            "current_price": round(cp, 2),
+            "gain_pct": round(gain, 1),
+            "current_value": round(adj_shares * cp, 2),
         }
 
     return {
-        "dates":            dates,
-        "portfolio_value":  port_values,
-        "spy_value":        spy_values,
-        "total_invested":   round(port_entry_value, 2),
-        "spy_invested":     round(port_entry_value, 2),
-        "final_value":      round(port_values[-1], 2),
-        "final_spy":        round(spy_values[-1], 2),
-        "cagr":             round(port_cagr, 2),
-        "spy_cagr":         round(spy_cagr, 2),
-        "n_months":         len(wide),
-        "holdings_detail":  holdings_detail,
-        "error":            None,
+        "dates": dates,
+        "portfolio_value": port_values,
+        "spy_value": spy_values,
+        "total_invested": round(port_entry_value, 2),
+        "spy_invested": round(port_entry_value, 2),
+        "final_value": round(port_values[-1], 2),
+        "final_spy": round(spy_values[-1], 2),
+        "cagr": round(port_cagr, 2),
+        "spy_cagr": round(spy_cagr, 2),
+        "n_months": len(wide),
+        "holdings_detail": holdings_detail,
+        "error": None,
     }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Monte Carlo projection
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
     """
@@ -588,10 +791,7 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
         return {"error": "Portfolio is empty"}
 
     if backtest.get("error"):
-        start_value = sum(
-            h["shares"] * h["price_at_add"]
-            for h in holdings.values()
-        )
+        start_value = sum(h["shares"] * h["price_at_add"] for h in holdings.values())
     else:
         start_value = backtest["final_value"]
 
@@ -667,7 +867,9 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
 
     rng = np.random.default_rng(seed=42)
 
-    def _simulate_multivariate(start: float, mu: float, cov: np.ndarray, w: np.ndarray) -> np.ndarray:
+    def _simulate_multivariate(
+        start: float, mu: float, cov: np.ndarray, w: np.ndarray
+    ) -> np.ndarray:
         n_assets = len(w)
         paths = np.empty((MC_PATHS, MC_MONTHS + 1))
         paths[:, 0] = start
@@ -683,15 +885,15 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
             correlated_returns = z @ L.T
             # geometric returns
             growth = np.exp(mu + correlated_returns)
-            asset_paths = paths[:, t-1][:, np.newaxis] * growth
+            asset_paths = paths[:, t - 1][:, np.newaxis] * growth
             # portfolio value = weighted sum
             paths[:, t] = np.dot(asset_paths, w)
 
         return paths
 
     # Drift correction
-    port_geo_mean = port_mean - (port_std ** 2) / 2
-    spy_geo_mean  = spy_mean - (spy_std ** 2) / 2
+    port_geo_mean = port_mean - (port_std**2) / 2
+    spy_geo_mean = spy_mean - (spy_std**2) / 2
 
     # Portfolio paths with full correlation
     port_paths = _simulate_multivariate(start_value, port_geo_mean, cov_mat, w_arr)
@@ -709,23 +911,27 @@ def run_montecarlo(portfolio: dict, backtest: dict) -> dict:
     spy_paths = _simulate(spy_start, spy_geo_mean, spy_std)
 
     def _percentile_paths(paths: np.ndarray, pct: int) -> list[float]:
-        return [round(float(fm.percentile(paths[:, t], pct) or 0.0), 2)
-                for t in range(MC_MONTHS + 1)]
+        return [
+            round(float(fm.percentile(paths[:, t], pct) or 0.0), 2) for t in range(MC_MONTHS + 1)
+        ]
 
     return {
-        "dates":       future_dates,
-        "p10":         _percentile_paths(port_paths, 10),
-        "p50":         _percentile_paths(port_paths, 50),
-        "p90":         _percentile_paths(port_paths, 90),
-        "spy_p10":     _percentile_paths(spy_paths, 10),
-        "spy_p50":     _percentile_paths(spy_paths, 50),
-        "spy_p90":     _percentile_paths(spy_paths, 90),
+        "dates": future_dates,
+        "p10": _percentile_paths(port_paths, 10),
+        "p50": _percentile_paths(port_paths, 50),
+        "p90": _percentile_paths(port_paths, 90),
+        "spy_p10": _percentile_paths(spy_paths, 10),
+        "spy_p50": _percentile_paths(spy_paths, 50),
+        "spy_p90": _percentile_paths(spy_paths, 90),
         "start_value": round(start_value, 2),
-        "error":       None,
+        "error": None,
     }
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Full simulation (backtest + Monte Carlo)
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     """
@@ -786,14 +992,19 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     if backtest.get("error"):
         return {"error": backtest["error"], "holdings": {}, "ranking": [], "weakest": None}
 
-    symbols  = list(holdings.keys())
+    symbols = list(holdings.keys())
     available = [s for s in symbols if s in backtest.get("holdings_detail", {})]
     if not available:
-        return {"error": "No holdings detail in backtest", "holdings": {}, "ranking": [], "weakest": None}
+        return {
+            "error": "No holdings detail in backtest",
+            "holdings": {},
+            "ranking": [],
+            "weakest": None,
+        }
 
     port_cagr = backtest["cagr"]
-    spy_cagr  = backtest["spy_cagr"]
-    gap_cagr  = round(port_cagr - spy_cagr, 3)
+    spy_cagr = backtest["spy_cagr"]
+    gap_cagr = round(port_cagr - spy_cagr, 3)
 
     # ── Rebuild price matrices from history for counterfactual swaps ──────────
     histories: dict[str, pd.DataFrame] = {}
@@ -806,19 +1017,23 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
     to_align = {s: histories[s] for s in available + ["SPY"] if s in histories}
     wide = _align_histories(to_align)
     if wide.empty or len(wide) < 6:
-        return {"error": "Insufficient price history for weak-link analysis",
-                "holdings": {}, "ranking": [], "weakest": None}
+        return {
+            "error": "Insufficient price history for weak-link analysis",
+            "holdings": {},
+            "ranking": [],
+            "weakest": None,
+        }
 
-    entry_row  = wide.iloc[0]
-    exit_row   = wide.iloc[-1]
-    n_months   = len(wide)
-    n_years    = n_months / 12
+    entry_row = wide.iloc[0]
+    exit_row = wide.iloc[-1]
+    n_months = len(wide)
+    n_years = n_months / 12
 
     # ── Entry values & weights ────────────────────────────────────────────────
     port_created = portfolio.get("created", "2000-01-01")[:10]
     splits_by_sym: dict[str, list[dict]] = {}
     for sym in available:
-        h     = holdings[sym]
+        h = holdings[sym]
         since = h.get("added_date") or port_created
         splits_by_sym[sym] = _splits_since(sym, since)
 
@@ -832,21 +1047,28 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
 
     total_entry = sum(entry_values.values())
     if total_entry <= 0:
-        return {"error": "Zero portfolio entry value", "holdings": {}, "ranking": [], "weakest": None}
+        return {
+            "error": "Zero portfolio entry value",
+            "holdings": {},
+            "ranking": [],
+            "weakest": None,
+        }
 
     weights = {sym: entry_values[sym] / total_entry for sym in entry_values}
 
     # ── Actual portfolio final value (replicated, split-adjusted) ────────────
     exit_date = exit_row["Date"]
-    def _port_value_at_exit(exclude_sym: str | None = None,
-                            replace_with_spy: bool = False) -> float:
+
+    def _port_value_at_exit(
+        exclude_sym: str | None = None, replace_with_spy: bool = False
+    ) -> float:
         """
         Compute final portfolio value.
         If exclude_sym is set and replace_with_spy=True, that holding's
         entry $ are invested in SPY instead.
         """
         spy_price_entry = float(entry_row["SPY"])
-        spy_price_exit  = float(exit_row["SPY"])
+        spy_price_exit = float(exit_row["SPY"])
 
         total = 0.0
         for sym in available:
@@ -858,9 +1080,9 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
                 spy_shares_equiv = ev / spy_price_entry if spy_price_entry > 0 else 0
                 total += spy_shares_equiv * spy_price_exit
             else:
-                factor     = _split_factor_at(splits_by_sym[sym], exit_date)
+                factor = _split_factor_at(splits_by_sym[sym], exit_date)
                 adj_shares = holdings[sym]["shares"] * factor
-                total     += adj_shares * float(exit_row[sym])
+                total += adj_shares * float(exit_row[sym])
         return total
 
     actual_final = _port_value_at_exit()
@@ -886,7 +1108,9 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
 
         # Counterfactual: replace only this stock with SPY
         counterfactual_final = _port_value_at_exit(exclude_sym=sym, replace_with_spy=True)
-        counterfactual_return = (counterfactual_final / total_entry - 1) * 100 if total_entry > 0 else 0.0
+        counterfactual_return = (
+            (counterfactual_final / total_entry - 1) * 100 if total_entry > 0 else 0.0
+        )
         swap_delta_pct = round(counterfactual_return - actual_total_return, 2)
 
         # Verdict thresholds
@@ -898,34 +1122,32 @@ def analyze_weak_links(portfolio: dict, backtest: dict | None = None) -> dict:
             verdict = "neutral"
 
         result_holdings[sym] = {
-            "weight":         round(weights[sym] * 100, 1),   # % of portfolio
-            "stock_cagr":     round(stock_cagr, 2),
-            "spy_cagr":       round(spy_cagr, 2),
-            "cagr_vs_spy":    round(cagr_vs_spy, 2),
-            "drag_bps":       round(drag_bps, 1),
+            "weight": round(weights[sym] * 100, 1),  # % of portfolio
+            "stock_cagr": round(stock_cagr, 2),
+            "spy_cagr": round(spy_cagr, 2),
+            "cagr_vs_spy": round(cagr_vs_spy, 2),
+            "drag_bps": round(drag_bps, 1),
             "swap_delta_pct": swap_delta_pct,
-            "verdict":        verdict,
+            "verdict": verdict,
         }
 
     # ── Ranking: worst drag first ─────────────────────────────────────────────
-    ranking = sorted(result_holdings.keys(),
-                     key=lambda s: result_holdings[s]["drag_bps"])
+    ranking = sorted(result_holdings.keys(), key=lambda s: result_holdings[s]["drag_bps"])
 
     # Weakest = largest positive swap_delta (most improved if swapped for SPY)
-    weakest = max(result_holdings, key=lambda s: result_holdings[s]["swap_delta_pct"],
-                  default=None)
+    weakest = max(result_holdings, key=lambda s: result_holdings[s]["swap_delta_pct"], default=None)
     if weakest and result_holdings[weakest]["swap_delta_pct"] <= 0:
         weakest = None  # every stock beat SPY — no weak link
 
     return {
-        "spy_cagr":   round(spy_cagr, 2),
-        "port_cagr":  round(port_cagr, 2),
-        "gap_cagr":   gap_cagr,
-        "n_years":    round(n_years, 1),
-        "holdings":   result_holdings,
-        "ranking":    ranking,
-        "weakest":    weakest,
-        "error":      None,
+        "spy_cagr": round(spy_cagr, 2),
+        "port_cagr": round(port_cagr, 2),
+        "gap_cagr": gap_cagr,
+        "n_years": round(n_years, 1),
+        "holdings": result_holdings,
+        "ranking": ranking,
+        "weakest": weakest,
+        "error": None,
     }
 
 
@@ -934,11 +1156,22 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
     if p is None:
         return {"error": f'Portfolio "{portfolio_name}" not found'}
 
+    if portfolio_repository.is_enabled():
+        cached = portfolio_repository.load_simulation(user_id, p)
+        if cached:
+            return cached
     cache_key = _simulation_key(user_id, portfolio_name)
-    cached = cache.read("port_sim", cache_key)
+    if portfolio_repository.is_enabled():
+        cached = None
+    else:
+        cached = cache.read("port_sim", cache_key)
     if cached:
         return cached
-    cached = _read_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
+    cached = (
+        None
+        if portfolio_repository.is_enabled()
+        else _read_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
+    )
     if cached:
         return cached
 
@@ -947,18 +1180,25 @@ def run_simulation(user_id: str, portfolio_name: str) -> dict:
 
     result = {
         "portfolio_name": portfolio_name,
-        "backtest":       bt,
-        "montecarlo":     mc,
-        "holdings":       p["holdings"],
+        "backtest": bt,
+        "montecarlo": mc,
+        "holdings": p["holdings"],
     }
 
-    _write_cache_or_raise("port_sim", cache_key, result)
+    if portfolio_repository.is_enabled():
+        portfolio_repository.save_simulation(user_id, p, result)
+    else:
+        _write_cache_or_raise("port_sim", cache_key, result)
     return result
 
 
 def invalidate_simulation_cache(user_id: str, portfolio_name: str) -> None:
+    if portfolio_repository.is_enabled():
+        portfolio_repository.invalidate_simulations(user_id, portfolio_name)
+        return
     _clear_cache_if_safe("port_sim", _simulation_key(user_id, portfolio_name))
     _clear_cache_if_safe("port_sim", _legacy_simulation_key(user_id, portfolio_name))
+
 
 def delete_all_user_data(user_id: str) -> dict:
     """
@@ -969,6 +1209,16 @@ def delete_all_user_data(user_id: str) -> dict:
     sec_facts/hist/analysis caches are ticker-keyed, deterministic public
     market data (not user-owned) and are intentionally NOT deleted.
     """
+    if portfolio_repository.is_enabled():
+        names = portfolio_repository.list_portfolios(user_id)
+        deleted = portfolio_repository.erase_user(user_id)
+        _erase_legacy_user_files(user_id)
+        return {
+            "user_id": user_id,
+            "portfolios_deleted": names,
+            "database_records": deleted,
+            "deleted": True,
+        }
     names = list_portfolios(user_id)
     for name in names:
         invalidate_simulation_cache(user_id, name)
@@ -976,9 +1226,38 @@ def delete_all_user_data(user_id: str) -> dict:
     _clear_cache_if_safe("portfolio", _portfolio_index_key(user_id))
     _clear_cache_if_safe("portfolio", _legacy_index_key(user_id))
     return {"user_id": user_id, "portfolios_deleted": names, "deleted": True}
+
+
+def export_user_data(user_id: str) -> dict:
+    """Export authoritative rows plus discoverable pre-migration projections."""
+    if portfolio_repository.is_enabled():
+        exported = portfolio_repository.export_user_data(user_id)
+    else:
+        exported = {
+            "portfolios": list_portfolio_changes(user_id),
+            "transactions": [],
+            "tombstones": [],
+            "simulations": [],
+            "legacy_imports": [],
+        }
+    portfolio_keys, simulation_keys = _legacy_user_keys(user_id)
+    exported["legacy_portfolio_files"] = [
+        {"source_key": key, "payload": payload}
+        for key in portfolio_keys
+        if (payload := _read_cache_if_safe("portfolio", key)) is not None
+    ]
+    exported["legacy_simulation_files"] = [
+        {"source_key": key, "payload": payload}
+        for key in simulation_keys
+        if (payload := _read_cache_if_safe("port_sim", key)) is not None
+    ]
+    return exported
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Multi-Portfolio Comparison (PROJECT_MAP.md — Portfolio Page Refactor)
 # ══════════════════════════════════════════════════════════════════════════════
+
 
 def _weak_link_score(portfolio: dict, backtest: dict) -> float:
     """
@@ -1056,13 +1335,7 @@ def compare_portfolios(user_id: str, portfolio_a_name: str, portfolio_b_name: st
     wl_score_b = _weak_link_score(p_b, bt_b) if p_b else 50.0
 
     def _composite(cagr, alpha, norm_final, norm_p50, wl_score):
-        return (
-            cagr * 0.40
-            + alpha * 0.25
-            + norm_final * 0.15
-            + norm_p50 * 0.15
-            + wl_score * 0.05
-        )
+        return cagr * 0.40 + alpha * 0.25 + norm_final * 0.15 + norm_p50 * 0.15 + wl_score * 0.05
 
     score_a = _composite(cagr_a, alpha_a, norm_final_a, norm_p50_a, wl_score_a)
     score_b = _composite(cagr_b, alpha_b, norm_final_b, norm_p50_b, wl_score_b)
@@ -1103,11 +1376,11 @@ def compare_portfolios(user_id: str, portfolio_a_name: str, portfolio_b_name: st
         reasons.append("Both portfolios perform similarly.")
 
     return {
-        "winner":      winner,
-        "score_a":     round(score_a, 2),
-        "score_b":     round(score_b, 2),
-        "reasons":     reasons,
+        "winner": winner,
+        "score_a": round(score_a, 2),
+        "score_b": round(score_b, 2),
+        "reasons": reasons,
         "portfolio_a": sim_a,
         "portfolio_b": sim_b,
-        "error":       None,
+        "error": None,
     }
