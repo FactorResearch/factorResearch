@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0.0",
+  "status": "reference-only; apply through future expand-and-contract migrations",
+  "types": {
+    "EntityId": "uuid",
+    "SecurityId": "uuid",
+    "ListingId": "uuid",
+    "IdentifierId": "uuid",
+    "Currency": "varchar(3) CHECK (value ~ '^[A-Z]{3}$')",
+    "Decimal": "numeric(38,12)",
+    "Ratio": "double precision CHECK (isfinite(value))",
+    "BasisPoints": "integer",
+    "BusinessDate": "date",
+    "SystemInstant": "timestamptz (normalized to UTC on write)",
+    "AvailabilityStatus": "text CHECK (value IN ('available','missing','not_applicable','stale','invalid','provider_failed','insufficient_history','policy_suppressed'))"
+  },
+  "records": {
+    "Provenance": {
+      "provider": "text NOT NULL",
+      "source_record_id": "text NOT NULL",
+      "source_uri": "text NULL",
+      "observed_at": "timestamptz NOT NULL",
+      "available_at": "timestamptz NOT NULL",
+      "ingested_at": "timestamptz NOT NULL",
+      "normalization_version": "text NOT NULL",
+      "filing_version": "text NULL"
+    },
+    "FinancialFact": {
+      "entity_id": "uuid NOT NULL",
+      "concept": "text NOT NULL",
+      "period_start": "date NOT NULL",
+      "period_end": "date NOT NULL",
+      "availability_status": "text NOT NULL",
+      "value": "numeric(38,12) NULL",
+      "unit": "text NOT NULL",
+      "currency": "varchar(3) NULL",
+      "filing_id": "uuid NULL",
+      "provenance_id": "uuid NULL"
+    },
+    "CorporateAction": {
+      "security_id": "uuid NOT NULL",
+      "action_id": "uuid PRIMARY KEY",
+      "action_type": "text NOT NULL",
+      "effective_date": "date NOT NULL",
+      "availability_status": "text NOT NULL",
+      "value": "numeric(38,12) NULL",
+      "provenance_id": "uuid NOT NULL"
+    },
+    "PriceObservation": {
+      "listing_id": "uuid NOT NULL",
+      "observation_date": "date NOT NULL",
+      "price_amount": "numeric(38,12) NOT NULL",
+      "currency": "varchar(3) NOT NULL",
+      "adjustment": "text NOT NULL",
+      "available_at": "timestamptz NOT NULL",
+      "provenance_id": "uuid NOT NULL"
+    },
+    "FxObservation": {
+      "base_currency": "varchar(3) NOT NULL",
+      "quote_currency": "varchar(3) NOT NULL",
+      "observation_date": "date NOT NULL",
+      "availability_status": "text NOT NULL",
+      "rate": "numeric(38,12) NULL",
+      "available_at": "timestamptz NOT NULL",
+      "provenance_id": "uuid NOT NULL"
+    },
+    "PortfolioTransaction": {
+      "transaction_id": "uuid PRIMARY KEY",
+      "portfolio_id": "uuid NOT NULL",
+      "listing_id": "uuid NOT NULL",
+      "transaction_type": "text NOT NULL",
+      "quantity_amount": "numeric(38,12) NOT NULL",
+      "quantity_unit": "text NOT NULL",
+      "unit_price_amount": "numeric(38,12) NULL",
+      "unit_price_currency": "varchar(3) NULL",
+      "executed_at": "timestamptz NOT NULL",
+      "recorded_at": "timestamptz NOT NULL"
+    },
+    "FactorObservation": {
+      "security_id": "uuid NOT NULL",
+      "factor": "text NOT NULL",
+      "as_of_date": "date NOT NULL",
+      "available_at": "timestamptz NOT NULL",
+      "value": "double precision NULL",
+      "availability_status": "text NOT NULL",
+      "availability_reason": "text NULL",
+      "model_version": "text NOT NULL",
+      "provenance_id": "uuid NOT NULL"
+    },
+    "FactorMatrix": {
+      "storage": "Arrow or Parquet analytical object; PostgreSQL stores immutable object identity and manifest only",
+      "as_of_date": "date NOT NULL",
+      "available_at": "timestamptz NOT NULL",
+      "model_version": "text NOT NULL"
+    },
+    "BacktestSpecification": {
+      "specification_id": "uuid PRIMARY KEY",
+      "strategy_version": "text NOT NULL",
+      "start_date": "date NOT NULL",
+      "end_date": "date NOT NULL",
+      "base_currency": "varchar(3) NOT NULL",
+      "created_at": "timestamptz NOT NULL"
+    },
+    "BacktestResult": {
+      "specification_id": "uuid NOT NULL",
+      "engine_version": "text NOT NULL",
+      "completed_at": "timestamptz NOT NULL",
+      "total_return": "double precision NOT NULL",
+      "manifest": "jsonb NOT NULL"
+    },
+    "SimulationSpecification": {
+      "specification_id": "uuid PRIMARY KEY",
+      "model_version": "text NOT NULL",
+      "paths": "bigint NOT NULL CHECK (paths > 0)",
+      "horizon_periods": "bigint NOT NULL CHECK (horizon_periods > 0)",
+      "created_at": "timestamptz NOT NULL"
+    },
+    "SimulationResult": {
+      "specification_id": "uuid NOT NULL",
+      "engine_version": "text NOT NULL",
+      "completed_at": "timestamptz NOT NULL",
+      "percentiles": "jsonb NOT NULL",
+      "manifest": "jsonb NOT NULL"
+    }
+  },
+  "invariants": [
+    "money and exact financial facts store amount as numeric(38,12) plus non-null currency",
+    "observation_date and fiscal boundaries use date; availability, execution, ingestion, and system time use timestamptz",
+    "unavailable numeric values store NULL plus a non-available status and non-empty reason",
+    "available numeric values store a non-null value, available status, and provenance foreign key",
+    "ticker aliases are stored separately from permanent entity, security, and listing UUID keys",
+    "historical filings, facts, actions, prices, transactions, and analyses are append-only or versioned"
+  ]
+}

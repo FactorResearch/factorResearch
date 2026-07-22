@@ -125,3 +125,16 @@ jobs:
           npm ci
           npm run quality:frontend
           npm audit --audit-level=high
+
+  rust-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install the pinned minimal Rust toolchain
+        run: rustup toolchain install 1.97.1 --profile minimal --component rustfmt
+
+      - name: Verify canonical Rust formatting and golden fixtures
+        run: |
+          cargo +1.97.1 fmt --manifest-path native/factorresearch_core/Cargo.toml --check
+          cargo +1.97.1 test --manifest-path native/factorresearch_core/Cargo.toml --locked

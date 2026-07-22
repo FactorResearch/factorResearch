@@ -8,6 +8,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
+  checks: write
   contents: read
   pull-requests: read
 
@@ -21,12 +22,18 @@ jobs:
       - uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: native/factorresearch_core
       - uses: astral-sh/setup-uv@v9.0.0
         with:
           python-version: "3.12"
           version: "0.11.30"
           enable-cache: true
           cache-dependency-glob: uv.lock
+      - name: Install the pinned minimal Rust toolchain
+        run: rustup toolchain install 1.97.1 --profile minimal
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
@@ -41,13 +48,15 @@ jobs:
       - name: Report low SAST findings without blocking release
         run: uv run --frozen bandit -q -l -r codes -x tests || true
       - run: npm ci && npm audit --audit-level=high
-      - name: Generate Python and Node software bills of materials
+      - name: Generate Python and Node SBOMs and Rust dependency metadata
         run: |
           uv run --frozen cyclonedx-py environment --output-format JSON --output-file sbom-python.json
           npm sbom --sbom-format cyclonedx > sbom-node.json
+          cargo +1.97.1 metadata --format-version 1 --locked --manifest-path native/factorresearch_core/Cargo.toml > rust-dependency-metadata.json
       - uses: actions/upload-artifact@v6
         with:
           name: security-sbom
           path: |
             sbom-python.json
             sbom-node.json
+            rust-dependency-metadata.json

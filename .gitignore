@@ -32,3 +32,4 @@ roadMap.md
 logo.md
 axe-results.json
 node_modules/
+native/**/target/
