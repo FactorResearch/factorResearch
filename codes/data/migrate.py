@@ -44,7 +44,7 @@ def main() -> None:
     db.init_user_db(users_url, lock_timeout_seconds=timeout)
     runtime_users_role = urlparse(db._users_db_url()).username
     if runtime_users_role:
-        db.configure_portfolio_runtime_role(users_url, runtime_users_role)
+        db.configure_users_runtime_role(users_url, runtime_users_role)
     elif is_production():
         raise RuntimeError("DATABASE_USERS_URL must identify a PostgreSQL runtime role")
 

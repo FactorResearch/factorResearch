@@ -14,7 +14,7 @@ def test_delete_user_records_covers_all_user_tables(monkeypatch):
     connection = MagicMock()
     connection.execute.return_value.rowcount = 1
     monkeypatch.setattr(db, "_ensure_user_init", lambda: None)
-    monkeypatch.setattr(db, "_users_conn", lambda: _connection(connection))
+    monkeypatch.setattr(db, "_users_conn", lambda *_args, **_kwargs: _connection(connection))
     result = db.delete_user_records("user-1")
     assert result == {
         "portfolio_simulation_results": 1,
@@ -29,8 +29,10 @@ def test_delete_user_records_covers_all_user_tables(monkeypatch):
         "subscriptions": 1,
         "user_settings": 1,
     }
-    # One tenant-context statement plus one owner-scoped delete per table.
-    assert connection.execute.call_count == 12
+    assert connection.execute.call_count == 11
+    statements = [str(call.args[0]) for call in connection.execute.call_args_list]
+    assert "owner_id" in statements[0]
+    assert "user_id" in statements[-1]
 
 
 def test_delete_analytics_matches_authenticated_and_anonymous_identity(monkeypatch):

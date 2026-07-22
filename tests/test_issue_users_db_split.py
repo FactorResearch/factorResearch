@@ -52,7 +52,7 @@ def test_user_weights_use_users_connection(monkeypatch):
 
     monkeypatch.setattr(db, "_users_initialized", True)
     monkeypatch.setattr(db, "_market_initialized", True)
-    monkeypatch.setattr(db, "_users_conn", lambda: _ctx(users_conn))
+    monkeypatch.setattr(db, "_users_conn", lambda *_args, **_kwargs: _ctx(users_conn))
     monkeypatch.setattr(db, "_conn", lambda: _ctx(market_conn))
 
     result = db.get_user_weights("u1")
@@ -68,7 +68,7 @@ def test_subscription_lookup_uses_users_connection(monkeypatch):
 
     monkeypatch.setattr(db, "_users_initialized", True)
     monkeypatch.setattr(db, "_market_initialized", True)
-    monkeypatch.setattr(db, "_users_conn", lambda: _ctx(users_conn))
+    monkeypatch.setattr(db, "_users_conn", lambda *_args, **_kwargs: _ctx(users_conn))
     monkeypatch.setattr(db, "_conn", lambda: _ctx(market_conn))
 
     result = db.get_subscription("u1")
@@ -84,7 +84,7 @@ def test_total_usage_lookup_handles_dict_rows_from_users_connection(monkeypatch)
 
     monkeypatch.setattr(db, "_users_initialized", True)
     monkeypatch.setattr(db, "_market_initialized", True)
-    monkeypatch.setattr(db, "_users_conn", lambda: _ctx(users_conn))
+    monkeypatch.setattr(db, "_users_conn", lambda *_args, **_kwargs: _ctx(users_conn))
     monkeypatch.setattr(db, "_conn", lambda: _ctx(market_conn))
 
     result = db.get_total_usage("u1", "analysis")
@@ -100,7 +100,7 @@ def test_market_data_stays_on_market_connection(monkeypatch):
 
     monkeypatch.setattr(db, "_users_initialized", True)
     monkeypatch.setattr(db, "_market_initialized", True)
-    monkeypatch.setattr(db, "_users_conn", lambda: _ctx(users_conn))
+    monkeypatch.setattr(db, "_users_conn", lambda *_args, **_kwargs: _ctx(users_conn))
     monkeypatch.setattr(db, "_conn", lambda: _ctx(market_conn))
 
     result = db.get("AAPL")

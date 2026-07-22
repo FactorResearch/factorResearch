@@ -10,7 +10,7 @@ def test_release_migration_initializes_each_schema_once(monkeypatch):
     grants = Mock()
     monkeypatch.setattr(migrate.db, "init_db", market)
     monkeypatch.setattr(migrate.db, "init_user_db", users)
-    monkeypatch.setattr(migrate.db, "configure_portfolio_runtime_role", grants)
+    monkeypatch.setattr(migrate.db, "configure_users_runtime_role", grants)
     monkeypatch.setattr(migrate.db, "_db_url", Mock(return_value="postgresql://market"))
     monkeypatch.setattr(
         migrate.db,

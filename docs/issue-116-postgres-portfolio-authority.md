@@ -16,14 +16,15 @@ foreign keys `(portfolio_id, owner_id)` so a row cannot be attached to another
 tenant's portfolio even if its UUID is known.
 
 Every table has row-level security enabled and forced. Policies require
-`owner_id = current_setting('app.user_id', true)` for reads and writes. The
-repository validates a non-empty authenticated user ID and sets this value
-transaction-locally before every query. Missing context therefore returns no
-rows and rejects writes. PUBLIC receives no table privileges. The release
-command derives the users runtime role from `DATABASE_USERS_URL` and grants
-only schema usage plus `SELECT`, `INSERT`, `UPDATE`, and `DELETE` on these six
-tables. Schema ownership and DDL remain with the migration role as defined by
-ISSUE_082.
+`owner_id = NULLIF(current_setting('app.current_user_id', true), '')` for reads
+and writes after ISSUE_080's canonical policy migration. The shared users
+connection boundary validates a non-empty authenticated user ID and sets this
+value transaction-locally before every query. Missing context fails before SQL
+execution. PUBLIC receives no table privileges. The release command derives
+the normal users runtime role from `DATABASE_USERS_URL` and grants only schema
+usage plus tenant-table DML; schema ownership and DDL remain with the migration
+role. Privileged Stripe, waitlist, and erasure operations use the distinct
+`DATABASE_USERS_SERVICE_URL` credential.
 
 ## Mutations and simulations
 

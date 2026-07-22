@@ -64,11 +64,12 @@ def _postgres_backend(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
                         "user_settings, user_usage, waitlist_signups, idempotency_records TO {}"
                     ).format(sql.Identifier(role_name))
                 )
-            db.configure_portfolio_runtime_role(database_url, role_name)
+            db.configure_users_runtime_role(database_url, role_name)
             runtime_url = make_conninfo(database_url, options=f"-c role={role_name}")
             db._pools.clear()
             db._users_initialized = False
             monkeypatch.setenv("DATABASE_USERS_URL", runtime_url)
+            monkeypatch.setenv("DATABASE_USERS_SERVICE_URL", database_url)
             monkeypatch.setenv("PORTFOLIO_STORAGE_BACKEND", "postgres")
             yield runtime_url
     finally:
@@ -83,9 +84,9 @@ def test_multi_connection_visibility_rls_concurrency_and_simulation(monkeypatch)
         assert error == ""
 
         with psycopg.connect(database_url, row_factory=psycopg.rows.dict_row) as other:
-            other.execute("SELECT set_config('app.user_id', 'user-1', true)")
+            other.execute("SELECT set_config('app.current_user_id', 'user-1', true)")
             assert other.execute("SELECT name FROM portfolios").fetchall() == [{"name": "Core"}]
-            other.execute("SELECT set_config('app.user_id', 'user-2', true)")
+            other.execute("SELECT set_config('app.current_user_id', 'user-2', true)")
             assert other.execute("SELECT name FROM portfolios").fetchall() == []
             assert other.execute("SELECT symbol FROM portfolio_holdings").fetchall() == []
 
@@ -138,7 +139,7 @@ def test_tombstones_erasure_and_idempotent_legacy_import(monkeypatch, tmp_path) 
         assert evidence["database_records"]["portfolios"] == 1
 
         with psycopg.connect(database_url) as connection:
-            connection.execute("SELECT set_config('app.user_id', 'user-1', true)")
+            connection.execute("SELECT set_config('app.current_user_id', 'user-1', true)")
             for table in (
                 "portfolios",
                 "portfolio_holdings",
@@ -152,3 +153,112 @@ def test_tombstones_erasure_and_idempotent_legacy_import(monkeypatch, tmp_path) 
                 ).fetchone() == (0,)
         assert cache.list_keys("portfolio") == []
     cache._encryptor = None
+
+
+def test_all_user_tables_use_provider_neutral_rls_and_pool_local_identity(monkeypatch) -> None:
+    with _postgres_backend(monkeypatch) as database_url:
+        identities = (
+            "auth0|alice",
+            "clerk_bob",
+            "550e8400-e29b-41d4-a716-446655440000",
+            "dev-persona:analyst",
+        )
+        for user_id in identities:
+            db.upsert_user_settings(
+                user_id,
+                {"provider_identity": user_id, "_sync": {"version": 1}},
+            )
+            assert db.get_user_settings(user_id)["provider_identity"] == user_id
+
+        with psycopg.connect(database_url, row_factory=psycopg.rows.dict_row) as alice:
+            role = alice.execute(
+                "SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname = current_user"
+            ).fetchone()
+            assert role == {"rolsuper": False, "rolbypassrls": False}
+            alice.execute(
+                "SELECT set_config('app.current_user_id', %(user_id)s, true)",
+                {"user_id": identities[0]},
+            )
+            assert alice.execute("SELECT user_id FROM user_settings").fetchall() == [
+                {"user_id": identities[0]}
+            ]
+            assert (
+                alice.execute(
+                    "DELETE FROM user_settings WHERE user_id = %(user_id)s",
+                    {"user_id": identities[1]},
+                ).rowcount
+                == 0
+            )
+
+        with psycopg.connect(database_url) as alice:
+            alice.execute(
+                "SELECT set_config('app.current_user_id', %(user_id)s, true)",
+                {"user_id": identities[0]},
+            )
+            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                alice.execute(
+                    "UPDATE user_settings SET user_id = %(other_user)s WHERE user_id = %(user_id)s",
+                    {"other_user": identities[1], "user_id": identities[0]},
+                )
+            alice.rollback()
+
+        with psycopg.connect(database_url) as alice:
+            alice.execute(
+                "SELECT set_config('app.current_user_id', %(user_id)s, true)",
+                {"user_id": identities[0]},
+            )
+            with pytest.raises(psycopg.errors.InsufficientPrivilege):
+                alice.execute(
+                    "INSERT INTO user_settings (user_id, settings_json) "
+                    "VALUES (%(other_user)s, '{}'::jsonb)",
+                    {"other_user": "clerk_mallory"},
+                )
+            alice.rollback()
+
+        with db._users_conn(identities[0]) as alice:
+            pid_row = alice.execute("SELECT pg_backend_pid()").fetchone()
+            alice_pid = pid_row.get("pg_backend_pid") if isinstance(pid_row, dict) else pid_row[0]
+            setting_row = alice.execute(
+                "SELECT current_setting('app.current_user_id', true)"
+            ).fetchone()
+            setting = (
+                setting_row.get("current_setting")
+                if isinstance(setting_row, dict)
+                else setting_row[0]
+            )
+            assert setting == identities[0]
+        with db._pool(db._users_db_url()).connection() as unscoped:
+            pid_row = unscoped.execute("SELECT pg_backend_pid()").fetchone()
+            assert (
+                pid_row.get("pg_backend_pid") if isinstance(pid_row, dict) else pid_row[0]
+            ) == alice_pid
+            setting_row = unscoped.execute(
+                "SELECT current_setting('app.current_user_id', true)"
+            ).fetchone()
+            setting = (
+                setting_row.get("current_setting")
+                if isinstance(setting_row, dict)
+                else setting_row[0]
+            )
+            assert setting in (None, "")
+        with db._users_conn(identities[1]) as bob:
+            pid_row = bob.execute("SELECT pg_backend_pid()").fetchone()
+            assert (
+                pid_row.get("pg_backend_pid") if isinstance(pid_row, dict) else pid_row[0]
+            ) == alice_pid
+            rows = bob.execute("SELECT user_id FROM user_settings").fetchall()
+            assert [row.get("user_id") if isinstance(row, dict) else row[0] for row in rows] == [
+                identities[1]
+            ]
+
+        db.upsert_subscription(
+            identities[0],
+            plan="premium",
+            status="active",
+            stripe_customer_id="cus_issue080",
+            privileged=True,
+        )
+        assert db.get_subscription_by_customer("cus_issue080")["user_id"] == identities[0]
+        deleted = db.delete_user_records(identities[0])
+        assert deleted["subscriptions"] == 1
+        assert deleted["user_settings"] == 1

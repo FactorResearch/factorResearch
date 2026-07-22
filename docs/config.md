@@ -23,6 +23,13 @@ Every setting must define:
 API access and refresh tokens. It must be at least 32 characters in production.
 Rotating it requires coordinated session invalidation and rollout because
 existing signed tokens will no longer validate after rotation.
+
+`DATABASE_USERS_URL` is the normal application credential for tenant-owned
+records. In production its PostgreSQL role must not be a superuser or have
+`BYPASSRLS`. `DATABASE_USERS_SERVICE_URL` is a separate restart-required secret
+for Stripe reconciliation, waitlist, privacy erasure, and controlled service
+workflows. Rotate either through the deployment secret manager; never expose
+migration or service URLs to clients or logs.
 # Feature flags
 Flags require owner, purpose, rollout plan, default behavior, telemetry, expiry date, and removal issue.
 # Reproducibility
