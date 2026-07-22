@@ -127,6 +127,18 @@ DEFAULT_DEFINITIONS: Final[tuple[SettingDefinition, ...]] = (
     SettingDefinition("FLASK_SECRET_KEY", str, secret=True, owner="security"),
     SettingDefinition("AUTH_TOKEN_SECRET", str, secret=True, owner="security"),
     SettingDefinition("ENCRYPTION_KEY", str, secret=True, owner="security"),
+    SettingDefinition("PROCESS_ROLE", str, default="web", owner="platform"),
+    SettingDefinition("DATABASE_MARKET_URL", str, default=None, secret=True, owner="database"),
+    SettingDefinition(
+        "DATABASE_MARKET_WORKER_URL", str, default=None, secret=True, owner="database"
+    ),
+    SettingDefinition("DATABASE_USERS_URL", str, default=None, secret=True, owner="database"),
+    SettingDefinition(
+        "DATABASE_USERS_SERVICE_URL", str, default=None, secret=True, owner="database"
+    ),
+    SettingDefinition("DATABASE_ANALYTICS_URL", str, default=None, secret=True, owner="database"),
+    SettingDefinition("DATABASE_POOL_SIZE", _parse_int, default=5, owner="database"),
+    SettingDefinition("ANALYTICS_DATABASE_POOL_SIZE", _parse_int, default=2, owner="database"),
 )
 
 

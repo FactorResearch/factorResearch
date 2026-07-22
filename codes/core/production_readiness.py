@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 
 from cryptography.fernet import Fernet
 
+from codes.core.database_roles import is_market_worker_process
+
 
 def _present(name: str) -> bool:
     return bool(os.environ.get(name, "").strip())
@@ -19,16 +21,22 @@ def validate_production_environment() -> list[str]:
     receive dedicated market/users URLs that are absent from normal runtime
     processes. Values are compared but never included in returned messages.
     """
-    errors = []
-    required = (
+    errors: list[str] = []
+    process_role = os.environ.get("PROCESS_ROLE", "").strip().lower()
+    market_worker = is_market_worker_process(process_role)
+    required = [
         "FLASK_SECRET_KEY",
         "ENCRYPTION_KEY",
         "TRUSTED_HOSTS",
-        "DATABASE_MARKET_URL",
-        "DATABASE_USERS_URL",
         "REDIS_URL",
         "SEC_USER_AGENT",
-    )
+    ]
+    if market_worker:
+        required.append("DATABASE_MARKET_WORKER_URL")
+    else:
+        required.extend(("DATABASE_MARKET_URL", "DATABASE_USERS_URL"))
+    if process_role not in {"migration"} and not market_worker:
+        required.append("DATABASE_USERS_SERVICE_URL")
     errors.extend(f"{name} is required" for name in required if not _present(name))
     errors.extend(_secret_and_transport_errors())
     errors.extend(_migration_process_errors())
@@ -52,14 +60,80 @@ def _secret_and_transport_errors() -> list[str]:
     if any(host == "*" or "/" in host or "://" in host for host in trusted_hosts):
         errors.append("TRUSTED_HOSTS must contain explicit hostnames")
 
-    if _present("DATABASE_MARKET_URL") and os.environ.get("DATABASE_MARKET_URL") == os.environ.get("DATABASE_USERS_URL"):
-        errors.append("DATABASE_MARKET_URL and DATABASE_USERS_URL must be isolated")
-    for name in ("DATABASE_MARKET_URL", "DATABASE_USERS_URL"):
-        if _present(name) and urlparse(os.environ[name]).scheme not in {"postgres", "postgresql"}:
-            errors.append(f"{name} must be a PostgreSQL URL")
+    errors.extend(_database_transport_errors())
     if _present("REDIS_URL") and urlparse(os.environ["REDIS_URL"]).scheme != "rediss":
         errors.append("REDIS_URL must use TLS (rediss)")
     return errors
+
+
+def _database_transport_errors() -> list[str]:
+    """Return sanitized database URL, separation, and exposure failures.
+
+    Returns:
+        Configuration messages containing environment names only. Parsed
+        usernames, hosts, passwords, and complete URLs are never returned.
+    """
+
+    errors: list[str] = []
+    if _present("DATABASE_MARKET_URL") and os.environ.get("DATABASE_MARKET_URL") == os.environ.get(
+        "DATABASE_USERS_URL"
+    ):
+        errors.append("DATABASE_MARKET_URL and DATABASE_USERS_URL must be isolated")
+    database_urls = (
+        "DATABASE_MARKET_URL",
+        "DATABASE_MARKET_WORKER_URL",
+        "DATABASE_USERS_URL",
+        "DATABASE_USERS_SERVICE_URL",
+    )
+    for name in database_urls:
+        if _present(name) and urlparse(os.environ[name]).scheme not in {"postgres", "postgresql"}:
+            errors.append(f"{name} must be a PostgreSQL URL")
+    errors.extend(
+        _distinct_database_role_errors(
+            "DATABASE_USERS_URL",
+            "DATABASE_USERS_SERVICE_URL",
+        )
+    )
+    errors.extend(
+        _distinct_database_role_errors(
+            "DATABASE_MARKET_URL",
+            "DATABASE_MARKET_WORKER_URL",
+        )
+    )
+    if is_market_worker_process(os.environ.get("PROCESS_ROLE")):
+        for name in (
+            "DATABASE_USERS_URL",
+            "DATABASE_USERS_SERVICE_URL",
+            "DATABASE_MIGRATION_MARKET_URL",
+            "DATABASE_MIGRATION_USERS_URL",
+            "DATABASE_MIGRATION_ANALYTICS_URL",
+        ):
+            if _present(name):
+                errors.append(f"{name} must not be available to market workers")
+    return errors
+
+
+def _distinct_database_role_errors(primary_name: str, secondary_name: str) -> list[str]:
+    """Reject two workload URLs that reuse one PostgreSQL login identity.
+
+    Args:
+        primary_name: Environment name for the first workload URL.
+        secondary_name: Environment name for the separated workload URL.
+
+    Returns:
+        One sanitized error when URLs or parsed usernames overlap; otherwise an
+        empty list. Credential values and usernames are never returned.
+    """
+
+    if not (_present(primary_name) and _present(secondary_name)):
+        return []
+    primary = os.environ[primary_name]
+    secondary = os.environ[secondary_name]
+    primary_role = urlparse(primary).username
+    secondary_role = urlparse(secondary).username
+    if primary == secondary or (primary_role is not None and primary_role == secondary_role):
+        return [f"{secondary_name} must use a PostgreSQL role distinct from {primary_name}"]
+    return []
 
 
 def _authentication_errors() -> list[str]:

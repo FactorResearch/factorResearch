@@ -6,6 +6,7 @@ import os
 from urllib.parse import urlparse
 
 from codes.core.config import is_production
+from codes.core.database_roles import DatabaseWorkload, verify_database_role
 from codes.data import analytics_db, db, temporal
 from codes.data.migrations import apply_migrations
 from codes.services.analysis_snapshot_service import SNAPSHOT_DDL
@@ -42,12 +43,6 @@ def main() -> None:
         lock_timeout_seconds=timeout,
     )
     db.init_user_db(users_url, lock_timeout_seconds=timeout)
-    runtime_users_role = urlparse(db._users_db_url()).username
-    if runtime_users_role:
-        db.configure_users_runtime_role(users_url, runtime_users_role)
-    elif is_production():
-        raise RuntimeError("DATABASE_USERS_URL must identify a PostgreSQL runtime role")
-
     analytics_runtime_url = _analytics_runtime_url()
     if analytics_runtime_url is not None and analytics_runtime_url != market_runtime_url:
         analytics_url = _migration_url("ANALYTICS", analytics_runtime_url)
@@ -133,6 +128,8 @@ def _initialize_analytics_schema(
 
     bootstrap_sql = "\n".join((analytics_db.SCHEMA, SNAPSHOT_DDL))
     with psycopg.connect(database_url) as connection:
+        if is_production():
+            verify_database_role(connection, DatabaseWorkload.MIGRATION)
         apply_migrations(
             connection,
             "analytics",

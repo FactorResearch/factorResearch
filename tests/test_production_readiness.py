@@ -8,6 +8,7 @@ BASE = {
     "TRUSTED_HOSTS": "research.example",
     "DATABASE_MARKET_URL": "postgresql://market",
     "DATABASE_USERS_URL": "postgresql://users",
+    "DATABASE_USERS_SERVICE_URL": "postgresql://service@users",
     "REDIS_URL": "rediss://redis",
     "SEC_USER_AGENT": "Cenvarnops@research.example",
     "AUTH_PROVIDER": "auth0",
@@ -28,6 +29,7 @@ def _configure(monkeypatch):
         "STRIPE_WEBHOOK_SECRET",
         "PROCESS_ROLE",
         "DATABASE_ANALYTICS_URL",
+        "DATABASE_MARKET_WORKER_URL",
         "ANALYTICS_DATABASE_URL",
         "FACTORRESEARCH_ANALYTICS_DATABASE_URL",
         "DATABASE_URL",
@@ -111,3 +113,46 @@ def test_migration_process_accepts_distinct_role_credentials(monkeypatch):
     monkeypatch.setenv("DATABASE_MIGRATION_USERS_URL", "postgresql://migration@users")
 
     assert validate_production_environment() == []
+
+
+def test_market_worker_requires_isolated_url_and_rejects_users_secrets(monkeypatch):
+    """Market workers must receive only their dedicated database credential."""
+    _configure(monkeypatch)
+    monkeypatch.setenv("PROCESS_ROLE", "market-worker")
+    monkeypatch.setenv("DATABASE_MARKET_WORKER_URL", "postgresql://worker@market")
+
+    failures = validate_production_environment()
+
+    assert any("DATABASE_USERS_URL must not be available" in item for item in failures)
+    assert any("DATABASE_USERS_SERVICE_URL must not be available" in item for item in failures)
+
+    monkeypatch.delenv("DATABASE_USERS_URL")
+    monkeypatch.delenv("DATABASE_USERS_SERVICE_URL")
+    monkeypatch.delenv("DATABASE_MARKET_URL")
+    assert validate_production_environment() == []
+
+
+def test_preflight_rejects_shared_service_and_worker_login_roles(monkeypatch):
+    """Query parameters cannot disguise shared PostgreSQL login principals."""
+    _configure(monkeypatch)
+    monkeypatch.setenv("DATABASE_USERS_URL", "postgresql://users@users/database")
+    monkeypatch.setenv("DATABASE_MARKET_URL", "postgresql://market@market/database")
+    monkeypatch.setenv(
+        "DATABASE_USERS_SERVICE_URL",
+        "postgresql://users@users/database?application_name=service",
+    )
+    monkeypatch.setenv(
+        "DATABASE_MARKET_WORKER_URL",
+        "postgresql://market@market/database?application_name=worker",
+    )
+
+    failures = validate_production_environment()
+
+    assert any(
+        "DATABASE_USERS_SERVICE_URL must use a PostgreSQL role distinct" in item
+        for item in failures
+    )
+    assert any(
+        "DATABASE_MARKET_WORKER_URL must use a PostgreSQL role distinct" in item
+        for item in failures
+    )
