@@ -6,16 +6,24 @@ from codes.data import migrate
 def test_release_migration_initializes_each_schema_once(monkeypatch):
     market = Mock()
     users = Mock()
-    temporal = Mock()
-    snapshots = Mock()
+    analytics = Mock()
     monkeypatch.setattr(migrate.db, "init_db", market)
     monkeypatch.setattr(migrate.db, "init_user_db", users)
-    monkeypatch.setattr(migrate.temporal, "ensure_schema", temporal)
-    monkeypatch.setattr(migrate, "ensure_schema_if_configured", snapshots)
+    monkeypatch.setattr(migrate.db, "_db_url", Mock(return_value="postgresql://market"))
+    monkeypatch.setattr(migrate.db, "_users_db_url", Mock(return_value="postgresql://users"))
+    monkeypatch.setattr(migrate, "_initialize_analytics_schema", analytics)
+    monkeypatch.setattr(migrate, "_analytics_runtime_url", Mock(return_value=None))
+    monkeypatch.setattr(migrate, "is_production", Mock(return_value=False))
 
     migrate.main()
 
-    market.assert_called_once_with()
-    temporal.assert_called_once_with()
-    users.assert_called_once_with()
-    snapshots.assert_called_once_with()
+    market.assert_called_once_with(
+        "postgresql://market",
+        additional_bootstrap_sql=(migrate.temporal.SCHEMA,),
+        lock_timeout_seconds=30.0,
+    )
+    users.assert_called_once_with("postgresql://users", lock_timeout_seconds=30.0)
+    analytics.assert_called_once_with(
+        "postgresql://market",
+        lock_timeout_seconds=30.0,
+    )

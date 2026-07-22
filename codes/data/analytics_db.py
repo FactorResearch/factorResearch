@@ -5,11 +5,14 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
+import threading
 from contextlib import contextmanager
 
 from dotenv import load_dotenv
 
 from codes.core.db_pool import ConnectionPool
+from codes.data import db
+from codes.data.migrations import verify_migrations
 
 load_dotenv()
 
@@ -22,9 +25,10 @@ except ImportError:  # pragma: no cover
 
 
 _initialized = False
+_init_lock = threading.Lock()
 _pool = None
 
-_CREATE_TABLE = """
+SCHEMA = """
 CREATE TABLE IF NOT EXISTS analytics_events (
     id             BIGSERIAL PRIMARY KEY,
     occurred_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -103,12 +107,28 @@ def pool_health() -> dict:
 
 
 def ensure_schema() -> None:
+    """Verify release-created analytics tables once per runtime process.
+
+    Returns:
+        None after the analytics migration scope passes read-only verification.
+
+    Raises:
+        Exception: Propagates missing, partial, unavailable, or checksum-drift
+            state. Runtime analytics paths never create schema.
+
+    Side Effects:
+        Opens a read-only verification transaction on the first successful call.
+    """
     global _initialized
     if _initialized:
         return
-    with _conn() as con:
-        con.execute(_CREATE_TABLE)
-    _initialized = True
+    db.verify_runtime_credential_boundary()
+    with _init_lock:
+        if _initialized:
+            return
+        with _conn() as con:
+            verify_migrations(con, "analytics", required_tables=("analytics_events",))
+        _initialized = True
 
 
 def insert_event(*, user_id: str | None, anonymous_id: str | None, event_name: str,

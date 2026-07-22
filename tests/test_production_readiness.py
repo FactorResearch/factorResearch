@@ -2,7 +2,6 @@ from cryptography.fernet import Fernet
 
 from codes.core.production_readiness import validate_production_environment
 
-
 BASE = {
     "FLASK_SECRET_KEY": "session-secret-with-at-least-32-characters",
     "ENCRYPTION_KEY": Fernet.generate_key().decode(),
@@ -23,7 +22,19 @@ BASE = {
 def _configure(monkeypatch):
     for name, value in BASE.items():
         monkeypatch.setenv(name, value)
-    for name in ("DISABLE_CSRF_DEV", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"):
+    for name in (
+        "DISABLE_CSRF_DEV",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET",
+        "PROCESS_ROLE",
+        "DATABASE_ANALYTICS_URL",
+        "ANALYTICS_DATABASE_URL",
+        "FACTORRESEARCH_ANALYTICS_DATABASE_URL",
+        "DATABASE_URL",
+        "DATABASE_MIGRATION_MARKET_URL",
+        "DATABASE_MIGRATION_USERS_URL",
+        "DATABASE_MIGRATION_ANALYTICS_URL",
+    ):
         monkeypatch.delenv(name, raising=False)
 
 
@@ -76,3 +87,24 @@ def test_preflight_rejects_weak_crypto_hosts_and_transport(monkeypatch):
     assert any("valid Fernet" in failure for failure in failures)
     assert any("explicit hostnames" in failure for failure in failures)
     assert any("must use TLS" in failure for failure in failures)
+
+
+def test_migration_process_requires_separate_postgresql_credentials(monkeypatch):
+    _configure(monkeypatch)
+    monkeypatch.setenv("PROCESS_ROLE", "migration")
+    monkeypatch.setenv("DATABASE_MIGRATION_MARKET_URL", BASE["DATABASE_MARKET_URL"])
+    monkeypatch.setenv("DATABASE_MIGRATION_USERS_URL", "https://invalid")
+
+    failures = validate_production_environment()
+
+    assert any("must differ from DATABASE_MARKET_URL" in failure for failure in failures)
+    assert any("DATABASE_MIGRATION_USERS_URL must be a PostgreSQL URL" in failure for failure in failures)
+
+
+def test_migration_process_accepts_distinct_role_credentials(monkeypatch):
+    _configure(monkeypatch)
+    monkeypatch.setenv("PROCESS_ROLE", "migration")
+    monkeypatch.setenv("DATABASE_MIGRATION_MARKET_URL", "postgresql://migration@market")
+    monkeypatch.setenv("DATABASE_MIGRATION_USERS_URL", "postgresql://migration@users")
+
+    assert validate_production_environment() == []

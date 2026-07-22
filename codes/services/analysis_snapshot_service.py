@@ -11,6 +11,8 @@ from functools import partial
 from typing import Any
 
 from codes.core.db_pool import ConnectionPool
+from codes.data import db
+from codes.data.migrations import verify_migrations
 from codes.models.analysis_snapshot import (
     PUBLIC_ANALYSIS_TYPES,
     AnalysisSnapshot,
@@ -88,6 +90,11 @@ CREATE TABLE IF NOT EXISTS custom_analysis_snapshots (
 CREATE INDEX IF NOT EXISTS idx_custom_analysis_owner_ticker_date
 ON custom_analysis_snapshots(user_id, ticker, analysis_date DESC, created_at DESC);
 """
+_SNAPSHOT_REQUIRED_TABLES = (
+    "analysis_snapshots",
+    "analysis_versions",
+    "custom_analysis_snapshots",
+)
 _pools: dict[str, ConnectionPool] = {}
 _pool_lock = threading.Lock()
 
@@ -169,12 +176,6 @@ def _connect() -> Iterator:
         yield conn
 
 
-def initialize_schema() -> None:
-    with _connect() as conn:
-        with conn.cursor() as cur:
-            cur.execute(SNAPSHOT_DDL)
-
-
 def pool_health() -> dict:
     with _pool_lock:
         return {f"pool_{index + 1}": pool.stats() for index, pool in enumerate(_pools.values())}
@@ -188,10 +189,30 @@ def delete_user_snapshots(user_id: str) -> int:
 
 
 def ensure_schema_if_configured() -> bool:
+    """Verify optional snapshot schema without granting runtime DDL privileges.
+
+    Returns:
+        False when snapshot storage is not configured, otherwise True after its
+        release-created tables and migration tracker pass read-only checks.
+
+    Raises:
+        Exception: Propagates missing, partial, unavailable, or checksum-drift
+            state so callers fail closed rather than attempting initialization.
+
+    Side Effects:
+        Opens a runtime database connection and performs read-only catalog
+        queries. The historical function name is retained for compatibility.
+    """
     if not _database_url():
         print("Analysis snapshot schema skipped: no analytics database URL configured.")
         return False
-    initialize_schema()
+    db.verify_runtime_credential_boundary()
+    with _connect() as connection:
+        verify_migrations(
+            connection,
+            "analytics",
+            required_tables=_SNAPSHOT_REQUIRED_TABLES,
+        )
     return True
 
 
