@@ -1,0 +1,29 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cenvarn canonical contract components",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "AvailabilityStatus": { "$ref": "./canonical.schema.json#/$defs/AvailabilityStatus" },
+      "AnalysisManifest": { "$ref": "./canonical.schema.json#/$defs/AnalysisManifest" },
+      "BacktestResult": { "$ref": "./canonical.schema.json#/$defs/BacktestResult" },
+      "BacktestSpecification": { "$ref": "./canonical.schema.json#/$defs/BacktestSpecification" },
+      "CorporateAction": { "$ref": "./canonical.schema.json#/$defs/CorporateAction" },
+      "FactorMatrix": { "$ref": "./canonical.schema.json#/$defs/FactorMatrix" },
+      "FactorObservation": { "$ref": "./canonical.schema.json#/$defs/FactorObservation" },
+      "FinancialFact": { "$ref": "./canonical.schema.json#/$defs/FinancialFact" },
+      "FiscalPeriod": { "$ref": "./canonical.schema.json#/$defs/FiscalPeriod" },
+      "FxObservation": { "$ref": "./canonical.schema.json#/$defs/FxObservation" },
+      "ObservedDecimal": { "$ref": "./canonical.schema.json#/$defs/ObservedDecimal" },
+      "ObservedRatio": { "$ref": "./canonical.schema.json#/$defs/ObservedRatio" },
+      "PortfolioTransaction": { "$ref": "./canonical.schema.json#/$defs/PortfolioTransaction" },
+      "PriceObservation": { "$ref": "./canonical.schema.json#/$defs/PriceObservation" },
+      "Provenance": { "$ref": "./canonical.schema.json#/$defs/Provenance" },
+      "SimulationResult": { "$ref": "./canonical.schema.json#/$defs/SimulationResult" },
+      "SimulationSpecification": { "$ref": "./canonical.schema.json#/$defs/SimulationSpecification" }
+    }
+  },
+  "x-canonical-schema-version": "1.0.0"
+}

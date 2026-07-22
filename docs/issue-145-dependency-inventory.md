@@ -2,9 +2,10 @@
 
 ## Contract
 
-`pyproject.toml` and `package.json` are the only hand-edited direct dependency
-declarations. Their lockfiles contain exact transitive resolutions. Every direct
-declaration must appear below with an owner and a disposition:
+`pyproject.toml`, `package.json`, and the manifests below `native/` are the
+hand-edited direct dependency declarations. Their lockfiles contain exact
+transitive resolutions. Every direct declaration must appear below with an
+owner and a disposition:
 
 - **Keep:** approved and owned for the current architecture.
 - **Temporary:** required by a legacy product path and removed by a named
@@ -25,6 +26,7 @@ responsibility; scanner output is inventory evidence, not legal advice.
 | Dash | Customer UI | Temporary | MIT | Legacy customer and internal Dash presentation | Remove customer use under ISSUE_142; retain only approved internal tooling |
 | Plotly | Customer UI | Temporary | MIT | Charts on retained Dash pages | Replace customer charts under ISSUE_142; keep internal compatibility tested |
 | pandas | Quant Platform | Temporary | BSD-3-Clause | Existing table and time-series paths | Narrow after Polars/Arrow owning issues; never rewrite DataFrame infrastructure |
+| PyArrow | Quant Platform | Keep | Apache-2.0 | Maintained Apache Arrow tables and IPC at canonical engine boundaries | Keep isolated behind canonical adapters; constrain and test each major upgrade |
 | NumPy | Quant Platform | Keep | BSD-3-Clause and bundled permissive notices | Numeric arrays and financial kernels | Keep within a tested major; use Rust only after benchmark/parity gate |
 | Requests | Data Platform | Replace | Apache-2.0 | Existing provider and authentication HTTP paths | New transports use shared HTTPX only when an owning issue migrates callers |
 | python-dotenv | Platform Engineering | Temporary | BSD-3-Clause | Local-development environment loading | Remove from production paths when typed configuration/secret management owns startup |
@@ -66,12 +68,18 @@ responsibility; scanner output is inventory evidence, not legal advice.
 
 ## Rust and native dependency budget
 
-The repository has no `Cargo.toml`, `Cargo.lock`, native dependency, Rust wheel,
-or Rust compile step. The current native dependency budget and compile time are
-therefore exactly zero. The first owning native issue must document each crate,
-commit `Cargo.lock`, run cargo-audit and cargo-deny, test Python fallback/parity,
-and establish a measured compile-time budget. ISSUE_145 does not create a
-placeholder native package.
+ISSUE_137 introduces the first schema-only Rust crate and commits its lockfile.
+It performs no financial computation and therefore has no Python parity or
+fallback path yet. The first native kernel issue remains responsible for
+production-shaped compile/runtime budgets and Python parity evidence.
+
+| Package | Owner | Disposition | License posture | Purpose and boundary | Upgrade/removal rule |
+|---|---|---|---|---|---|
+| serde | Quant Platform | Keep | MIT OR Apache-2.0 | Maintained canonical struct serialization derives | Keep major 1; do not implement a serializer |
+| rust_decimal | Quant Platform | Keep | MIT | Exact money, price, quantity, and accounting values serialized as strings | Keep behind canonical schema; reject conversion loss |
+| time | Quant Platform | Keep | MIT OR Apache-2.0 | Typed business dates and UTC instants | Keep canonical ISO/RFC3339 adapters tested |
+| uuid | Quant Platform | Keep | Apache-2.0 OR MIT | Permanent entity, security, listing, and record identities | Keep parsing/Serde only until an owning identity issue needs generation |
+| serde_json | Quality Engineering | Keep (dev only) | MIT OR Apache-2.0 | Rust golden-fixture contract test | Remains outside runtime dependencies |
 
 ## Approved license policy and exceptions
 

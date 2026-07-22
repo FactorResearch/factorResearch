@@ -7,6 +7,7 @@ dependencies = [
   "dash>=4.4,<5",
   "plotly>=6.9,<7",
   "pandas>=3.0.3,<4",
+  "pyarrow>=25,<26",
   "numpy>=2.5.1,<3",
   "requests>=2.34.2,<3",
   "python-dotenv>=1.2.2,<2",
@@ -59,9 +60,12 @@ strict = true
 follow_imports = "skip"
 warn_unused_configs = true
 files = [
+  "codes/core/arrow_contracts.py",
+  "codes/core/canonical_adapters.py",
   "codes/core/ports.py",
   "codes/composition.py",
   "codes/data/providers/sec_universe.py",
+  "codes/domain/canonical.py",
   "codes/services/product_analytics.py",
   "codes/app_modules/analytics_context.py",
   "codes/app_modules/composition.py",

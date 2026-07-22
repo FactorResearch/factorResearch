@@ -75,11 +75,17 @@ def test_every_direct_dependency_has_an_owner_and_disposition() -> None:
 
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text())
     package = json.loads((ROOT / "package.json").read_text())
+    cargo = tomllib.loads((ROOT / "native" / "factorresearch_core" / "Cargo.toml").read_text())
     inventory = (ROOT / "docs/issue-145-dependency-inventory.md").read_text().lower()
-    direct_names = _direct_python_names(pyproject) | set(package["devDependencies"])
+    direct_names = (
+        _direct_python_names(pyproject)
+        | set(package["devDependencies"])
+        | set(cargo["dependencies"])
+        | set(cargo["dev-dependencies"])
+    )
     for name in direct_names:
         assert f"| {name.lower()} |" in inventory
-    assert "native dependency budget and compile time are\ntherefore exactly zero" in inventory
+    assert (ROOT / "native" / "factorresearch_core" / "Cargo.lock").is_file()
 
 
 def test_repository_policy_is_mirrored_and_mechanically_reviewed() -> None:
@@ -95,16 +101,30 @@ def test_repository_policy_is_mirrored_and_mechanically_reviewed() -> None:
 
 
 def test_supply_chain_workflows_cover_current_ecosystems() -> None:
-    """Require frozen audits, two SBOMs, license review, and grouped updates."""
+    """Require frozen audits, inventories, license review, and grouped updates."""
 
     security = (ROOT / ".github/workflows/security-audit.yml").read_text().lower()
     review = (ROOT / ".github/workflows/dependency-review.yml").read_text().lower()
+    validation = (ROOT / ".github/workflows/pr-tests.yml").read_text().lower()
     updater = (ROOT / ".github/dependabot.yml").read_text().lower()
-    for control in ("uv sync --frozen", "pip-audit", "npm audit", "sbom-python", "sbom-node"):
+    for control in (
+        "uv sync --frozen",
+        "pip-audit",
+        "npm audit",
+        "rustsec/audit-check@v2.0.0",
+        "sbom-python",
+        "sbom-node",
+        "rust-dependency-metadata.json",
+    ):
         assert control in security
+    assert (
+        "cargo +1.97.1 test --manifest-path native/factorresearch_core/cargo.toml --locked"
+    ) in validation
+    assert "embarkstudios/cargo-deny-action@v2.1.1" in review
+    assert "command-arguments: bans licenses sources" in review
     assert "license-check: true" in review
     assert "fail-on-severity: high" in review
-    for ecosystem in ("pip", "npm", "github-actions"):
+    for ecosystem in ("pip", "npm", "cargo", "github-actions"):
         assert f"package-ecosystem: {ecosystem}" in updater
 
 

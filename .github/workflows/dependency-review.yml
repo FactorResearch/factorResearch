@@ -19,3 +19,14 @@ jobs:
           license-check: true
           vulnerability-check: true
           deny-licenses: AGPL-3.0, GPL-3.0, SSPL-1.0, BUSL-1.1
+
+  rust-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: EmbarkStudios/cargo-deny-action@v2.1.1
+        with:
+          rust-version: "1.97.1"
+          manifest-path: native/factorresearch_core/Cargo.toml
+          command: check
+          command-arguments: bans licenses sources

@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.cenvarn.com/canonical/v1/canonical.schema.json",
+  "title": "Cenvarn Canonical Financial Contracts",
+  "description": "Language-neutral v1 contracts for identities, exact values, time, provenance, observations, engine specifications, and results.",
+  "x-schema-version": "1.0.0",
+  "x-compatibility": "additive-minor",
+  "$defs": {
+    "EntityId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Permanent issuer or legal-entity identity; never a ticker alias."
+    },
+    "SecurityId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Permanent identity for one fungible security."
+    },
+    "ListingId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Permanent identity for a security listing on one venue."
+    },
+    "IdentifierId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Permanent identity for an external identifier assignment."
+    },
+    "Currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "Uppercase three-letter currency code."
+    },
+    "Decimal": {
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+      "description": "Base-10 exact value serialized as text; exponent notation is prohibited."
+    },
+    "Money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/Decimal" },
+        "currency": { "$ref": "#/$defs/Currency" }
+      }
+    },
+    "Price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency", "adjustment"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/Decimal" },
+        "currency": { "$ref": "#/$defs/Currency" },
+        "adjustment": {
+          "type": "string",
+          "enum": ["raw", "split_adjusted", "total_return_adjusted"]
+        }
+      }
+    },
+    "Quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "unit"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/Decimal" },
+        "unit": { "type": "string", "minLength": 1 }
+      }
+    },
+    "Ratio": {
+      "type": "number",
+      "description": "Finite IEEE-754 binary64 analytical ratio; JSON NaN and infinity are prohibited."
+    },
+    "BasisPoints": {
+      "type": "integer",
+      "description": "One unit is one hundredth of one percentage point."
+    },
+    "AvailabilityStatus": {
+      "type": "string",
+      "enum": [
+        "available",
+        "missing",
+        "not_applicable",
+        "stale",
+        "invalid",
+        "provider_failed",
+        "insufficient_history",
+        "policy_suppressed"
+      ]
+    },
+    "Provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "source_record_id",
+        "observed_at",
+        "available_at",
+        "ingested_at",
+        "normalization_version"
+      ],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "source_record_id": { "type": "string", "minLength": 1 },
+        "source_uri": { "type": ["string", "null"], "format": "uri" },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "available_at": { "type": "string", "format": "date-time" },
+        "ingested_at": { "type": "string", "format": "date-time" },
+        "normalization_version": { "type": "string", "minLength": 1 },
+        "filing_version": { "type": ["string", "null"] }
+      }
+    },
+    "ObservedDecimal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "value", "reason", "provenance"],
+      "properties": {
+        "status": { "$ref": "#/$defs/AvailabilityStatus" },
+        "value": { "anyOf": [{ "$ref": "#/$defs/Decimal" }, { "type": "null" }] },
+        "reason": { "type": ["string", "null"] },
+        "provenance": { "anyOf": [{ "$ref": "#/$defs/Provenance" }, { "type": "null" }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "available" } } },
+          "then": {
+            "properties": {
+              "value": { "$ref": "#/$defs/Decimal" },
+              "reason": { "type": "null" },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": { "type": "null" },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "ObservedRatio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "value", "reason", "provenance"],
+      "properties": {
+        "status": { "$ref": "#/$defs/AvailabilityStatus" },
+        "value": { "type": ["number", "null"] },
+        "reason": { "type": ["string", "null"] },
+        "provenance": { "anyOf": [{ "$ref": "#/$defs/Provenance" }, { "type": "null" }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "available" } } },
+          "then": {
+            "properties": {
+              "value": { "type": "number" },
+              "reason": { "type": "null" },
+              "provenance": { "$ref": "#/$defs/Provenance" }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": { "type": "null" },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "FiscalPeriod": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fiscal_year", "period", "start_date", "end_date"],
+      "properties": {
+        "fiscal_year": { "type": "integer", "minimum": 1800, "maximum": 9999 },
+        "period": { "type": "string", "enum": ["FY", "Q1", "Q2", "Q3", "Q4", "H1", "H2", "TTM"] },
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" }
+      }
+    },
+    "FilingVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filing_id", "accession", "filed_at", "accepted_at", "amendment"],
+      "properties": {
+        "filing_id": { "type": "string", "format": "uuid" },
+        "accession": { "type": "string", "minLength": 1 },
+        "filed_at": { "type": "string", "format": "date-time" },
+        "accepted_at": { "type": "string", "format": "date-time" },
+        "amendment": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "FinancialFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "concept", "period", "value", "unit"],
+      "properties": {
+        "entity_id": { "$ref": "#/$defs/EntityId" },
+        "concept": { "type": "string", "minLength": 1 },
+        "period": { "$ref": "#/$defs/FiscalPeriod" },
+        "value": { "$ref": "#/$defs/ObservedDecimal" },
+        "unit": { "type": "string", "minLength": 1 },
+        "currency": { "anyOf": [{ "$ref": "#/$defs/Currency" }, { "type": "null" }] },
+        "filing": { "anyOf": [{ "$ref": "#/$defs/FilingVersion" }, { "type": "null" }] }
+      }
+    },
+    "CorporateAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["security_id", "action_id", "action_type", "effective_date", "value", "provenance"],
+      "properties": {
+        "security_id": { "$ref": "#/$defs/SecurityId" },
+        "action_id": { "type": "string", "format": "uuid" },
+        "action_type": { "type": "string", "enum": ["split", "cash_dividend", "stock_dividend", "spinoff", "merger"] },
+        "effective_date": { "type": "string", "format": "date" },
+        "value": { "$ref": "#/$defs/ObservedDecimal" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+    "PriceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["listing_id", "observation_date", "price", "available_at", "provenance"],
+      "properties": {
+        "listing_id": { "$ref": "#/$defs/ListingId" },
+        "observation_date": { "type": "string", "format": "date" },
+        "price": { "$ref": "#/$defs/Price" },
+        "available_at": { "type": "string", "format": "date-time" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+    "FxObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_currency", "quote_currency", "observation_date", "rate", "available_at", "provenance"],
+      "properties": {
+        "base_currency": { "$ref": "#/$defs/Currency" },
+        "quote_currency": { "$ref": "#/$defs/Currency" },
+        "observation_date": { "type": "string", "format": "date" },
+        "rate": { "$ref": "#/$defs/ObservedDecimal" },
+        "available_at": { "type": "string", "format": "date-time" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      }
+    },
+    "PortfolioTransaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transaction_id", "portfolio_id", "listing_id", "transaction_type", "quantity", "executed_at", "recorded_at"],
+      "properties": {
+        "transaction_id": { "type": "string", "format": "uuid" },
+        "portfolio_id": { "type": "string", "format": "uuid" },
+        "listing_id": { "$ref": "#/$defs/ListingId" },
+        "transaction_type": { "type": "string", "enum": ["buy", "sell", "deposit", "withdrawal", "dividend", "fee", "tax"] },
+        "quantity": { "$ref": "#/$defs/Quantity" },
+        "unit_price": { "anyOf": [{ "$ref": "#/$defs/Price" }, { "type": "null" }] },
+        "executed_at": { "type": "string", "format": "date-time" },
+        "recorded_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "FactorObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["security_id", "factor", "as_of_date", "available_at", "value", "model_version"],
+      "properties": {
+        "security_id": { "$ref": "#/$defs/SecurityId" },
+        "factor": { "type": "string", "minLength": 1 },
+        "as_of_date": { "type": "string", "format": "date" },
+        "available_at": { "type": "string", "format": "date-time" },
+        "value": { "$ref": "#/$defs/ObservedRatio" },
+        "model_version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "FactorMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["as_of_date", "available_at", "security_ids", "factor_names", "values", "model_version"],
+      "properties": {
+        "as_of_date": { "type": "string", "format": "date" },
+        "available_at": { "type": "string", "format": "date-time" },
+        "security_ids": { "type": "array", "items": { "$ref": "#/$defs/SecurityId" } },
+        "factor_names": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "values": { "type": "array", "items": { "type": "array", "items": { "$ref": "#/$defs/ObservedRatio" } } },
+        "model_version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "BacktestSpecification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specification_id", "strategy_version", "start_date", "end_date", "base_currency", "created_at"],
+      "properties": {
+        "specification_id": { "type": "string", "format": "uuid" },
+        "strategy_version": { "type": "string", "minLength": 1 },
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" },
+        "base_currency": { "$ref": "#/$defs/Currency" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "BacktestResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specification_id", "engine_version", "completed_at", "total_return", "manifest"],
+      "properties": {
+        "specification_id": { "type": "string", "format": "uuid" },
+        "engine_version": { "type": "string", "minLength": 1 },
+        "completed_at": { "type": "string", "format": "date-time" },
+        "total_return": { "type": "number" },
+        "manifest": { "$ref": "#/$defs/AnalysisManifest" }
+      }
+    },
+    "SimulationSpecification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specification_id", "model_version", "paths", "horizon_periods", "created_at"],
+      "properties": {
+        "specification_id": { "type": "string", "format": "uuid" },
+        "model_version": { "type": "string", "minLength": 1 },
+        "paths": { "type": "integer", "minimum": 1 },
+        "horizon_periods": { "type": "integer", "minimum": 1 },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "SimulationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["specification_id", "engine_version", "completed_at", "percentiles", "manifest"],
+      "properties": {
+        "specification_id": { "type": "string", "format": "uuid" },
+        "engine_version": { "type": "string", "minLength": 1 },
+        "completed_at": { "type": "string", "format": "date-time" },
+        "percentiles": { "type": "object", "additionalProperties": { "type": "number" } },
+        "manifest": { "$ref": "#/$defs/AnalysisManifest" }
+      }
+    },
+    "AnalysisManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "normalization_version", "provider_mapping_version", "model_version", "engine_version", "executed_at"],
+      "properties": {
+        "schema_version": { "const": "1.0.0" },
+        "normalization_version": { "type": "string", "minLength": 1 },
+        "provider_mapping_version": { "type": "string", "minLength": 1 },
+        "model_version": { "type": "string", "minLength": 1 },
+        "engine_version": { "type": "string", "minLength": 1 },
+        "executed_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
